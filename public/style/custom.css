@@ -1,0 +1,114 @@
+.chatIcons span{
+    margin-left: 5px;
+}
+@media screen and (max-width: 786px) {
+    .chatIcons span{
+        margin-left: 13px;
+    }
+}
+.chatIcons .fa-paperclip{
+    line-height: 2;
+    font-weight: bold;
+    font-size: 20px;
+    transform: rotate(90deg);
+}
+.hoverIt:hover{
+    cursor: pointer;
+}
+.border0{
+    border: 0px;
+}
+.msgDel{
+    background-color: #ccc !important;
+    font-style: italic;
+}
+.removeUser{
+    position: absolute; 
+    right: 13px; 
+    top: 10px;
+}
+.msg3dots{
+    position: absolute;
+    left: 50%;
+    top: 2px;
+    height: 15px;
+}
+.width100{
+    width: 100%;
+}
+.statusDropDown{ 
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    bottom: 0px;
+    left: 31px;
+    border: 2px solid #171717;
+}
+.activeSt{
+    background-color: #0EF31B; 
+}
+.awaySt{
+    background-color: #F8F500;
+}
+.dDisturbSt{
+    background-color: coral;
+}
+.invisSt{
+    background-color: #fff;
+}
+.statusDropDown:hover{
+    background-color: #fff;
+    border: 3px solid #fff;
+}
+.statusDropDown .stAngleDd{
+    padding-left: 1px;
+    margin-top: -1px;
+}
+.statusDrpOptions{
+    width: 150px;
+    background-color: #fff; 
+    position: absolute;
+    z-index: 99999999;
+    top: 47px;
+    left: 72px;
+    padding-left: 0px;
+    list-style: none; 
+}
+.statusDrpOptions li{
+    padding: 8px 5px 5px 32px;
+
+}
+.statusDrpOptions li:hover{
+    background-color: #E8E9E5;
+}
+.statusDrpOptions li.active{
+    background-image: url('../images/tick.png');
+    background-repeat: no-repeat;
+    background-position: 4% 7px;
+}
+.inbox_people{
+    position: relative;
+}
+.parentRightWindow{
+    position: relative;
+}
+#isTyping{
+    position: absolute;
+    right: 22px;
+    font-style: italic;
+    font-size: 13px;
+    bottom: 50px;
+    background-color: #fff;
+    padding: 2px;
+    border-radius: 7%;
+}
+#remotes{
+    border-bottom:1px solid #ccc;
+}
+#videoOutput{
+    width: 100%;
+    max-height:340px;
+}

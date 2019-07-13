@@ -1,0 +1,163 @@
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content" *ngIf='activatedForm == 0'>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" style="font-size:25px; font-weight:500"> Groups </span>
+          <hr>
+          <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Create Group </button>
+          </div>
+          <div class=" card-body">
+            <div class="">
+              <table class="table">
+                <thead class=" text-primary">
+                  <th>
+                    ID
+                  </th>
+                  <th>
+                    Name
+                  </th>
+                  <th>
+                    Total Users
+                  </th>
+                </thead>
+                <tbody *ngFor="let user of usersList; let i = index">
+                  <tr>
+                    <td>
+                      <p>..............</p>
+                    </td>
+                    <td>
+                      <p>..............</p>
+                    </td>
+                    <td>
+                      <p>..............</p>
+                    </td>
+
+                    <!-- <td> -->
+                      <!-- <input type="hidden" value="{{ user._id }}" #userId>  -->
+                    <!-- </td> -->
+                    <td>
+                      <div class="collapse navbar-collapse justify-content-end" id="collapseExample"
+                        [ngbCollapse]="isCollapsed">
+
+                        <ul class="">
+                          <li class="nav-item removeStyle" ngbDropdown>
+                            <a class="nav-link" id="dropdownBasic2" ngbDropdownToggle>
+                              <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu
+                              aria-labelledby="dropdownBasic2">
+                              <a class="dropdown-item" (click)="updateForm(user)">Add</a>
+                              <a class="dropdown-item" (click)="DeleteUser(userId.value)">Delete</a>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- -----------------------------  --------------------------------------------- -->
+<!-- ----------------------------- GROUPS ADD -------------------------------------- -->
+<!-- -----------------------------  --------------------------------------------- -->
+
+<div class="main-content" *ngIf='activatedForm == 1'>
+    <div class="row">
+      <div class="col-md-8 offset-md-1 col-lg-8 offset-lg-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="title" style="font-size:25px; font-weight:500">Create Group</span>
+            <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Back </button>
+  
+          </div>
+          <div class="card-body">
+            <form [formGroup]="userGroupForm" (ngSubmit)="CreateGroup()">
+              <div class="row">
+  
+                <div class="col-md-5 px-1">
+                  <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" formControlName="username" placeholder="Username">
+                  </div>
+                </div>
+                <div class="col-md-6 pl-1">
+                  <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input name="email" id="email" type="email" formControlName="email" class="form-control"
+                      placeholder="Email">
+                  </div>
+                </div>
+                <div class="col-md-5 pl-1">
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input name="password" id="password" type="password" (input)="passwordValidation(password)"
+                      formControlName="password" class="form-control" placeholder="password" #password>
+                  </div>
+  
+                </div>
+                <div class="col-md-8 pl-1">
+                  <span style="color: red"> {{ passwordMessage }} </span>
+                </div>
+  
+              </div>
+              <div class="row">
+                <div class="col-md-11 pl-1">
+                  <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" class="form-control" formControlName="address" placeholder="Home Address">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 pl-1">
+                  <div class="form-group">
+                    <label>Contact No.</label>
+                    <input type="number" class="form-control" formControlName="contact" placeholder="phone number">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 pl-1">
+                  <!-- <div class="form-group"> -->
+                  <a class="simple-text logo-mini">
+                    <div class="logo-img">
+                      <label for="profile_img">
+                        <span *ngIf="userImage == null">
+                          <img class="img-responsive" src="/assets/img/noProfile.png" />
+                        </span>
+                        <span *ngIf="userImage != null">
+                          <img class="img-responsive" [src]="imageSrc"
+                            style="border-radius: 50%; height: 120px; width: 120px; position: relative;" />
+                        </span>
+  
+                        <input type="file" (change)="userImageUpload($event)" value="Upload"
+                          style="position: absolute; margin-left: 10px" #uploadedImage>
+                      </label>
+  
+                    </div>
+                  </a>
+                  <!-- </div> -->
+                </div>
+              </div>
+              <!-- <div class="row"> -->
+                <!-- <div class="col-md-4 pl-1"> -->
+                  <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="submit">
+                <!-- </div> -->
+              <!-- </div> -->
+            </form>
+            <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

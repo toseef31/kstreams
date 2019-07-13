@@ -1,0 +1,104 @@
+<!-- <div class="panel-header panel-header-sm">
+</div> -->
+<!-- <img [src]="userImage"> -->
+<div class="main-content" *ngIf="!userLoggedIn">
+  <div class="row">
+    <div class="col-md-7 offset-md-3 col-md-offset-6 col-lg-5 offset-lg-4">
+
+      <!-- ************************************************************************************** -->
+      <!-- ************************************* LOGIN FORM ************************************ -->
+      <div class="card" *ngIf="activatedForm == 1">
+        <div class="card-header">
+          <h5 class="title" style="text-align: center"> Admin Login </h5>
+        </div>
+        <div class="card-body">
+
+          <form [formGroup]="loginform" (ngSubmit)="onLogin()">
+            <div class="row">
+
+              <div class="col-md-12 pl-1">
+                <div class="form-group">
+                  <label for="email">Email address</label>
+                  <input name="email" id="email" type="email" class="form-control" formControlName="email"
+                    placeholder="Email">
+                </div>
+              </div>
+
+              <div class="col-md-12 px-1">
+                <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" class="form-control" placeholder="Username" formControlName="password" value="">
+                </div>
+              </div>
+
+              <div class="col-md-12 px-1">
+                <div class="form-group">
+                  <p class="text-danger floatRight cursorPointer" (click)="formActivation()">
+                    <u>forgot password</u>
+                  </p>
+                  <br>
+                  <input type="submit" [disabled]="loginform.invalid" class="btn btn-primary textAlign" value="submit">
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+          <div style="text-align: center; color:red">
+            <p> {{ formMessage }} </p>
+          </div>
+
+        </div>
+      </div> <!-- Div-Card End -->
+
+      <!-- ************************************************************************************** -->
+      <!-- ******************************** FORGET PASSWORD FORM ******************************** -->
+
+      <div class="card" *ngIf="activatedForm == 2">
+        <div class="card-header">
+          <h5 class="title" style="text-align: center">Password Reset</h5>
+        </div>
+        <div class="card-body">
+
+          <form [formGroup]="forgetPasswordForm" (ngSubmit)="onForget()">
+            <div class="row">
+
+              <div class="col-md-12 pl-1">
+                <div class="form-group">
+                  <label for="email">New Password</label>
+                  <input name="newpassword" id="newpassword" type="password" class="form-control"
+                    formControlName="newpassword" placeholder="new password">
+                </div>
+              </div>
+
+              <div class="col-md-12 px-1">
+                <div class="form-group">
+                  <label>Repeat Password</label>
+                  <input type="password" id="repeatpassword" class="form-control" placeholder="repeat password"
+                    formControlName="repeatpassword">
+                </div>
+              </div>
+
+              <div class="col-md-12 px-1">
+                <div class="form-group">
+                  <p class="text-danger floatRight cursorPointer" (click)="formActivation()">
+                    <u>go to login</u>
+                  </p>
+                  <br>
+                  <input type="submit" [disabled]="loginform.invalid" class="btn btn-primary textAlign" value="submit">
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+          <div style="text-align: center; color:red">
+            <p> {{ formMessage }} </p>
+          </div>
+
+        </div>
+      </div> <!-- Div-Card End -->
+
+    </div>
+  </div>
+</div>

@@ -6,6 +6,12 @@ const express = require('express'),
 
 const registrationRoute = require('./routes/registration.routes');
 const groupsRoute = require('./routes/groups.routes');
+ 
+var fs = require('fs'); 
+var https = require('https');
+var privateKey  = fs.readFileSync('keys/ssl.key', 'utf8');
+var certificate = fs.readFileSync('keys/ssl.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.url, { useNewUrlParser: true }).then(
@@ -14,7 +20,6 @@ mongoose.connect(config.url, { useNewUrlParser: true }).then(
 );
 
 const app = express();
-
 app.use(express.static('assets'))
 
 app.use(bodyParser.json());
@@ -28,6 +33,7 @@ app.use('/groups', groupsRoute);
 
 const port = process.env.PORT || 4000;
 
-app.listen(port, function () {
-    console.log('Listening on port ' + port);
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(port, function () {
+    console.log(' https Listening on port ' + port);
 });

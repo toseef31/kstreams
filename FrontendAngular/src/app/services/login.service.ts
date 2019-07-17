@@ -6,7 +6,6 @@ import { SessionStorageService, LocalStorageService } from 'angular-web-storage'
 })
 export class LoginService {
 
-  userLoggedIn: boolean;
   userImage: any;
 
   constructor(private sessionService: SessionStorageService, private localStorageService: LocalStorageService) { }
@@ -32,5 +31,13 @@ export class LoginService {
   getUserImage(){
     return this.userImage;
   }
+
+  // setUserPassword(password: string){
+  //   this.sessionService.set("userPassword", password);
+  // }
+
+  // getUserPassword(){
+  //   return this.sessionService.get("userPassword");
+  // }
 
 }

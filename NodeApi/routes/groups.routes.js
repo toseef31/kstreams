@@ -1,25 +1,117 @@
 const express = require('express');
 const groupsRouter = express.Router();
 let groupModel = require('../models/groups');
+let userModel = require('../models/registration');
 
-groupsRouter.route('/storegroup').post(function (req, res) {
-    var Group = groupModel;
+groupsRouter.route('/addusergroup').post(function (req, res) {
 
-    console.log(req.body);
-
-    //  let newGroupModel = new groupModel(req.body);
-    // newGroupModel.save()
- 
     groupModel.update(
-        { $push: { members: req.body.id }, name: req.body.name, status: req.body.status },
-        // { name: req.body.name },
-        // { status: req.body.status }
+        { '_id': req.body.selectedGroupId },
+        { $push: { members: req.body.user } },
     ).then(
         (result) => {
-            res.send(result);
+            var Group = groupModel;
+            var User = userModel;
+
+            Group.find({ '_id': req.body.selectedGroupId }).populate('members').exec(function (err, users) {
+                if (err) { return console.log(err); }
+                var groupUsers = users;
+
+                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0  }, {}).exec(function (err, remainingUsers) {
+                    if (err) { return console.log(err); }
+
+                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+                })
+
+            });
+
         }).catch(err => {
             res.send(err);
         });
 });
+
+
+groupsRouter.route("/deletegroupuser").post(function (req, res) {
+    groupModel.update(
+        { '_id': req.body.selectedGroupId },
+        { $pull: { members: req.body.user } },
+    ).then(
+        (result) => {
+            var Group = groupModel;
+            var User = userModel;
+
+            Group.find({ '_id': req.body.selectedGroupId }).populate('members').exec(function (err, users) {
+                if (err) { return console.log(err); }
+                var groupUsers = users;
+
+                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0  }, {}).exec(function (err, remainingUsers) {
+                    if (err) { return console.log(err); }
+
+                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+                })
+
+            });
+
+        }).catch(err => {
+            res.send(err);
+        });
+})
+
+groupsRouter.route("/creategroup").post(function (req, res) {
+    let newGroupModel = new groupModel(req.body);
+
+    newGroupModel.save().then(
+        reg => {
+            var Group = groupModel;
+            Group.find({ 'status': 1 }, { '_id': true, 'name': true, 'status': true }, function (err, groups) {
+                res.send(groups);
+            })
+            //  res.send({ 'message': 'group created successfully', 'status': true });
+        }).catch(
+            err => {
+                res.status(400).send({ 'message': "unable to create group", 'status': false });
+            }
+        )
+});
+
+groupsRouter.route("/deletegroup").post(function (req, res) {
+    var Group = groupModel;
+   // console.log(req.body);
+    Group.findByIdAndUpdate(req.body.groupId, { 'status': 0 }).then(
+        (result) => {
+            var Group = groupModel;
+            Group.find({ 'status': 1 }, { '_id': true, 'name': true, 'status': true }, function (err, groups) {
+                res.send(groups);
+            })
+
+        }).catch(err => {
+            res.status(400).send({ 'message': "failed to delete the group", 'status': false });
+        });
+})
+
+groupsRouter.route("/getgroups").get(function (req, res) {
+    var Groups = groupModel;
+
+    Groups.find({ 'status': 1 }, { '_id': true, 'members': true, 'name': true, 'status': true }, function (err, groups) {
+        res.send(groups);
+    })
+})
+
+groupsRouter.route("/getaddedusers").post(function (req, res) {
+    var Group = groupModel;
+    var User = userModel;
+
+    Group.find({ '_id': req.body.selectedGroupId}).populate('members').exec(function (err, users) {
+        if (err) { return console.log(err); }
+        var groupUsers = users;
+
+        User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0 }, {}).exec(function (err, remainingUsers) {
+            if (err) { return console.log(err); }
+
+            res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+        })
+    });
+})
+
 
 module.exports = groupsRouter;

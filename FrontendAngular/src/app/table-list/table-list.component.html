@@ -10,7 +10,7 @@
             <i class="now-ui-icons loader_refresh spin"></i>
           </span> -->
           <hr>
-          <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Add User </button>
+          <span><i class="fa fa-user-plus" (click)="formActivation()" style="font-size:36px; float: right; color: coral"></i></span>
         </div>
         <div class="card-body">
           <div class="">
@@ -29,8 +29,9 @@
                   Phone
                 </th>
               </thead>
-              <tbody *ngFor="let user of usersList; let i = index">
-                <tr>
+
+              <tbody *ngIf="this.totalUsers != 0">
+                <tr *ngFor="let user of usersList; let i = index">
                   <td>
                     {{user.username}}
                   </td>
@@ -48,7 +49,11 @@
                     <!-- <input type="hidden" value="{{user}}" #userId> -->
                   </td>
                   <td>
-                    <div class="collapse navbar-collapse justify-content-end" id="collapseExample"
+                      <span> <i class="fa fa-edit px-3" (click)="updateForm(user)">  </i> </span>
+
+                      <span> <i class="fa fa-trash px-3" (click)="DeleteUser(userId.value)">  </i> </span>
+
+                    <!-- <div class="collapse navbar-collapse justify-content-end" id="collapseExample"
                       [ngbCollapse]="isCollapsed">
 
                       <ul class="">
@@ -59,15 +64,19 @@
 
                           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu
                             aria-labelledby="dropdownBasic2">
-                            <a class="dropdown-item" (click)="updateForm(user)">Update</a>
+                            <a class="dropdown-item" (click)="updateForm(user)"><i class="fa fa-trash"></i>Update</a>
                             <a class="dropdown-item" (click)="DeleteUser(userId.value)">Delete</a>
                           </div>
                         </li>
                       </ul>
-                    </div>
+                    </div> -->
                   </td>
                 </tr>
               </tbody>
+
+              <span *ngIf="totalUsers == 0">
+                <p style="text-align: center">No Data Found</p>
+              </span>
             </table>
           </div>
         </div>
@@ -86,8 +95,8 @@
       <div class="card">
         <div class="card-header">
           <span class="title" style="font-size:25px; font-weight:500">Add Users</span>
-          <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Back </button>
-
+          <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Back </button> -->
+          <span><i class="now-ui-icons arrows-1_minimal-left"  style="float: right; font-size:30px" (click)="formActivation()"></i></span>
         </div>
         <div class="card-body">
           <form [formGroup]="userAddFormGroup" (ngSubmit)="AddUser()" enctype="multipart/form-data">
@@ -112,7 +121,6 @@
                   <input name="password" id="password" type="password" (input)="passwordValidation(password)"
                     formControlName="password" class="form-control" placeholder="password" #password>
                 </div>
-
               </div>
               <div class="col-md-8 pl-1">
                 <span style="color: red"> {{ passwordMessage }} </span>
@@ -167,9 +175,9 @@
               </div>
             </div>
             <!-- <div class="row"> -->
-              <!-- <div class="col-md-4 pl-1"> -->
-                <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="submit">
-              <!-- </div> -->
+            <!-- <div class="col-md-4 pl-1"> -->
+            <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="submit">
+            <!-- </div> -->
             <!-- </div> -->
           </form>
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
@@ -191,7 +199,8 @@
           <span class="title" style="font-size:25px; font-weight:500">Update User</span>
           <br>
           <span> ({{selectedUser.username}}) </span>
-          <button class="btn btn-primary" style="float: right" (click)="DeActivateUpdateForm()"> Back </button>
+          <!-- <button class="btn btn-primary" style="float: right" (click)="DeActivateUpdateForm()"> Back </button> -->
+          <span><i class="now-ui-icons arrows-1_minimal-left"  style="float: right; font-size:30px" (click)="DeActivateUpdateForm()"></i></span>
 
         </div>
         <div class="card-body">
@@ -211,6 +220,16 @@
                   <input name="email" id="email" type="email" [value]="selectedUser.email" formControlName="email"
                     class="form-control" placeholder="Email">
                 </div>
+              </div>
+              <div class="col-md-5 pl-1">
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input name="password" id="password" type="password" (input)="passwordValidation(password)"
+                    formControlName="password" class="form-control" placeholder="password" #password>
+                </div>
+              </div>
+              <div class="col-md-12 pl-1">
+                <span style="color: red"> {{ passwordMessage }} </span>
               </div>
 
             </div>

@@ -41,12 +41,6 @@ export class LoginComponent implements OnInit {
     this.userLoggedIn = this.loginService.isUserLoggedIn();
     this.activatedForm = 1; // set LoginForm as DefaultForm
     this.initializeFormGroup();
-
-    // this.backendApi.ImageApiRequest().then(
-    //   (res)=>{
-    //      this.userImage = res;
-    //   }
-    // );
   }
 
   onLogin() {
@@ -64,10 +58,11 @@ export class LoginComponent implements OnInit {
         
           this.sessionService.set('user_session_data', loginResponse.data);
 
-         this.loginService.setUserImage(this.userImage);
-         this.loginService.setUserLoggedIn(true);
-         this.loginService.setCurrentUrl('/dashboard');
-         this.router.navigate(['/dashboard']);
+          // this.loginService.setUserPassword(password);
+          this.loginService.setUserImage(this.userImage);
+          this.loginService.setUserLoggedIn(true);
+          this.loginService.setCurrentUrl('/dashboard');
+          this.router.navigate(['/dashboard']);
         }
         else {
           this.formMessage = loginResponse.message;

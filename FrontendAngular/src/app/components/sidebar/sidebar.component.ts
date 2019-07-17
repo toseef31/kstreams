@@ -50,16 +50,16 @@ export class SidebarComponent implements OnInit {
 
     this.username = this.sessionService.get('user_session_data').username;
 
-    this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email).then(
-      (backendResponse: any) => {
+    // this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email).then(
+    //   (backendResponse: any) => {
      
-        let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
-        const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-        let base64String = btoa(STRING_CHAR);
-        this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
+    //     let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
+    //     const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+    //     let base64String = btoa(STRING_CHAR);
+    //     this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
         
-        this.loginService.setUserImage(this.userImage);
-      });
+    //     this.loginService.setUserImage(this.userImage);
+    //   });
   }
 
   isMobileMenu() {

@@ -37,7 +37,6 @@ let RegistrationSchema = new Schema({
     },
 }, { timestamps: true });
 
-//var User = mongoose.model('User', RegistrationSchema); // ........
 
 RegistrationSchema.pre('save', function (next) {
     var user = this;

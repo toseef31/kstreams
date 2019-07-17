@@ -31,6 +31,11 @@ app.use(cors());
 app.use('/business', registrationRoute);
 app.use('/groups', groupsRoute);
 
+// const port = process.env.PORT || 4000;
+// app.listen(port, function () {
+//     console.log('Listening on port ' + port);
+// });
+
 const port = process.env.PORT || 4000;
 
 var httpsServer = https.createServer(credentials, app);

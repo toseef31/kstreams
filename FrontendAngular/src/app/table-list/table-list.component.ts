@@ -1,17 +1,20 @@
 import { SessionStorageService } from 'angular-web-storage';
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { Router } from '@angular/router';
 import { ROUTES } from '../components/sidebar/sidebar.component';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackendApiService } from '../services/backend-api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-table-list',
   templateUrl: './table-list.component.html',
   styleUrls: ['./table-list.component.css']
 })
-export class TableListComponent implements OnInit {
+export class TableListComponent implements OnInit, OnDestroy {
+
+  getUsersSubscription : Subscription
 
   userAddFormGroup: FormGroup;
   userUpdateFormGroup: FormGroup;
@@ -26,9 +29,11 @@ export class TableListComponent implements OnInit {
 
   userImage: File = null;
   imageSrc: string = "";
+  userPassword: string = "";
   usersList = [];
   selectedUser: any;
   loggedUserId: number = 0;
+  totalUsers: number = 0;
 
   constructor(
     private loginService: LoginService,
@@ -42,6 +47,7 @@ export class TableListComponent implements OnInit {
 
   ngOnInit() {
     this.loggedUserId = this.sessionService.get('user_session_data').id;
+    
     this.initializeAddForm();
 
     if (this.sessionService.get('activatedForm') == null || this.sessionService.get('activatedForm') == "") {
@@ -52,14 +58,10 @@ export class TableListComponent implements OnInit {
     }
 
     this.backendService.getUsersRequest(this.loggedUserId);
-    this.backendService.updateUserList.subscribe(
+    this.getUsersSubscription = this.backendService.updateUserList.subscribe(
       (backendResponse: any) => {
-        // this.usersList = [];
-        // for(let user of backendResponse){
-        //   if (user._id != this.loggedUserId)
-        //      this.usersList.push(user);
-        // }
         this.usersList = backendResponse;
+        this.totalUsers = this.usersList.length;
       }
     )
   }
@@ -133,13 +135,15 @@ export class TableListComponent implements OnInit {
     const email = this.userUpdateFormGroup.value.email;
     const country = this.userUpdateFormGroup.value.country;
     const phone = this.userUpdateFormGroup.value.phone
+    const password = this.userUpdateFormGroup.value.password;
 
     const userData = {
       '_id': id,
       'username': username,
       'email': email,
       'country': country,
-      'phone': phone
+      'phone': phone,
+      'password': password
     };
 
     this.backendService.userUpdateRequest(userData, this.loggedUserId).then(
@@ -156,7 +160,7 @@ export class TableListComponent implements OnInit {
   }
 
   DeleteUser(userId: number) {
-    this.backendService.deleteUserRequest(userId);
+    this.backendService.deleteUserRequest(userId, this.loggedUserId);
   }
 
   initializeAddForm() {
@@ -173,6 +177,7 @@ export class TableListComponent implements OnInit {
     this.userUpdateFormGroup = this.formBuilder.group({
       username: [this.selectedUser.username],
       email: [this.selectedUser.email],
+      password: [''],
       country: [this.selectedUser.country],
       phone: [this.selectedUser.phone]
     });
@@ -211,4 +216,7 @@ export class TableListComponent implements OnInit {
     this.userAddFormGroup.reset();
   }
 
+  ngOnDestroy(){
+    this.getUsersSubscription.unsubscribe();
+  }
 }

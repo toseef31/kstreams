@@ -70,7 +70,7 @@ registrationRoutes.route("/login").post(function (req, res) {
 registrationRoutes.post('/getusers', function (req, res) {
     var User = regModel;
 
-    User.find({ 'isAdmin': 0 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
+    User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
         res.send(users);
     });
 
@@ -87,7 +87,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
     newUserModel.save()
         .then(reg => {
             var User = regModel;
-            User.find({ 'isAdmin': 0 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
+            User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
                 res.send({ 'message': 'user added successfully', 'status': true, 'users': users });
             });
         })
@@ -101,13 +101,13 @@ registrationRoutes.post('/deleteuser', function (req, res) {
     const loggedUserId = req.body._id;
     const userIdToBeDeleted = req.body.userId;
 
-    User.findByIdAndDelete(userIdToBeDeleted).then(
+    User.findByIdAndUpdate(userIdToBeDeleted, {'status': 0}).then(
         (result) => {
             if (!result) {
                 res.status(400).send({ 'message': "unable to delete user", 'status': false });
             }
 
-            User.find({ 'isAdmin': 0 }, { 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
+            User.find({ 'isAdmin': 0, 'status': 1 }, { 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
                 res.send(users);
             })
         }
@@ -123,7 +123,7 @@ registrationRoutes.route('/updateuser').post(function (req, res) {
         User.findByIdAndUpdate(req.body.userData._id, { $set: req.body.userData }).then(
             (result) => {
                 var User = regModel;
-                User.find({ 'isAdmin': 0 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
+                User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'username': true, 'country': true, 'phone': true }, function (err, users) {
                     res.send({ 'message': 'user data updated successfully', 'status': true, 'users': users });
                 });
 

@@ -16,7 +16,7 @@ import { UserGroupsComponent } from '../../user-groups/user-groups.component';
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent , canActivate: [AuthguardService] },
     { path: 'user-profile',   component: UserProfileComponent, canActivate: [AuthguardService] },
-    { path: 'table-list',     component: TableListComponent, canActivate: [AuthguardService] },
+    { path: 'user-list',     component: TableListComponent, canActivate: [AuthguardService] },
     { path: 'users-groups',    component: UserGroupsComponent, canActivate: [AuthguardService] },
     { path: 'typography',     component: TypographyComponent, canActivate: [AuthguardService] },
     { path: 'icons',          component: IconsComponent, canActivate: [AuthguardService] },

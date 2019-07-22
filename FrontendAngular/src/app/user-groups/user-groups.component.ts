@@ -13,16 +13,17 @@ export class UserGroupsComponent implements OnInit {
 
   userGroupsForm: FormGroup;
 
+  dropdownDefaultText: string = "select a user";
   loggedUserId: number = 0;
   selectedGroupId: number = 0; // may needs value to be reset
   activatedForm: number = 0;
   genericMessage: string = "";
-  selectedUser: number = 0;
+  selectedUserId: number = 0;
+  totalGroups: number = 0;
 
   groupsList = [];
   usersList = [];
   addedUsersList = [];
-
 
   constructor(
     private sessionService: SessionStorageService,
@@ -31,7 +32,8 @@ export class UserGroupsComponent implements OnInit {
 
   ngOnInit() {
     this.initializeGroupForm();
-    
+    this.dropdownDefaultText = "select a user";
+
     this.loggedUserId = this.sessionService.get('user_session_data').id;
 
     this.activatedForm = this.sessionService.get('activatedForm');
@@ -41,19 +43,25 @@ export class UserGroupsComponent implements OnInit {
     else {
       this.activatedForm = parseInt(this.sessionService.get('activatedForm'));
     }
-    
+
     // -------- GETS THE LIST OF GROUPS ---------------------------------
     this.backendAPI.getGroups();
     this.backendAPI.getGroupsList.subscribe(
-      (groupsList: any)=>{
-      //  console.log(groupsList);
+      (groupsList: any) => {
+        //console.log(groupsList);
         this.groupsList = groupsList;
+        this.totalGroups = groupsList.length;
       });
-   
+
     this.backendAPI.usersGroupUpdate.subscribe(
-      (groupedUsersList: any) => {
+      (groupedUsersList: any) => { 
         this.usersList = groupedUsersList.remainingUsers;
         this.addedUsersList = groupedUsersList.groupUsers[0].members;
+       
+        if (this.usersList.length == 0)
+          this.dropdownDefaultText = "no users remaining";
+        else
+          this.dropdownDefaultText = "select a user";
       }
     )
   }
@@ -61,22 +69,25 @@ export class UserGroupsComponent implements OnInit {
   formActivation() {
     this.addedUsersList = [];
     this.usersList = [];
+    this.userGroupsForm.reset();
 
     if (this.activatedForm == 0) {
       this.sessionService.set('activatedForm', 1);
       this.activatedForm = 1;
     }
     else if (this.activatedForm == 1) {
+      this.backendAPI.getGroups();
       this.activatedForm = 0;
       this.sessionService.set('activatedForm', 0);
     }
-    else{
+    else {
+      this.backendAPI.getGroups();
       this.activatedForm = 0;
       this.sessionService.set('activatedForm', 0);
     }
   }
 
-  ManageGroupUsers(groupId: number){
+  ManageGroupUsers(groupId: number) {
     this.activatedForm = 2;
     this.selectedGroupId = groupId;
 
@@ -95,34 +106,25 @@ export class UserGroupsComponent implements OnInit {
     );
   }
 
-  DeleteGroup(groupId: number){
-    this.backendAPI.deleteGroup(groupId);
-  }
-
-  excludeUser(selectedUser: number){
-      this.backendAPI.deleteUserInGroup(selectedUser, this.selectedGroupId);
-  }
-
-  selectUser(_selectedUser: number){
-    this.selectedUser = _selectedUser;
-  }
-
-  AddUserInGroup(){
-    if (this.selectedUser != 0){
-        this.backendAPI.addUsersInGroups(this.selectedUser, this.selectedGroupId);
+  DeleteGroup(groupId: number, groupName: string) {
+    if(confirm("Are you sure to delete "+groupName)) {
+      this.backendAPI.deleteGroup(groupId);
     }
-    // this.changeDetected = true;
-    // this.addedUsersList.push(selectedUser);
-    // this.tempUsersList.push(selectedUser);
+  }
 
-    // let index= 0
-    // for(let user of this.usersList){
-    //   if (selectedUser._id == user._id){
-    //     this.usersList.splice(index, 1);
-    //     break;
-    //   }
-    //   index++;
-    // }
+  excludeUser(selectedUser: number) {
+    this.backendAPI.deleteUserInGroup(selectedUser, this.selectedGroupId);
+  }
+
+  selectUser(_selectedUser: number) {
+    this.selectedUserId = _selectedUser;
+  }
+
+  AddUserInGroup() {
+    if (this.selectedUserId != 0) {
+      this.backendAPI.addUsersInGroups(this.selectedUserId, this.selectedGroupId);
+      this.selectedUserId = 0;
+    }
   }
 
   initializeGroupForm() {

@@ -6,20 +6,16 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title" style="font-size:25px; font-weight:500"> Groups </span>
-          <hr>
+          <!-- <hr> -->
           <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Create Group </button> -->
-          <span><i class="fa fa-users" style="float: right; font-size:25px" (click)="formActivation()"></i></span>
+          <span><i class="fa fa-users user-icon" style="float: right; font-size:25px" (click)="formActivation()"></i></span>
         </div>
         <div class=" card-body">
-          <div class="">
             <table class="table">
               <thead class=" text-primary">
                 <th>
-                  Name
+                  Names
                 </th>
-                <!-- <th>
-                  Status
-                </th> -->
                 <th>
                   Total Users
                 </th>
@@ -29,39 +25,23 @@
                   <td>
                     <p>{{group.name}}</p>
                   </td>
-                  <!-- <td>
-                    <p>{{group.status}}</p>
-                  </td> -->
                   <td>
                       {{group.members.length}}
                   </td>
-                  <!-- <td> -->
+                
                   <input type="hidden" value="{{ group._id }}" #groupId>
-                  <!-- </td> -->
                   <td>
-                    <div class="collapse navbar-collapse justify-content-end" id="collapseExample"
-                      [ngbCollapse]="isCollapsed">
+                    <span> <i class="fa fa-edit px-3 user-icon" (click)="ManageGroupUsers(groupId.value)">  </i> </span>
+                    <span> <i class="fa fa-trash px-3 user-icon" (click)="DeleteGroup(groupId.value, group.name)">  </i> </span>
 
-                      <ul class="">
-                        <li class="nav-item removeStyle" ngbDropdown>
-                          <a class="nav-link" id="dropdownBasic2" ngbDropdownToggle>
-                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                          </a>
-
-                          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu
-                            aria-labelledby="dropdownBasic2">
-                            <a class="dropdown-item" (click)="ManageGroupUsers(groupId.value)">Manage Users</a>
-                            <a class="dropdown-item" (click)="DeleteGroup(groupId.value)">Delete Group</a>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
                   </td>
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
+        <span *ngIf="totalGroups == 0">
+          <p style="text-align: center">No data found</p>
+        </span>
       </div>
     </div>
   </div>
@@ -78,7 +58,7 @@
         <div class="card-header">
           <span class="title" style="font-size:25px; font-weight:500">Create Group</span>
           <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Back </button> -->
-          <span><i class="now-ui-icons arrows-1_minimal-left" style="float: right; font-size:30px"
+          <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
               (click)="formActivation()"></i></span>
 
         </div>
@@ -110,17 +90,18 @@
 <div class="main-content" *ngIf='activatedForm == 2'>
 
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-7 offset-md-3">
       <div class="card">
         <div class="card-header">
           <span class="card-title" style="font-size:25px; font-weight:500"> Users (to be add)</span>
-          <span><i class="now-ui-icons arrows-1_minimal-left" style="float: right; font-size:30px"
+          <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
               (click)="formActivation()"></i></span>
         </div>
         <div class="card-body">
 
           <select name="users" (change)="selectUser($event.target.value)" style="width: 70%">
-            <option value="null" disabled>Select a User</option>
+            <!-- <option value="null" selected disabled hidden>select a user</option> -->
+            <option value="null" *ngIf="selectedUserId == 0" selected disabled hidden>{{dropdownDefaultText}}</option>
             <option *ngFor="let user of usersList" [value]="user._id">{{user.username}}</option>
           </select>
 

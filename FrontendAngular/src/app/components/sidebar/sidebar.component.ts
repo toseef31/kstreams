@@ -14,10 +14,10 @@ declare interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
   { path: '/dashboard', title: 'Dashboard', icon: 'design_app', class: '' },
   //{ path: '/user-profile', title: 'Add Users', icon: 'users_single-02', class: '' },
-  { path: '/table-list', title: 'Users', icon: 'design_bullet-list-67', class: '' },
+  { path: '/user-list', title: 'Users', icon: 'design_bullet-list-67', class: '' },
   { path: '/user-groups', title: 'Groups', icon: 'design_bullet-list-67', class: '' },
   // { path: '/dashboard', title: 'Dashboard',  icon: 'design_app', class: '' },
-  { path: '/icons', title: 'Icons', icon: 'education_atom', class: '' },
+  // { path: '/icons', title: 'Icons', icon: 'education_atom', class: '' },
   // { path: '/maps', title: 'Maps',  icon:'location_map-big', class: '' },
   // { path: '/notifications', title: 'Notifications',  icon:'ui-1_bell-53', class: '' },
 
@@ -70,7 +70,7 @@ export class SidebarComponent implements OnInit {
   };
 
   onSelection(index: number) {
-    console.log(index);
+   // console.log(index);
 
     if (index == 0) {
       this.loginService.setCurrentUrl('/dashboard');
@@ -82,7 +82,7 @@ export class SidebarComponent implements OnInit {
     // }
     else if (index == 1) {
       this.loginService.setCurrentUrl('/table-list');
-      this.router.navigate(['/table-list']);
+      this.router.navigate(['/user-list']);
     }
     else if (index == 2) {
       this.loginService.setCurrentUrl('/users-groups');

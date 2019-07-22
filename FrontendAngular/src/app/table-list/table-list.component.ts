@@ -159,8 +159,11 @@ export class TableListComponent implements OnInit, OnDestroy {
       });
   }
 
-  DeleteUser(userId: number) {
-    this.backendService.deleteUserRequest(userId, this.loggedUserId);
+  DeleteUser(userId: number, username: string) {
+    if(confirm("Are you sure to delete username: "+username)) {
+      this.backendService.deleteUserRequest(userId, this.loggedUserId);
+    }
+   
   }
 
   initializeAddForm() {
@@ -168,6 +171,7 @@ export class TableListComponent implements OnInit, OnDestroy {
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
+      cpassword: ['', Validators.required],
       country: [''],
       phone: ['']
     })
@@ -177,17 +181,24 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.userUpdateFormGroup = this.formBuilder.group({
       username: [this.selectedUser.username],
       email: [this.selectedUser.email],
-      password: [''],
+      password: ['', Validators.required],
+      cpassword: ['', Validators.required],
       country: [this.selectedUser.country],
       phone: [this.selectedUser.phone]
     });
   }
 
-  passwordValidation(element: HTMLInputElement) {
-    const passwordLength = element.value.length;
+  passwordValidation(passwordElement: HTMLInputElement, cpasswordElement: HTMLInputElement) {
+    const passwordLength = passwordElement.value.length;
+    const cpasswordLength = cpasswordElement.value.length;
+
     if (passwordLength < 6) {
       this.passwordMessage = "password minimum length is 6";
       this.isPasswordValid = true;
+    }
+    else if (cpasswordLength != 0 && passwordLength!= 0 && passwordElement.value != cpasswordElement.value){
+      this.passwordMessage = "password not matching";
+      this.isPasswordValid = false;
     }
     else {
       this.passwordMessage = "";

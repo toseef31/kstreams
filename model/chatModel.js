@@ -4,20 +4,32 @@
 */
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const chatSchema = mongoose.Schema({
+	"senderId": {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'users'
+	},
+	"recevierId": {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'users'
+	},
+	"groupId": {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'groups'            //If isGroup is 1 then there will be groupId and no receiver id          
+	},
+	"message": String,
+	"status": {
+		type: Number,
+		default: 1        //1=Active, 0=Deleted
+	},
+	"isSeen": {
+		type: Number,
+		default: 0        //0=No, 1=Yes
+	},
+	"isGroup": {
+		type: Number,
+		default: 0        //0=No, 1=Yes
+	}
+}, { timestamps: true });
 
-const chatSchema = new Schema({
-	"senderId":String,
-	"senderName":String,
-	"senderImage":String,
-	"msgType":String,
-	"originalName":String,
-	"recevierId":String,         //{ type: Schema.Types.ObjectId, ref: 'Users' }, for populate joins
-	"receiverImage":String,         //{ type: Schema.Types.ObjectId, ref: 'Users' }, for populate joins
-	"message":String,           //{ type: Schema.Types.ObjectId, ref: 'Users' },
-	"delete":{type:String,default:''},      
-	"isseen":{type:Boolean,default:false},
-	"date": { type: Date, default: Date.now },
-},{ toJSON: { virtuals: true } });
- 
-module.exports = mongoose.model('chat',chatSchema);
+module.exports = mongoose.model('chat', chatSchema)

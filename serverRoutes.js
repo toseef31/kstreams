@@ -13,22 +13,32 @@ module.exports = function(app,io,saveUser){
    
     app.post('/login',chatCon.login);
     app.post('/groupChat',chatCon.groupChat);
+
     app.get('/checkSession',chatCon.checkSession);
     app.get('/createUser/:name',chatCon.createUser);
     app.get('/getUsers/:userId',chatCon.getUsers);
+
+    app.get('/getcreatedgroups',chatCon.getCreatedGroups);
+
     app.post('/addgroup',chatCon.addGroup);
     app.get('/getGroups/:userId',chatCon.getGroups);
     app.post('/chat',chatCon.chat);
     app.post('/updateChat/:id',chatCon.updateChat);
     app.get('/getChat/:senderId/:recevierId',chatCon.getChat);
-    app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
+
+    //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
+    app.get('/getGroup/:groupId',chatCon.getGroup);
+
+
     app.get('/deleteMsg/:msgId/:type',chatCon.deleteMsg);
     app.get('/logout',chatCon.logout);
     app.post('/updateGroupChat/:id',chatCon.updateGroupChat);
     app.get('/deleteGroupMsg/:msgId/:type/:groupId',chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId',chatCon.getNotification);
     app.post('/notificationseen',chatCon.notificationseen);
+
     app.post('/getgroupchat',chatCon.getgroupchat);
+
     app.post('/chatFilesShare', upload.array('avatar'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('avatar'), chatCon.groupFilesShare);
     app.get('/changeStatus',chatCon.changeStatus);

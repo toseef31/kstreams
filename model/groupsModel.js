@@ -3,14 +3,18 @@
 * designBy => Peek International
 */
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
-const groupSchema = new Schema({
-	"members":[],
-	"name":String,         
-	"message":[{name:String,originalName:String,msgType:String,sender:String,message:String,delete:{type:String,default:''},date:{type:Date,default:Date.now()}}],
-	"lastMsg":{type:String,default:null},     
-	"date": { type: Date, default: Date.now },
-});
-module.exports = mongoose.model('groups',groupSchema);
+const groupSchema = mongoose.Schema({
+	"members": [{
+		type: Schema.ObjectId,
+		ref: 'users'
+	}],
+	"name": String,
+	"status": {
+		type: Number,
+		default: 1        //1=Active, 0=Deleted
+	},
+}, { timestamps: true });
+
+module.exports = mongoose.model('groups', groupSchema)

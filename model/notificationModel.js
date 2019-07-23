@@ -3,15 +3,22 @@
 * designBy => Peek International
 */
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
-const notiSchema = new Schema({
-	"senderId":String,
-	"senderName":String,
-	"recevierId":String,         
-	"message":String,                 
-	"isseen":{type:Boolean,default:false},
-	"date": { type: Date, default: Date.now },
-});
-module.exports = mongoose.model('notification',notiSchema);
+const notiSchema = mongoose.Schema({
+	"senderId": {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'users'
+	},
+	"recevierId": {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'users'
+	},
+	"message": String,
+	"isSeen": {
+		type: Number,
+		default: 0        //0=No, 1=Yes
+	},
+}, { timestamps: true });
+
+module.exports = mongoose.model('notifications', notiSchema)  

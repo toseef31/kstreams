@@ -18,24 +18,35 @@ module.exports = function(io,saveUser){
 	var router = {};
 
 	router.groupChat = function(req,res){
-        var id = req.body.id;
-        var senderId = req.body.senderId;
-        var message = req.body.message;
-        var name = req.body.name;
-        var msgType = "message";
-        groupsModel.update({_id:id},{$push:{message:{name:name,sender:senderId,message:message,msgType:msgType}},lastMsg:message},function(err,data){
+
+        newMessage = new chatModel({
+            "groupId": req.body.id,
+            "senderId":req.body.senderId,
+            "message":req.body.message,
+            "isGroup": 1
+        });
+
+        newMessage.save(function(err,data){
             if(err) throw err;
-            groupsModel.findOne({_id:id}).limit(1).exec(function(err,data){
+            chatModel.findOne({groupId:req.body.id,senderId:req.body.senderId}).sort({updatedAt:-1}).exec(function(err,data){
+                helper.addNewMessage(data);
                 if(err) throw err;
                 res.json(data);
-                helper.RTGU();
             })
         })
-        
+
+        // groupsModel.update({_id:id},{$push:{message:{name:name,sender:senderId,message:message,msgType:msgType}},lastMsg:message},function(err,data){
+        //     if(err) throw err;
+        //     groupsModel.findOne({_id:id}).limit(1).exec(function(err,data){
+        //         if(err) throw err;
+        //         res.json(data);
+        //         helper.RTGU();
+        //     })
+        // })
     }
 
     router.getUsers = function(req,res){
-        console.log('getUsers chCtrl',req.params.userId);
+     
     	userModel.find(
         {_id:{$ne:req.params.userId},delete:{$ne:true}},
         {},{sort: '-updatedAt'})
@@ -45,6 +56,15 @@ module.exports = function(io,saveUser){
         .exec(function(err,data){ 
     		res.json(data);
     	});
+    }
+
+    router.getCreatedGroups = function (req, res){
+            // get all groups
+            groupsModel.find().exec(function (err, groups) {
+                if (err) { return console.log(err); }
+                // send groups list
+                res.send(groups);
+            })
     }
 
     router.addGroup = function(req,res){
@@ -90,11 +110,7 @@ module.exports = function(io,saveUser){
         });
         newMessage.save(function(err,data){
             if(err) throw err;
-            /* update and push new message in recevier and sender user*/
-            console.log(sender,' and ',recevier);
-            //.populate('senderInfo').populate('receiverInfo')
-            chatModel.findOne({senderId:sender,recevierId:recevier}).sort({date:-1}).exec(function(err,data){
-                console.log('Result ',data);
+            chatModel.findOne({senderId:sender,recevierId:recevier}).sort({updatedAt:-1}).exec(function(err,data){
                 helper.addNewMessage(data);
                 res.json(data);
             })
@@ -123,8 +139,7 @@ module.exports = function(io,saveUser){
     router.getChat = function(req,res){
         var sender = req.params.senderId;
         var receiver = req.params.recevierId;
-        
-        console.log(sender,' getChat ',receiver);
+
         var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:receiver,recevierId:sender},{senderId:sender,revevierId:receiver}]}}},
 	        updatedata ={$set:{'chat.$.unreadMsg':0}};
             recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
@@ -142,14 +157,17 @@ module.exports = function(io,saveUser){
 
     router.getGroup = function(req,res){
        var id = req.params.groupId;
-       var memId = req.params.mem_id;
-       groupsModel.update({_id:id,members:{$elemMatch:{id:memId}}},{$set:{'members.$.isseen':true}},function(err,data){
-        if(err) throw err;
-        helper.getData(groupsModel,{_id:id},function(data){
-            helper.RTGU();
-            res.json(data);
-        })
+       chatModel.find({groupId:id}).lean().then(function(data){
+        res.json(data);
        })
+
+    //    groupsModel.update({_id:id,members:{$elemMatch:{id:memId}}},{$set:{'members.$.isSeen':true}},function(err,data){
+    //     if(err) throw err;
+    //     helper.getData(groupsModel,{_id:id},function(data){
+    //         helper.RTGU();
+    //         res.json(data);
+    //     })
+    //    })
        
     }
     router.out = (req, res) => {
@@ -210,12 +228,12 @@ module.exports = function(io,saveUser){
             if(user.length > 0){
                 let User = user[0]; 
                 /*check password*/
-                // console.log('password ',password,' and ',User.password);
+           
                 //if(User.password && bcrypt.compareSync(password, User.password)){ 
                     /*change status from offline to online*/
                     helper.changeStatus(User._id,{status:1},function(data){
                         /*set session */
-                        //console.log('User._id ',User._id);
+                     
                         req.session.user = User;
                         /*this function use to move user info to another view*/
                         saveUser(User);
@@ -281,6 +299,7 @@ module.exports = function(io,saveUser){
         var id = req.params.id;
         var message = req.body.message;
         var groupId = req.body.groupId;
+     
         groupsModel.update({'message._id':id},{$set:{'message.$.message':message}},function(err,data){
             if(err) throw err;
             helper.getData(groupsModel,{_id:groupId},function(data){
@@ -288,11 +307,12 @@ module.exports = function(io,saveUser){
             })
         });
     }
+
     router.notificationseen = (req,res) => {
        userId =  req.body.userId;
        notifiModel.update({recevierId:userId},{isseen:true},{multi:true},function(err,data){
         if (err) throw err;
-        console.log('notificationseen ',data);
+      
         res.json(data);
        })
 
@@ -344,12 +364,15 @@ module.exports = function(io,saveUser){
         helper.RTGU();
         res.json({message:'done'});
     }
+
     router.getgroupchat = function(req,res){
         var id = req.body.id;
         groupsModel.find({_id:id}).lean().then(function(data){
             res.json(data);
         })
     }
+  
+
     router.changeStatus = function(req,res){
         if(req.session.user){
             helper.changeStatus(req.session.user._id,{status:'away'},function(data){
@@ -360,7 +383,7 @@ module.exports = function(io,saveUser){
         }
     }
     router.recent = (req,res) => {
-       //console.log(req.body);
+      
         if(req.body.receiverId!=req.body.senderId) 
             recentModel.find({receiverId:req.body.receiverId,senderId:req.body.senderId},(err, data) => {
                 if (err) throw err;

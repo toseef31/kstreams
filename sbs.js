@@ -17,16 +17,23 @@ const options     = {
     	cert: sslConfig.certificate,
       };
 const server    = require('https').Server(options,app);
-const io        = require('socket.io')(server);
-
+const io       = require('socket.io')(server);
+const config = require('./config/DB');
 //*****
 //*****
 //mongo db connection 
 //*****
 //*****
+//mongodb://localhost/kstreams
+//const db = "./config/DB";
+mongoose.Promise = global.Promise;
+mongoose.connect(config.url, { useNewUrlParser: true }).then(
+    () => { console.log('Database is connected') },
+    err => { console.log('Cannot connect to the database' + err) }
+);
 
-const db = "mongodb://localhost/kstreams";
-mongoose.connect(db,{ useNewUrlParser: true });
+
+//mongoose.connect(db,{ useNewUrlParser: true });
 
 //*****
 //*****

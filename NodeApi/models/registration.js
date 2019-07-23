@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 // Define collection and schema for Reg.
 let RegistrationSchema = new Schema({
-    username: {
+    name: {
         type: String
     },
     email: {

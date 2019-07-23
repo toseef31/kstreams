@@ -8,7 +8,7 @@
           <span class="card-title" style="font-size:25px; font-weight:500"> Groups </span>
           <!-- <hr> -->
           <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Create Group </button> -->
-          <span><i class="fa fa-users user-icon" style="float: right; font-size:25px" (click)="formActivation()"></i></span>
+          <span><i class="fa fa-user-plus user-icon" style="float: right; font-size:25px" (click)="formActivation()"></i></span>
         </div>
         <div class=" card-body">
             <table class="table">
@@ -102,7 +102,7 @@
           <select name="users" (change)="selectUser($event.target.value)" style="width: 70%">
             <!-- <option value="null" selected disabled hidden>select a user</option> -->
             <option value="null" *ngIf="selectedUserId == 0" selected disabled hidden>{{dropdownDefaultText}}</option>
-            <option *ngFor="let user of usersList" [value]="user._id">{{user.username}}</option>
+            <option *ngFor="let user of usersList" [value]="user._id">{{user.name}}</option>
           </select>
 
           &nbsp; &nbsp;
@@ -120,7 +120,7 @@
           <tbody>
             <tr *ngFor="let addedUser of addedUsersList">
               <td>
-                {{addedUser.username}}
+                {{addedUser.name}}
               </td>
               <td>
                 <span> <i class="fa fa-minus" (click)="excludeUser(addedUser._id)"> </i> </span>

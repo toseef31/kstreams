@@ -25,6 +25,7 @@ export class BackendApiService {
       return this.http.post(this.userBaseUrl + "/login", loginData).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
+          this.refreshLoggedUserData.next(backendResponse);
         }
       );
     });
@@ -74,23 +75,24 @@ export class BackendApiService {
     const data = { '_id': loggedinUserId }
     return this.http.post(this.userBaseUrl + "/getusers", data).subscribe(
       (usersList: any) => {
+        //console.log(usersList);
         this.updateUserList.next(usersList);
       }
     );
   }
 
-  // getLoggedInUserRequest(email: string) {
-  //   const data = { 'email': email };
-  //   var promise = new Promise((resolve, reject) => {
-  //     return this.http.post(this.userBaseUrl + '/getloggeduser', data).subscribe(
-  //       (loggedUserData: any) => {
-  //         resolve(loggedUserData);
-  //         this.refreshLoggedUserData.next(loggedUserData);
-  //       }
-  //     );
-  //   });
-  //   return promise;
-  // }
+  getLoggedInUserRequest(email: string) {
+    const data = { 'email': email };
+    var promise = new Promise((resolve, reject) => {
+      return this.http.post(this.userBaseUrl + '/getloggeduser', data).subscribe(
+        (loggedUserData: any) => {
+          resolve(loggedUserData);
+          this.refreshLoggedUserData.next(loggedUserData);
+        }
+      );
+    });
+    return promise;
+  }
 
   deleteUserRequest(userId: number, myUserId) {
     const data = { 'userId': userId, '_id': myUserId }

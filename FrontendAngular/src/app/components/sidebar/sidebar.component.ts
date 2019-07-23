@@ -15,7 +15,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/dashboard', title: 'Dashboard', icon: 'design_app', class: '' },
   //{ path: '/user-profile', title: 'Add Users', icon: 'users_single-02', class: '' },
   { path: '/user-list', title: 'Users', icon: 'design_bullet-list-67', class: '' },
-  { path: '/user-groups', title: 'Groups', icon: 'design_bullet-list-67', class: '' },
+  { path: '/user-groups', title: 'Groups', icon: 'fa fa-users', class: 'fa fa-users' },
   // { path: '/dashboard', title: 'Dashboard',  icon: 'design_app', class: '' },
   // { path: '/icons', title: 'Icons', icon: 'education_atom', class: '' },
   // { path: '/maps', title: 'Maps',  icon:'location_map-big', class: '' },
@@ -47,19 +47,22 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => menuItem);
+  //console.log(this.sessionService.get('user_session_data'));
+    this.username = this.sessionService.get('user_session_data').name;
+    this.userImage = this.loginService.getUserImage();
+   
 
-    this.username = this.sessionService.get('user_session_data').username;
-
-    // this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email).then(
-    //   (backendResponse: any) => {
+    this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email).then(
+      (backendResponse: any) => {
      
-    //     let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
-    //     const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-    //     let base64String = btoa(STRING_CHAR);
-    //     this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
-        
-    //     this.loginService.setUserImage(this.userImage);
-    //   });
+        // let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
+        // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+        // let base64String = btoa(STRING_CHAR);
+        // this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
+        console.log (backendResponse)
+       // this.loginService.setUserImage(this.userImage);
+       this.userImage = this.loginService.getUserImage();
+      });
   }
 
   isMobileMenu() {

@@ -3,7 +3,7 @@
         <div class="logo-img">
             <label for="profile_img">
                 <span *ngIf="userImage == null || userImage == ''">
-                    <!-- <img src="/assets/img/noProfile.png"/> -->
+                    <img src="/assets/img/noProfile.png"/>
                 </span>
                 <span *ngIf="userImage != null && userImage != ''">
                     <img [src]="userImage"/>

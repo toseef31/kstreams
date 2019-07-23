@@ -50,11 +50,11 @@ export class LoginComponent implements OnInit {
     this.backendApi.loginApiRequest({ 'email': email, 'password': password }).then(
       (loginResponse: any) => {
         if (loginResponse.isUserExist) {
-
-          let TYPED_ARRAY = new Uint8Array(loginResponse.imageFile);
-          const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-          let base64String = btoa(STRING_CHAR);
-          this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
+       //   console.log(loginResponse);
+          // let TYPED_ARRAY = new Uint8Array(loginResponse.imageFile);
+          // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+          // let base64String = btoa(STRING_CHAR);
+          // this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
         
           this.sessionService.set('user_session_data', loginResponse.data);
 

@@ -8,6 +8,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.groupchats = [];
     $scope.groupChat = false;
     $scope.allGroups;
+    $scope.editMsgIconStatus = false;
     /*socket io connection*/
 
     $scope.audio = new Audio('audio/call.mp3');
@@ -362,7 +363,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.get("/getUsers/" + response.data._id)
             .then(function (response) {
                 $scope.allUsers = response.data;
-                console.log(response.data);
                 for (i = 0; i < response.data.length; i++) {
                     if (response.data[i].email != $scope.user.email) {
                         $scope.getmembers.push(response.data[i]);
@@ -371,9 +371,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
 
         /*get all group users*/
-        $http.get("/getcreatedgroups")
+        $http.get("/getcreatedgroups/"+$scope.user._id)
             .then(function (response) {
-                console.log(response);
+             // console.log(response);
                 $scope.allGroups = response.data;
                 // for (i = 0; i < response.data.length; i++) {
                 //     if (response.data[i].email != $scope.user.email) {
@@ -404,7 +404,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             fd.append('senderName', $scope.user.name);
 
             if ($scope.chatIsActive === true) {
-                console.log("chat");
+               
                 fd.append('friendId', $scope.chatWithId);   //chnId 1
                 $http.post('/chatFilesShare', fd, {
                     transformRequest: angular.identity,
@@ -503,7 +503,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.status = '';
 
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
-                    console.log(groupchat.data);
+                    console.log(groupchat);
                     $scope.groupchats = groupchat.data;
                     // $scope.groupMembers = groupchat.data[0].members;
                     // $scope.chats = groupchat.data[0].message;
@@ -519,6 +519,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
         /* to show edit menu popup on right click on a message*/
         $scope.editMenu = function (chat) {
+            $scope.editMsgIconStatus = true;
             $scope.editMsgId = chat._id;
             $rootScope.editMsgMenu1 = ($rootScope.editMsgMenu1) ? false : true;
             $scope.msgEdit = chat.message;
@@ -627,7 +628,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             ele[0].emojioneArea.setText('');
                         })
                 } else {
-                    console.log("groupchat saviour");
+                    
                     $http.post('/groupChat', {"isGroup":1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId })
                         .then(function (res) {
                             console.log(res);
@@ -655,6 +656,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.groupName = '';
                 $scope.members = '';
             });
+        }
+
+        $scope.disableMsgEdit = function (){
+            console.log("a");
+            if($scope.editMsgIconStatus)
+            $rootScope.editMsgMenu1 = false;
         }
         /* after enter the live stream pass this function call*/
         // $scope.broadcasting = function(type){
@@ -976,6 +983,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.welcomePage = true;
                         $http.get("/getUsers/" + $scope.user._id)
                             .then(function (response) {
+                            
                                 $scope.allUsers = response.data;
                             });
                     });

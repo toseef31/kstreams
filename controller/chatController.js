@@ -28,7 +28,7 @@ module.exports = function(io,saveUser){
 
         newMessage.save(function(err,data){
             if(err) throw err;
-            chatModel.findOne({groupId:req.body.id,senderId:req.body.senderId}).sort({updatedAt:-1}).exec(function(err,data){
+            chatModel.findOne({groupId:req.body.id,senderId:req.body.senderId}).populate('senderId').sort({updatedAt:-1}).exec(function(err,data){
                 helper.addNewMessage(data);
                 if(err) throw err;
                 res.json(data);
@@ -46,7 +46,6 @@ module.exports = function(io,saveUser){
     }
 
     router.getUsers = function(req,res){
-     
     	userModel.find(
         {_id:{$ne:req.params.userId},delete:{$ne:true}},
         {},{sort: '-updatedAt'})
@@ -58,13 +57,27 @@ module.exports = function(io,saveUser){
     	});
     }
 
+
     router.getCreatedGroups = function (req, res){
             // get all groups
-            groupsModel.find().exec(function (err, groups) {
-                if (err) { return console.log(err); }
-                // send groups list
-                res.send(groups);
-            })
+
+           groupsModel.find().populate('members', {'name':true}).exec(function (err, groups) {
+               
+            var tempGroups = [];
+               if (err) { return console.log(err); }
+
+               for (var i= 0; i < groups.length; i++){
+                  
+                  for (var j= 0; j < groups[i].members.length; j++){
+                      // console.log(req.params.userId +" == "+ groups[i].members[j]._id);
+                       if (req.params.userId == groups[i].members[j]._id){
+                        tempGroups.push(groups[i]);
+                       // break;
+                       }
+                  }
+               }
+                  res.send(tempGroups); // send groups list
+           })
     }
 
     router.addGroup = function(req,res){
@@ -85,8 +98,10 @@ module.exports = function(io,saveUser){
     }
 
     router.getGroups = function(req,res){
+       
         groupsModel.find({ members: { $elemMatch: { id: req.params.userId } } })
         .lean().then(function(data){
+           
             res.json(data);
         }); 
     }
@@ -156,8 +171,9 @@ module.exports = function(io,saveUser){
     }
 
     router.getGroup = function(req,res){
-       var id = req.params.groupId;
-       chatModel.find({groupId:id}).lean().then(function(data){
+      var id = req.params.groupId;
+       chatModel.find({groupId:id}).populate('senderId').lean().then(function(data){
+        
         res.json(data);
        })
 
@@ -312,11 +328,10 @@ module.exports = function(io,saveUser){
        userId =  req.body.userId;
        notifiModel.update({recevierId:userId},{isseen:true},{multi:true},function(err,data){
         if (err) throw err;
-      
-        res.json(data);
-       })
-
+            res.json(data);
+        })
     }
+    
     router.deleteGroupMsg = function(req,res){
         var msgId = req.params.msgId;
         var type = req.params.type;

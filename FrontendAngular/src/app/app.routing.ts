@@ -6,7 +6,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { LoginComponent } from './login/login.component';
-import { DeactivateguardService } from './services/deactivateguard.service';
 
 const routes: Routes = [
   {

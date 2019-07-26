@@ -1,9 +1,10 @@
-import { DomSanitizer } from '@angular/platform-browser';
 import { BackendApiService } from './../../services/backend-api.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SessionStorageService } from 'angular-web-storage';
 import { Router } from '@angular/router';
 import { LoginService } from '../../services/login.service';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 declare interface RouteInfo {
   path: string;
@@ -12,19 +13,9 @@ declare interface RouteInfo {
   class: string;
 }
 export const ROUTES: RouteInfo[] = [
-  { path: '/dashboard', title: 'Dashboard', icon: 'design_app', class: '' },
-  //{ path: '/user-profile', title: 'Add Users', icon: 'users_single-02', class: '' },
-  { path: '/user-list', title: 'Users', icon: 'design_bullet-list-67', class: '' },
-  { path: '/user-groups', title: 'Groups', icon: 'design_bullet-list-67', class: '' },
-  // { path: '/dashboard', title: 'Dashboard',  icon: 'design_app', class: '' },
-  // { path: '/icons', title: 'Icons', icon: 'education_atom', class: '' },
-  // { path: '/maps', title: 'Maps',  icon:'location_map-big', class: '' },
-  // { path: '/notifications', title: 'Notifications',  icon:'ui-1_bell-53', class: '' },
-
-  // { path: '/user-profile', title: 'User Profile',  icon:'users_single-02', class: '' },
-  // { path: '/table-list', title: 'Table List',  icon:'design_bullet-list-67', class: '' },
-  // { path: '/typography', title: 'Typography',  icon:'text_caps-small', class: '' },
-  // { path: '/upgrade', title: 'Upgrade to PRO',  icon:'objects_spaceship', class: 'active active-pro' }
+  { path: '/dashboard', title: 'Dashboard', icon: '', class: '' },
+  { path: '/user-list', title: 'Users', icon: '', class: '' },
+  { path: '/user-groups', title: 'Groups', icon: '', class: '' }
 ];
 
 @Component({
@@ -32,37 +23,40 @@ export const ROUTES: RouteInfo[] = [
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
+
+  LoggedUserDataSubscription: Subscription;
 
   menuItems: any[];
   username: string = '';
   userImage: any;
 
-  constructor(private sessionService: SessionStorageService,
+  constructor(
+    private sanitizer: DomSanitizer,
+    private sessionService: SessionStorageService,
     private router: Router,
     private loginService: LoginService,
-    private backendService: BackendApiService,
-    private sanitizer: DomSanitizer) {
+    private backendService: BackendApiService) {
   }
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => menuItem);
-  //console.log(this.sessionService.get('user_session_data'));
     this.username = this.sessionService.get('user_session_data').name;
     this.userImage = this.loginService.getUserImage();
-   
 
-    this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email).then(
+    this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email);
+    this.LoggedUserDataSubscription = this.backendService.refreshLoggedUserData.subscribe(
       (backendResponse: any) => {
-     
-        // let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
-        // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-        // let base64String = btoa(STRING_CHAR);
-        // this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
-        console.log (backendResponse)
-       // this.loginService.setUserImage(this.userImage);
-       this.userImage = this.loginService.getUserImage();
-      });
+      
+        if (backendResponse.imageFile != null) {
+          // let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
+          // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+          // let base64String = btoa(STRING_CHAR);
+          //this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,' + base64String);
+          this.userImage = backendResponse.imageFile;
+        }
+      }
+    );
   }
 
   isMobileMenu() {
@@ -73,16 +67,10 @@ export class SidebarComponent implements OnInit {
   };
 
   onSelection(index: number) {
-   // console.log(index);
-
     if (index == 0) {
       this.loginService.setCurrentUrl('/dashboard');
       this.router.navigate(['/dashboard']);
     }
-    // else if (index == 1) {
-    //   this.loginService.setCurrentUrl('/user-profile');
-    //   this.router.navigate(['/user-profile']);
-    // }
     else if (index == 1) {
       this.loginService.setCurrentUrl('/table-list');
       this.router.navigate(['/user-list']);
@@ -97,8 +85,7 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  userImageUpload() {
-
+  ngOnDestroy() {
+    this.LoggedUserDataSubscription.unsubscribe();
   }
-
 }

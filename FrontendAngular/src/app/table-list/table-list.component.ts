@@ -2,7 +2,6 @@ import { SessionStorageService } from 'angular-web-storage';
 import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import { LoginService } from '../services/login.service';
 import { Router } from '@angular/router';
-import { ROUTES } from '../components/sidebar/sidebar.component';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackendApiService } from '../services/backend-api.service';
 import { Subscription } from 'rxjs';
@@ -15,10 +14,11 @@ import { Subscription } from 'rxjs';
 export class TableListComponent implements OnInit, OnDestroy {
 
   getUsersSubscription : Subscription
-
+   
   userAddFormGroup: FormGroup;
   userUpdateFormGroup: FormGroup;
 
+  showPasswordFields: boolean = false;
   isImageUploaded: boolean = false;
   isCollapsed: boolean = false;
   isPasswordValid: boolean = false;
@@ -28,7 +28,7 @@ export class TableListComponent implements OnInit, OnDestroy {
   activatedForm: number = 0;
 
   userImage: File = null;
-  imageSrc: string = "";
+  imageSrc: string = "/assets/img/noProfile.png";
   userPassword: string = "";
   usersList = [];
   selectedUser: any;
@@ -60,13 +60,20 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.backendService.getUsersRequest(this.loggedUserId);
     this.getUsersSubscription = this.backendService.updateUserList.subscribe(
       (backendResponse: any) => {
+    
         this.usersList = backendResponse;
         this.totalUsers = this.usersList.length;
       }
     )
   }
 
+  passwordForm(){
+    this.showPasswordFields = !this.showPasswordFields;
+  }
+
   formActivation() {
+    this.imageSrc = "";
+    this.userImage = null;
     if (this.activatedForm == 0) {
       this.sessionService.set('activatedForm', 1);
       this.activatedForm = 1;
@@ -78,13 +85,24 @@ export class TableListComponent implements OnInit, OnDestroy {
   }
 
   updateForm(user: any) {
+    this.passwordMessage = "";
+    this.showPasswordFields = false;
     this.selectedUser = user;
+    if (user.userImageLink){
+      this.imageSrc = this.selectedUser.userImageLink;
+    }
+    else{
+      this.imageSrc = "";
+    }
+  
     this.activatedForm = 2;
     this.initializeUpdateForm();
   }
   DeActivateUpdateForm() {
+    this.isImageUploaded = false;
     this.selectedUser = [];
     this.activatedForm = 0;
+    this.backendService.getUsersRequest(this.loggedUserId);
   }
 
   AddUser() {
@@ -103,16 +121,13 @@ export class TableListComponent implements OnInit, OnDestroy {
     }
 
     const userData = {
-      'username': username,
+      'name': username,
       'email': email,
       'password': password,
       'country': country,
       'phone': phone,
       'user_image': tempUserImage
     };
-
-    // const fdata = new FormData();
-    // fdata.append('');
 
     this.backendService.userAddRequest(userData, this.userImage, this.loggedUserId).then(
       (backendResponse: any) => {
@@ -137,16 +152,42 @@ export class TableListComponent implements OnInit, OnDestroy {
     const phone = this.userUpdateFormGroup.value.phone
     const password = this.userUpdateFormGroup.value.password;
 
-    const userData = {
+    var tempUserImage;
+    
+    if (this.imageSrc == "") {
+      tempUserImage = "";
+    }
+    else {
+      if (this.userImage == null)
+        tempUserImage = this.selectedUser.user_image;
+        else
+        tempUserImage = this.userImage.name;
+    }
+   
+    var userData = {};
+    if (password != ""){
+     userData = {
       '_id': id,
       'username': username,
       'email': email,
       'country': country,
       'phone': phone,
-      'password': password
+      'password': password,
+      'user_image': tempUserImage
     };
+  }
+  else{
+     userData = {
+      '_id': id,
+      'username': username,
+      'email': email,
+      'country': country,
+      'phone': phone,
+      'user_image': tempUserImage
+    };
+  }
 
-    this.backendService.userUpdateRequest(userData, this.loggedUserId).then(
+    this.backendService.userUpdateRequest(userData, this.userImage, this.loggedUserId).then(
       (backendResponse: any) => {
         if (backendResponse.status) {
           this.genericMessage = backendResponse.message;

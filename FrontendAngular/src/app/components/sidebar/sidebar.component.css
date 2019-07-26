@@ -1,3 +1,20 @@
 .sidebar .logo, .off-canvas-sidebar .logo{
     padding: 1.5rem 0.7rem !important;
 }
+
+.overrideMaxWidth{
+    max-width: 500% !important;
+    width: 300% !important;
+    border-radius: 50%;
+    height: 270%;
+}
+/* .mainProfileWidth{
+    width: 300% !important;
+} */
+
+.userNameTransform{
+    transform: translate3d(40%, 0 ,0) !important;
+    position: absolute;
+    top: 200%;
+    margin-left: 105px;
+}

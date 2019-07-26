@@ -1,11 +1,10 @@
-import { CanDeactivate } from '@angular/router';
 import { BackendApiService } from './../services/backend-api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SessionStorageService } from 'angular-web-storage';
 import { LoginService } from '../services/login.service';
-import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+import { DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -28,8 +27,7 @@ export class LoginComponent implements OnInit {
     private backendApi: BackendApiService,
     private router: Router,
     private sessionService: SessionStorageService,
-    private loginService: LoginService,
-    private sanitizer: DomSanitizer
+    private loginService: LoginService
   ) {
 
     if (this.loginService.isUserLoggedIn()) {
@@ -50,16 +48,7 @@ export class LoginComponent implements OnInit {
     this.backendApi.loginApiRequest({ 'email': email, 'password': password }).then(
       (loginResponse: any) => {
         if (loginResponse.isUserExist) {
-       //   console.log(loginResponse);
-          // let TYPED_ARRAY = new Uint8Array(loginResponse.imageFile);
-          // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-          // let base64String = btoa(STRING_CHAR);
-          // this.userImage = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'+ base64String);
-        
           this.sessionService.set('user_session_data', loginResponse.data);
-
-          // this.loginService.setUserPassword(password);
-          this.loginService.setUserImage(this.userImage);
           this.loginService.setUserLoggedIn(true);
           this.loginService.setCurrentUrl('/dashboard');
           this.router.navigate(['/dashboard']);

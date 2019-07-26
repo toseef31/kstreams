@@ -24,7 +24,7 @@ let RegistrationSchema = new Schema({
         type: String 
     },
     status: {
-        type: Number,
+        type: String,
         default: 1
     },
     pstatus: {

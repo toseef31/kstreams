@@ -20,8 +20,8 @@ mongoose.connect(config.url, { useNewUrlParser: true }).then(
 );
 
 const app = express();
-app.use(express.static('assets'))
 
+app.use(express.static('assets'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
@@ -37,8 +37,8 @@ app.use('/groups', groupsRoute);
 // });
 
 const port = process.env.PORT || 4000;
-
 var httpsServer = https.createServer(credentials, app);
+
 httpsServer.listen(port, function () {
     console.log(' https Listening on port ' + port);
 });

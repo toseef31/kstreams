@@ -1,6 +1,5 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { ROUTES } from '../sidebar/sidebar.component';
-import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
 import { LoginService } from '../../services/login.service';
 import { SessionStorageService } from 'angular-web-storage';
@@ -11,26 +10,25 @@ import { SessionStorageService } from 'angular-web-storage';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  private listTitles: any[];
-  location: Location;
   mobile_menu_visible: any = 0;
   private toggleButton: any;
   private sidebarVisible: boolean;
 
   public isCollapsed = true;
+  mainPanel: any;
 
-  constructor(location: Location,
+  constructor(
     private element: ElementRef,
     private router: Router,
     private loginService: LoginService,
     private sessionService: SessionStorageService) {
 
-    this.location = location;
     this.sidebarVisible = false;
+    this.mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
+    console.log(this.mainPanel);
   }
 
   ngOnInit() {
-    this.listTitles = ROUTES.filter(listTitle => listTitle);
     const navbar: HTMLElement = this.element.nativeElement;
     this.toggleButton = navbar.getElementsByClassName('navbar-toggler')[0];
     this.router.events.subscribe((event) => {
@@ -66,11 +64,11 @@ export class NavbarComponent implements OnInit {
 
   sidebarOpen() {
     const toggleButton = this.toggleButton;
-    const mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
+   // const mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
     const html = document.getElementsByTagName('html')[0];
-    if (window.innerWidth < 991) {
-      mainPanel.style.position = 'fixed';
-    }
+    // if (window.innerWidth < 991) { console.log("a");
+    //   this.mainPanel.style.position = 'fixed';
+    // }
 
     setTimeout(function () {
       toggleButton.classList.add('toggled');
@@ -83,11 +81,10 @@ export class NavbarComponent implements OnInit {
   sidebarClose() {
     const html = document.getElementsByTagName('html')[0];
     this.toggleButton.classList.remove('toggled');
-    const mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
-
+    //const mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
     // if (window.innerWidth < 991) {
-    //   setTimeout(function () {
-    //     mainPanel.style.position = '';
+    //   setTimeout(function () {console.log("b");
+    //     this.mainPanel.style.position = '';
     //   }, 500);
     // }
     this.sidebarVisible = false;
@@ -105,7 +102,6 @@ export class NavbarComponent implements OnInit {
     const html = document.getElementsByTagName('html')[0];
 
     if (this.mobile_menu_visible == 1) {
-      // $('html').removeClass('nav-open');
       html.classList.remove('nav-open');
       if ($layer) {
         $layer.remove();
@@ -149,19 +145,4 @@ export class NavbarComponent implements OnInit {
 
     }
   };
-
-  getTitle() {
-    var titlee = this.location.prepareExternalUrl(this.location.path());
-    if (titlee.charAt(0) === '#') {
-      titlee = titlee.slice(2);
-    }
-    titlee = titlee.split('/').pop();
-
-    for (var item = 0; item < this.listTitles.length; item++) {
-      if (this.listTitles[item].path === titlee) {
-        return this.listTitles[item].title;
-      }
-    }
-    return 'Dashboard';
-  }
 }

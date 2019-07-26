@@ -8,7 +8,7 @@
           <span class="navbar-toggler-bar bar3"></span>
         </button>
       </div>
-      <a class="navbar-brand" href="#pablo">{{getTitle()}}</a>
+      <a class="navbar-brand" href="#pablo"> Dashboard </a>
     </div>
     <button class="navbar-toggler" type="button" (click)="collapse()" [attr.aria-expanded]="!isCollapsed"
       aria-controls="collapseExample">
@@ -28,8 +28,6 @@
           </a>
 
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu aria-labelledby="dropdownBasic2">
-            <!-- <a class="dropdown-item" href="#">Profile</a>
-            <a class="dropdown-item" href="#">Settings</a> -->
             <a class="dropdown-item" (click)="LogOut()"> <i class="fa fa-sign-out-alt"></i>Logout</a>
           </div>
         </li>

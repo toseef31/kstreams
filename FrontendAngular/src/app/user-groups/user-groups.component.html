@@ -6,38 +6,38 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title" style="font-size:25px; font-weight:500"> Groups </span>
-          <!-- <hr> -->
-          <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Create Group </button> -->
-          <span><i class="fa fa-user-plus user-icon" style="float: right; font-size:25px" (click)="formActivation()"></i></span>
+          <span><i class="fa fa-user-plus user-icon" style="float: right; font-size:25px"
+              (click)="formActivation()"></i></span>
         </div>
         <div class=" card-body">
-            <table class="table">
-              <thead class=" text-primary">
-                <th>
-                  Names
-                </th>
-                <th>
-                  Total Users
-                </th>
-              </thead>
-              <tbody>
-                <tr *ngFor="let group of groupsList; let g = index">
-                  <td>
-                    <p>{{group.name}}</p>
-                  </td>
-                  <td>
-                      {{group.members.length}}
-                  </td>
-                
-                  <input type="hidden" value="{{ group._id }}" #groupId>
-                  <td>
-                    <span> <i class="fa fa-edit px-3 user-icon" (click)="ManageGroupUsers(groupId.value)">  </i> </span>
-                    <span> <i class="fa fa-trash px-3 user-icon" (click)="DeleteGroup(groupId.value, group.name)">  </i> </span>
+          <table class="table">
+            <thead class=" text-primary">
+              <th>
+                Names
+              </th>
+              <th>
+                Total Users
+              </th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let group of groupsList; let g = index">
+                <td>
+                  <p>{{group.name}}</p>
+                </td>
+                <td>
+                  {{group.members?.length}}
+                </td>
 
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                <input type="hidden" value="{{ group._id }}" #groupId>
+                <td>
+                  <span> <i class="fa fa-edit px-3 user-icon" (click)="ManageGroupUsers(groupId.value)"> </i> </span>
+                  <span> <i class="fa fa-trash px-3 user-icon" (click)="DeleteGroup(groupId.value, group.name)"> </i>
+                  </span>
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <span *ngIf="totalGroups == 0">
           <p style="text-align: center">No data found</p>
@@ -57,7 +57,6 @@
       <div class="card">
         <div class="card-header">
           <span class="title" style="font-size:25px; font-weight:500">Create Group</span>
-          <!-- <button class="btn btn-primary" style="float: right" (click)="formActivation()"> Back </button> -->
           <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
               (click)="formActivation()"></i></span>
 
@@ -100,7 +99,6 @@
         <div class="card-body">
 
           <select name="users" (change)="selectUser($event.target.value)" style="width: 70%">
-            <!-- <option value="null" selected disabled hidden>select a user</option> -->
             <option value="null" *ngIf="selectedUserId == 0" selected disabled hidden>{{dropdownDefaultText}}</option>
             <option *ngFor="let user of usersList" [value]="user._id">{{user.name}}</option>
           </select>
@@ -123,7 +121,7 @@
                 {{addedUser.name}}
               </td>
               <td>
-                <span> <i class="fa fa-minus" (click)="excludeUser(addedUser._id)"> </i> </span>
+                <span> <i class="fa fa-minus user-icon" (click)="excludeUser(addedUser._id)"> </i> </span>
               </td>
             </tr>
           </tbody>

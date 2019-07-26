@@ -31,13 +31,4 @@ export class LoginService {
   getUserImage(){
     return this.userImage;
   }
-
-  // setUserPassword(password: string){
-  //   this.sessionService.set("userPassword", password);
-  // }
-
-  // getUserPassword(){
-  //   return this.sessionService.get("userPassword");
-  // }
-
 }

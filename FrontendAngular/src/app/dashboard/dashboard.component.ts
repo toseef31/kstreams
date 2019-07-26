@@ -13,6 +13,7 @@ import { BackendApiService } from '../services/backend-api.service';
 export class DashboardComponent implements OnInit, OnDestroy {
 
   getUsersSubscription: Subscription;
+  getGroupsSubscription: Subscription;
 
   usersList = [];
   totalUsers: number= 0;
@@ -34,7 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.backendAPI.getUsersRequest(this.loggedUserId);
-    this.getUsersSubscription = this.backendAPI.updateUserList.subscribe(
+    this.getGroupsSubscription = this.getUsersSubscription = this.backendAPI.updateUserList.subscribe(
       (backendResponse: any) => {
         this.usersList = backendResponse;
         this.totalUsers = this.usersList.length;
@@ -49,13 +50,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-    console.log(this.loginService.getCurrentUrl());
-   
-    // if (this.loginService.getCurrentUrl() != ""){
-    //   this.router.navigate(['/dashboard']);
-    //   return false;
-    // }
-
     if (!this.loginService.isUserLoggedIn()) {
       return true;
     }
@@ -67,6 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.getUsersSubscription.unsubscribe();
+    this.getGroupsSubscription.unsubscribe();
   }
 
 }

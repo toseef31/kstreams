@@ -1,34 +1,42 @@
 <div class="logo">
     <a class="simple-text logo-mini">
         <div class="logo-img">
-            <label for="profile_img">
+            <!-- <label for="profile_img"> -->
                 <span *ngIf="userImage == null || userImage == ''">
-                    <img src="/assets/img/noProfile.png"/>
+                    <img class="img-responsive overrideMaxWidth" src="/assets/img/noProfile.png" />
                 </span>
                 <span *ngIf="userImage != null && userImage != ''">
-                    <img [src]="userImage"/>
+                    <img class="img-responsive overrideMaxWidth" [src]="userImage" />
                 </span>
-            </label>
-            <input type="file" id="profile_img" style="display: none" (click)="userImageUpload()">
+            <!-- </label> -->
+            <!-- <input type="file" id="profile_img" style="display: none" (click)="userImageUpload()"> -->
         </div>
     </a>
-    <a class="simple-text logo-normal">
+    <a class="simple-text logo-normal userNameTransform">
         {{username}}
     </a>
 </div>
+<br><br><br><br><br><br>
+
 <div class="sidebar-wrapper">
     <ul class="nav">
-        <li routerLinkActive="active" *ngFor="let menuItem of menuItems; let i = index"
-            class="{{menuItem.class}} nav-item">
-            <!-- <a [routerLink]="[menuItem.path]"></a> -->
-            <a (click)="onSelection(i)">
-                <input type="hidden" value={{i}}>
-                <i class="now-ui-icons {{menuItem.icon}}"></i>
-                <p>{{menuItem.title}}</p>
+        <li>
+            <a (click)="onSelection(0)">
+                <i class="now-ui-icons design_app" style="color: blanchedalmond"></i>
+                <p>Dashboard</p>
             </a>
         </li>
-
-        <!--  <li routerLinkActive="active" *ngFor="let menuItem of menuItems; let i = index" class="{{menuItem.class}} nav-item">
-            <a [routerLink]="[menuItem.path]"> -->
+        <li>
+            <a (click)="onSelection(1)">
+                <i class="fa fa-user" style="color: blanchedalmond"></i>
+                <p>Users</p>
+            </a>
+        </li>
+        <li>
+            <a (click)="onSelection(2)">
+                <i class="fa fa-users" style="color: blanchedalmond"></i>
+                <p>Groups</p>
+            </a>
+        </li>
     </ul>
 </div>

@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SessionStorageService } from 'angular-web-storage';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { LoginService } from '../services/login.service';
 import { BackendApiService } from '../services/backend-api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-groups',
   templateUrl: './user-groups.component.html',
   styleUrls: ['./user-groups.component.scss']
 })
-export class UserGroupsComponent implements OnInit {
+export class UserGroupsComponent implements OnInit, OnDestroy {
+
+  getGroupsListSubscription: Subscription;
+  usersGroupUpdateSubscription: Subscription;
 
   userGroupsForm: FormGroup;
 
@@ -46,18 +50,17 @@ export class UserGroupsComponent implements OnInit {
 
     // -------- GETS THE LIST OF GROUPS ---------------------------------
     this.backendAPI.getGroups();
-    this.backendAPI.getGroupsList.subscribe(
+    this.getGroupsListSubscription = this.backendAPI.getGroupsList.subscribe(
       (groupsList: any) => {
-        //console.log(groupsList);
         this.groupsList = groupsList;
         this.totalGroups = groupsList.length;
       });
 
-    this.backendAPI.usersGroupUpdate.subscribe(
-      (groupedUsersList: any) => { 
+    this.usersGroupUpdateSubscription = this.backendAPI.usersGroupUpdate.subscribe(
+      (groupedUsersList: any) => {
         this.usersList = groupedUsersList.remainingUsers;
         this.addedUsersList = groupedUsersList.groupUsers[0].members;
-       
+
         if (this.usersList.length == 0)
           this.dropdownDefaultText = "no users remaining";
         else
@@ -99,7 +102,7 @@ export class UserGroupsComponent implements OnInit {
 
     this.backendAPI.createGroup(groupName).then(
       (backendResponse: any) => {
-        this.genericMessage = backendResponse.message;
+        this.genericMessage = "group created succesfully";
         this.userGroupsForm.reset();
         setTimeout(() => { this.genericMessage = "" }, 2000)
       }
@@ -107,7 +110,7 @@ export class UserGroupsComponent implements OnInit {
   }
 
   DeleteGroup(groupId: number, groupName: string) {
-    if(confirm("Are you sure to delete "+groupName)) {
+    if (confirm("Are you sure to delete " + groupName)) {
       this.backendAPI.deleteGroup(groupId);
     }
   }
@@ -131,5 +134,10 @@ export class UserGroupsComponent implements OnInit {
     this.userGroupsForm = this.formBuilder.group({
       name: [''],
     });
+  }
+
+  ngOnDestroy(){
+    this.getGroupsListSubscription.unsubscribe();
+    this.usersGroupUpdateSubscription.unsubscribe();
   }
 }

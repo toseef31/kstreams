@@ -14,7 +14,6 @@ export class BackendApiService {
   public refreshLoggedUserData = new Subject<any>();
   public getGroupsList = new Subject<any>();
   public usersGroupUpdate = new Subject<any>();
-  //public getUsersList = new Subject<any>();
 
   constructor(
     private http: HttpClient
@@ -25,7 +24,6 @@ export class BackendApiService {
       return this.http.post(this.userBaseUrl + "/login", loginData).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
-          this.refreshLoggedUserData.next(backendResponse);
         }
       );
     });
@@ -33,9 +31,9 @@ export class BackendApiService {
   }
 
   userAddRequest(userData: any, userImage: File, loggedUserId: number) {
-
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data');
+
     var fd = new FormData();
     fd.append('userData', JSON.stringify(userData));
     fd.append('loggedUserId', JSON.stringify(loggedUserId));
@@ -48,7 +46,6 @@ export class BackendApiService {
     var promise = new Promise((resolve, reject) => {
       return this.http.post(this.userBaseUrl + "/adduser", fd, { headers: headers }).subscribe(
         (backendResponse: any) => {
-          //  console.log(backendResponse);
           resolve(backendResponse);
           this.updateUserList.next(backendResponse.users);
         }
@@ -57,14 +54,24 @@ export class BackendApiService {
     return promise;
   }
 
-  userUpdateRequest(userData: any, loggedUserId: number) {
-    const data = { 'userData': userData, 'loggedUserId': loggedUserId };
+  userUpdateRequest(userData: any, userImage: File, loggedUserId: number) {
+    //const data = { 'userData': userData, 'loggedUserId': loggedUserId };
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+
+    var fd = new FormData();
+    fd.append('userData', JSON.stringify(userData));
+    //fd.append('loggedUserId', JSON.stringify(loggedUserId));
+
+    if (userImage != null)
+      fd.append('file', userImage, userImage.name);
+    if (userImage != null)
+      fd.append('file', null, '');
 
     var promise = new Promise((resolve, reject) => {
-      return this.http.post(this.userBaseUrl + "/updateuser", data).subscribe(
+      return this.http.post(this.userBaseUrl + "/updateuser", fd, { headers: headers }).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
-          this.updateUserList.next(backendResponse.users);
         }
       )
     });
@@ -75,7 +82,6 @@ export class BackendApiService {
     const data = { '_id': loggedinUserId }
     return this.http.post(this.userBaseUrl + "/getusers", data).subscribe(
       (usersList: any) => {
-        //console.log(usersList);
         this.updateUserList.next(usersList);
       }
     );
@@ -83,15 +89,11 @@ export class BackendApiService {
 
   getLoggedInUserRequest(email: string) {
     const data = { 'email': email };
-    var promise = new Promise((resolve, reject) => {
-      return this.http.post(this.userBaseUrl + '/getloggeduser', data).subscribe(
-        (loggedUserData: any) => {
-          resolve(loggedUserData);
-          this.refreshLoggedUserData.next(loggedUserData);
-        }
-      );
-    });
-    return promise;
+    return this.http.post(this.userBaseUrl + '/getloggeduser', data).subscribe(
+      (loggedUserData: any) => {
+        this.refreshLoggedUserData.next(loggedUserData);
+      }
+    );
   }
 
   deleteUserRequest(userId: number, myUserId) {

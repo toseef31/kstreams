@@ -10,7 +10,7 @@ var multer = require('multer');
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/WEB STUFF/PEEK INTERNATION/Angular Projects/AdminPanel New/kstreams/NodeApi/assets')
+        cb(null, 'images/')
     },
 
     filename: function (req, file, cb) {

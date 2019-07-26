@@ -40,7 +40,7 @@ export class BackendApiService {
 
     if (userImage != null)
       fd.append('file', userImage, userImage.name);
-    if (userImage != null)
+    if (userImage == null)
       fd.append('file', null, '');
 
     var promise = new Promise((resolve, reject) => {

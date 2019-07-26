@@ -134,6 +134,8 @@ export class TableListComponent implements OnInit, OnDestroy {
         if (backendResponse.status) {
           this.genericMessage = backendResponse.message;
           this.formReset();
+          this.userImage = null;
+          this.imageSrc = "";
           setTimeout(() => { this.genericMessage = "" }, 2500);
         }
         else {

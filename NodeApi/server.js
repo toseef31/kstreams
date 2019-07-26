@@ -21,7 +21,7 @@ mongoose.connect(config.url, { useNewUrlParser: true }).then(
 
 const app = express();
 
-app.use(express.static('assets'))
+app.use(express.static('images'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true

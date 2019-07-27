@@ -3,7 +3,7 @@
 * designBy => Peek International
 */ 
 const userModel   = require('../model/users-model');
-const recentModel = require('../model/recent-model');
+// const recentModel = require('../model/recent-model');
 const chatModel   = require('../model/chatModel');
 const groupsModel = require('../model/groupsModel');
 const notifiModel = require('../model/notificationModel');
@@ -46,11 +46,8 @@ module.exports = function(io,saveUser){
     }
 
     router.getUsers = function(req,res){
-    	userModel.find(
-        {_id:{$ne:req.params.userId},delete:{$ne:true}},
-        {},{sort: '-updatedAt'})
-        // .populate('senderInfo')
-        // .populate('receiverInfo')
+    	userModel.find({_id:{$ne:req.params.userId},isAdmin:{$ne:1},status:1},
+        {},{sort: '-updatedAt'}) 
         .lean()
         .exec(function(err,data){ 
     		res.json(data);
@@ -59,15 +56,11 @@ module.exports = function(io,saveUser){
 
 
     router.getCreatedGroups = function (req, res){
-            // get all groups
-
-           groupsModel.find().populate('members', {'name':true}).exec(function (err, groups) {
-               
-            var tempGroups = [];
-               if (err) { return console.log(err); }
-
-               for (var i= 0; i < groups.length; i++){
-                  
+            // get all groups 
+           groupsModel.find().populate('members', {'name':true}).exec(function (err, groups) { 
+                var tempGroups = [];
+               if (err) { return console.log(err); } 
+               for (var i= 0; i < groups.length; i++){ 
                   for (var j= 0; j < groups[i].members.length; j++){
                       // console.log(req.params.userId +" == "+ groups[i].members[j]._id);
                        if (req.params.userId == groups[i].members[j]._id){
@@ -75,8 +68,8 @@ module.exports = function(io,saveUser){
                        // break;
                        }
                   }
-               }
-                  res.send(tempGroups); // send groups list
+                }
+                res.send(tempGroups); // send groups list
            })
     }
 
@@ -155,11 +148,11 @@ module.exports = function(io,saveUser){
         var sender = req.params.senderId;
         var receiver = req.params.recevierId;
 
-        var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:receiver,recevierId:sender},{senderId:sender,revevierId:receiver}]}}},
-	        updatedata ={$set:{'chat.$.unreadMsg':0}};
-            recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
-            	helper.RTU({senderId:sender,recevierId:receiver});
-            })
+        // var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:receiver,recevierId:sender},{senderId:sender,revevierId:receiver}]}}},
+	    //     updatedata ={$set:{'chat.$.unreadMsg':0}};
+        //     recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
+        //     	helper.RTU({senderId:sender,recevierId:receiver});
+        //     })
         chatModel.find({$or:[{senderId:sender,recevierId:receiver},{senderId:receiver,recevierId:sender}]})
         // .populate('senderInfo')
         // .populate('receiverInfo')
@@ -171,11 +164,10 @@ module.exports = function(io,saveUser){
     }
 
     router.getGroup = function(req,res){
-      var id = req.params.groupId;
-       chatModel.find({groupId:id}).populate('senderId').lean().then(function(data){
-        
-        res.json(data);
-       })
+        var id = req.params.groupId;
+        chatModel.find({groupId:id}).populate('senderId').lean().then(function(data){ 
+            res.json(data);
+        })
 
     //    groupsModel.update({_id:id,members:{$elemMatch:{id:memId}}},{$set:{'members.$.isSeen':true}},function(err,data){
     //     if(err) throw err;
@@ -212,8 +204,7 @@ module.exports = function(io,saveUser){
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
         if(req.session.user && typeof req.session.user._id !== 'undefiend'){
-            helper.changeStatus(req.session.user._id,{status:1},function(data){
-                //helper.RTU();
+            helper.changeStatus(req.session.user._id,{status:1},function(data){ 
                 res.json(data);
             }); 
         }
@@ -398,26 +389,26 @@ module.exports = function(io,saveUser){
         }
     }
     router.recent = (req,res) => {
-      
-        if(req.body.receiverId!=req.body.senderId) 
-            recentModel.find({receiverId:req.body.receiverId,senderId:req.body.senderId},(err, data) => {
-                if (err) throw err;
-                if(data.length <= 0){ 
-                    var recent = new recentModel({
-                                    "receiverId":req.body.receiverId,
-                                    "receiverName":req.body.receiverName,
-                                    "senderId":req.body.senderId,
-                                    "senderName": req.body.senderName,
-                                    "sender_image": req.body.sender_image,
-                                    "receiver_image": req.body.receiver_image,
-                                });
-                    recent.save(function(err,data){
-                        if(err) console.log(err);
-                    }) 
-                } 
-                res.json(1);
-            });
-        else
+        console.log('No need of recent');
+        // if(req.body.receiverId!=req.body.senderId) 
+        //     recentModel.find({receiverId:req.body.receiverId,senderId:req.body.senderId},(err, data) => {
+        //         if (err) throw err;
+        //         if(data.length <= 0){ 
+        //             var recent = new recentModel({
+        //                             "receiverId":req.body.receiverId,
+        //                             "receiverName":req.body.receiverName,
+        //                             "senderId":req.body.senderId,
+        //                             "senderName": req.body.senderName,
+        //                             "sender_image": req.body.sender_image,
+        //                             "receiver_image": req.body.receiver_image,
+        //                         });
+        //             recent.save(function(err,data){
+        //                 if(err) console.log(err);
+        //             }) 
+        //         } 
+        //         res.json(1);
+        //     });
+        // else
             res.json(1);
     }
     router.saveUserDataToSession = ( req, res ) => {
@@ -446,14 +437,15 @@ module.exports = function(io,saveUser){
     }
 
     router.removeUser = ( req, res ) => {
-        recentModel.findOneAndDelete({_id:req.body.id},(err, data) => {
-            if (err) throw err;
-            chatModel.deleteMany({$or:[{senderId:data.senderId,recevierId:data.receiverId},{senderId:data.receiverId,recevierId:data.senderId}]},(err,data) => {
-                if (err) throw err;
-                res.json(data);
-            })
+        console.log('removeUser: Logic need to be updated');
+        // recentModel.findOneAndDelete({_id:req.body.id},(err, data) => {
+        //     if (err) throw err;
+        //     chatModel.deleteMany({$or:[{senderId:data.senderId,recevierId:data.receiverId},{senderId:data.receiverId,recevierId:data.senderId}]},(err,data) => {
+        //         if (err) throw err;
+        //         res.json(data);
+        //     })
             
-        });
+        // });
     }
     router.updateUserImage = ( req, res ) => {
         userModel.findOneAndUpdate({userId:req.body.id},{user_image:req.body.image},function(err,data){

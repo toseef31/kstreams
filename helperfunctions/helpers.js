@@ -4,18 +4,19 @@
 */
 const bcrypt      = require('bcrypt');
 const userModel   = require('../model/users-model');
-const recentModel = require('../model/recent-model'); 
+// const recentModel = require('../model/recent-model'); 
 const groupsModel = require('../model/groupsModel');
 const mongoose    = require('mongoose');
 
 module.exports = function(io){
 	var helper = {}; 
 	helper.RTU = function (data){
-	    recentModel.find({$or:[{senderId:data.senderId},{receiverId:data.senderId}]}).sort({updatedAt:-1}).exec(function(err,senderUsers){
-	       recentModel.find({$or:[{receiverId:data.recevierId},{senderId:data.recevierId}]}).sort({updatedAt:-1}).exec(function(err,receiverUsers){
-	          io.emit('getUsers',{senderUsers:senderUsers,receiverUsers:receiverUsers,senderId:data.senderId,receiverId:data.recevierId});
-	       });
-	    });
+		console.log('IN helper.RTU');
+	    // recentModel.find({$or:[{senderId:data.senderId},{receiverId:data.senderId}]}).sort({updatedAt:-1}).exec(function(err,senderUsers){
+	    //    recentModel.find({$or:[{receiverId:data.recevierId},{senderId:data.recevierId}]}).sort({updatedAt:-1}).exec(function(err,receiverUsers){
+	    //       io.emit('getUsers',{senderUsers:senderUsers,receiverUsers:receiverUsers,senderId:data.senderId,receiverId:data.recevierId});
+	    //    });
+	    // });
 	}
 
 	helper.RTGU = function (){
@@ -28,36 +29,36 @@ module.exports = function(io){
 	helper.incrypt = function (pass){
 	    return bcrypt.hashSync(pass,bcrypt.genSaltSync(9))
 	}
-	helper.updateLastMsg = function (data){
-		console.log('updateLastMsg: ',data);
+	helper.updateLastMsg = function (data){ 
+		console.log('IN helper.updateLastMsg');
 	    /*this promise update user last msg if has else add*/
 	    return new Promise((resolve,reject) =>{
 	       
-	        var query = {$or:[{senderId:data.senderId,receiverId:data.recevierId},{senderId:data.recevierId,receiverId:data.senderId}],chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}] }}},
-	            update = {$set:{'chat.$._id':data._id,'chat.$.senderId':data.senderId,'chat.$.recevierId':data.recevierId,'chat.$.message':data.message,'chat.$.isseen':data.isseen,'chat.$.date':data.date }};
+	        // var query = {$or:[{senderId:data.senderId,receiverId:data.recevierId},{senderId:data.recevierId,receiverId:data.senderId}],chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}] }}},
+	        //     update = {$set:{'chat.$._id':data._id,'chat.$.senderId':data.senderId,'chat.$.recevierId':data.recevierId,'chat.$.message':data.message,'chat.$.isseen':data.isseen,'chat.$.date':data.date }};
 	        
-	        recentModel.update(query, update, function(error, result) {
-	            if(error) reject(error);
-	            if(result.n == 1 && result.nModified == 1 && result.ok == 1) resolve();
-	            if (result.n == 0 && result.nModified == 0 && result.ok == 1){
-	                recentModel.update({senderId:data.senderId,receiverId:data.recevierId}, {$push:{chat:data}}, function(error, result) {
-	                   if(error) reject('user not add');
-	                    resolve();
-	                });
-	            }
-	        });
+	        // recentModel.update(query, update, function(error, result) {
+	        //     if(error) reject(error);
+	        //     if(result.n == 1 && result.nModified == 1 && result.ok == 1) resolve();
+	        //     if (result.n == 0 && result.nModified == 0 && result.ok == 1){
+	        //         recentModel.update({senderId:data.senderId,receiverId:data.recevierId}, {$push:{chat:data}}, function(error, result) {
+	        //            if(error) reject('user not add');
+	        //             resolve();
+	        //         });
+	        //     }
+	        // });
 	       
 	    });
 	    
 	}
 	
 	helper.incrementUnReadMsg = function (data){
-		var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}]}}},
-	    	updatedata ={$inc:{'chat.$.unreadMsg':1}};
-	    recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
-	    	if(err) throw err;
-	    })
-
+		console.log('IN helper.incrementUnReadMsg');
+		// var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}]}}},
+	    // 	updatedata ={$inc:{'chat.$.unreadMsg':1}};
+	    // recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
+	    // 	if(err) throw err;
+	    // }) 
 	}
 	helper.addNewMessage = function (data){
         helper.updateLastMsg(data).then(function(){

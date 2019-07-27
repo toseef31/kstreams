@@ -314,7 +314,7 @@ img{ max-width:100%;}
 .chat_img { 
   overflow: hidden;
   width: 40px;
-  height: 40px;
+  max-height: 40px;
   float: left;
   /* margin-right: 10px; */
   text-align: center;
@@ -335,10 +335,9 @@ img{ max-width:100%;}
   top: 42%;
 }
 .chat_ib {
-  float: left;
-  padding: 0 0 0 15px;
   width: 88%;
   color: #222;
+  margin-left: 50px; 
 }
 
 .chat_people{ overflow:hidden; clear:both;}

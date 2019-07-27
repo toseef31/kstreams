@@ -40,8 +40,8 @@ export class BackendApiService {
 
     if (userImage != null)
       fd.append('file', userImage, userImage.name);
-    if (userImage == null)
-      fd.append('file', null, '');
+    // if (userImage == null)
+    //   fd.append('file', null, '');
 
     var promise = new Promise((resolve, reject) => {
       return this.http.post(this.userBaseUrl + "/adduser", fd, { headers: headers }).subscribe(
@@ -65,8 +65,8 @@ export class BackendApiService {
 
     if (userImage != null)
       fd.append('file', userImage, userImage.name);
-    if (userImage != null)
-      fd.append('file', null, '');
+    // if (userImage != null)
+    //   fd.append('file', null, '');
 
     var promise = new Promise((resolve, reject) => {
       return this.http.post(this.userBaseUrl + "/updateuser", fd, { headers: headers }).subscribe(

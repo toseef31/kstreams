@@ -13,7 +13,7 @@
           <table class="table">
             <thead class=" text-primary">
               <th>
-                Names
+                Name
               </th>
               <th>
                 Total Users
@@ -66,7 +66,7 @@
             <div class="row">
               <div class="col-md-5 px-1">
                 <div class="form-group">
-                  <label>Names</label>
+                  <label>Name</label>
                   <input type="text" class="form-control" formControlName="name" placeholder="group name">
                 </div>
               </div>
@@ -92,7 +92,7 @@
     <div class="col-md-7 offset-md-3">
       <div class="card">
         <div class="card-header">
-          <span class="card-title" style="font-size:25px; font-weight:500"> Users (to be add)</span>
+          <span class="card-title" style="font-size:25px; font-weight:500"> Group users</span>
           <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
               (click)="formActivation()"></i></span>
         </div>
@@ -127,7 +127,7 @@
           </tbody>
 
           <span *ngIf="addedUsersList?.length == 0">
-            <p style="text-align: center">no user added in this group</p>
+            <p style="text-align: center">No user found</p>
           </span>
 
         </table>

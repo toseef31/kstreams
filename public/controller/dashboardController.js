@@ -57,7 +57,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-    let webSocketIp = 'kstreams.com';
+    let webSocketIp = 'kstreams.com';  //localhost || kstreams.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
     class Ws {
         get newClientPromise() {
@@ -363,11 +363,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.get("/getUsers/" + response.data._id)
         .then(function (response) {
             $scope.allUsers = response.data;
-            for (i = 0; i < response.data.length; i++) {
-                if (response.data[i].email != $scope.user.email) {
-                    $scope.getmembers.push(response.data[i]);
-                }
-            }
+            for (i = 0; i < response.data.length; i++) 
+                if (response.data[i].email != $scope.user.email)
+                    $scope.getmembers.push(response.data[i]); 
         });
 
         /*get all group users*/
@@ -638,7 +636,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           
         /*logout the user and destroy the session*/
         $scope.logout = function () {
-            //$http.get($scope.sbsLink+"setChatStatus/2/"+$scope.userEmailId+"/0"); //set logout
+            console.log('Logout');
             $http.get('/logout').then(function (res) {
                 if (res.data.msg == "session destroy") {
                     $scope.user = undefined;
@@ -725,7 +723,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             // socket.emit('connectUsers',{check:check,members:$scope.receiveGroupMem});
         }
         socket.on('updateConnectedUsers', function (data) {
-            for (var i = 0; i < data.members.length; i++) {
+            var i = 0;
+            for (i; i < data.members.length; i++) {
                 if (data.members[i].id == $scope.user._id) 
                     $scope.$apply(function () {
                         if (data.check == 'countGroupMembers') $scope.countGroupMembers += 1;
@@ -769,8 +768,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 document.querySelector('.audioTab').style.display = 'none';
                 console.log('Calling stop from 3');
                 $scope.stopK();
-            }
-
+            } 
         })
         /* delete message chat and group both handle in this function*/
         $scope.deleteMsg = function (type) {
@@ -937,6 +935,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             $(".ringingBell").addClass('hidden');
         });
+
         $scope.onExit = function () {
             $http.get('/changeStatus').then(function (res) {
                 return ('bye bye');
@@ -947,6 +946,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     }, function errorCallback(response) {
         $scope.sessionDestroy = true;
+        $location.path('/');
     });
 
     $scope.showHideDots = function (id, isShow = 0) {
@@ -959,9 +959,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         else $(".stAngleDd").addClass('hidden');
     };
 
-    $scope.stArr = ['activeSt', 'awaySt', 'dDisturbSt', 'invisSt'];
+    $scope.stArr = ['activeSt', 'awaySt', 'dDisturbSt', 'invisSt','offlineSt'];
     $scope.changeSt = function (val = 0) {
-        $scope.currSt = val;
+        $scope.currSt = val; 
         $scope.stClass = $scope.stArr[$scope.currSt]; 
         $http.post('/setPerStatus', { pStatus: val }).then((res) => {
             if (res.status) console.log('Changed');
@@ -973,7 +973,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.get('/checkPerStatus').then((res) => {
             if (res.status) {
                 $scope.currSt = res.data.pStatus;
+                console.log('$scope.currSt ',res.data,$scope.currSt);
                 $scope.stClass = $scope.stArr[$scope.currSt];
+                console.log('$scope.stClass ',$scope.stClass);
                 $scope.userEmailId = res.data.email;
                 // $http.get($scope.sbsLink+"setChatStatus/2/"+$scope.userEmailId+"/1"); //set online
                 // $http.get($scope.sbsLink+"setChatStatus/1/"+$scope.userEmailId+"/"+res.data.pStatus);
@@ -985,6 +987,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.showDDwnSt = function () {
         $scope.showDrpDwnSt = !$scope.showDrpDwnSt;
     }
+ 
 
     var everywhere = angular.element(window.document);
     everywhere.bind('click', function (event) {

@@ -15,11 +15,11 @@
       <div class="inbox_msg">
         <div class="container-fluid">
           <div class="navbar-header">
-            <button type="button" id="side-btn" class="navbar-toggle navbar-contact" style="float: left;">
+            <!-- <button type="button" id="side-btn" class="navbar-toggle navbar-contact" style="float: left;">
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span> 
-            </button>
+            </button> -->
 
             <!-- left side bar for mobile view -->
             <!-- left side bar for mobile view -->
@@ -28,20 +28,21 @@
             <div class="inbox_people col-sm-4 col-xs-12 hidden-lg hidden-md hidden-sm width100" id="mobile-view-contact"> 
                 <div class="headind_srch">
                   <div class="recent_heading width100">
-                    <div class="pro_img">
-                      <!-- <img src="images/profile-photos/noProfile.png" alt="{{user.name}}"> -->
+                    <div class="pro_img"> 
                       <span ng-if="user.user_image == ''">
-                        <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{user._id}}" /> 
+                        <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
                       </span>
                       <span ng-if="user.user_image != ''">
-                        <img class="importantHeight" src="{{ 'https://kstreams.com:4000/' + user.user_image }}" alt="{{user._id}}" /> 
-                      </span>
-
+                        <img class="importantHeight" src="{{ 'https://kstreams.com:4000/' + user.user_image }}" alt="{{user.name}}" /> 
+                      </span> 
                     </div>
-                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="{activeSt:user.pStatus==0,awaySt:user.pStatus==1,dDisturbSt:user.pStatus==2,invisSt:user.pStatus==3,offlineSt:user.pStatus==4}" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                       <div class="fa fa-angle-down hidden stAngleDd"></div>
                     </div> 
                     <h4>{{user.name}}</h4>
+                    <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()"> 
+                      <span class='glyphicon glyphicon-log-out'></span> Logout
+                    </a>
                   </div>
                 </div>
                 <div class="inbox_chat">
@@ -56,15 +57,15 @@
                           <div class="chat_list active_chat" ng-if="userA._id != user._id"  ng-click="startChat({type:'chat',user:userA})" style="position: relative;">
                             <!-- <i class="fa fa-close text-danger removeUser" ng-click="removeUser()" tooltip-placement="top" uib-tooltip="Delete user"></i> -->
                             <div class="chat_people">
-                              <div class="chat_img">
-                                <span class="status " ng-if='userA.pStatus'  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
+                              <div class="chat_img ">
+                                <span class="status "  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span>
                                 <!-- <img class="{{userA.pStatus}} 4" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" />  -->
                               
                                 <span ng-if="userA.user_image == ''">
-                                  <img class="importantHeight" class="{{userA.pStatus}}" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" /> 
+                                  <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" /> 
                                 </span>
                                 <span ng-if="userA.user_image != ''">
-                                  <img class="importantHeight" class="{{userA.pStatus}}" ng-if="userA.receiverId != user._id" src="{{ 'https://kstreams.com:4000/' + userA.user_image }}" alt="{{user._id}}" /> 
+                                  <img class="importantHeight"  ng-if="userA.receiverId != user._id" src="{{ 'https://kstreams.com:4000/' + userA.user_image }}" alt="{{user._id}}" /> 
                                 </span> 
                               </div>  
                               <div class="chat_ib color-white"> 
@@ -122,10 +123,13 @@
                   <img class="importantHeight" src="{{ 'https://kstreams.com:4000/' + user.user_image }}" alt="{{user._id}}" /> 
                 </span> 
               </div>
-              <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+              <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="{activeSt:user.pStatus==0,awaySt:user.pStatus==1,dDisturbSt:user.pStatus==2,invisSt:user.pStatus==3,offlineSt:user.pStatus==4}" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                 <div class="fa fa-angle-down hidden stAngleDd"></div>
               </div> 
-              <h4>{{user.name}}</h4>
+              <h4>{{user.name}}</h4>   
+              <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()"> 
+                <span class='glyphicon glyphicon-log-out'></span> Logout
+              </a>
             </div>
           </div>
 
@@ -142,12 +146,12 @@
                       <!-- <i class="fa fa-close text-danger removeUser" tooltip-placement="top" uib-tooltip="Delete user" ng-click="removeUser(userA._id)"></i> -->
                       <div class="chat_people"> 
                         <div class="chat_img"> 
-                          <span class="status " ng-if='userA.pStatus'  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
+                          <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span>
                           <span ng-if="userA.user_image == ''">
-                            <img class="importantHeight" class="{{userA.pStatus}}" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" /> 
+                            <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
                           </span>
                           <span ng-if="userA.user_image != ''">
-                            <img class="importantHeight" class="{{userA.pStatus}}" ng-if="userA.receiverId != user._id" src="{{ 'https://kstreams.com:4000/' + userA.user_image }}" alt="{{user._id}}" /> 
+                            <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="{{ 'https://kstreams.com:4000/' + userA.user_image }}" alt="{{user.name}}" /> 
                           </span> 
                         </div>
                         <div class="chat_ib color-white userText"> 
@@ -246,7 +250,18 @@
             <span> <i class="fa fa-arrow-left" onclick="showContact()"></i></span>
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
             <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
+
+            <div class="pull-right" ng-if="!groupSelected">
+                <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
+                  <span class="glyphicon glyphicon-earphone"></span> call
+                </button>
+                <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
+                  <span class="glyphicon glyphicon-facetime-video"></span> Video Call
+                </button>
+              </div>
           </div>
+
+          
 
           <div class="msg_history" id="{{connectionId}}" file-dropzone files-to-upload='files'>
             <div ng-repeat="groupMember in groupMembers">

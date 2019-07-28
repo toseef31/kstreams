@@ -49,7 +49,7 @@ module.exports = function(io,saveUser){
     	userModel.find({_id:{$ne:req.params.userId},isAdmin:{$ne:1},status:1},
         {},{sort: '-updatedAt'}) 
         .lean()
-        .exec(function(err,data){ 
+        .exec(function(err,data){  
     		res.json(data);
     	});
     }
@@ -204,7 +204,7 @@ module.exports = function(io,saveUser){
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
         if(req.session.user && typeof req.session.user._id !== 'undefiend'){
-            helper.changeStatus(req.session.user._id,{status:1},function(data){ 
+            helper.changeStatus(req.session.user._id,{pStatus:0},function(data){ 
                 res.json(data);
             }); 
         }
@@ -217,7 +217,7 @@ module.exports = function(io,saveUser){
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
     	if(req.session.user){
-            helper.changeStatus(req.session.user._id,{status:1},function(data){
+            helper.changeStatus(req.session.user._id,{pStatus:0},function(data){
                 //helper.RTU();
                 res.json(data);
             });
@@ -238,7 +238,7 @@ module.exports = function(io,saveUser){
            
                 //if(User.password && bcrypt.compareSync(password, User.password)){ 
                     /*change status from offline to online*/
-                    helper.changeStatus(User._id,{status:1},function(data){
+                    helper.changeStatus(User._id,{pStatus:0},function(data){
                         /*set session */
                      
                         req.session.user = User;
@@ -273,15 +273,16 @@ module.exports = function(io,saveUser){
 	}
 
 	router.logout = function(req,res){
+        //console.log('Set logout pStatus: ',req.session.user._id,' and 4');
         if(req.session.user){
-            helper.changeStatus(req.session.user._id,{status:0},function(data){
-               req.session.destroy(function(err) {
+            // helper.changeStatus(req.session.user._id,{pStatus:4},function(data){
+                req.session.destroy(function(err) {
                     res.status(404).send();
                 })
                //helper.RTU();
                res.json({msg:"session destroy"});
-            });
-        }
+            //}); 
+        } 
     }
 
     router.deleteMsg = function(req,res){
@@ -381,11 +382,12 @@ module.exports = function(io,saveUser){
 
     router.changeStatus = function(req,res){
         if(req.session.user){
-            helper.changeStatus(req.session.user._id,{status:'away'},function(data){
-                //helper.RTU();
-                res.json(data);
-            });
-            
+            console.log('changeStatus ',req.session.user._id);
+            //Need to set its logic
+            // helper.changeStatus(req.session.user._id,{pStatus:4},function(data){
+            //     //helper.RTU();
+            //     res.json(data);
+            // });
         }
     }
     router.recent = (req,res) => {
@@ -455,6 +457,7 @@ module.exports = function(io,saveUser){
     }
 
     router.setPerStatus = ( req, res ) => { 
+        console.log('Set pStatus: ',req.session.user._id,' and ',req.body.pStatus);
         if(req.session.user)
             userModel.findOneAndUpdate(
                 {_id:req.session.user._id},

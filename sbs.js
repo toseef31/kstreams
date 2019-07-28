@@ -156,15 +156,13 @@ io.on('connection', function (socket) {
 	};
 
 	/*disconnect user */
-	/*socket.on('disconnect', function () {
-		
-		if(authUser){
-			console.log(authUser);
-			changeStatus(authUser._id,{status:'away'},function(data){
+	socket.on('disconnect', function () { 
+		if(authUser){ 
+			changeStatus(authUser._id,{pStatus:4},function(data){
 				updateUsers();
 			});
 		}
-	});*/
+	});
 	socket.username = "Anonymous";
 	//listen on change_username
 	socket.on('change_username', (data) => {

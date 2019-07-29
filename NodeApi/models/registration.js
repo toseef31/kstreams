@@ -24,13 +24,13 @@ let RegistrationSchema = new Schema({
         type: String 
     },
     status: {
-        type: String,
+        type: Number,
         default: 1
-    },
-    pstatus: {
+    }, //active=1/inActive=0
+    pStatus: {
         type: Number,
         default: 0
-    },
+    },  //active=0/away=1/dNotDisturb=2/Invisible=3/Offline=4
     isAdmin: {
         type: Number,
         default: 0

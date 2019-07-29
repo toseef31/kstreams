@@ -29,11 +29,11 @@ registrationRoutes.route("/login").post(function (req, res) {
     User.findOne({ email: req.body.email }).then(
         (result) => {
             if (!result) {
-                return res.json({ 'message': "incorrect email", 'isUserExist': false });
+                return res.json({ 'message': "Incorrect email", 'isUserExist': false });
             }
             else {
                 if (!bcrypt.compareSync(req.body.password, result.password)) {
-                    return res.json({ 'message': "incorrect password", 'isUserExist': false });
+                    return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                 }
 
                 // var fileBuffer = null;

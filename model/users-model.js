@@ -15,8 +15,8 @@ const userSchema = new Schema({
 	"country":String,
 	"password":String,
 	// "chat":[{senderId:String,recevierId:String,date:{type:Date,default:Date.now},message:String,unreadMsg:{type:Number,default:0},isseen:{type:Boolean,default:false}}],
-	"status":{ type: Number, default:1 },  //active=1/inActive=0
-	"pStatus":{ type: Number, default:0 },  //active=0/away=1/dNotDisturb=2/Invisible=3/Offline=4
+	"status":{ type: String, default:0 },  //offline=1/online=0
+	"pStatus":{ type: Number, default:0 },  //active=0/away=1/dNotDisturb=2/Invisible=3
 	// "date": { type: Date, default: Date.now },
 	// "updatedAt": {type: Date, default: Date.now}
 },

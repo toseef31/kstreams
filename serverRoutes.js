@@ -18,8 +18,8 @@ module.exports = function(app,io,saveUser){
     app.get('/createUser/:name',chatCon.createUser);
     app.get('/getUsers/:userId',chatCon.getUsers);
 
-    //app.get('/getCreatedGroups',chatCon.getCreatedGroups);
-    app.get('/getCreatedGroups/:userId',chatCon.getCreatedGroups);
+    //app.get('/getcreatedgroups',chatCon.getCreatedGroups);
+    app.get('/getcreatedgroups/:userId',chatCon.getCreatedGroups);
 
     app.post('/addgroup',chatCon.addGroup);
     app.get('/getGroups/:userId',chatCon.getGroups);

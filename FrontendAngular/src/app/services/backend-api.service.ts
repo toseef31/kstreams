@@ -24,6 +24,7 @@ export class BackendApiService {
       return this.http.post(this.userBaseUrl + "/login", loginData).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
+          console.log("a");
         }
       );
     });
@@ -48,6 +49,7 @@ export class BackendApiService {
         (backendResponse: any) => {
           resolve(backendResponse);
           this.updateUserList.next(backendResponse.users);
+          console.log("a");
         }
       );
     });

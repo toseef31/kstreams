@@ -16,6 +16,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
   usersGroupUpdateSubscription: Subscription;
 
   userGroupsForm: FormGroup;
+  editGroupForm: FormGroup;
 
   dropdownDefaultText: string = "select a user";
   loggedUserId: number = 0;
@@ -24,6 +25,9 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
   genericMessage: string = "";
   selectedUserId: number = 0;
   totalGroups: number = 0;
+  loading: boolean = true;
+  isGroupEdited: boolean = false;
+  selectedGroupData: any;
 
   groupsList = [];
   usersList = [];
@@ -35,8 +39,8 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     private backendAPI: BackendApiService) { }
 
   ngOnInit() {
-    this.initializeGroupForm();
-    this.dropdownDefaultText = "select a user";
+    this.initializeUsersGroupForm();
+    this.dropdownDefaultText = "Select a user";
 
     this.loggedUserId = this.sessionService.get('user_session_data').id;
 
@@ -48,52 +52,54 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
       this.activatedForm = parseInt(this.sessionService.get('activatedForm'));
     }
 
-    // -------- GETS THE LIST OF GROUPS ---------------------------------
+    // -------- GET THE LIST OF GROUPS ---------------------------------
     this.backendAPI.getGroups();
     this.getGroupsListSubscription = this.backendAPI.getGroupsList.subscribe(
       (groupsList: any) => {
         this.groupsList = groupsList;
         this.totalGroups = groupsList.length;
+        this.loading = false;
+     
+        if (this.isGroupEdited){
+            this.genericMessage = "Group edited successfully";
+            setTimeout(() => { this.genericMessage = "" }, 2000)
+        }
       });
 
     this.usersGroupUpdateSubscription = this.backendAPI.usersGroupUpdate.subscribe(
       (groupedUsersList: any) => {
         this.usersList = groupedUsersList.remainingUsers;
         this.addedUsersList = groupedUsersList.groupUsers[0].members;
-
+        this.loading = false;
+        
         if (this.usersList.length == 0)
-          this.dropdownDefaultText = "no users remaining";
+          this.dropdownDefaultText = "No users remaining";
         else
-          this.dropdownDefaultText = "select a user";
+          this.dropdownDefaultText = "Select a user";
       }
     )
   }
 
-  formActivation() {
+  formActivation(formNumber: number) { // 0- means going back ; 1- means going to another form
     this.addedUsersList = [];
     this.usersList = [];
+    this.isGroupEdited = false;
     this.userGroupsForm.reset();
 
-    if (this.activatedForm == 0) {
-      this.sessionService.set('activatedForm', 1);
-      this.activatedForm = 1;
-    }
-    else if (this.activatedForm == 1) {
-      this.backendAPI.getGroups();
-      this.activatedForm = 0;
-      this.sessionService.set('activatedForm', 0);
-    }
-    else {
-      this.backendAPI.getGroups();
-      this.activatedForm = 0;
-      this.sessionService.set('activatedForm', 0);
-    }
+    this.activatedForm = formNumber;
+    this.sessionService.set('activatedForm', this.activatedForm);
   }
 
-  ManageGroupUsers(groupId: number) {
+  EditGroupForm(group: any) {
     this.activatedForm = 2;
-    this.selectedGroupId = groupId;
+    this.selectedGroupData = group;
+    this.initializeEditGroupForm();
+  }
 
+  ManageUsersForm(groupId: number) {
+    this.activatedForm = 3;
+    this.selectedGroupId = groupId;
+    this.sessionService.set('activatedForm', this.activatedForm);
     this.backendAPI.getAddedUsers(groupId);
   }
 
@@ -102,11 +108,16 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
 
     this.backendAPI.createGroup(groupName).then(
       (backendResponse: any) => {
-        this.genericMessage = "group created succesfully";
+        this.genericMessage = "Group created succesfully";
         this.userGroupsForm.reset();
         setTimeout(() => { this.genericMessage = "" }, 2000)
       }
     );
+  }
+
+  EditGroup() {
+    this.backendAPI.editGroup(this.selectedGroupData._id, this.editGroupForm.value.name);
+    this.isGroupEdited = true;
   }
 
   DeleteGroup(groupId: number, groupName: string) {
@@ -130,13 +141,19 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     }
   }
 
-  initializeGroupForm() {
+  initializeUsersGroupForm() {
     this.userGroupsForm = this.formBuilder.group({
-      name: [''],
+      name: ['']
     });
   }
 
-  ngOnDestroy(){
+  initializeEditGroupForm() {
+    this.editGroupForm = this.formBuilder.group({
+      name: [this.selectedGroupData.name]
+    });
+  }
+
+  ngOnDestroy() {
     this.getGroupsListSubscription.unsubscribe();
     this.usersGroupUpdateSubscription.unsubscribe();
   }

@@ -20,11 +20,13 @@ export class BackendApiService {
   ) { }
 
   loginApiRequest(loginData: any) {
+    //var headers = new HttpHeaders();
+    //headers.append('Content-Type', 'application/x-www-form-urlencoded');
     var promise = new Promise((resolve, reject) => {
       return this.http.post(this.userBaseUrl + "/login", loginData).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
-          console.log("a");
+          console.log("login");
         }
       );
     });
@@ -49,7 +51,6 @@ export class BackendApiService {
         (backendResponse: any) => {
           resolve(backendResponse);
           this.updateUserList.next(backendResponse.users);
-          console.log("a");
         }
       );
     });
@@ -127,6 +128,15 @@ export class BackendApiService {
       );
     });
     return promise;
+  }
+
+  editGroup(groupId: number, groupName: string) {
+    const data = { 'groupId': groupId, 'groupName': groupName };
+
+    return this.http.post(this.groupsBaseUrl + '/editgroup', data).subscribe(
+      (backendResponse) => {
+        this.getGroupsList.next(backendResponse);
+      });
   }
 
   deleteGroup(groupId: number) {

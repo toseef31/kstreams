@@ -82,7 +82,7 @@ registrationRoutes.post('/getusers', function (req, res) {
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/';
 
-    User.find({ 'isAdmin': 0, 'status': '1' }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+    User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
         var tempUsers = users;
 
         for (var i = 0; i < tempUsers.length; i++) {
@@ -106,34 +106,49 @@ registrationRoutes.post('/getusers', function (req, res) {
 registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
 
     let newUserModel = new regModel(JSON.parse(req.body.userData));
-    //const loggedUserId = JSON.parse(req.body.loggedUserId);
+    let userModel = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/';
 
-    newUserModel.save()
-        .then(reg => {
-            var User = regModel;
-            User.find({ 'isAdmin': 0, 'status': '1' }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
-                var tempUsers = users;
-                for (var i = 0; i < users.length; i++) {
-                    if (users[i].user_image != "") {
-                        tempUsers[i] = {
-                            "_id": tempUsers[i]._id,
-                            "name": tempUsers[i].name,
-                            "email": tempUsers[i].email,
-                            "country": tempUsers[i].country,
-                            "phone": tempUsers[i].phone,
-                            "user_image": tempUsers[i].user_image,
-                            "userImageLink": (fullUrl + tempUsers[i].user_image)
-                        };
-                    }
+    var userData = JSON.parse(req.body.userData);
+   
+    userModel.find({ 'email': userData.email }, {'email':true}, function (err, result) {
+     
+        if (result.length == 0) {
+            newUserModel.save()
+                .then(reg => {
+                    var User = regModel;
 
-                }
-                res.send({ 'message': 'user added successfully', 'status': true, 'users': tempUsers });
-            });
-        })
-        .catch(err => {
-            res.status(400).send({ 'message': "unable to save in database", 'status': false });
-        });
+                    User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+                        var tempUsers = users;
+                        for (var i = 0; i < users.length; i++) {
+                            if (users[i].user_image != "") {
+                                tempUsers[i] = {
+                                    "_id": tempUsers[i]._id,
+                                    "name": tempUsers[i].name,
+                                    "email": tempUsers[i].email,
+                                    "country": tempUsers[i].country,
+                                    "phone": tempUsers[i].phone,
+                                    "user_image": tempUsers[i].user_image,
+                                    "userImageLink": (fullUrl + tempUsers[i].user_image)
+                                };
+                            }
+
+                        }
+                        res.send({ 'message': 'user added successfully', 'status': true, 'users': tempUsers });
+                    });
+                })
+                .catch(err => {
+                    res.status(400).send({ 'message': "unable to save in database", 'status': false });
+                });
+        }
+        else {
+            res.send({ 'message': 'email already exist', 'status': false , 'users': null});
+        }
+    }).catch(err => {
+        res.send({ 'message': 'operation failed', 'status': false });
+    });
+
+
 });
 
 registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
@@ -149,7 +164,7 @@ registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
             (result) => {
 
                 var User = regModel;
-                User.find({ 'isAdmin': 0, 'status': '1' }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+                User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
                     var tempUsers = users;
                     for (var i = 0; i < users.length; i++) {
                         if (users[i].user_image != "") {
@@ -181,13 +196,13 @@ registrationRoutes.post('/deleteuser', function (req, res) {
     const userIdToBeDeleted = req.body.userId;
     var fullUrl = req.protocol + '://' + req.get('host') + '/';
 
-    User.findByIdAndUpdate(userIdToBeDeleted, { 'status': '0' }).then(
+    User.findByIdAndUpdate(userIdToBeDeleted, { 'status': 0 }).then(
         (result) => {
             if (!result) {
                 res.status(400).send({ 'message': "unable to delete user", 'status': false });
             }
 
-            User.find({ 'isAdmin': 0, 'status': '1' }, { 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+            User.find({ 'isAdmin': 0, 'status': 1 }, { 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
                 var tempUsers = users;
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].user_image != "") {

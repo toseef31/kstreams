@@ -13,16 +13,18 @@ import { Subscription } from 'rxjs';
 })
 export class TableListComponent implements OnInit, OnDestroy {
 
-  getUsersSubscription : Subscription
-   
+  getUsersSubscription: Subscription
+
   userAddFormGroup: FormGroup;
   userUpdateFormGroup: FormGroup;
 
+  loading: boolean = true;
   showPasswordFields: boolean = false;
   isImageUploaded: boolean = false;
   isCollapsed: boolean = false;
   isPasswordValid: boolean = false;
   passwordMatching: boolean = false;
+  isSubmitted: boolean = false;
   passwordMessage: string = '';
   genericMessage: string = '';
   activatedForm: number = 0;
@@ -47,7 +49,7 @@ export class TableListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loggedUserId = this.sessionService.get('user_session_data').id;
-    
+
     this.initializeAddForm();
 
     if (this.sessionService.get('activatedForm') == null || this.sessionService.get('activatedForm') == "") {
@@ -60,20 +62,23 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.backendService.getUsersRequest(this.loggedUserId);
     this.getUsersSubscription = this.backendService.updateUserList.subscribe(
       (backendResponse: any) => {
-    
-        this.usersList = backendResponse;
-        this.totalUsers = this.usersList.length;
+        this.loading = false;
+        if (backendResponse != null){
+         this.usersList = backendResponse;
+         this.totalUsers = this.usersList.length;
+        }
       }
     )
   }
 
-  passwordForm(){
+  passwordForm() {
     this.showPasswordFields = !this.showPasswordFields;
   }
 
   formActivation() {
     this.imageSrc = "";
     this.userImage = null;
+    this.isSubmitted = false;
     if (this.activatedForm == 0) {
       this.sessionService.set('activatedForm', 1);
       this.activatedForm = 1;
@@ -88,17 +93,19 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.passwordMessage = "";
     this.showPasswordFields = false;
     this.selectedUser = user;
-    if (user.userImageLink){
+    if (user.userImageLink) {
       this.imageSrc = this.selectedUser.userImageLink;
     }
-    else{
+    else {
       this.imageSrc = "";
     }
-  
+
     this.activatedForm = 2;
     this.initializeUpdateForm();
   }
+
   DeActivateUpdateForm() {
+    this.isSubmitted = false;
     this.isImageUploaded = false;
     this.selectedUser = [];
     this.activatedForm = 0;
@@ -106,6 +113,8 @@ export class TableListComponent implements OnInit, OnDestroy {
   }
 
   AddUser() {
+    this.isSubmitted = true;
+
     const username = this.userAddFormGroup.value.username;
     const email = this.userAddFormGroup.value.email;
     const password = this.userAddFormGroup.value.password;
@@ -142,10 +151,17 @@ export class TableListComponent implements OnInit, OnDestroy {
           this.genericMessage = backendResponse.message;
           setTimeout(() => { this.genericMessage = "" }, 2500);
         }
+
+        this.isSubmitted = false;
       });
+
+      setTimeout(() => {
+        this.isSubmitted = false;
+      }, 1000);
   }
 
   UpdateUser() {
+    this.isSubmitted = true;
 
     const id = this.selectedUser._id;
     const username = this.userUpdateFormGroup.value.username;
@@ -155,39 +171,39 @@ export class TableListComponent implements OnInit, OnDestroy {
     const password = this.userUpdateFormGroup.value.password;
 
     var tempUserImage;
-    
+
     if (this.imageSrc == "") {
       tempUserImage = "";
     }
     else {
       if (this.userImage == null)
         tempUserImage = this.selectedUser.user_image;
-        else
+      else
         tempUserImage = this.userImage.name;
     }
-   
+
     var userData = {};
-    if (password != ""){
-     userData = {
-      '_id': id,
-      'username': username,
-      'email': email,
-      'country': country,
-      'phone': phone,
-      'password': password,
-      'user_image': tempUserImage
-    };
-  }
-  else{
-     userData = {
-      '_id': id,
-      'username': username,
-      'email': email,
-      'country': country,
-      'phone': phone,
-      'user_image': tempUserImage
-    };
-  }
+    if (password != "") {
+      userData = {
+        '_id': id,
+        'username': username,
+        'email': email,
+        'country': country,
+        'phone': phone,
+        'password': password,
+        'user_image': tempUserImage
+      };
+    }
+    else {
+      userData = {
+        '_id': id,
+        'username': username,
+        'email': email,
+        'country': country,
+        'phone': phone,
+        'user_image': tempUserImage
+      };
+    }
 
     this.backendService.userUpdateRequest(userData, this.userImage, this.loggedUserId).then(
       (backendResponse: any) => {
@@ -199,14 +215,16 @@ export class TableListComponent implements OnInit, OnDestroy {
           this.genericMessage = backendResponse.message;
           setTimeout(() => { this.genericMessage = "" }, 2500);
         }
+
+        this.isSubmitted = false;
       });
   }
 
   DeleteUser(userId: number, username: string) {
-    if(confirm("Are you sure to delete username: "+username)) {
+    if (confirm("Are you sure to delete username: " + username)) {
       this.backendService.deleteUserRequest(userId, this.loggedUserId);
     }
-   
+
   }
 
   initializeAddForm() {
@@ -236,11 +254,11 @@ export class TableListComponent implements OnInit, OnDestroy {
     const cpasswordLength = cpasswordElement.value.length;
 
     if (passwordLength < 6) {
-      this.passwordMessage = "password minimum length is 6";
+      this.passwordMessage = "Password minimum length is 6";
       this.isPasswordValid = true;
     }
-    else if (cpasswordLength != 0 && passwordLength!= 0 && passwordElement.value != cpasswordElement.value){
-      this.passwordMessage = "password not matching";
+    else if (cpasswordLength != 0 && passwordLength != 0 && passwordElement.value != cpasswordElement.value) {
+      this.passwordMessage = "Password not matching";
       this.isPasswordValid = false;
     }
     else {
@@ -270,7 +288,7 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.userAddFormGroup.reset();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.getUsersSubscription.unsubscribe();
   }
 }

@@ -57,7 +57,10 @@
             </tbody>
           </table>
         </div>
-        <span *ngIf="totalUsers == 0">
+        <span *ngIf="loading">
+            <div class="stats"  style="text-align: center"> <i class="now-ui-icons loader_refresh spin"></i> </div>
+        </span>
+        <span *ngIf="!loading && totalUsers == 0">
           <p style="text-align: center">No data found</p>
         </span>
       </div>
@@ -158,7 +161,12 @@
               </div>
             </div>
 
-            <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="submit">
+            <span *ngIf="!isSubmitted">
+              <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="Submit">
+            </span>
+            <span *ngIf="isSubmitted">
+              <input class="btn btn-info btn-block" [disabled]="true" type="submit" value="Wait...">
+            </span>
 
           </form>
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
@@ -275,7 +283,7 @@
               </div>
             </div>
 
-            <input class="btn btn-info btn-block" type="submit" value="update">
+            <input class="btn btn-info btn-block" type="submit" value="Update">
           </form>
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
         </div>

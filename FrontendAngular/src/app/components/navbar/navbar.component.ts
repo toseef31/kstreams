@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit {
 
     this.sidebarVisible = false;
     this.mainPanel = <HTMLElement>document.getElementsByClassName('main-panel')[0];
-    console.log(this.mainPanel);
+   // console.log(this.mainPanel);
   }
 
   ngOnInit() {

@@ -7,7 +7,7 @@
         <div class="card-header">
           <span class="card-title" style="font-size:25px; font-weight:500"> Groups </span>
           <span><i class="fa fa-user-plus user-icon" style="float: right; font-size:25px"
-              (click)="formActivation()"></i></span>
+              (click)="formActivation(1)"></i></span>
         </div>
         <div class=" card-body">
           <table class="table">
@@ -30,7 +30,12 @@
 
                 <input type="hidden" value="{{ group._id }}" #groupId>
                 <td>
-                  <span> <i class="fa fa-edit px-3 user-icon" (click)="ManageGroupUsers(groupId.value)"> </i> </span>
+                  <span> <i class="fa fa-edit px-3 user-icon" (click)="EditGroupForm(group)"> </i> </span>
+                  
+                  <span>
+                    <img src="assets/img/manage-user.png" class="icon-customSize user-icon" (click)="ManageUsersForm(groupId.value)">
+                  </span>
+
                   <span> <i class="fa fa-trash px-3 user-icon" (click)="DeleteGroup(groupId.value, group.name)"> </i>
                   </span>
 
@@ -39,8 +44,11 @@
             </tbody>
           </table>
         </div>
-        <span *ngIf="totalGroups == 0">
-          <p style="text-align: center">No data found</p>
+        <span *ngIf="loading">
+            <div class="stats"  style="text-align: center"> <i class="now-ui-icons loader_refresh spin"></i> </div>
+        </span>
+        <span *ngIf="!loading && totalGroups == 0">
+          <p style="text-align: center">No group found</p>
         </span>
       </div>
     </div>
@@ -58,7 +66,7 @@
         <div class="card-header">
           <span class="title" style="font-size:25px; font-weight:500">Create Group</span>
           <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
-              (click)="formActivation()"></i></span>
+              (click)="formActivation(0)"></i></span>
 
         </div>
         <div class="card-body">
@@ -72,7 +80,7 @@
               </div>
             </div>
 
-            <input class="btn btn-info btn-block" [disabled]="!userGroupsForm.valid" type="submit" value="submit">
+            <input class="btn btn-info btn-block" [disabled]="!userGroupsForm.valid" type="submit" value="Submit">
           </form>
 
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
@@ -83,10 +91,46 @@
 </div>
 
 <!-- -----------------------------  --------------------------------------------- -->
-<!-- ----------------------------- USERS ADD IN GROUP ------------------------------ -->
+<!-- ----------------------------- EDIT GROUPS ------------------------------------ -->
 <!-- -----------------------------  --------------------------------------------- -->
 
 <div class="main-content" *ngIf='activatedForm == 2'>
+    <div class="row">
+      <div class="col-md-8 offset-md-1 col-lg-8 offset-lg-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="title" style="font-size:25px; font-weight:500">Edit Group</span>
+            <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
+                (click)="formActivation(0)"></i></span>
+  
+          </div>
+          <div class="card-body">
+            <form [formGroup]="editGroupForm" (ngSubmit)="EditGroup()">
+              <div class="row">
+                <div class="col-md-5 px-1">
+                  <div class="form-group">
+                    <label>Edit Name</label>
+                    <input type="text" class="form-control" formControlName="name" placeholder="group name">
+                  </div>
+                </div>
+              </div>
+  
+              <input class="btn btn-info btn-block" type="submit" value="Submit">
+            </form>
+  
+            <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- -----------------------------  --------------------------------------------- -->
+<!-- ----------------------------- USERS ADD IN GROUP ------------------------------ -->
+<!-- -----------------------------  --------------------------------------------- -->
+
+<div class="main-content" *ngIf='activatedForm == 3'>
 
   <div class="row">
     <div class="col-md-7 offset-md-3">
@@ -94,7 +138,7 @@
         <div class="card-header">
           <span class="card-title" style="font-size:25px; font-weight:500"> Group users</span>
           <span><i class="now-ui-icons arrows-1_minimal-left user-icon" style="float: right; font-size:30px"
-              (click)="formActivation()"></i></span>
+              (click)="formActivation(0)"></i></span>
         </div>
         <div class="card-body">
 
@@ -104,7 +148,7 @@
           </select>
 
           &nbsp; &nbsp;
-          <button (click)="AddUserInGroup()"> add </button>
+          <button (click)="AddUserInGroup()" [disabled]="selectedUserId == 0"> add </button>
 
         </div>
 
@@ -126,7 +170,10 @@
             </tr>
           </tbody>
 
-          <span *ngIf="addedUsersList?.length == 0">
+          <span *ngIf="loading">
+              <div class="stats"  style="text-align: center"> <i class="now-ui-icons loader_refresh spin"></i> </div>
+          </span>
+          <span *ngIf="!loading && addedUsersList?.length == 0">
             <p style="text-align: center">No user found</p>
           </span>
 

@@ -67,12 +67,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
   };
 
   onSelection(index: number) {
+    this.sessionService.set('activatedForm', 0);
+    
     if (index == 0) {
       this.loginService.setCurrentUrl('/dashboard');
       this.router.navigate(['/dashboard']);
     }
     else if (index == 1) {
-      this.loginService.setCurrentUrl('/table-list');
+      this.loginService.setCurrentUrl('/user-list');
       this.router.navigate(['/user-list']);
     }
     else if (index == 2) {

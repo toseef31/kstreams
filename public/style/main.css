@@ -64,7 +64,7 @@
 .chatMenu{
   background: #fff;
   border: 1px solid #ccc;
-  width: 60px;
+  /* width: 60px; */
   padding: 7px;
   font-weight: 600;
   position: absolute;
@@ -351,11 +351,18 @@ img{ max-width:100%;}
 
 .active_chat{ background: #dadada; margin-top:5px;}
 
-.active_groupChatMembers { background: #bfb9b9; margin-top:5px; }
+.active_groupChatMembers { 
+  background: #dadada; 
+  text-align: center;
+  border: 1px solid gray;
+  /* text-decoration: underline; */
+  /* #dadada */
+}
 
 .outgoing_msg_img {
-  /* width: 35px; */
-  height: 35px;
+  float: right;
+  width: 45px;
+  height: 45px;
   display: inline-block;
   /* margin-right: 10px; */
   text-align: center;
@@ -410,11 +417,34 @@ img{ max-width:100%;}
   width: 100%;
   color:#fff;
 }
+
+.deleted_received_msg {
+  background: #749e64 none repeat scroll 0 0;
+  border-radius: 3px;
+  color: #646464;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  width: 100%;
+  color:#fff;
+}
+
+.deleted_sent_msg {
+  background: #48749c none repeat scroll 0 0;
+  border-radius: 3px;
+  color: #646464;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  width: 100%;
+  color:#fff;
+}
+
 .time_date {
   color: #747474;
   display: block;
   font-size: 12px;
-  margin: 8px 0 0;
+  margin: 0 0 10px;
 }
 .received_withd_msg { width: 57%;}
 .mesgs {
@@ -428,7 +458,7 @@ img{ max-width:100%;}
   font-size: 14px;
   margin: 0; color:#fff;
   padding: 5px 10px 5px 12px;
-  width:100%;
+  width:90%;
 }
 .outgoing_msg{ overflow:hidden; position: relative;}
 .sent_msg {

@@ -33,6 +33,12 @@
     top: 2px;
     height: 15px;
 }
+.msg3dotsNew{
+    position: absolute;
+    /* left: 50%; */
+    top: 2px;
+    height: 15px;
+}
 .width100{
     width: 100%;
 }

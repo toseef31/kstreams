@@ -78,11 +78,17 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-			model.find(obj).exec(function(err,data){
-				if(err){
+			model.find({'email':obj.email}).exec(function(err,data){
+				//console.log(data[0].password);
+				if(err){ 
 					callback({err:err});
 				}else{
-					callback(data);
+					if (!bcrypt.compareSync(obj.password, data[0].password)) {  
+						callback({err:err});
+					}
+					else{
+						callback(data);
+					}
 				}
 			});	
 		}else{

@@ -265,16 +265,14 @@
 
            <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
            <div class="hidden-xs big-btn">
-              <div class="chat_list active_groupChatMembers" ng-if="!chatIsActive && groupChat && isGroupSelected == 1">
-               <strong> Group Members: </strong>
-                  <span ng-repeat="groupA in allGroups"  style="position: relative;">
-                    <!-- <p>{{selectedGroupId}} == {{groupA._id}}</p> -->
+              Group members: 
+              <div ng-repeat="groupA in allGroups">
+                  <div class="chat_list active_groupChatMembers" ng-click="startChat({type:'groupchat',group:groupA})" style="position: relative;">
                       <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
-                        <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}
-                          <span ng-if="(groupA.members.length-1) != $index">,</span>
-                        </span>
+                        <span>{{groupM.name}}</span>
+                        <span ng-if="(groupA.members.length-1) != $index">,</span>
                       </span>
-                  </span>
+                  </div>
                 </div> 
            </div>
 
@@ -292,11 +290,9 @@
                 </button>
               </div>
           </div>
-        
+
           <div class="msg_history" id="{{connectionId}}" file-dropzone files-to-upload='files'>
-           
             <div ng-repeat="groupMember in groupMembers">
-            
                 <div ng-if="groupMember.id === user._id " class="group_message">
                   <h4><strong>{{user.name}}</strong> your are added in this group as a member</h4>
                   <p><strong>members:</strong> <span ng-repeat="gMem in groupMembers">{{gMem.name}} </span></p>
@@ -309,25 +305,16 @@
             <div ng-if="!groupChat">
             <div ng-repeat="chat in chats track by $index">
               <div class="incoming_msg" ng-if="chat.senderId != user._id">
-                <div class="received_msg" ng-if="!chat.isDeleted">
+                <div class="received_msg">
                   <div class="received_withd_msg">
-                    <strong>{{chat.senderId.name}}</strong><p>{{chat.message}}</p>
-                    <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
-                  </div>
-                </div>
-
-                <div class="incoming_msg" ng-if="chat.isDeleted">
-                  <div class="received_msg">
-                    <div class="received_withd_msg">
-                      <div class="deleted_received_msg">this message has been deleted</div>
-                      <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
-                    </div>
+                    <strong>{{chat.name}}</strong><p>{{chat.message}}</p>
+                    <span class="time_date"> {{ chat.date |date:"MMM dd,yyyy 'at' h:mma" }}</span>
                   </div>
                 </div>
               </div>
            
               <div class="outgoing_msg"  ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)" ng-if="chat.senderId == user._id">
-                <div class="sent_msg" ng-if="!chat.isDeleted">
+                <div class="sent_msg" >
                     <div class="outgoing_msg_img  hidden-xs"> 
                         <span ng-if="user.user_image == ''">
                           <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{chat.name}}" /> 
@@ -336,71 +323,47 @@
                           <img class="importantHeight" src="{{ 'https://localhost:4000/' + user.user_image }}" alt="{{chat.name}}" /> 
                         </span>
                       </div>
-                    <p class="chat-mesg" >
-                      {{chat.message}}
-                    </p> 
+                  <p class="chat-mesg">
+                    {{chat.message}}
+                  </p>
                   <p class="chat-mesg">
                     <a class="color-white" href="share/{{chat.message}}" download="{{chat.originalName}}">{{chat.originalName}}</a>
                   </p>
                   <span class="time_date"> 
-                    {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                    {{ chat.date | date:"MMM dd,yyyy 'at' h:mma"}}
                   </span>
                   <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
                     <li>
                       <span class='hoverIt fa fa-edit' tooltip-placement="left" uib-tooltip="Edit" ng-click="editMsg()"></span>
                       <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me" ng-click="deleteMsg('fromMe')"></span>
-                      <!-- <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span> -->
+                      <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span>
                     </li> 
                   </ul>
-                  <!-- <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dots hoverIt"/> -->
-                  <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()"/>
+                  <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dots hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()"/>
                 </div>
-
-                <div class="sent_msg" ng-if="chat.isDeleted">
-                  <!-- <p class="chat-mesg" style="margin-bottom: 2px">
-                    <span>message is deleted </span>
-                  </p> -->
-               
-                    <div class="deleted_sent_msg">this message has been deleted</div>
-                    <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
-               
-                </div>
-
               </div>
               
             </div>
           </div>
 
-            <!-- ------------------------------------------------------------------------------ -->
+               <!-- ------------------------------------------------------------------------------ -->
             <!-- ------------------- GROUP CHAT --------------------------------------------------- -->
             <!-- ------------------------------------------------------------------------------ -->
           <div ng-if="groupChat">
           <div ng-repeat="chat in groupchats track by $index">
-
               <div class="incoming_msg" ng-if="chat.senderId._id != user._id">
-               
-                <div class="" ng-if="!chat.isDeleted">
+                <div class="received_msg">
                   <div class="received_withd_msg">
                     
                     <strong>{{chat.senderId.name}}</strong><p>{{chat.message}}</p>
-                    <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
+                    <span class="time_date"> {{ chat.date |date:"MMM dd,yyyy 'at' h:mma" }}</span>
                   </div>
                 </div>
-
-                <div class="received_msg" ng-if="chat.isDeleted">
-                    <div class="received_msg">
-                      <div class="received_withd_msg">
-                        <div class="deleted_received_msg">this message has been deleted</div>
-                        <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
-                      </div>
-                    </div>
-                  </div>
-
               </div>
            
               <div class="outgoing_msg"  ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)" ng-if="chat.senderId._id == user._id">
              
-                <div class="sent_msg" ng-if="!chat.isDeleted">
+                <div class="sent_msg" >
                     <div class="outgoing_msg_img  hidden-xs"> 
                         <span ng-if="user.user_image == ''">
                           <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{chat.name}}" /> 
@@ -417,26 +380,21 @@
                     <a class="color-white" href="share/{{chat.message}}" download="{{chat.originalName}}">{{chat.originalName}}</a>
                   </p>
                   <span class="time_date"> 
-                    {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                    {{ chat.date | date:"MMM dd,yyyy 'at' h:mma"}}
                   </span>
 
                   <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
                     <li>
                       <span class='hoverIt fa fa-edit' tooltip-placement="left" uib-tooltip="Edit" ng-click="editMsg()"></span>
                       <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me" ng-click="deleteMsg('fromMe')"></span>
-                      <!-- <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span> -->
+                      <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span>
                     </li> 
                   </ul>
-                  <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
+                  <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dots hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
                 </div>
-
-                <div class="sent_msg" ng-if="chat.isDeleted">
-                  <div class="deleted_sent_msg">this message has been deleted</div>
-                  <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
-                </div>
-
               </div>
             </div>
+
           </div>
 
           </div>

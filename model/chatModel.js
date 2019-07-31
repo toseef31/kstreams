@@ -22,10 +22,6 @@ const chatSchema = mongoose.Schema({
 		type: Number,
 		default: 1        //1=Active, 0=Deleted
 	},
-	"isDeleted": {
-		type: Number,
-		default: 0     //0=Not deleted, 1=Deleted
-	},
 	"isSeen": {
 		type: Number,
 		default: 0        //0=No, 1=Yes

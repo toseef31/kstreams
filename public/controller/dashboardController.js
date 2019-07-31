@@ -1,10 +1,6 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal) {
     $scope.isGroupSelected = 0;
     $scope.selectedGroupId = 0;
-
-    $scope.usersLoaded = false;
-    $scope.groupsLoaded = false;
-    $scope.chatLoaded = false;
     /*save with whom user are chatting*/
     $scope.chatWith = '';
     $scope.chatWithId = '';
@@ -367,23 +363,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all users*/
         $http.get("/getUsers/" + response.data._id)
             .then(function (response) {
-              
                 $scope.allUsers = response.data;
                 for (i = 0; i < response.data.length; i++) {
                     if (response.data[i].email != $scope.user.email) {
                         $scope.getmembers.push(response.data[i]);
                     }
                 }
-                $scope.usersLoaded = true;
             });
 
         /*get all group users*/
         $http.get("/getcreatedgroups/"+$scope.user._id)
             .then(function (response) {
-               
              // console.log(response);
                 $scope.allGroups = response.data;
-                $scope.groupsLoaded = true;
                 // for (i = 0; i < response.data.length; i++) {
                 //     if (response.data[i].email != $scope.user.email) {
                 //         $scope.getmembers.push(response.data[i]);
@@ -485,7 +477,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.startChat = function (obj) {
             $scope.isGroupSelected= 1;
             $scope.welcomePage = false;
-          
+        
            // $scope.selectedGroupId = obj.group._id;
             /*obj is an object send from view it may be a chat or a group info*/
             if (obj.type == 'chat') {
@@ -503,7 +495,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.groupMembers = '';
                         $scope.chats = res.data;
                         scrollbottom();
-                        $scope.chatLoaded = true;
                     });
             } else {
                // $scope.user = 'welcome'
@@ -515,7 +506,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
                     $scope.groupchats = groupchat.data;
-                    $scope.chatLoaded = true;
                     console.log($scope.groupchats);
                     // $scope.groupMembers = groupchat.data[0].members;
                     // $scope.chats = groupchat.data[0].message;
@@ -1220,10 +1210,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.showDDwnSt = function () {
         $scope.showDrpDwnSt = !$scope.showDrpDwnSt;
-    }
-
-    $scope.showDDwnDisabler = function(){
-        $scope.showDrpDwnSt = false;
     }
 
     var everywhere = angular.element(window.document);

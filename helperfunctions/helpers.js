@@ -68,8 +68,6 @@ module.exports = function(io){
         	}
 
 	helper.changeStatus = function (id,status,callback){
-		// console.log("helper");
-		// console.log(status);
 		if(status){
 			userModel.findByIdAndUpdate(id,{$set:status}).exec(function(err,data){
 				if(err) throw err;
@@ -80,7 +78,7 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-			model.find({'email':obj.email, 'status': 1}).exec(function(err,data){
+			model.find({'email':obj.email}).exec(function(err,data){
 				//console.log(data[0].password);
 				if(err){ 
 					callback({err:err});

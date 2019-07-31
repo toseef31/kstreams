@@ -1,4 +1,5 @@
-<div id="MainWrap" ng-controller="dashController" ng-click="$event.stopPropagation()">
+<div id="MainWrap" ng-controller="dashController" ng-click=""> 
+  <!-- $event.stopPropagation() -->
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
@@ -38,7 +39,7 @@
                       </span>
 
                     </div>
-                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+                    <div class="statusDropDown hoverIt " ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                       <div class="fa fa-angle-down hidden stAngleDd"></div>
                     </div> 
                     <h4>{{user.name}}</h4>
@@ -54,11 +55,9 @@
                       <div ng-if="allUsers.length > 0">
                         <div ng-repeat="userA in allUsers" class="user_profile" onclick="toggle()">
                           <div class="chat_list active_chat" ng-if="userA._id != user._id"  ng-click="startChat({type:'chat',user:userA})" style="position: relative;">
-                            <!-- <i class="fa fa-close text-danger removeUser" ng-click="removeUser()" tooltip-placement="top" uib-tooltip="Delete user"></i> -->
                             <div class="chat_people">
                               <div class="chat_img">
                                 <span class="status " ng-if='userA.pStatus'  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
-                                <!-- <img class="{{userA.pStatus}} 4" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" />  -->
                               
                                 <span ng-if="userA.user_image == ''">
                                   <img class="importantHeight" class="{{userA.pStatus}} 4" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" /> 
@@ -84,6 +83,10 @@
                           </div>
                         </div>
                       </div>
+                      
+                      <div ng-if="!usersLoaded">
+                          <strong style="color:wheat">Loading ...</strong>
+                        </div>
                       <!-- users end -->
                     </uib-tab>
                     <!-- recent tab end-->
@@ -113,6 +116,10 @@
                       </div>
                     </div> 
                   </div>
+                  
+                  <div ng-if="!groupsLoaded">
+                      <strong style="color:wheat">Loading ...</strong>
+                    </div>
               </uib-tab>
                 <!-- group tab end -->
                 <!-- group tab end -->
@@ -127,7 +134,7 @@
           <!-- left side bar for desktop view -->
           <!-- left side bar for desktop view -->
           <!-- left side bar for desktop view -->
-        <div class="inbox_people col-sm-4 col-xs-12 hidden-xs" id="contact-bar" ng-click="disableMsgEdit()">
+        <div class="inbox_people col-sm-4 col-xs-12 hidden-xs" id="contact-bar" ng-click="disableMsgEdit(); showDDwnDisabler()">
           <div class="headind_srch">
             <div class="recent_heading">
               <div class="pro_img">
@@ -140,7 +147,7 @@
                 </span>
 
               </div>
-              <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+              <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                 <div class="fa fa-angle-down hidden stAngleDd"></div>
               </div> 
               <h4>{{user.name}}</h4>
@@ -195,6 +202,10 @@
                     <h3>You have no chat</h3>
                   </div>
                 </div>
+              
+                <div ng-if="!usersLoaded">
+                  <strong style="color:wheat">Loading ...</strong>
+                </div>
               </uib-tab>
               <!-- recent tab end-->
               <!-- recent tab end-->
@@ -222,6 +233,9 @@
                     </div>
                   </div> 
                 </div>
+                <div ng-if="!groupsLoaded">
+                    <strong style="color:wheat">Loading ...</strong>
+                  </div>
             </uib-tab>
               <!-- group tab end -->
               <!-- group tab end -->
@@ -229,13 +243,20 @@
 
               </uib-tabset>
           </div>
-
+          
           <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
+              <li ng-class="currSt==0?'active':''" ng-click='changeSt(0)'>Active</a></li>
+              <li ng-class="currSt==1?'active':''" ng-click='changeSt(1)'>Away</li>
+              <li ng-class="currSt==2?'active':''" ng-click='changeSt(2)'>Do not disturb</li>
+              <li ng-class="currSt==3?'active':''" ng-click='changeSt(3)'>Invisible</li>
+            </ul>
+
+          <!-- <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
             <li ng-class="currSt==0?'active':''" ng-click='changeSt(0)'>Active</a></li>
             <li ng-class="currSt==1?'active':''" ng-click='changeSt(1)'>Away</li>
             <li ng-class="currSt==2?'active':''" ng-click='changeSt(2)'>Do not disturb</li>
             <li ng-class="currSt==3?'active':''" ng-click='changeSt(3)'>Invisible</li>
-          </ul>
+          </ul> -->
         </div>
 
         <!--<span class='fa fa-check'></span> message container start -->
@@ -248,7 +269,7 @@
           </div>
         </div>
 
-        <div class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow" ng-click="disableMsgEdit()" ng-hide="welcomePage" ng-show="!welcomePage" style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
+        <div class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow" ng-click="disableMsgEdit(); showDDwnDisabler()" ng-hide="welcomePage" ng-show="!welcomePage" style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
           <div class="hidden-xs big-btn" style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
             <span class="status-bar">{{groupOrUser}}  
               <!-- <span class="{{status}}-text">{{status}}</span> -->
@@ -284,12 +305,12 @@
                 <!-- <span class="{{status}}-text">{{status}}</span> -->
               </span>
               <div class="pull-right">
-                <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
+                <!-- <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
                   <span class="glyphicon glyphicon-earphone"></span>
                 </button>
                 <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
                   <span class="glyphicon glyphicon-facetime-video"></span>
-                </button>
+                </button> -->
               </div>
           </div>
         
@@ -365,12 +386,15 @@
                     <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
                
                 </div>
-
+                
               </div>
-              
+             
             </div>
           </div>
-
+          
+          <!-- <div ng-if="!chatLoaded">
+              <strong style="color:rgb(134, 134, 134)">Loading...</strong>
+          </div> -->
             <!-- ------------------------------------------------------------------------------ -->
             <!-- ------------------- GROUP CHAT --------------------------------------------------- -->
             <!-- ------------------------------------------------------------------------------ -->

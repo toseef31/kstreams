@@ -47,7 +47,7 @@ module.exports = function (io, saveUser) {
 
     router.getUsers = function (req, res) {
         userModel.find(
-            { _id: { $ne: req.params.userId }, delete: { $ne: true } },
+            { _id: { $ne: req.params.userId }, delete: { $ne: true }, 'status': 1 },
             {}, { sort: '-updatedAt' })
             // .populate('senderInfo')
             // .populate('receiverInfo')
@@ -61,8 +61,8 @@ module.exports = function (io, saveUser) {
     router.getCreatedGroups = function (req, res) {
         // get all groups
 
-        groupsModel.find().populate('members', { 'name': true }).exec(function (err, groups) {
-
+        groupsModel.find({'status': 1}).populate('members', { 'name': true }).exec(function (err, groups) {
+          
             var tempGroups = [];
             if (err) { return console.log(err); }
 
@@ -99,9 +99,9 @@ module.exports = function (io, saveUser) {
 
     router.getGroups = function (req, res) {
 
-        groupsModel.find({ members: { $elemMatch: { id: req.params.userId } } })
+        groupsModel.find({ members: { $elemMatch: { id: req.params.userId } }, 'status': 1 })
             .lean().then(function (data) {
-
+             
                 res.json(data);
             });
     }
@@ -173,7 +173,7 @@ module.exports = function (io, saveUser) {
     router.getGroup = function (req, res) {
         var id = req.params.groupId;
         chatModel.find({ groupId: id}).populate('senderId').lean().then(function (data) {
-
+           
             res.json(data);
         })
 
@@ -328,7 +328,7 @@ module.exports = function (io, saveUser) {
         chatModel.findByIdAndUpdate(chatId, { message: message }, function (err, data) {
             if (err) throw err;
 
-            chatModel.find({isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
+            chatModel.find({'groupId':groupId, isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
                 if (err) throw err;
                 res.json(groupMsgs);
             })
@@ -355,7 +355,9 @@ module.exports = function (io, saveUser) {
         chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function (err, data) {
             if (err) throw err;
             //sort({ updatedAt: -1 })
-            chatModel.find({isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
+            chatModel.find({'groupId': groupId, isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
+               console.log("______________");
+               console.log(groupMsgs);
                 res.json(groupMsgs);
             })
         
@@ -401,7 +403,7 @@ module.exports = function (io, saveUser) {
             var message = req.files[i].filename;
             var originalName = req.files[i].originalname;
             var msgType = spliceType[1];
-            groupsModel.update({ _id: id }, { $push: { message: { name: name, originalName: originalName, sender: senderId, message: message, msgType: msgType } }, lastMsg: originalName }, function (err, data) {
+            groupsModel.update({ _id: id, 'status': 1 }, { $push: { message: { name: name, originalName: originalName, sender: senderId, message: message, msgType: msgType } }, lastMsg: originalName }, function (err, data) {
                 if (err) throw err;
             })
         }
@@ -411,7 +413,7 @@ module.exports = function (io, saveUser) {
 
     router.getgroupchat = function (req, res) {
         var id = req.body.id;
-        groupsModel.find({ _id: id }).lean().then(function (data) {
+        groupsModel.find({ _id: id, 'status': 1}).lean().then(function (data) {
             res.json(data);
         })
     }
@@ -419,7 +421,7 @@ module.exports = function (io, saveUser) {
 
     router.changeStatus = function (req, res) {
         if (req.session.user) {
-            helper.changeStatus(req.session.user._id, { status: 'away' }, function (data) {
+            helper.changeStatus(req.session.user._id, { status: 0 }, function (data) {
                 //helper.RTU();
                 res.json(data);
             });
@@ -450,7 +452,7 @@ module.exports = function (io, saveUser) {
             res.json(1);
     }
     router.saveUserDataToSession = (req, res) => {
-        userModel.find({ email: req.body.user_email }, (err, data) => {
+        userModel.find({ email: req.body.user_email , 'status': 1 }, (err, data) => {
             if (err) throw err;
             if (data.length > 0) {
                 //do some thing if user exsist
@@ -485,7 +487,7 @@ module.exports = function (io, saveUser) {
         });
     }
     router.updateUserImage = (req, res) => {
-        userModel.findOneAndUpdate({ userId: req.body.id }, { user_image: req.body.image }, function (err, data) {
+        userModel.findOneAndUpdate({ userId: req.body.id , 'status': 1}, { user_image: req.body.image }, function (err, data) {
             if (err) throw err;
             res.json(req.body.id);
         })
@@ -494,7 +496,7 @@ module.exports = function (io, saveUser) {
     router.setPerStatus = (req, res) => {
         if (req.session.user)
             userModel.findOneAndUpdate(
-                { _id: req.session.user._id },
+                { _id: req.session.user._id , 'status': 1},
                 { pStatus: req.body.pStatus }, function (err, data) {
                     if (err) throw err;
                     res.json({ status: true, id: req.body.id });
@@ -505,7 +507,7 @@ module.exports = function (io, saveUser) {
 
     router.checkPerStatus = (req, res) => {
         if (req.session.user)
-            userModel.find({ _id: req.session.user._id })
+            userModel.find({ _id: req.session.user._id , 'status': 1})
                 .lean()
                 .then(function (result) {
                     res.json({ status: true, 'pStatus': result[0].pStatus, 'email': result[0].email });

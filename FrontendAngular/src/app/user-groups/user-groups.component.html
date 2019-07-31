@@ -80,7 +80,12 @@
               </div>
             </div>
 
-            <input class="btn btn-info btn-block" [disabled]="!userGroupsForm.valid" type="submit" value="Submit">
+            <span *ngIf="!isSubmitted">
+              <input class="btn btn-info btn-block" [disabled]="!userGroupsForm.valid" type="submit" value="Submit">
+            </span>
+            <span *ngIf="isSubmitted">
+              <input class="btn btn-info btn-block" [disabled]="true" type="submit" value="Submit">
+            </span>
           </form>
 
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>

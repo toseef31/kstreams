@@ -142,16 +142,16 @@
               <div class="col-md-4 pl-1">
                 <a class="simple-text logo-mini">
                   <div class="logo-img">
-
+                    <label class="fontWeighter choosePicture" *ngIf="userImage == null">Choose Picture: </label>
                     <label for="profile_img">
-                      <span *ngIf="userImage == null">
+                      <!-- <span *ngIf="userImage == null">
                         <img class="img-responsive" src="/assets/img/noProfile.png" />
-                      </span>
+                      </span> -->
                       <span *ngIf="userImage != null">
                         <img class="img-responsive" [src]="imageSrc"
                           style="border-radius: 50%; height: 120px; width: 120px; position: relative;" />
                       </span>
-
+                    
                       <input type="file" (change)="userImageUpload($event)" value="Upload"
                         style="position: absolute; margin-left: 15px; top: 35%;" #uploadedImage>
                     </label>
@@ -160,7 +160,7 @@
                 </a>
               </div>
             </div>
-
+            <br>
             <span *ngIf="!isSubmitted">
               <input class="btn btn-info btn-block" [disabled]="!userAddFormGroup.valid" type="submit" value="Submit">
             </span>
@@ -264,11 +264,11 @@
               <div class="col-md-4 pl-1">
                 <a class="simple-text logo-mini">
                   <div class="logo-img">
-
+                    <label class="fontWeighter choosePicture" *ngIf="imageSrc == ''">Choose Picture: </label>
                     <label for="profile_img">
-                      <span *ngIf="imageSrc == ''">
+                      <!-- <span *ngIf="imageSrc == ''">
                         <img class="img-responsive" src="/assets/img/noProfile.png" />
-                      </span>
+                      </span> -->
                       <span *ngIf="imageSrc != ''">
                         <img class="img-responsive" [src]="imageSrc"
                           style="border-radius: 50%; height: 120px; width: 120px; position: relative;" />
@@ -282,7 +282,7 @@
                 </a>
               </div>
             </div>
-
+            <br>
             <input class="btn btn-info btn-block" type="submit" value="Update">
           </form>
           <p style="text-align: center; color:rgb(157, 201, 90)"> {{genericMessage}} </p>

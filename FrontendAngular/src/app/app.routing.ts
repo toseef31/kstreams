@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { LoginComponent } from './login/login.component';
@@ -38,9 +39,11 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes ,{onSameUrlNavigation: 'reload'})
   ],
   exports: [
   ],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
+  //{provide: LocationStrategy, useClass: HashLocationStrategy}
 })
 export class AppRoutingModule { }

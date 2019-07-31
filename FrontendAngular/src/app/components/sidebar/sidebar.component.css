@@ -12,9 +12,16 @@
     width: 300% !important;
 } */
 
-.userNameTransform{
+.userNameTransform_withImage{
     transform: translate3d(40%, 0 ,0) !important;
     position: absolute;
     top: 200%;
     margin-left: 105px;
+}
+
+.userName_noImage{
+    color: white !important;
+    font-weight: 600;
+    font-size: xx-large;
+    margin-left: 60px;
 }

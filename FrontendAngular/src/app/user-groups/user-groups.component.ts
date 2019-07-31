@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SessionStorageService } from 'angular-web-storage';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LoginService } from '../services/login.service';
 import { BackendApiService } from '../services/backend-api.service';
 import { Subscription } from 'rxjs';
@@ -27,6 +27,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
   totalGroups: number = 0;
   loading: boolean = true;
   isGroupEdited: boolean = false;
+  isSubmitted: boolean = false;
   selectedGroupData: any;
 
   groupsList = [];
@@ -84,6 +85,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     this.addedUsersList = [];
     this.usersList = [];
     this.isGroupEdited = false;
+    this.isSubmitted = false;
     this.userGroupsForm.reset();
 
     this.activatedForm = formNumber;
@@ -110,9 +112,13 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
       (backendResponse: any) => {
         this.genericMessage = "Group created succesfully";
         this.userGroupsForm.reset();
+        this.isSubmitted = false;
         setTimeout(() => { this.genericMessage = "" }, 2000)
-      }
-    );
+      });
+
+      setTimeout(() => {
+        this.isSubmitted = false;
+      }, 1000);
   }
 
   EditGroup() {
@@ -143,7 +149,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
 
   initializeUsersGroupForm() {
     this.userGroupsForm = this.formBuilder.group({
-      name: ['']
+      name: ['', Validators.required]
     });
   }
 

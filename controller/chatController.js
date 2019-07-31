@@ -57,7 +57,7 @@ module.exports = function(io,saveUser){
 
     router.getCreatedGroups = function (req, res){
             // get all groups 
-           groupsModel.find().populate('members', {'name':true}).exec(function (err, groups) { 
+           groupsModel.find({'status': 1}).populate('members', {'name':true}).exec(function (err, groups) { 
                 var tempGroups = [];
                if (err) { return console.log(err); } 
                for (var i= 0; i < groups.length; i++){ 
@@ -92,7 +92,7 @@ module.exports = function(io,saveUser){
 
     router.getGroups = function(req,res){
        
-        groupsModel.find({ members: { $elemMatch: { id: req.params.userId } } })
+        groupsModel.find({ members: { $elemMatch: { id: req.params.userId } }, 'status': 1 })
         .lean().then(function(data){
            
             res.json(data);
@@ -231,7 +231,7 @@ module.exports = function(io,saveUser){
     	var email = req.body.email;
     	var password = req.body.password;
     	
-    	helper.getData(userModel,{email:email},function(user){
+    	helper.getData(userModel,{ 'email': email, 'password': password },function(user){
             if(user.length > 0){
                 let User = user[0]; 
                 /*check password*/
@@ -288,10 +288,15 @@ module.exports = function(io,saveUser){
     router.deleteMsg = function(req,res){
         var msgId = req.params.msgId;
         var type = req.params.type;
-        chatModel.findByIdAndUpdate(msgId,{delete:type},function(err,data){
+        chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function (err, data) {
             if (err) throw err;
             res.json(data);
         })
+
+        // chatModel.findByIdAndUpdate(msgId,{delete:type},function(err,data){
+        //     if (err) throw err;
+        //     res.json(data);
+        // })
     }
     router.updateChat = function(req,res){
         var chatId = req.params.id;
@@ -308,12 +313,20 @@ module.exports = function(io,saveUser){
         var message = req.body.message;
         var groupId = req.body.groupId;
      
-        groupsModel.update({'message._id':id},{$set:{'message.$.message':message}},function(err,data){
-            if(err) throw err;
-            helper.getData(groupsModel,{_id:groupId},function(data){
-                res.json(data);
+        chatModel.findByIdAndUpdate(id, { message: message }, function (err, data) {
+            if (err) throw err;
+            chatModel.find({'groupId':groupId, isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
+                if (err) throw err;
+                res.json(groupMsgs);
             })
         });
+
+        // groupsModel.update({'message._id':id},{$set:{'message.$.message':message}},function(err,data){
+        //     if(err) throw err;
+        //     helper.getData(groupsModel,{_id:groupId},function(data){
+        //         res.json(data);
+        //     })
+        // });
     }
 
     router.notificationseen = (req,res) => {
@@ -328,13 +341,22 @@ module.exports = function(io,saveUser){
         var msgId = req.params.msgId;
         var type = req.params.type;
         var groupId = req.params.groupId;
-        groupsModel.update({'message._id':msgId},{$set:{'message.$.delete':type}},function(err,data){
-            if(err) throw err;
-            helper.getData(groupsModel,{_id:groupId},function(data){
-                res.json(data);
+
+        chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function (err, data) {
+            if (err) throw err;
+            chatModel.find({'groupId': groupId, isGroup: 1}).populate('senderId').exec( function (err, groupMsgs) {
+                res.json(groupMsgs);
             })
-        });
+        })
+        
+        // groupsModel.update({'message._id':msgId},{$set:{'message.$.delete':type}},function(err,data){
+        //     if(err) throw err;
+        //     helper.getData(groupsModel,{_id:groupId},function(data){
+        //         res.json(data);
+        //     })
+        // });
     }
+
     router.addfiles = function (req, res, next) {
         for( var i = 0; i < req.files.length; i++ ){
             var type = req.files[i].mimetype;
@@ -373,8 +395,8 @@ module.exports = function(io,saveUser){
     }
 
     router.getgroupchat = function(req,res){
-        var id = req.body.id;
-        groupsModel.find({_id:id}).lean().then(function(data){
+       var id = req.body.id;
+        groupsModel.find({ _id: id, 'status': 1}).lean().then(function (data) {
             res.json(data);
         })
     }

@@ -26,6 +26,10 @@ const chatSchema = mongoose.Schema({
 		type: Number,
 		default: 0        //0=No, 1=Yes
 	},
+	"isDeleted": {
+		type: Number,
+		default: 0
+	},
 	"isGroup": {
 		type: Number,
 		default: 0        //0=No, 1=Yes

@@ -25,8 +25,9 @@
             <!-- left side bar for mobile view -->
             <!-- left side bar for mobile view -->
 
-            <div class="inbox_people col-sm-4 col-xs-12 hidden-lg hidden-md hidden-sm width100" id="mobile-view-contact"> 
-                <div class="headind_srch">
+            <div ng-if="!isChatPanel && isSidePanel" class="inbox_people col-sm-4 col-xs-12 hidden-lg hidden-md hidden-sm width100" id="mobile-view-contact"> 
+              
+              <div class="headind_srch">
                   <div class="recent_heading width100">
                     <div class="pro_img"> 
                       <span ng-if="user.user_image == ''">
@@ -36,7 +37,7 @@
                         <img class="importantHeight" src="{{ 'https://kstreams.com:4000/' + user.user_image }}" alt="{{user.name}}" /> 
                       </span> 
                     </div>
-                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="{activeSt:user.pStatus==0,awaySt:user.pStatus==1,dDisturbSt:user.pStatus==2,invisSt:user.pStatus==3,offlineSt:user.pStatus==4}" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                       <div class="fa fa-angle-down hidden stAngleDd"></div>
                     </div> 
                     <h4>{{user.name}}</h4>
@@ -51,7 +52,8 @@
                     <!-- recent tab start-->
                     <!-- recent tab start-->
                     <!-- recent tab start--> 
-                    <uib-tab select="chatActive()" index="0" heading="Recent Chat">
+                    <uib-tab select="chatActive()" index="nchatIndex" heading="Recent Chat">
+                     
                       <div ng-if="allUsers.length > 0">
                         <div ng-repeat="userA in allUsers"  ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index" class="user_profile" onclick="toggle()">
                           <div class="chat_list active_chat" ng-if="userA._id != user._id"  ng-click="startChat({type:'chat',user:userA})" style="position: relative;">
@@ -94,39 +96,50 @@
                     <!-- recent tab end-->
                     <!-- recent tab end-->
  
-                    <uib-tab select="groupChatActive()" index="1" heading="Group Chat"> 
-                         <!-- <p style="color: white"> IN PROGRESS ... </p> -->
-  
-                  <div ng-if="allGroups.length > 0">
+                 <uib-tab select="groupChatActive()" index="gchatIndex" heading="Group Chat"> 
+                   <!-- <p style="color: wheat">{{gchatIndex}}</p> -->
+                  <!-- <div ng-if="allGroups.length > 0">
                     <div ng-repeat="groupA in allGroups">
-                      <div class="chat_list active_chat" ng-click="startChat({type:'groupchat',group:groupA})" style="position: relative;">
+                      <div class="chat_list active_chat" ng-click="startChat({type:'groupchat',group:groupA}); " style="position: relative;">
                         <div> 
                           <h5>{{groupA.name}}</h5>
-                          (
-                          <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
-                            <span>{{groupM.name}}</span>
-                            <span ng-if="(groupA.members.length-1) != $index">,</span>
-                          </span>)
-  
                         </div>
                       </div>
                     </div> 
-                  </div>
-                  
+                  </div> -->
+
+                  <div ng-if="allGroups.length > 0">
+                      <div ng-repeat="groupA in allGroups" ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
+                        <div class="chat_list active_chat" ng-click="startChat({type:'groupchat',group:groupA})" style="position: relative;"> 
+                          <div><h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5></div>
+                        </div>
+                      </div> 
+                    </div>
+
                   <div ng-if="!groupsLoaded">
                       <strong style="color:wheat">Loading ...</strong>
                     </div>
                       </uib-tab> 
+
                   </uib-tabset>
                 </div>
             </div>
+
+            <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
+              <li ng-class="currSt==0?'active':''" ng-click='changeSt(0)'>Active</a></li>
+              <li ng-class="currSt==1?'active':''" ng-click='changeSt(1)'>Away</li>
+              <li ng-class="currSt==2?'active':''" ng-click='changeSt(2)'>Do not disturb</li>
+              <li ng-class="currSt==3?'active':''" ng-click='changeSt(3)'>Invisible</li>
+            </ul>
             
           </div>
         </div>
+
           <!-- left side bar for desktop view -->
           <!-- left side bar for desktop view -->
           <!-- left side bar for desktop view -->
-        <div class="inbox_people col-sm-4 col-xs-12 hidden-xs" id="contact-bar" ng-click="disableMsgEdit()">
+        <div class="inbox_people col-sm-4 col-xs-12 hidden-xs" id="contact-bar" ng-click="disableMsgEdit(); showDDwnDisabler()">
+   
           <div class="headind_srch">
             <div class="recent_heading">
               <div class="pro_img"> 
@@ -137,7 +150,7 @@
                   <img class="importantHeight" src="{{ 'https://kstreams.com:4000/' + user.user_image }}" alt="{{user._id}}" /> 
                 </span> 
               </div>
-              <div class="statusDropDown hoverIt" ng-click="showDDwnSt()" ng-class="{activeSt:user.pStatus==0,awaySt:user.pStatus==1,dDisturbSt:user.pStatus==2,invisSt:user.pStatus==3,offlineSt:user.pStatus==4}" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+              <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                 <div class="fa fa-angle-down hidden stAngleDd"></div>
               </div> 
               <h4>{{user.name}}</h4>   
@@ -146,19 +159,21 @@
               </a>
             </div>
           </div>
-
+          
           <div class="inbox_chat">
+            
             <uib-tabset active="activeForm"> 
               <!-- tab one content -->
               <!-- recent tab start-->
               <!-- recent tab start-->
               <!-- recent tab start--> 
-              <uib-tab select="chatActive()" index="0" heading="Recent Chat">
+              <uib-tab  select="chatActive()"  index="nchatIndex" heading="Recent Chat">
                 <div ng-if="allUsers.length > 0"> 
                   <div ng-repeat="userA in allUsers" ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
                     <div class="chat_list active_chat" ng-if="userA._id != user._id"  ng-click="startChat({type:'chat',user:userA})" style="position: relative;">
                       <!-- <i class="fa fa-close text-danger removeUser" tooltip-placement="top" uib-tooltip="Delete user" ng-click="removeUser(userA._id)"></i> -->
                       <div class="chat_people"> 
+                        
                         <div class="chat_img"> 
                           <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span>
                           <span ng-if="userA.user_image == ''">
@@ -168,6 +183,8 @@
                             <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="{{ 'https://kstreams.com:4000/' + userA.user_image }}" alt="{{user.name}}" /> 
                           </span> 
                         </div>
+
+
                         <div class="chat_ib color-white userText"> 
                           <span>{{userA.name}}</span> 
                           <div ng-repeat="msg in userA.chat">
@@ -201,9 +218,8 @@
               <!-- group tab start-->
               <!-- group tab start-->
               <!-- group tab start--> 
-              <uib-tab select="groupChatActive()" index="1" heading="Group Chat"> 
+              <uib-tab  select="groupChatActive()"  index="gchatIndex" heading="Group Chat"> 
                 <div ng-if="allGroups.length > 0">
-                    <!-- ng-class="{'grpChecked':grpSurv.checked}" -->
                   <div ng-repeat="groupA in allGroups" ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
                     <div class="chat_list active_chat" ng-click="startChat({type:'groupchat',group:groupA})" style="position: relative;"> 
                       <div><h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5></div>
@@ -239,49 +255,36 @@
           </div>
         </div>
 
-        <div class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow" ng-click="disableMsgEdit()" ng-hide="welcomePage" ng-show="!welcomePage" style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
+        <div ng-if="isChatPanel && !isSidePanel" class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow"  ngClick="showContact()" ng-click="disableMsgEdit(); showDDwnDisabler()" ng-hide="welcomePage" ng-show="!welcomePage" style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
           <div class="hidden-xs big-btn" style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
             <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
-
-            <!-- <div class="pull-right" ng-if="!groupSelected">
-              <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
-                <span class="glyphicon glyphicon-earphone"></span> call
-              </button>
-              <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
-                <span class="glyphicon glyphicon-facetime-video"></span> Video Call
-              </button>
-            </div> -->
-  
           </div>
 
           <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
-          <div class="big-btn grpMembers" ng-if="selGrpMembers.length>0 && groupSelected">
-            <b>Group members: </b>  
-            <span ng-repeat="mem in selGrpMembers" ng-value="{{$index}}">
-              <span>{{mem.name}}</span>
-              <span ng-if="(selGrpMembers.length-1) != $index">,</span>
-            </span>  
-          </div>
+          <div class="hidden-xs big-btn">
+            <div class="chat_list active_groupChatMembers" ng-if="!chatIsActive && groupChat && isGroupSelected == 1">
+             <strong> Group Members: </strong>
+                <span ng-repeat="groupA in allGroups"  style="position: relative;">
+                  <!-- <p>{{selectedGroupId}} == {{groupA._id}}</p> -->
+                    <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
+                      <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}
+                        <span ng-if="(groupA.members.length-1) != $index">,</span>
+                      </span>
+                    </span>
+                </span>
+              </div> 
+         </div>
  
           <div class="small-btn hidden-lg hidden-md hidden-sm" style="background: #171717;padding: 10px;color: #fff; height: 44px;">
-            <span> <i class="fa fa-arrow-left" onclick="showContact()"></i></span>
+           <!-- onclick="showContact()"  -->
+            <span> <i class="fa fa-arrow-left" ng-click="chatBack()"></i></span>
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
             <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
-
-            <!-- <div class="pull-right" ng-if="!groupSelected">
-                <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
-                  <span class="glyphicon glyphicon-earphone"></span> call
-                </button>
-                <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
-                  <span class="glyphicon glyphicon-facetime-video"></span> Video Call
-                </button>
-              </div> -->
           </div>
 
-          
-
           <div class="msg_history" id="{{connectionId}}" file-dropzone files-to-upload='files'>
+            
             <div ng-repeat="groupMember in groupMembers">
               <div ng-if="groupMember.id === user._id" class="group_message">
                 <h4><strong>{{user.name}}</strong> your are added in this group as a member</h4>
@@ -292,7 +295,9 @@
             <!-- ------------------------------------------------------------------------------ -->
             <!-- ------------------- NORMAL CHAT --------------------------------------------------- -->
             <!-- ------------------------------------------------------------------------------ -->
+         
             <div ng-if="!groupChat">
+         
               <div ng-repeat="chat in chats track by $index">
                 <div class="incoming_msg" ng-if="chat.senderId != user._id">
                   <div class="received_msg" ng-if="!chat.isDeleted">
@@ -585,19 +590,20 @@
       con.scrollTo(0,$('.msg_history').prop("scrollHeight"));  
     }, 100); 
   }
- 
+  
   function toggle(){
-    $('.mesgs1').show();
-    $('#mobile-view-contact').hide();
-    $('#msg-container-welcome').hide();
-    $('.navbar-header').hide();
+      $('.mesgs1').show();
+      $('#mobile-view-contact').hide();
+    // $('#msg-container-welcome').hide();
+    //  $('.navbar-header').hide();
   }
-  function showContact(){
-    $('.mesgs1').hide();
-    $('#mobile-view-contact').show();
-    $('#msg-container-welcome').show();
-    $('.navbar-header').show();
-  }
+  
+  // function showContact(){
+  //   $('.mesgs1').hide();
+  //   $('#mobile-view-contact').show();
+  //   $('#msg-container-welcome').show();
+  //   $('.navbar-header').show();
+  // }
 
   $(document).on('click','.makeFullScreen',function(){
     $(".2wayChat").addClass('fullScreen');

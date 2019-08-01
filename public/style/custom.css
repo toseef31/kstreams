@@ -77,12 +77,12 @@
     margin-top: -1px;
 }
 .statusDrpOptions{
-    width: 150px;
+    width: 145px;
     background-color: #fff; 
     position: absolute;
     z-index: 99999999;
-    top: 47px;
-    left: 72px;
+    top: 20px;
+    left: 75px;
     padding-left: 0px;
     list-style: none; 
 }

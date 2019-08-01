@@ -1,11 +1,14 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal) {
     $scope.isGroupSelected = 0;
     $scope.selectedGroupId = 0;
-
+    $scope.backPressed = false;
     $scope.usersLoaded = false;
     $scope.groupsLoaded = false;
     $scope.chatLoaded = false;
-
+    $scope.isChatPanel = false;
+    $scope.isSidePanel = true;
+    $scope.nchatIndex = 0;
+    $scope.gchatIndex = 1;
     /*save with whom user are chatting*/
     $scope.chatWith = '';
     $scope.chatWithId = '';
@@ -461,31 +464,51 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
 
         $scope.groupeActive = function () {
-            $scope.chatIsActive = false;
+            //$scope.chatIsActive = false;
             $scope.groupeIsActive = true;
+            $scope.isChatPanel = true; 
         }
 
-        $scope.chatActive = function () {
+        $scope.chatActive = function (index) {
+            $scope.nchatIndex==0;  $scope.gchatIndex==1;
             $scope.isGroupSelected= 0;
-           // $scope.groupOrUser = "";
             $scope.groupChat = false;
             $scope.groupeIsActive = false;
             $scope.chatIsActive = true;
             $scope.groupSelected=false;
+            // console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
         }
 
         $scope.groupChatActive = function () {
-            $scope.isGroupSelected= 0;
-           // $scope.groupOrUser = "";
+            $scope.nchatIndex==1;  $scope.gchatIndex==0;
+            $scope.isGroupSelected= 1;
             $scope.groupChat = true;
             $scope.chatIsActive = false;
             $scope.groupeIsActive = true;
-            $scope.groupSelected=true;
+            $scope.groupSelected=true; 
+            // console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
         }
+
+        $scope.chatBack = function (){
+           $scope.isChatPanel = false;
+           $scope.isSidePanel = true;
+           $scope.welcomePage = true;
+           $scope.backPressed = true;
+
+        //    console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
+        }
+
+        // $scope.getDataCustomFromSelect = function(selectName) {
+        //     var v = document.querySelector('select[name="' + selectName + '"]')
+        //       .getAttribute('index');
+        //     console.log(v);
+        //   }
+
 
         $scope.groupSelected=false;
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
+            $scope.isSidePanel = false;  $scope.isChatPanel = true;
             $scope.isGroupSelected= 1;
             $scope.welcomePage = false;
             /*obj is an object send from view it may be a chat or a group info*/
@@ -498,7 +521,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.chatWithId = obj.user._id;
                 socket.emit('change_username', { username: $rootScope.user.name, rcv_id: $scope.chatWithId });
                 $scope.status = obj.user.status;
-                $scope.connectionId = $scope.chatWithId; //chnId 2
+                $scope.connectionId = $scope.chatWithId; 
 
                 //chnId 3
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
@@ -507,7 +530,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.chats = res.data;
                     scrollbottom();
                 });
-            } else { 
+            } else {  
+               // $scope.groupChat = true;
+               
                 $scope.groupSelected=true;
                 $scope.selectedGroupId = obj.group._id;
                 $scope.sendType = 'group';
@@ -515,6 +540,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.selGroupName = obj.group.name;
                 $scope.selGrpMembers=obj.group.members;
                 $scope.status = ''; 
+               
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) { 
                     $scope.groupchats = groupchat.data; 
                     scrollbottom();
@@ -987,6 +1013,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.changeSt = function (val = 0) {
         $scope.currSt = val; 
         $scope.stClass = $scope.stArr[$scope.currSt]; 
+        console.log($scope.stClass);
         $http.post('/setPerStatus', { pStatus: val }).then((res) => {
             if (res.status) console.log('Changed');
         }); 

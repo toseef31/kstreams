@@ -64,7 +64,7 @@
 .chatMenu{
   background: #fff;
   border: 1px solid #ccc;
-  width: 60px;
+  /* width: 60px; */
   padding: 7px;
   font-weight: 600;
   position: absolute;
@@ -196,7 +196,7 @@
   max-width: 100%; 
 }
 .recent_heading h4{
-  float: right;
+  /* float: right; */
   width: 80%;
   line-height: 2;
   
@@ -286,7 +286,7 @@ img{ max-width:100%;}
   text-align: right;
   width: 60%; 
 }
-.headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #fff;}
+.headind_srch{ padding:10px 12px 10px 15px; overflow:hidden; border-bottom:1px solid #fff;}
 
 .recent_heading h4 {
   color: #fff;
@@ -350,7 +350,11 @@ img{ max-width:100%;}
 
 .active_chat{ background: #dadada; margin-top:5px;}
 
-.active_groupChatMembers { background: #bfb9b9; margin-top:5px; }
+.active_groupChatMembers { 
+  background: #dadada; 
+  text-align: center;
+  border: 1px solid gray;
+}
 
 .outgoing_msg_img {
   float: right;

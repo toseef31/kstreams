@@ -47,7 +47,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.backendService.getLoggedInUserRequest(this.sessionService.get('user_session_data').email);
     this.LoggedUserDataSubscription = this.backendService.refreshLoggedUserData.subscribe(
       (backendResponse: any) => {
-      
+   
         if (backendResponse.imageFile != null) {
           // let TYPED_ARRAY = new Uint8Array(backendResponse.imageFile.data);
           // const STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);

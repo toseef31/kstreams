@@ -7,8 +7,8 @@ import { Subject } from 'rxjs';
 })
 export class BackendApiService {
 
-  private userBaseUrl: string = 'https://localhost:4000/business';
-  private groupsBaseUrl: string = 'https://localhost:4000/groups';
+  private userBaseUrl: string = 'https://localhost:22000/business';
+  private groupsBaseUrl: string = 'https://localhost:22000/groups';
 
   public updateUserList = new Subject<any>();
   public refreshLoggedUserData = new Subject<any>();

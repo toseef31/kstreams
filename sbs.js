@@ -19,11 +19,6 @@ const options     = {
 const server    = require('https').Server(options,app);
 const io       = require('socket.io')(server);
 const config = require('./config/DB');
-
-const registrationRoute = require('./routes/registration.routes');
-const groupsRoute = require('./routes/groups.routes');
-var fs = require('fs'); 
-var https = require('https');
 //*****
 //*****
 //mongo db connection 
@@ -63,17 +58,20 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors());
-app.use(session({secret:"kstreams@123",resave:false,saveUninitialized:true}));
-app.use(express.static('images'));
+app.use(session({secret:"kstreams@123",resave:true,saveUninitialized:true})); //resave changed to 'true'
+app.use(express.static('public'));
+app.use(express.static('Images/Profiles'));
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 /*get data from url and encode in to json*/
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+const registrationRoute = require('./routes/registration.routes');
+const groupsRoute = require('./routes/groups.routes');
 app.use('/business', registrationRoute);
 app.use('/groups', groupsRoute);
-
+ 
 //****
 //****
 // push notification code 
@@ -165,12 +163,18 @@ io.on('connection', function (socket) {
 
 	/*disconnect user */
 	socket.on('disconnect', function () { 
+		console.log("DISCONNECTED"); 	
 		if(authUser){ 
-			changeStatus(authUser._id,{pStatus:4},function(data){
-				updateUsers();
-			});
+			 console.log(authUser);
+		    userModel.update({ '_id': authUser._id }, { 'onlineStatus': 0}).exec();
+			// changeStatus(authUser._id,{},function(data){
+			// 	updateUsers();
+			// });
 		}
 	});
+
+	module.exports.authUser = authUser;
+	
 	socket.username = "Anonymous";
 	//listen on change_username
 	socket.on('change_username', (data) => {
@@ -178,6 +182,7 @@ io.on('connection', function (socket) {
 			socket.rcv_id = data.rcv_id;  
 			console.log(socket.username,' change_username ',socket.rcv_id);
 	});
+	
 	//listen on typing
 	socket.on('typing', (data) => {
 		console.log(socket.username,' typing ',socket.rcv_id);

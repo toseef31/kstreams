@@ -9,6 +9,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.isSidePanel = true;
     $scope.nchatIndex = 0;
     $scope.gchatIndex = 1;
+    $scope.loggedUserId = 0;
     /*save with whom user are chatting*/
     $scope.chatWith = '';
     $scope.chatWithId = '';
@@ -327,13 +328,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     // Kurento webrtc functions end================================================
     /*check session of the user if he is logged in or not*/
+  
+    
     $http({
         method: 'GET',
         url: '/get',
         xhrFields: { withCredentials: true }
     }).then(function successCallback(response) {
+        $scope.loggedUserId = response.data._id;
         $scope.check = function (event) {
-            console.log(event.keyCode);
+            console.log(event);
         }
         /*login user */
         /* store video of calling sound*/
@@ -367,6 +371,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     .then(function(response) {
         //     });
 
+        // $http.get('/checkSession/'+ $scope.user._id).then(function (res) {
+             
+        // })
 
         /*get all users*/
         $http.get("/getUsers/" + response.data._id)
@@ -679,8 +686,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           
         /*logout the user and destroy the session*/
         $scope.logout = function () {
-            console.log('Logout');
-            $http.get('/logout').then(function (res) {
+            
+           $http.get('/logout/'+$scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
                     $scope.user = undefined;
                     $location.path('/');
@@ -1015,6 +1022,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.stClass = $scope.stArr[$scope.currSt]; 
         console.log($scope.stClass);
         $http.post('/setPerStatus', { pStatus: val }).then((res) => {
+            console.log(res);
             if (res.status) console.log('Changed');
         }); 
     }

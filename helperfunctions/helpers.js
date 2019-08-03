@@ -70,7 +70,7 @@ module.exports = function(io){
 
 	helper.changeStatus = function (id,status,callback){
 		if(status){
-			userModel.findByIdAndUpdate(id,{$set:status}).exec(function(err,data){
+			userModel.findByIdAndUpdate(id).exec(function(err,data){
 				if(err) throw err;
 				callback(data);
 			});
@@ -79,7 +79,7 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-			console.log(obj);
+		
 			model.find({'email':obj.email, 'status': 1}).exec(function(err,data){
 				//console.log(data[0].password);
 				if(err){ 
@@ -89,7 +89,11 @@ module.exports = function(io){
 						callback({err:err});
 					}
 					else{
-						callback(data);
+						userModel.update({'email': obj.email}, {'onlineStatus': 1}).exec(function (err, result) {
+						   if (result)
+						     callback(data);
+						})
+					
 					}
 				}
 			});	

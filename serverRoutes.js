@@ -15,6 +15,7 @@ module.exports = function(app,io,saveUser){
     app.post('/groupChat',chatCon.groupChat);
 
     app.get('/checkSession',chatCon.checkSession);
+    // app.get('/checkSession/:userId',chatCon.checkSession);
     app.get('/createUser/:name',chatCon.createUser);
     app.get('/getUsers/:userId',chatCon.getUsers);
 
@@ -32,7 +33,7 @@ module.exports = function(app,io,saveUser){
 
 
     app.get('/deleteMsg/:msgId/:type',chatCon.deleteMsg);
-    app.get('/logout',chatCon.logout);
+    app.get('/logout/:userId',chatCon.logout);
     app.post('/updateGroupChat/:id',chatCon.updateGroupChat);
     app.get('/deleteGroupMsg/:msgId/:type/:groupId',chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId',chatCon.getNotification);

@@ -60,7 +60,14 @@
                             <!-- <i class="fa fa-close text-danger removeUser" ng-click="removeUser()" tooltip-placement="top" uib-tooltip="Delete user"></i> -->
                             <div class="chat_people">
                               <div class="chat_img ">
-                                <span class="status "  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span>
+                                  <!-- <p>{{userA.onlineStatus}}</p> -->
+
+                                  <span ng-if="userA.onlineStatus == 0">
+                                      <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
+                                  </span>
+                                  <span ng-if="userA.onlineStatus == 1">
+                                     <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span> 
+                                  </span>  
                                 <!-- <img class="{{userA.pStatus}} 4" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user._id}}" />  -->
                               
                                 <span ng-if="userA.user_image == ''">
@@ -175,7 +182,16 @@
                       <div class="chat_people"> 
                         
                         <div class="chat_img"> 
-                          <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span>
+                         
+                          <span ng-if="userA.onlineStatus == 0">
+                              <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
+                          </span>
+                          <span ng-if="userA.onlineStatus == 1">
+                             <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span> 
+                          </span>  
+            
+                          <!-- <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3,offlineSt:userA.pStatus==4}"></span> -->
+                         
                           <span ng-if="userA.user_image == ''">
                             <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
                           </span>

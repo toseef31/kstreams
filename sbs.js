@@ -53,10 +53,7 @@ var authUser;
 // middle ware area 
 //*****
 //*****
-const corsOptions = {
-  origin: "https://kstreams.com", //the port my react app is running on.
-  credentials: true,
-};
+
 app.use(cors());
 app.use(session({secret:"kstreams@123",resave:true,saveUninitialized:true})); //resave changed to 'true'
 app.use(express.static('public'));
@@ -110,16 +107,7 @@ require('./serverRoutes')(app,io,saveUser);
 // custom function area 
 //*****
 //*****
-
-/* change the status of the user example online offline away*/
-function changeStatus(id,status,callback){
-	if(status){
-		userModel.findByIdAndUpdate(id,{$set:status}).exec(function(err,data){
-			if(err) throw err;
-			callback(data);
-		});
-	}
-}
+ 
 /*
 //** get data from database
 //**@param modelname
@@ -142,35 +130,29 @@ function getData(model,obj = 0, callback){
 }
 /* save the current login user info in a variable */
 function saveUser(user){
-	authUser = user;
+	authUser = user;  
+	setUserStatus(1,authUser._id);
 }
 //*****
 //*****
 // socket io events area 
 //*****
 //*****
-
+function setUserStatus(status,userId){ 
+	userModel.update({ '_id': userId }, { 'onlineStatus': status}).exec();
+}
 io.on('connection', function (socket) {
-
-	/*get new msg and it again to the view*/
-
-	function updateUsers(){
-		getData(userModel,{},function(users){ 
-			console.log('Emit getUsers 146');
-			io.emit('getUsers',users);
-		});
-	};
-
+ 
+	socket.on('user_connected', (data) => { 
+		socket.userId=data.userId; 	 
+		setUserStatus(1,socket.userId);
+		
+		io.emit('front_user_status',{'userId':socket.userId,'status':1});
+	});
 	/*disconnect user */
-	socket.on('disconnect', function () { 
-		console.log("DISCONNECTED"); 	
-		if(authUser){ 
-			 console.log(authUser);
-		    userModel.update({ '_id': authUser._id }, { 'onlineStatus': 0}).exec();
-			// changeStatus(authUser._id,{},function(data){
-			// 	updateUsers();
-			// });
-		}
+	socket.on('disconnect', function () {  	 
+		setUserStatus(0,socket.userId);
+		io.emit('front_user_status',{'userId':socket.userId,'status':0});
 	});
 
 	module.exports.authUser = authUser;
@@ -178,14 +160,12 @@ io.on('connection', function (socket) {
 	socket.username = "Anonymous";
 	//listen on change_username
 	socket.on('change_username', (data) => {
-			socket.username = data.username;
-			socket.rcv_id = data.rcv_id;  
-			console.log(socket.username,' change_username ',socket.rcv_id);
+		socket.username = data.username;
+		socket.rcv_id = data.rcv_id;   
 	});
 	
 	//listen on typing
-	socket.on('typing', (data) => {
-		console.log(socket.username,' typing ',socket.rcv_id);
+	socket.on('typing', (data) => { 
 		socket.broadcast.emit('typingRec', {username : socket.username,rcv_id:socket.rcv_id})
 	});
 
@@ -195,9 +175,7 @@ io.on('connection', function (socket) {
 	socket.on('checkmsg',function(chat){
 		io.emit('remsg',chat);
 	});
-	// socket.on('videoCall',function(data){
-	// 	io.emit('videoCallToFriend',data);
-	// })
+ 
 	socket.on('calldisconnect',function(data){
 		io.emit('calldis',data);
 	})

@@ -343,7 +343,7 @@ img{ max-width:100%;}
 .chat_people{ overflow:hidden; clear:both;}
 .chat_list {
   margin: 0;
-  padding: 18px 16px 10px;
+  padding: 10px 16px 10px;
   cursor: pointer;
 }
 .inbox_chat { height: 474px; overflow-y: scroll;}
@@ -497,9 +497,10 @@ img{ max-width:100%;}
 .msg_history {
   padding: 10px;
   background: #dadada;
-  height: 446px;
+  height: 450px;
   overflow-y: auto;
 }
+
 .status-bar{
   font-size: 18px;
 }

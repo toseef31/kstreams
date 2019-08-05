@@ -402,41 +402,7 @@ module.exports = function (io, saveUser) {
             res.json(data);
         })
     }
-
-
-    router.changeStatus = function (req, res) {
-        if (req.session.user) {
-            console.log('changeStatus ', req.session.user._id);
-            //Need to set its logic
-            // helper.changeStatus(req.session.user._id,{pStatus:4},function(data){
-            //     //helper.RTU();
-            //     res.json(data);
-            // });
-        }
-    }
-    router.recent = (req, res) => {
-        console.log('No need of recent');
-        // if(req.body.receiverId!=req.body.senderId) 
-        //     recentModel.find({receiverId:req.body.receiverId,senderId:req.body.senderId},(err, data) => {
-        //         if (err) throw err;
-        //         if(data.length <= 0){ 
-        //             var recent = new recentModel({
-        //                             "receiverId":req.body.receiverId,
-        //                             "receiverName":req.body.receiverName,
-        //                             "senderId":req.body.senderId,
-        //                             "senderName": req.body.senderName,
-        //                             "sender_image": req.body.sender_image,
-        //                             "receiver_image": req.body.receiver_image,
-        //                         });
-        //             recent.save(function(err,data){
-        //                 if(err) console.log(err);
-        //             }) 
-        //         } 
-        //         res.json(1);
-        //     });
-        // else
-        res.json(1);
-    }
+  
     router.saveUserDataToSession = (req, res) => {
         userModel.find({ email: req.body.user_email }, (err, data) => {
             if (err) throw err;

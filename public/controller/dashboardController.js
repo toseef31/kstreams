@@ -1,5 +1,5 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal) {
-    $scope.isGroupSelected = 0;
+ 
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -15,8 +15,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.chatWithId = '';
     /*save all chats */
     $scope.chats = [];
-    $scope.groupchats = [];
-    $scope.groupChat = false;
+    $scope.groupchats = []; 
     $scope.allGroups;
     $scope.editMsgIconStatus = false;
     /*socket io connection*/
@@ -346,7 +345,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.countGroupMembers = 1;
         $scope.groupOrUser = '';
         $rootScope.user = response.data;
-
+        socket.emit('user_connected', { userId: $rootScope.user._id });
         // Registering user with kurento start 
         var jsonMessage = {
             id: 'register',
@@ -356,35 +355,23 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.sendKMessage(jsonMessage);
         //end
         $scope.setCallState(NO_CALL);
-        //$scope.busy              = false; // true then the user is on the call
-        $scope.chatIsActive = true;
-        //$scope.groupIsActive     = false;
-        // $scope.reveiveGroupCall  = false;
-        $scope.receiveCall = false;
-        //$scope.liveStream        = false;
+   
+        $scope.receiveCall = false; 
         $scope.welcomePage = true;
         $scope.caller = false;
         $scope.getmembers = [];
         $scope.files = [];
-        /*get user image*/
-        // $http.get($scope.sbsLink+"api/getUserinfo/"+response.data.userId)
-        //     .then(function(response) {
-        //     });
-
-        // $http.get('/checkSession/'+ $scope.user._id).then(function (res) {
-             
-        // })
-
+ 
         /*get all users*/
         $http.get("/getUsers/" + response.data._id)
         .then(function (response) {
-     $scope.allUsers = response.data;
-                for (i = 0; i < response.data.length; i++) {
-                    if (response.data[i].email != $scope.user.email) {
-                        $scope.getmembers.push(response.data[i]);
-                    }
+            $scope.allUsers = response.data;
+            for (i = 0; i < response.data.length; i++) {
+                if (response.data[i].email != $scope.user.email) {
+                    $scope.getmembers.push(response.data[i]);
                 }
-                $scope.usersLoaded = true;
+            }
+            $scope.usersLoaded = true;
         });
 
         /*get all group users*/
@@ -420,8 +407,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             fd.append('senderId', $scope.user._id);
             fd.append('senderName', $scope.user.name);
 
-            if ($scope.chatIsActive === true) {
-               
+            if (!$scope.groupSelected) { 
                 fd.append('friendId', $scope.chatWithId);   //chnId 1
                 $http.post('/chatFilesShare', fd, {
                     transformRequest: angular.identity,
@@ -429,10 +415,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }).then(function (d) {
                     updatechat();
                 })
-            }
-            // else if ($scope.chatIsActive === false && $scope.groupeIsActive === true){
-            //      console.log("group");
-            // }
+            } 
             else {
                 fd.append('id', $scope.connectionId);
                 fd.append('name', $scope.user.name);
@@ -449,6 +432,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
 
         }
+ 
+        
+        socket.on('front_user_status', function (data) {
+            let i=0; 
+            if($scope.allUsers)
+                for (i; i < $scope.allUsers.length; i++)
+                    if ($scope.allUsers[i]._id == data.userId){ 
+                        $scope.allUsers[i].onlineStatus=data.status;
+                        $scope.$apply();
+                    }   
+        });
+ 
+
         socket.on('updateOtherMembersFiles', function (data) {
             $scope.$apply(() => {
                 for (var i = 0; i < data.members.length; i++) {
@@ -465,71 +461,46 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     });
         /*get All notifications*/
         $http.get("/getNotification/" + $rootScope.user._id)
-            .then(function (response) {
-                $scope.notifications = response.data.noti;
-                $scope.notiCount = response.data.count;
-            });
-
-        $scope.groupeActive = function () {
-            //$scope.chatIsActive = false;
-            $scope.groupeIsActive = true;
-            $scope.isChatPanel = true; 
-        }
-
+        .then(function (response) {
+            $scope.notifications = response.data.noti;
+            $scope.notiCount = response.data.count;
+        });
+ 
+        $scope.groupSelected=false;
         $scope.chatActive = function (index) {
-            $scope.nchatIndex==0;  $scope.gchatIndex==1;
-            $scope.isGroupSelected= 0;
-            $scope.groupChat = false;
-            $scope.groupeIsActive = false;
-            $scope.chatIsActive = true;
-            $scope.groupSelected=false;
-            // console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
+            $scope.nchatIndex=0;  
+            $scope.gchatIndex=1;    
+            $scope.groupSelected=false;  
         }
 
         $scope.groupChatActive = function () {
-            $scope.nchatIndex==1;  $scope.gchatIndex==0;
-            $scope.isGroupSelected= 1;
-            $scope.groupChat = true;
-            $scope.chatIsActive = false;
-            $scope.groupeIsActive = true;
-            $scope.groupSelected=true; 
-            // console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
+            $scope.nchatIndex=1;  
+            $scope.gchatIndex=0;   
+            $scope.groupSelected=true;  
         }
 
         $scope.chatBack = function (){
            $scope.isChatPanel = false;
            $scope.isSidePanel = true;
            $scope.welcomePage = true;
-           $scope.backPressed = true;
-
-        //    console.log("n: "+$scope.nchatIndex + ", g: " + $scope.gchatIndex);
+           $scope.backPressed = true; 
         }
-
-        // $scope.getDataCustomFromSelect = function(selectName) {
-        //     var v = document.querySelector('select[name="' + selectName + '"]')
-        //       .getAttribute('index');
-        //     console.log(v);
-        //   }
-
-
-        $scope.groupSelected=false;
+ 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
-            $scope.isSidePanel = false;  $scope.isChatPanel = true;
-            $scope.isGroupSelected= 1;
+             
+            $scope.isSidePanel = false;  $scope.isChatPanel = true; 
             $scope.welcomePage = false;
             /*obj is an object send from view it may be a chat or a group info*/
-            if (obj.type == 'chat') {
+            if (obj.type == 1) {
                 $scope.groupSelected=false;
-                $scope.selGrpMembers=[];
-                $scope.sendType = 'chat';
+                $scope.selGrpMembers=[]; 
                 $scope.selUserName = obj.user.name;
                 $scope.chatWithImage = obj.user.user_image;
                 $scope.chatWithId = obj.user._id;
                 socket.emit('change_username', { username: $rootScope.user.name, rcv_id: $scope.chatWithId });
                 $scope.status = obj.user.status;
-                $scope.connectionId = $scope.chatWithId; 
-
+                $scope.connectionId = $scope.chatWithId;  
                 //chnId 3
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
                 .then(function (res) { 
@@ -537,17 +508,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.chats = res.data;
                     scrollbottom();
                 });
-            } else {  
-               // $scope.groupChat = true;
-               
+            } else {   
                 $scope.groupSelected=true;
-                $scope.selectedGroupId = obj.group._id;
-                $scope.sendType = 'group';
+                $scope.selectedGroupId = obj.group._id; 
                 $scope.connectionId = obj.group._id;
                 $scope.selGroupName = obj.group.name;
                 $scope.selGrpMembers=obj.group.members;
-                $scope.status = ''; 
-               
+                $scope.status = '';  
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) { 
                     $scope.groupchats = groupchat.data; 
                     scrollbottom();
@@ -614,13 +581,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
         /* send message to the user group and chat both handle in this function through sendType*/
-        $scope.sendMessage = function (sendType, message = 0, chkmsg = 0) {
+        $scope.sendMessage = function (message = 0, chkmsg = 0) {
             if (!$scope.message && chkmsg) $scope.message = chkmsg;
             else if (!$scope.message && !chkmsg) return;
 
-            if (sendType == 'chat') {
-                if (message != 0) 
-                    $scope.message = 'call duration ' + $scope.timmerObj.showTime();
+            if (!$scope.groupSelected) {
+                if (message != 0) $scope.message = 'call duration ' + $scope.timmerObj.showTime();
                  
                 if ($scope.edit === true)
                     $http.post('/updateChat/' + $scope.editMsgId, { "message": $scope.message })
@@ -628,9 +594,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.message = '';
                         $scope.editMsgId = '';
                         $scope.edit = false;
-                        updatechat();
-                        var ele = $('#sendMsg').emojioneArea();
-                        ele[0].emojioneArea.setText(''); 
+                        updatechat(); 
                     })
                 else
                     $http.post('/chat', {"isGroup":0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message })
@@ -639,19 +603,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.message = ''; 
                         $scope.chats.push(res.data);
                         socket.emit('checkmsg', res.data); 
-                        scrollbottom();
-                        var ele = $('#sendMsg').emojioneArea();
-                        ele[0].emojioneArea.setText('');
+                        scrollbottom(); 
                     }) 
-            } else {
+            } 
+            else {
                 if ($scope.edit === true) 
                     $http.post('/updateGroupChat/' + $scope.editMsgId, { "message": $scope.message, groupId: $scope.connectionId })
                     .then(function (res) {
                         $scope.message = '';
                         $scope.editMsgId = '';
-                        $scope.edit = false;
-                        var ele = $('#sendMsg').emojioneArea();
-                        ele[0].emojioneArea.setText('');
+                        $scope.edit = false; 
                         socket.emit('updateGroupChat', {data: res.data, case: 'del' });
                     })
                 else 
@@ -661,11 +622,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         var data = res.data.message[last];
                         $scope.message = '';
                         socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'nodel' });
-                        scrollbottom();
-                        var ele = $('#sendMsg').emojioneArea();
-                        ele[0].emojioneArea.setText('');
-                    }) 
+                        scrollbottom(); 
+                    })  
             }
+
+            var ele = $('#sendMsg').emojioneArea();
+            ele[0].emojioneArea.setText(''); 
         }
         /*this array save group members*/
         $scope.members = [];
@@ -718,7 +680,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.caller = true;
             $scope.ringbell.loop = true;
             $scope.ringbell.play();
-            if ($scope.chatIsActive == true) {
+            if (!$scope.groupSelected) {
                 $scope.showVideo = true;
                 $scope.openVoice = true;
                 console.log('from ', $scope.user._id, ' to ', $scope.chatWithId);
@@ -822,7 +784,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
         /* delete message chat and group both handle in this function*/
         $scope.deleteMsg = function (type) {
-            if ($scope.sendType == 'chat')
+            if (!$scope.groupSelected)
                 $scope.callModal({ 'type': 2, 'id': $scope.editMsgId, 'type2': type });
             else
                 $scope.callModal({ 'type': 3, 'id': $scope.editMsgId, 'type2': type, 'connId': $scope.connectionId });
@@ -993,13 +955,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $(".ringingBell").addClass('hidden');
         });
 
-        $scope.onExit = function () {
-            $http.get('/changeStatus').then(function (res) {
-                return ('bye bye');
-            })
-        };
+        // $scope.onExit = function () {
+        //     $http.get('/changeStatus').then(function (res) {
+        //         return ('bye bye');
+        //     })
+        // };
 
-        $window.onbeforeunload = $scope.onExit;
+        // $window.onbeforeunload = $scope.onExit;
 
     }, function errorCallback(response) {
         $scope.sessionDestroy = true;
@@ -1016,11 +978,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         else $(".stAngleDd").addClass('hidden');
     };
 
-    $scope.stArr = ['activeSt', 'awaySt', 'dDisturbSt', 'invisSt','offlineSt'];
+    $scope.stArr = ['activeSt', 'awaySt', 'dDisturbSt', 'invisSt'];
     $scope.changeSt = function (val = 0) {
         $scope.currSt = val; 
         $scope.stClass = $scope.stArr[$scope.currSt]; 
-        console.log($scope.stClass);
+        console.log('changeSt == ',$scope.stClass,' $scope.currSt ',$scope.currSt);
         $http.post('/setPerStatus', { pStatus: val }).then((res) => {
             console.log(res);
             if (res.status) console.log('Changed');

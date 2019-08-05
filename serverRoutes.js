@@ -38,17 +38,15 @@ module.exports = function(app,io,saveUser){
     app.get('/deleteGroupMsg/:msgId/:type/:groupId',chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId',chatCon.getNotification);
     app.post('/notificationseen',chatCon.notificationseen);
-
     app.post('/getgroupchat',chatCon.getgroupchat);
-
     app.post('/chatFilesShare', upload.array('avatar'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('avatar'), chatCon.groupFilesShare);
-    app.get('/changeStatus',chatCon.changeStatus);
+    // app.get('/changeStatus',chatCon.changeStatus);
     app.post('/SUDTS',chatCon.saveUserDataToSession);
     app.post('/set',chatCon.set);
     app.get('/get',chatCon.get);
     app.get('/logout',chatCon.out);
-    app.post('/recent',chatCon.recent);
+    // app.post('/recent',chatCon.recent);
     app.post('/removeUser',chatCon.removeUser);
     app.post('/updateUser/image',chatCon.updateUserImage);
     app.post('/setPerStatus',chatCon.setPerStatus);

@@ -6,5 +6,5 @@
 var path = require('path');
 var fs = require('fs');
 
-exports.privateKey = fs.readFileSync(path.join(__dirname, './private/ssl.key')).toString();
-exports.certificate = fs.readFileSync(path.join(__dirname, './private/ssl.crt')).toString();
+exports.privateKey = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.key')).toString();
+exports.certificate = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.crt')).toString();

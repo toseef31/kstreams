@@ -270,6 +270,14 @@
           <div class="hidden-xs big-btn" style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
             <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
+              <div class="pull-right" ng-if="!groupSelected">
+                <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
+                  <span class="glyphicon glyphicon-earphone"></span> call
+                </button>
+                <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
+                  <span class="glyphicon glyphicon-facetime-video"></span> Video Call
+                </button>
+              </div>
           </div>
 
           <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
@@ -291,6 +299,14 @@
             <span> <i class="fa fa-arrow-left" ng-click="chatBack()"></i></span>
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
             <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
+            <div class="pull-right" ng-if="!groupSelected">
+              <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
+                <span class="glyphicon glyphicon-earphone"></span> call
+              </button>
+              <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
+                <span class="glyphicon glyphicon-facetime-video"></span> Video Call
+              </button>
+            </div>
           </div>
 
           <div class="msg_history"  ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}" file-dropzone files-to-upload='files'>

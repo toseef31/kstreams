@@ -9,7 +9,7 @@ const mongoose    = require('mongoose');
 const session     = require('express-session');
 const userModel   = require('./model/users-model'); 
 const bodyParser  = require('body-parser');
-//const webpush     = require('web-push');
+const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
 const options     = {
@@ -42,8 +42,8 @@ mongoose.connect(config.url, { useNewUrlParser: true }).then(
 //***** 
 var users  = [];
 
-//const publicVapidKey = 'BEU-89R8Bp4adsJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
-//const privateVapidKey = 'adaqwqwsa';
+const publicVapidKey = 'BEU-89R8Bp4adsJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
+const privateVapidKey = 'adaqwqwsa';
 const port = 22000;
 var authUser;
 
@@ -74,17 +74,19 @@ app.use('/groups', groupsRoute);
 // push notification code 
 //****
 //****
-// webpush.setVapidDetails('mailto:saadahmed.91221@gmail.com',publicVapidKey,privateVapidKey);
-// app.post('/subscribe',(req,res) => {
-// 	//Get push subcription object
-// 	const subscription = req.body.subscription;
-// 	//send 201 resource created
-// 	res.status(201).json({});
-// 	//create payload
-// 	const payload = JSON.stringify({ title :req.body.title});
-// 	//pass object into send notification
-// 	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
-// });
+const vapidKeys = webpush.generateVAPIDKeys();
+console.log('vapidKeys: ',vapidKeys.publicKey,' and ',vapidKeys.privateKey);
+webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',vapidKeys.publicKey,vapidKeys.privateKey);
+app.post('/subscribe',(req,res) => {
+	//Get push subcription object
+	const subscription = req.body.subscription;
+	//send 201 resource created
+	res.status(201).json({});
+	//create payload
+	const payload = JSON.stringify({ title :req.body.title});
+	//pass object into send notification
+	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
+});
 //*****
 //*****
 // server start

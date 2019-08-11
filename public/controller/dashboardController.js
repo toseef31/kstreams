@@ -182,9 +182,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log('incomingCall ', message.userData);
         $scope.setCallState(PROCESSING_CALL);
 
-        // if ('serviceWorker' in navigator) {
-        //     send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
-        // }
+        if ('serviceWorker' in navigator) {
+            send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
+        }
         $scope.toggleBtn(true);
         //$scope.busy               = true;
 

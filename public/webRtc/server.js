@@ -25,11 +25,11 @@ var fs    = require('fs');
 var https = require('https'); 
 // let hostIs=location.host.split(':');
 // let webSocketIp='110.10.130.70';
-// if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //jobcallme.com
+// if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //www.jobcallme.com
 
 var argv = minimist(process.argv.slice(2), {
   default: {
-      as_uri: "https://jobcallme.com:8443/",
+      as_uri: "https://www.jobcallme.com:8443/",
       ws_uri: "ws://localhost:8888/kurento"
   }
 });

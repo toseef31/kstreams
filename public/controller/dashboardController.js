@@ -66,7 +66,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-    let webSocketIp = 'jobcallme.com';  //localhost || jobcallme.com
+    let webSocketIp = 'www.jobcallme.com';  //localhost || www.jobcallme.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
     class Ws {
         get newClientPromise() {

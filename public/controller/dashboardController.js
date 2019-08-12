@@ -914,6 +914,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
                 if ($scope.user._id == msg.recevierId && $scope.chatWithId == msg.senderId) {
+                    if ('serviceWorker' in navigator)
+                        send('New message received from '+senderName).catch(err => console.log('New message ',err));
+                    
                     $scope.chats.push(msg);
                     scrollbottom();
                 }

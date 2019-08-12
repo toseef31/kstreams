@@ -182,7 +182,7 @@ module.exports = function (io, saveUser) {
     }
     router.out = (req, res) => {
         req.session.destroy();
-        res.header('Access-Control-Allow-Origins', 'https://kstreams.com, https://localhost:22000');
+        res.header('Access-Control-Allow-Origins', 'https://jobcallme.com, https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
@@ -193,7 +193,7 @@ module.exports = function (io, saveUser) {
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
-                res.header('Access-Control-Allow-Origin', 'https://kstreams.com , https://localhost:22000');
+                res.header('Access-Control-Allow-Origin', 'https://jobcallme.com , https://localhost:22000');
                 res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
                 res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
                 res.header('Access-Control-Allow-Credentials', 'true');
@@ -201,7 +201,7 @@ module.exports = function (io, saveUser) {
             })
     }
     router.get = (req, res) => {
-        res.header('Access-Control-Allow-Origin', 'https://kstreams.com,https://localhost:22000');
+        res.header('Access-Control-Allow-Origin', 'https://jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
@@ -219,7 +219,7 @@ module.exports = function (io, saveUser) {
         }
     }
     router.checkSession = function (req, res) {
-        res.header('Access-Control-Allow-Origin', 'https://kstreams.com,https://localhost:22000');
+        res.header('Access-Control-Allow-Origin', 'https://jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');

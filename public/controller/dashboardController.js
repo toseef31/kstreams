@@ -596,15 +596,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.edit = false;
                         updatechat(); 
                     })
-                else
-                    $http.post('/chat', {"isGroup":0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message })
+                else{
+                    var msgObj={"isGroup":0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+                    $scope.message = ''; 
+                    $scope.chats.push(msgObj);
+                    socket.emit('checkmsg', msgObj); 
+                    scrollbottom(); 
+                    $http.post('/chat', msgObj)
                     .then(function (res) {
-                        if (res.data.length < 1) return;
-                        $scope.message = ''; 
-                        $scope.chats.push(res.data);
-                        socket.emit('checkmsg', res.data); 
-                        scrollbottom(); 
+                        if (res.data.length < 1) return; 
                     }) 
+                }
+                    
             } 
             else {
                 if ($scope.edit === true) 
@@ -914,8 +917,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
                 if ($scope.user._id == msg.recevierId && $scope.chatWithId == msg.senderId) {
+                    //console.log('msg ',msg);
                     if ('serviceWorker' in navigator)
-                        send('New message received from '+msg.senderName).catch(err => console.log('New message ',err));
+                        send(msg.senderName,': '+msg.message).catch(err => console.log('New message ',err));
                     
                     $scope.chats.push(msg);
                     scrollbottom();

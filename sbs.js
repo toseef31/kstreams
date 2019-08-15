@@ -74,9 +74,9 @@ app.use('/groups', groupsRoute);
 // push notification code 
 //****
 //****
-const vapidKeys = webpush.generateVAPIDKeys();
-console.log('vapidKeys: ',vapidKeys.publicKey,' and ',vapidKeys.privateKey);
-webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',vapidKeys.publicKey,vapidKeys.privateKey);
+// const vapidKeys = webpush.generateVAPIDKeys();
+// console.log('vapidKeys: ',vapidKeys.publicKey,' and ',vapidKeys.privateKey);
+webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
 app.post('/subscribe',(req,res) => {
 	//Get push subcription object
 	const subscription = req.body.subscription;

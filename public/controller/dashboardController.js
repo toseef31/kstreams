@@ -605,6 +605,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $http.post('/chat', msgObj)
                     .then(function (res) {
                         if (res.data.length < 1) return; 
+                        // $scope.message = ''; 
+                        // $scope.chats.push(res.data);
+                        // socket.emit('checkmsg', res.data); 
+                        // scrollbottom(); 
                     }) 
                 }
                     

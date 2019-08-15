@@ -919,7 +919,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 if ($scope.user._id == msg.recevierId && $scope.chatWithId == msg.senderId) {
                     //console.log('msg ',msg);
                     if ('serviceWorker' in navigator)
-                        send(msg.senderName,': '+msg.message).catch(err => console.log('New message ',err));
+                        send(msg.senderName+': '+msg.message).catch(err => console.log('New message ',err));
                     
                     $scope.chats.push(msg);
                     scrollbottom();

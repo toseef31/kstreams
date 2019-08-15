@@ -42,8 +42,8 @@ mongoose.connect(config.url, { useNewUrlParser: true }).then(
 //***** 
 var users  = [];
 
-const publicVapidKey = 'BEU-89R8Bp4adsJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
-const privateVapidKey = 'adaqwqwsa';
+const publicVapidKey = 'BEU-89R8Bp4KeZEjOSQtFj-3aBvwgFE8iJ20y4CG2H4Mwip9jaX8dkldWsOPJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
+const privateVapidKey = 'ntLibayiqZ-KpIC5swgVRep2ywsbn6zEVC0sS10mnaQ';
 const port = 22000;
 var authUser;
 
@@ -75,7 +75,7 @@ app.use('/groups', groupsRoute);
 //****
 //****
 // const vapidKeys = webpush.generateVAPIDKeys();
-// console.log('vapidKeys: ',vapidKeys.publicKey,' and ',vapidKeys.privateKey);
+// console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
 webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
 app.post('/subscribe',(req,res) => {
 	//Get push subcription object

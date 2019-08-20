@@ -4,13 +4,16 @@
 */
 
 const chatController  = require('./controller/chatController');
+//const clientPushNotif  = require('./public/client');
 const multer          = require('multer');
 const upload          = multer({ dest: 'public/share' });
 module.exports = function(app,io,saveUser){
 
     /*create new object of chatController*/
     var chatCon = new chatController(io,saveUser);
-   
+    //app.post('/notification', clientPushNotif.send);
+    //app.post('/notification');
+
     app.post('/login',chatCon.login);
     app.post('/groupChat',chatCon.groupChat);
 

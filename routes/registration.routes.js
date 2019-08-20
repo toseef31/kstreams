@@ -1,11 +1,10 @@
 const express = require('express');
 const registrationRoutes = express.Router();
 var bcrypt = require('bcrypt');
-let regModel = require('../model/users-model');
 var multer = require('multer');
-//var fs = require('fs');
+let regModel = require('../model/users-model');
+let configData = require('../public/lib/js/config')
 
-//imageDir = "https://localhost:4000/";
 
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
 const storage = multer.diskStorage({
@@ -23,9 +22,9 @@ const upload = multer({
 // -----------------------------------------------------------------------------------------------
 
 registrationRoutes.route("/login").post(function (req, res) {
-    console.log("login");
     var User = regModel;
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
+    let myProjectId = configData.projectId; // getting the stored projectId in configVar
 
     User.findOne({ email: req.body.email }).then(
         (result) => {
@@ -57,7 +56,7 @@ registrationRoutes.route("/login").post(function (req, res) {
 
 registrationRoutes.route("/getloggeduser").post(function (req, res) {
     var User = regModel;
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
     User.findOne({ email: req.body.email }).then(
         (result) => {
@@ -81,9 +80,9 @@ registrationRoutes.route("/getloggeduser").post(function (req, res) {
 
 registrationRoutes.post('/getusers', function (req, res) {
     var User = regModel;
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
-    User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+    User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
         var tempUsers = users;
 
         for (var i = 0; i < tempUsers.length; i++) {
@@ -95,6 +94,7 @@ registrationRoutes.post('/getusers', function (req, res) {
                     "country": tempUsers[i].country,
                     "phone": tempUsers[i].phone,
                     "user_image": tempUsers[i].user_image,
+                    "status": tempUsers[i].status,
                     "userImageLink": (fullUrl + tempUsers[i].user_image)
                 };
         }
@@ -107,10 +107,9 @@ registrationRoutes.post('/getusers', function (req, res) {
 registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
 
     let newUserModel = new regModel(JSON.parse(req.body.userData));
-    let userModel = regModel;
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
-
     var userData = JSON.parse(req.body.userData);
+    let userModel = regModel;
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
    
     userModel.find({ 'email': userData.email }, {'email':true}, function (err, result) {
      
@@ -119,7 +118,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
                 .then(reg => {
                     var User = regModel;
 
-                    User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+                    User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
                         var tempUsers = users;
                         for (var i = 0; i < users.length; i++) {
                             if (users[i].user_image != "") {
@@ -129,6 +128,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
                                     "email": tempUsers[i].email,
                                     "country": tempUsers[i].country,
                                     "phone": tempUsers[i].phone,
+                                    "status": tempUsers[i].status,
                                     "user_image": tempUsers[i].user_image,
                                     "userImageLink": (fullUrl + tempUsers[i].user_image)
                                 };
@@ -155,7 +155,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
 registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
     var User = regModel;
     var newUserModel = new regModel(JSON.parse(req.body.userData));
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
     // if (req.body.userData.password != ""){
     bcrypt.hash(newUserModel.password, 10, function (err, hash) {
@@ -165,7 +165,7 @@ registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
             (result) => {
 
                 var User = regModel;
-                User.find({ 'isAdmin': 0, 'status': 1 }, { '_id': true, 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+                User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
                     var tempUsers = users;
                     for (var i = 0; i < users.length; i++) {
                         if (users[i].user_image != "") {
@@ -175,6 +175,7 @@ registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
                                 "email": tempUsers[i].email,
                                 "country": tempUsers[i].country,
                                 "phone": tempUsers[i].phone,
+                                "status": tempUsers[i].status,
                                 "user_image": tempUsers[i].user_image,
                                 "userImageLink": (fullUrl + tempUsers[i].user_image)
                             };
@@ -195,7 +196,7 @@ registrationRoutes.post('/deleteuser', function (req, res) {
     var User = regModel;
     //const loggedUserId = req.body._id;
     const userIdToBeDeleted = req.body.userId;
-    var fullUrl = req.protocol + '://' + req.get('host') + '/';
+    var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
     User.findByIdAndUpdate(userIdToBeDeleted, { 'status': 0 }).then(
         (result) => {
@@ -203,7 +204,7 @@ registrationRoutes.post('/deleteuser', function (req, res) {
                 res.status(400).send({ 'message': "unable to delete user", 'status': false });
             }
 
-            User.find({ 'isAdmin': 0, 'status': 1 }, { 'email': true, 'user_image': true, 'name': true, 'country': true, 'phone': true }, function (err, users) {
+            User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
                 var tempUsers = users;
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].user_image != "") {
@@ -213,6 +214,7 @@ registrationRoutes.post('/deleteuser', function (req, res) {
                             "email": tempUsers[i].email,
                             "country": tempUsers[i].country,
                             "phone": tempUsers[i].phone,
+                            "status": tempUsers[i].status,
                             "user_image": tempUsers[i].user_image,
                             "userImageLink": (fullUrl + tempUsers[i].user_image)
                         };

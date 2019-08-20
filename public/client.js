@@ -1,11 +1,12 @@
-const publicVapidKey = 'BEU-89R8Bp4KeZEjOSQtFj-3aBvwgFE8iJ20y4CG2H4Mwip9jaX8dkldWsOPJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
+const publicVapidKey = 'BOkWsflrOnCVOs19RXCMiHl-tAbRzKC3BlAwxzTo7rJYWGAgGFzDweF9jgSvlZ17AwV-fIlXPRxPVp_-Hr9gwk4';
 
-// check for service worker
-if ('serviceWorker' in navigator) {
-	//send('you have a new messege').catch(err => console.error(err));
-}
+//check for service worker
+// if ('serviceWorker' in navigator) {
+// 	send('you have a new messege').catch(err => console.error(err));
+// }
+
 // register sw, register push , send push
-async function send(title) {
+async function send() {
 	//registering service worker
 	console.log('regitering service worker.....');
 	const register = await navigator.serviceWorker.register('/worker.js',{
@@ -18,7 +19,16 @@ async function send(title) {
 	const subscription = await register.pushManager.subscribe({
 		userVisibleOnly:true,
 		applicationServerKey:urlBase64ToUint8Array(publicVapidKey)
+	}).then(function (pushSubscription){
+        const pushSub = {
+            endpoint: pushSubscription.endpoint,
+            keys:{
+                p256dh: pushSubscription.getKey('p256dh'),
+                auth: pushSubscription.getKey('auth')
+            }
+        };
 	});
+
 	console.log('push registered');
 
 	// send push notifications

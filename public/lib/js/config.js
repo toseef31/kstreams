@@ -3454,12 +3454,24 @@ Config.smileys = {
     "D:": "anguished"
 };
 
+
 Config.inits = {};
 Config.map = {};
 
 Config.mapcolon = {};
 var a = [];
 Config.reversemap = {};
+
+
+Config.projectId = 0;
+Config.storeProjectId = function (id){
+   Config.projectId = id;
+};
+
+Config.getProjectId = function(){
+    return Config.projectId;
+};
+
 
 Config.init_emoticons = function()
 {
@@ -3508,7 +3520,6 @@ Config.init_unified = function()
     Config.inits.unified = 1;
 
     buildMap();
-
 };
 
 

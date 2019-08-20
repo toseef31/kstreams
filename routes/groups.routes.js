@@ -13,11 +13,11 @@ groupsRouter.route('/addusergroup').post(function (req, res) {
             var Group = groupModel;
             var User = userModel;
 
-            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 } }).exec(function (err, users) {
+            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
                 if (err) { return console.log(err); }
                 var groupUsers = users;
 
-                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': 1 }, {}).exec(function (err, remainingUsers) {
+                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
                     if (err) { return console.log(err); }
 
                     res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
@@ -40,11 +40,11 @@ groupsRouter.route("/deletegroupuser").post(function (req, res) {
             var Group = groupModel;
             var User = userModel;
 
-            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 } }).exec(function (err, users) {
+            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
                 if (err) { return console.log(err); }
                 var groupUsers = users;
 
-                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': 1 }, {}).exec(function (err, remainingUsers) {
+                User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
                     if (err) { return console.log(err); }
 
                     res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
@@ -78,7 +78,7 @@ groupsRouter.route("/editgroup").post(function (req, res) {
    
     Group.findByIdAndUpdate(req.body.groupId, { 'name': req.body.groupName }).then(
         (result) => {
-            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 }, select: { '_id': true, 'email': true, 'username': true, 'status': true } }).exec(function (err, groups) {
+            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
                 res.send(groups);
             })
         }
@@ -93,7 +93,7 @@ groupsRouter.route("/deletegroup").post(function (req, res) {
     Group.findByIdAndUpdate(req.body.groupId, { 'status': 0 }).then(
         (result) => {
             var Group = groupModel;
-            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 }, select: { '_id': true, 'email': true, 'username': true, 'status': true } }).exec(function (err, groups) {
+            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
                 res.send(groups);
             })
 
@@ -105,7 +105,7 @@ groupsRouter.route("/deletegroup").post(function (req, res) {
 groupsRouter.route("/getgroups").get(function (req, res) {
     var Groups = groupModel;
 
-    Groups.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 }, select: { '_id': true, 'email': true, 'username': true, 'status': true } }).exec(function (err, groups) {
+    Groups.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
         res.send(groups);
     })
 })
@@ -114,11 +114,11 @@ groupsRouter.route("/getaddedusers").post(function (req, res) {
     var Group = groupModel;
     var User = userModel;
 
-    Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $eq: 1 }, isAdmin: 0 } }).exec(function (err, users) {
+    Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
         if (err) { return console.log(err); }
         var groupUsers = users;
 
-        User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': 1 }, {}).exec(function (err, remainingUsers) {
+        User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
             if (err) { return console.log(err); }
 
             res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });

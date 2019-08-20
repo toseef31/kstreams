@@ -361,7 +361,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.caller = false;
         $scope.getmembers = [];
         $scope.files = [];
- 
+
+        //{ userId: $scope.user._id }
+        $http.post("/notification").then(function (response){
+           console.log(response);
+        });
+
         /*get all users*/
         $http.get("/getUsers/" + response.data._id)
         .then(function (response) {

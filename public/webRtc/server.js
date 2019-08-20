@@ -25,19 +25,19 @@ var fs    = require('fs');
 var https = require('https'); 
 // let hostIs=location.host.split(':');
 // let webSocketIp='110.10.130.70';
-// if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //kstreams.com
+// if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //www.jobcallme.com
 
 var argv = minimist(process.argv.slice(2), {
   default: {
-      as_uri: "https://127.0.0.1:8443/",
+      as_uri: "https://www.jobcallme.com:8443/",
       ws_uri: "ws://localhost:8888/kurento"
   }
 });
 
 var options =
 {
-  key:  fs.readFileSync('keys/ssl.key'),
-  cert: fs.readFileSync('keys/ssl.crt')
+  key:  fs.readFileSync('keys/jcm/ssl.key'),
+  cert: fs.readFileSync('keys/jcm/ssl.crt')
 };
 
 var app = express();

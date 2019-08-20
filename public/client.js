@@ -5,6 +5,12 @@ const publicVapidKey = 'BOkWsflrOnCVOs19RXCMiHl-tAbRzKC3BlAwxzTo7rJYWGAgGFzDweF9
 // 	send('you have a new messege').catch(err => console.error(err));
 // }
 
+
+// check for service worker
+// if ('serviceWorker' in navigator) {
+// 	send('you have a new messege').catch(err => console.error(err));
+// }
+
 // register sw, register push , send push
 async function send() {
 	//registering service worker

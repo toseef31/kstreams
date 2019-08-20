@@ -18,6 +18,10 @@ const chatSchema = mongoose.Schema({
 		ref: 'groups'            //If isGroup is 1 then there will be groupId and no receiver id          
 	},
 	"message": String,
+	"messageType": {
+		type: String,
+		default: 'normal'
+	},
 	"status": {
 		type: Number,
 		default: 1        //1=Active, 0=Deleted

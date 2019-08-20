@@ -6,7 +6,24 @@
 const chatController  = require('./controller/chatController');
 //const clientPushNotif  = require('./public/client');
 const multer          = require('multer');
-const upload          = multer({ dest: 'public/share' });
+//const upload          = multer({ dest: 'public/share' });
+
+// ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {  
+        cb(null, 'images/chatImages/')
+    },
+
+    filename: function (req, file, cb) {
+        console.log(file);
+        cb(null, file.originalname)
+    }
+})
+const upload = multer({
+    storage: storage
+})
+// -----------------------------------------------------------------------------------------------
+
 module.exports = function(app,io,saveUser){
 
     /*create new object of chatController*/
@@ -33,7 +50,7 @@ module.exports = function(app,io,saveUser){
 
     //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
     app.get('/getGroup/:groupId',chatCon.getGroup);
-
+    app.post('/getLastGroupMsg',chatCon.getLastGroupMsg);
 
     app.get('/deleteMsg/:msgId/:type',chatCon.deleteMsg);
     app.get('/logout/:userId',chatCon.logout);
@@ -42,8 +59,11 @@ module.exports = function(app,io,saveUser){
     app.get('/getNotification/:userId',chatCon.getNotification);
     app.post('/notificationseen',chatCon.notificationseen);
     app.post('/getgroupchat',chatCon.getgroupchat);
-    app.post('/chatFilesShare', upload.array('avatar'), chatCon.addfiles);
-    app.post('/groupFilesShare', upload.array('avatar'), chatCon.groupFilesShare);
+    app.post('/getcurrentgroupchat',chatCon.getcurrentgroupchat);
+
+   // app.post('/chatFilesShare', upload.single('file'), chatCon.addfiles);
+    app.post('/chatFilesShare', upload.array('file'), chatCon.addfiles);
+    app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
     // app.get('/changeStatus',chatCon.changeStatus);
     app.post('/SUDTS',chatCon.saveUserDataToSession);
     app.post('/set',chatCon.set);

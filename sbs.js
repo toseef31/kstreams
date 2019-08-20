@@ -3,23 +3,24 @@
 * designBy => Peek International
 */
 
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const session = require('express-session');
-const userModel = require('./model/users-model');
-const bodyParser = require('body-parser');
-//const webpush     = require('web-push');
-const cors = require('cors');
-const sslConfig = require('./ssl-config');
-const options = {
-	key: sslConfig.privateKey,
-	cert: sslConfig.certificate,
-};
-const server = require('https').Server(options, app);
-const io = require('socket.io')(server);
+const express     = require('express');
+const app         = express();
+const mongoose    = require('mongoose'); 
+const session     = require('express-session');
+const userModel   = require('./model/users-model'); 
+const bodyParser  = require('body-parser');
+const webpush     = require('web-push');
+const cors        = require('cors');
+const sslConfig   = require('./ssl-config');
+const options     = {
+    	key: sslConfig.privateKey,
+    	cert: sslConfig.certificate,
+      };
+const server    = require('https').Server(options,app);
+const io       = require('socket.io')(server);
+
 const config = require('./config/DB');
-const webpush = require('web-push');
+
 //*****
 //*****
 //mongo db connection 
@@ -47,8 +48,8 @@ webpush.setVapidDetails('https://localhost:22000/#!/', publicVapidKey, privateVa
 //***** 
 var users = [];
 
-//const publicVapidKey = 'BEU-89R8Bp4adsJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
-//const privateVapidKey = 'adaqwqwsa';
+//const publicVapidKey = 'BEU-89R8Bp4KeZEjOSQtFj-3aBvwgFE8iJ20y4CG2H4Mwip9jaX8dkldWsOPJtnp7fcqnQR1FbzVZeQ1YD7N5tA';
+//const privateVapidKey = 'ntLibayiqZ-KpIC5swgVRep2ywsbn6zEVC0sS10mnaQ';
 const port = 22000;
 var authUser;
 
@@ -86,17 +87,19 @@ app.use('/friends', friendRoute);
 // push notification code 
 //****
 //****
-// webpush.setVapidDetails('mailto:saadahmed.91221@gmail.com',publicVapidKey,privateVapidKey);
-// app.post('/subscribe',(req,res) => {
-// 	//Get push subcription object
-// 	const subscription = req.body.subscription;
-// 	//send 201 resource created
-// 	res.status(201).json({});
-// 	//create payload
-// 	const payload = JSON.stringify({ title :req.body.title});
-// 	//pass object into send notification
-// 	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
-// });
+// const vapidKeys = webpush.generateVAPIDKeys();
+// console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
+webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
+app.post('/subscribe',(req,res) => {
+	//Get push subcription object
+	const subscription = req.body.subscription;
+	//send 201 resource created
+	res.status(201).json({});
+	//create payload
+	const payload = JSON.stringify({ title :req.body.title});
+	//pass object into send notification
+	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
+});
 //*****
 //*****
 // server start
@@ -142,7 +145,7 @@ function getData(model, obj = 0, callback) {
 }
 /* save the current login user info in a variable */
 function saveUser(user) {
-	console.log(user);
+	//console.log(user);
 	authUser = user;
 	setUserStatus(1, authUser._id);
 }

@@ -66,7 +66,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-    let webSocketIp = 'kstreams.com';  //localhost || kstreams.com
+    let webSocketIp = 'www.jobcallme.com';  //localhost || www.jobcallme.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
     class Ws {
         get newClientPromise() {
@@ -182,9 +182,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log('incomingCall ', message.userData);
         $scope.setCallState(PROCESSING_CALL);
 
-        // if ('serviceWorker' in navigator) {
-        //     send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
-        // }
+        if ('serviceWorker' in navigator) {
+            send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
+        }
         $scope.toggleBtn(true);
         //$scope.busy               = true;
 
@@ -405,9 +405,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.upload = function () {
+            console.log("upload");
             var fd = new FormData();
             angular.forEach($scope.files, function (file) {
-                fd.append('avatar', file); // when previwe on then file.file
+                fd.append('file', file); // when previwe on then file.file
             })
             fd.append('senderId', $scope.user._id);
             fd.append('senderName', $scope.user.name);
@@ -428,11 +429,25 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     transformRequest: angular.identity,
                     headers: { 'Content-Type': undefined }
                 }).then(function (d) {
-                    $http.post('/getgroupchat', { id: $scope.connectionId }).then((res) => {
-                        $scope.chats = res.data[0].message;
-                        socket.emit('updateGroupFiles', { members: res.data[0].members, messages: res.data[0].message });
-                        scrollbottom();
-                    })
+                   
+                    socket.emit('updateGroupFiles', d);
+                    // $http.post('/getLastGroupMsg', {id: $scope.connectionId, senderId: $scope.user._id}).then(function (groupchat) { 
+                    //     console.log(groupchat);
+                    //   //  $scope.groupchats = groupchat.data; 
+                    //   socket.emit('updateGroupFiles', groupchat);
+
+                    //   // socket.emit('updateGroupFiles', { members: res.data[0].members, messages: res.data[0].message });
+
+                    //     scrollbottom();
+                    // }) 
+
+                    
+                    // $http.post('/getcurrentgroupchat', { id: $scope.connectionId, senderId: $scope.user._id}).then((res) => {
+                    //  //   $scope.chats = res.data[0].message;
+                    //    console.log(res);
+                    //     socket.emit('updateGroupFiles', { members: res.data[0].members, messages: res.data[0].message });
+                    //     scrollbottom();
+                    // })
                 })
             }
 
@@ -451,13 +466,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
  
 
         socket.on('updateOtherMembersFiles', function (data) {
+            
             $scope.$apply(() => {
-                for (var i = 0; i < data.members.length; i++) {
-                    if (data.members[i].id == $scope.user._id) {
-                        $scope.chats = data.messages;
-                    }
-                }
+                console.log(data.data[0]);
+                $scope.groupchats.push(data.data[0]);
+                console.log($scope.groupchats);
+               
+                scrollbottom();
+                // for (var i = 0; i < data.members.length; i++) {
+                //     if (data.members[i].id == $scope.user._id) {
+                //         $scope.chats = data.messages;
+                //     }
+                // }
             });
+          
+           
         })
         /*get All groups*/
         // $http.get("/getGroups/"+$rootScope.user._id)
@@ -587,6 +610,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
         /* send message to the user group and chat both handle in this function through sendType*/
         $scope.sendMessage = function (message = 0, chkmsg = 0) {
+           
             if (!$scope.message && chkmsg) $scope.message = chkmsg;
             else if (!$scope.message && !chkmsg) return;
 
@@ -601,15 +625,24 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.edit = false;
                         updatechat(); 
                     })
-                else
-                    $http.post('/chat', {"isGroup":0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message })
+                else{
+                    var msgObj={"isGroup":0, "messageType": "normal", "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+                    $scope.message = ''; 
+                    $scope.chats.push(msgObj);
+                    socket.emit('checkmsg', msgObj); 
+                    scrollbottom(); 
+                    $http.post('/chat', msgObj)
                     .then(function (res) {
-                        if (res.data.length < 1) return;
-                        $scope.message = ''; 
-                        $scope.chats.push(res.data);
-                        socket.emit('checkmsg', res.data); 
-                        scrollbottom(); 
+                        if (res.data.length < 1) return; 
+                        // var msgObj={"isGroup":0, "messageType": $scope.user.messageType, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+
+                        // $scope.message = ''; 
+                        // $scope.chats.push(res.data);
+                        // socket.emit('checkmsg', res.data); 
+                        // scrollbottom(); 
                     }) 
+                }
+                    
             } 
             else {
                 if ($scope.edit === true) 
@@ -904,6 +937,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
         /* update the chat of the friend side after any action*/
         socket.on('updateChatAll', (conversation) => {
+          
             var recevierId = conversation.length >= 0 ? conversation[0].recevierId : conversation.recevierId;
             var senderId = conversation.length >= 0 ? conversation[0].senderId : conversation.senderId;
             $scope.$apply(function () {
@@ -917,8 +951,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
+            console.log(msg);
             $scope.$apply(function () {
                 if ($scope.user._id == msg.recevierId && $scope.chatWithId == msg.senderId) {
+                    //console.log('msg ',msg);
+                    if ('serviceWorker' in navigator)
+                        send(msg.senderName+': '+msg.message).catch(err => console.log('New message ',err));
+                    
                     $scope.chats.push(msg);
                     scrollbottom();
                 }

@@ -19,8 +19,8 @@ const chatSchema = mongoose.Schema({
 	},
 	"message": String,
 	"messageType": {
-		type: String,
-		default: 'normal'
+		type: Number,    // 0- Normal , 1- Image, 2- Text, PDF etc..
+		default: 0
 	},
 	"status": {
 		type: Number,

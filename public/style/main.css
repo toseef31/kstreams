@@ -229,6 +229,16 @@
   font-size: 14px;
   text-decoration: underline;
 }
+
+.messageType2Width {
+  width: 20%;
+  margin-left: 3%;
+}
+
+.customMargin{
+  margin-left: 3%;
+}
+
 .received_withd_msg a {
   color: #fff;
 }
@@ -327,7 +337,7 @@ img{ max-width:100%;}
 }
 .chat_img img{
   max-width:100%;
-  height: 100%;
+  height: 10%;
 }
 .userText{
   margin-left: 10%;
@@ -415,6 +425,7 @@ img{ max-width:100%;}
   padding: 5px 10px 5px 12px;
   width: 100%;
   color:#fff;
+  margin-bottom: 7px;
 }
 
 .incoming_msg_img img{
@@ -439,7 +450,7 @@ img{ max-width:100%;}
 .time_date {
   color: #747474;
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   margin: 8px 0 0;
 }
 .received_withd_msg { width: 57%;}

@@ -81,7 +81,6 @@ app.use('/groups', groupsRoute);
 app.use('/projects', projectRoute);
 app.use('/friends', friendRoute);
 
-
 //****
 //****
 // push notification code 

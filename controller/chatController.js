@@ -7,9 +7,14 @@ const userModel = require('../model/users-model');
 const chatModel = require('../model/chatModel');
 const groupsModel = require('../model/groupsModel');
 const notifiModel = require('../model/notificationModel');
+const projectModel = require('../model/projectModel');
 const mongoose = require('mongoose');
 const helpers = require('../helperfunctions/helpers');
+const isImage = require('is-image');
 
+// const readChunk = require('read-chunk');
+// const fileType = require('file-type');
+var path = require('path');
 var sbs = require('../sbs')
 
 module.exports = function (io, saveUser) {
@@ -18,6 +23,17 @@ module.exports = function (io, saveUser) {
     var helper = new helpers(io);
     /*main router object which contain all function*/
     var router = {};
+    var projectData;
+
+    router.getProjectData = function (req, res) {
+        var projectId = req.body.projectId;
+        projectModel.find({ '_id': projectId }).exec(function (err, projData) {
+            projectData = projData;
+          //  console.log('e');
+            res.send(projectData);
+        })
+    }
+
 
     router.groupChat = function (req, res) {
 
@@ -121,7 +137,7 @@ module.exports = function (io, saveUser) {
         newMessage.save(function (err, data) {
             if (err) throw err;
             chatModel.findOne({ senderId: sender, recevierId: recevier }).sort({ updatedAt: -1 }).exec(function (err, data) {
-               // console.log(data);
+                // console.log(data);
                 helper.addNewMessage(data);
                 res.json(data);
             })
@@ -179,34 +195,37 @@ module.exports = function (io, saveUser) {
         //         res.json(data);
         //     })
         //    })
-
     }
 
     router.getLastGroupMsg = function (req, res) {
         var id = req.body.id;
         var sid = req.body.senderId;
-       
-        chatModel.find({ groupId: id , senderId: sid}).populate('senderId').lean().then(function (data) {
-            console.log(data);
+
+        chatModel.find({ groupId: id, senderId: sid }).populate('senderId').lean().then(function (data) {
             res.json(data);
         })
-
     }
 
     router.out = (req, res) => {
         req.session.destroy();
-        res.header('Access-Control-Allow-Origins', 'https://www.jobcallme.com, https://localhost:22000');
+       // console.log('d'); //console.log(projectData[0].domainUrl);
+        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+      //  res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
         res.json({ message: "session destroy" });
     }
+
     router.set = (req, res) => {
         userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
-                res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com , https://localhost:22000');
+               // console.log('c');
+                res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+              // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+
                 res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
                 res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
                 res.header('Access-Control-Allow-Credentials', 'true');
@@ -214,17 +233,20 @@ module.exports = function (io, saveUser) {
             })
     }
     router.get = (req, res) => {
-        res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+        //console.log('b');
+        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
         // console.log(sbs.authUser);
         if (req.session.user && typeof req.session.user._id !== 'undefiend') {
-            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {  
+            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
             });
         }
-        else{
+        else {
             res.status(401).send();
             // userModel.update({'_id': sbs.authUser._id}, {'onlineStatus': 0}).exec(function (err, result) {
             //     res.status(401).send();
@@ -232,7 +254,9 @@ module.exports = function (io, saveUser) {
         }
     }
     router.checkSession = function (req, res) {
-        res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+      //  console.log('a');
+        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
@@ -247,15 +271,31 @@ module.exports = function (io, saveUser) {
         }
     }
 
+    router.downloadFile = function (req, res) {
+        var filename = req.params.filename;
+        // res.download('../kstreams/images/chatImages/' + filename);  
+        filepath = path.join(__dirname, '../images/chatImages') + '/' + filename;
+
+        res.download(filepath);
+        //res.sendFile(filepath);
+    }
+
+    // router.downloadFile = function(req, res){
+    //     console.log(req.body);
+    //     filepath = path.join('/images/'+req.body.urloffolder+'/'+req.body.filename);
+    //     res.sendFile(filepath);
+    // }
+
     router.login = function (req, res) {
         var email = req.body.email;
         var password = req.body.password;
 
         helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
+
             if (user.length > 0) {
                 let User = user[0];
                 /*change status from offline to online*/
-                helper.changeStatus(User._id, { }, function (data) {
+                helper.changeStatus(User._id, {}, function (data) {
                     /*set session */
                     req.session.user = User;
                     /*this function use to move user info to another view*/
@@ -287,8 +327,7 @@ module.exports = function (io, saveUser) {
 
     router.logout = function (req, res) {
         if (req.session.user) {
-            req.session.destroy(function (err) 
-            {
+            req.session.destroy(function (err) {
                 userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0 }).exec(function (err, result) {
                     res.status(404).send();
                 })
@@ -373,23 +412,31 @@ module.exports = function (io, saveUser) {
     }
 
     router.addfiles = function (req, res, next) {
-            // var newchat = new chatModel({
-            //     "senderId": req.body.senderId,
-            //     "recevierId": req.body.friendId,
-            //     "message": req.file.originalname,
-            // });
-            // newchat.save( function (err, data) {
-            //     if (err) throw err;
-            // })
+        // var newchat = new chatModel({
+        //     "senderId": req.body.senderId,
+        //     "recevierId": req.body.friendId,
+        //     "message": req.file.originalname,
+        // });
+        // newchat.save( function (err, data) {
+        //     if (err) throw err;
+        // })
+        let isFileImage = 1;
 
         for (var i = 0; i < req.files.length; i++) {
+            if (isImage('./images/chatImages/' + req.files[i].originalname)) {
+                isFileImage = 1;
+            }
+            else {
+                isFileImage = 2;
+            }
+
             var newchat = new chatModel({
                 "senderId": req.body.senderId,
                 "recevierId": req.body.friendId,
                 "message": req.files[i].originalname,
-                "messageType": 'file'
+                "messageType": isFileImage
             });
-            newchat.save( function (err, data) {
+            newchat.save(function (err, data) {
                 if (err) throw err;
             })
         }
@@ -397,40 +444,42 @@ module.exports = function (io, saveUser) {
     }
 
     router.groupFilesShare = function (req, res, next) {
-     
+
+        let isFileImage = 1;
+
         for (var i = 0; i < req.files.length; i++) {
-           // var type = req.files[i].mimetype;
-           // var spliceType = type.split('/');
-          //  var id = req.body.id;
-            // var senderId = req.body.senderId;
-            // var name = req.body.name;
-            // var message = req.files[i].originalname;
-            // var msgType = 'file';
+
+            if (isImage('./images/chatImages/' + req.files[i].originalname)) {
+                isFileImage = 1;
+            }
+            else {
+                isFileImage = 2;
+            }
 
             var newchat = new chatModel({
                 "groupId": req.body.id,
                 "senderId": req.body.senderId,
                 "isGroup": 1,
-              //  "recevierId": req.body.friendId,
+                //  "recevierId": req.body.friendId,
                 "message": req.files[i].originalname,
-                "messageType": 'file'
+                "messageType": isFileImage
             });
-            newchat.save( function (err, data) {
+
+            newchat.save(function (err, data) {
                 if (err) throw err;
 
-                chatModel.find({_id: data._id, groupId: req.body.id , senderId: req.body.senderId}).populate('senderId').lean().then(function (data) {
-                    console.log(data);
+                chatModel.find({ _id: data._id, groupId: req.body.id, senderId: req.body.senderId }).populate('senderId').lean().then(function (data) {
                     res.json(data);
                 })
 
-             //   res.send(data);
+                //   res.send(data);
             })
 
             // groupsModel.update({ _id: id }, { $push: { message: {isGroup:1, messageType: msgType, message: message } }, lastMsg: originalName }, function (err, data) {
             //     if (err) throw err;
             // })
-          
-          //  res.send(req.files);
+
+            //  res.send(req.files);
         }
         // helper.RTGU();
         // res.json({ message: 'done' });
@@ -446,20 +495,18 @@ module.exports = function (io, saveUser) {
     router.getcurrentgroupchat = function (req, res) {
         var id = req.body.id;
         var _senderId = req.body.senderId;
-        console.log(id);console.log(_senderId); 
         // groupsModel.find({ _id: id, senderId: _senderId, 'status': 1 }).lean().exec(function (err, data) {
         //     console.log(data);
         //     res.json(data);
         // })
 
-        groupsModel.find( {'groupId': id, 'senderId': _senderId },function (err, data) {
-          console.log(data);
+        groupsModel.find({ 'groupId': id, 'senderId': _senderId }, function (err, data) {
             res.json(data);
         });
-       
+
     }
-  
-  
+
+
     router.saveUserDataToSession = (req, res) => {
         userModel.find({ email: req.body.user_email }, (err, data) => {
             if (err) throw err;

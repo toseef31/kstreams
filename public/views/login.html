@@ -1,10 +1,13 @@
 <div class="container" ng-controller="loginController">
-<h1 class="form-heading">login Form</h1>
     <div class="login-form">
         <div class="main-div col-sm-4">
             <div class="panel">
-                <img src="images/favicon.png"  />
-                <h2>Kstreams Chat</h2>
+                <img ng-if="projectLogo == ''" src="images/favicon.png"  />
+                <img ng-if="projectLogo != ''" src="images/logos/{{projectLogo}}"  />
+
+                <h2 ng-if="projectName == ''">Kstreams Chat</h2>
+                <h2 ng-if="projectName != ''">{{projectName}}</h2>
+
                 <p>Please enter your email and password</p>
             </div>
             <form id="Login" ng-submit="login()">

@@ -3,7 +3,8 @@ const registrationRoutes = express.Router();
 var bcrypt = require('bcrypt');
 var multer = require('multer');
 let regModel = require('../model/users-model');
-let configData = require('../public/lib/js/config')
+let projectModel = require('../model/projectModel');
+let configData = require('../public/lib/js/config');
 
 
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
@@ -45,6 +46,13 @@ registrationRoutes.route("/login").post(function (req, res) {
                 if (result.user_image != '') {
                     var imageFile = fullUrl + result.user_image;
                 }
+
+                //------------------- GET PROJECT DATA ----------------------------------------
+                // var projectId = req.body.projectId;
+                // projectModel.find({ '_id': projectId }).exec(function (err, projectData) {
+                //    res.send(projectData);
+                // })
+                //-----------------------------------------------------------------------------
 
                 const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                 return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });

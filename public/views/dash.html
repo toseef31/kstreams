@@ -2,10 +2,10 @@
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
-    <button type="button" ng-click="upload()" >submit</button>
+    <button type="button" ng-click="upload()">submit</button>
   </form>
   <!-- file upload code ends -->
-  
+
   <!-- main container -->
   <!-- main container -->
   <!-- main container -->
@@ -25,82 +25,92 @@
             <!-- left side bar for mobile view -->
             <!-- left side bar for mobile view -->
 
-            <div ng-if="!isChatPanel && isSidePanel" class="inbox_people posRelative col-sm-4 col-xs-12 hidden-lg hidden-md hidden-sm width100" id="mobile-view-contact"> 
-              
+            <div ng-if="!isChatPanel && isSidePanel"
+              class="inbox_people posRelative col-sm-4 col-xs-12 hidden-lg hidden-md hidden-sm width100"
+              id="mobile-view-contact">
+
               <div class="headind_srch">
-                  <div class="recent_heading width100">
-                    <div class="pro_img"> 
-                      <span ng-if="user.user_image == ''">
-                        <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
-                      </span>
-                      <span ng-if="user.user_image != ''">
-                        <img class="importantHeight" src="images/profile-photos/{{user.user_image}}" alt="{{user.name}}" /> 
-                      </span> 
-                    </div>
-                    <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
-                      <div class="fa fa-angle-down hidden stAngleDd"></div>
-                    </div> 
-                    <h4>{{user.name}}</h4>
-                    <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()"> 
-                      <span class='glyphicon glyphicon-log-out'></span> Logout
-                    </a>
+                <div class="recent_heading width100">
+                  <div class="pro_img">
+                    <span ng-if="user.user_image == ''">
+                      <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
+                    </span>
+                    <span ng-if="user.user_image != ''">
+                      <img class="importantHeight" src="images/profilePhotos/{{user.user_image}}" alt="{{user.name}}" />
+                    </span>
                   </div>
+                  <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()"
+                    ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+                    <div class="fa fa-angle-down hidden stAngleDd"></div>
+                  </div>
+                  <h4>{{user.name}}</h4>
+                  <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()">
+                    <span class='glyphicon glyphicon-log-out'></span> Logout
+                  </a>
                 </div>
-                <div class="inbox_chat">
-                  <uib-tabset active="activeForm" class="contact-tabs"> 
-                    <!-- tab one content -->
-                    <!-- recent tab start-->
-                    <!-- recent tab start-->
-                    <!-- recent tab start mobile--> 
-                    <uib-tab select="chatActive()" index="nchatIndex" heading="Recent Chat">
-                     
-                      <div ng-if="allUsers.length > 0">
-                        <div ng-repeat="userA in allUsers"  ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index" class="user_profile a1" onclick="toggle()">
-                          <div class="chat_list active_chat posRelative" ng-if="userA._id != user._id"  ng-click="startChat({type:1,user:userA})">
-                            <div class="chat_people">
-                              <div class="chat_img "> 
-                                  <span ng-if="userA.onlineStatus == 0">
-                                      <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
-                                  </span>
-                                  <span ng-if="userA.onlineStatus == 1">
-                                     <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span> 
-                                  </span>   
-                                  <span ng-if="userA.user_image == ''">
-                                    <img class="importantHeight" ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{userA.name}}" /> 
-                                  </span>
-                                  <span ng-if="userA.user_image != ''">
-                                    <img class="importantHeight" ng-if="userA.receiverId != user._id" src="images/profile-photos/{{userA.user_image }}" alt="{{userA.name}}" /> 
-                                  </span> 
-                                </div>  
-                                <div class="chat_ib color-white"> 
-                                  <h5 ng-if="userA.receiverId != user._id">{{userA.name}} </h5>
-                                  <div ng-repeat="msg in userA.chat">
-                                    <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">New message <span class="badge">{{msg.unreadMsg}}</span></p>
-                                    <p><span class="wrap">{{msg.message }}</span> <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span></p>
-                                  </div>
-                                </div> 
+              </div>
+              <div class="inbox_chat">
+                <uib-tabset active="activeForm" class="contact-tabs">
+                  <!-- tab one content -->
+                  <!-- recent tab start-->
+                  <!-- recent tab start-->
+                  <!-- recent tab start mobile-->
+                  <uib-tab select="chatActive()" index="nchatIndex" heading="Recent Chat">
+
+                    <div ng-if="allUsers.length > 0">
+                      <div ng-repeat="userA in allUsers" ng-class="{grpChecked: $parent.selection==$index}"
+                        ng-click="$parent.selection=$index" class="user_profile a1" onclick="toggle()">
+                        <div class="chat_list active_chat posRelative" ng-if="userA._id != user._id"
+                          ng-click="startChat({type:1,user:userA})">
+                          <div class="chat_people">
+                            <div class="chat_img ">
+                              <span ng-if="userA.onlineStatus == 0">
+                                <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
+                              </span>
+                              <span ng-if="userA.onlineStatus == 1">
+                                <span class="status "
+                                  ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
+                              </span>
+                              <span ng-if="userA.user_image == ''">
+                                <img class="importantHeight" ng-if="userA.receiverId != user._id"
+                                  src="images/noProfile.png" alt="{{userA.name}}" />
+                              </span>
+                              <span ng-if="userA.user_image != ''">
+                                <img class="importantHeight" ng-if="userA.receiverId != user._id"
+                                  src="images/profilePhotos/{{userA.user_image }}" alt="{{userA.name}}" />
+                              </span>
+                            </div>
+                            <div class="chat_ib color-white">
+                              <h5 ng-if="userA.receiverId != user._id">{{userA.name}} </h5>
+                              <div ng-repeat="msg in userA.chat">
+                                <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">New
+                                  message <span class="badge">{{msg.unreadMsg}}</span></p>
+                                <p><span class="wrap">{{msg.message }}</span>
+                                  <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span></p>
                               </div>
                             </div>
                           </div>
-                        <div ng-if="allUsers.length == 0">
-                          <div class="notfound">
-                            <h3>You have no chat</h3>
-                          </div>
                         </div>
                       </div>
-                      <!-- users end -->
-
-                      <div ng-if="!usersLoaded">
-                        <strong style="color:wheat">Loading ...</strong>
+                      <div ng-if="allUsers.length == 0">
+                        <div class="notfound">
+                          <h3>You have no chat</h3>
+                        </div>
                       </div>
-                    </uib-tab>
-                    <!-- recent tab end-->
-                    <!-- recent tab end-->
-                    <!-- recent tab end  mobile-->
- 
-                 <uib-tab select="groupChatActive()" index="gchatIndex" heading="Group Chat"> 
-                   <!-- <p style="color: wheat">{{gchatIndex}}</p> -->
-                  <!-- <div ng-if="allGroups.length > 0">
+                    </div>
+                    <!-- users end -->
+
+                    <div ng-if="!usersLoaded">
+                      <strong style="color:wheat">Loading ...</strong>
+                    </div>
+                  </uib-tab>
+                  <!-- recent tab end-->
+                  <!-- recent tab end-->
+                  <!-- recent tab end  mobile-->
+
+                  <uib-tab select="groupChatActive()" index="gchatIndex" heading="Group Chat">
+                    <!-- <p style="color: wheat">{{gchatIndex}}</p> -->
+                    <!-- <div ng-if="allGroups.length > 0">
                     <div ng-repeat="groupA in allGroups">
                       <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA}); " >
                         <div> 
@@ -110,21 +120,24 @@
                     </div> 
                   </div> -->
 
-                  <div ng-if="allGroups.length > 0">
-                    <div ng-repeat="groupA in allGroups" class='a2' ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
-                      <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})"> 
-                        <div><h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5></div>
+                    <div ng-if="allGroups.length > 0">
+                      <div ng-repeat="groupA in allGroups" class='a2' ng-class="{grpChecked: $parent.selection==$index}"
+                        ng-click="$parent.selection=$index">
+                        <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})">
+                          <div>
+                            <h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5>
+                          </div>
+                        </div>
                       </div>
-                    </div> 
-                  </div>
+                    </div>
 
-                  <div ng-if="!groupsLoaded">
+                    <div ng-if="!groupsLoaded">
                       <strong style="color:wheat">Loading ...</strong>
                     </div>
-                      </uib-tab> 
+                  </uib-tab>
 
-                  </uib-tabset>
-                </div>
+                </uib-tabset>
+              </div>
             </div>
 
             <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
@@ -133,84 +146,91 @@
               <li ng-class="currSt==2?'active':''" ng-click='changeSt(2)'>Do not disturb</li>
               <li ng-class="currSt==3?'active':''" ng-click='changeSt(3)'>Invisible</li>
             </ul>
-            
+
           </div>
         </div>
 
-          <!-- left side bar for desktop view -->
-          <!-- left side bar for desktop view -->
-          <!-- left side bar for desktop view -->
-        <div class="inbox_people posRelative col-sm-4 col-xs-12 hidden-xs" id="contact-bar" ng-click="disableMsgEdit(); showDDwnDisabler()">
-   
+        <!-- left side bar for desktop view -->
+        <!-- left side bar for desktop view -->
+        <!-- left side bar for desktop view -->
+        <div class="inbox_people posRelative col-sm-4 col-xs-12 hidden-xs" id="contact-bar"
+          ng-click="disableMsgEdit(); showDDwnDisabler()">
+
           <div class="headind_srch">
             <div class="recent_heading">
-              <div class="pro_img"> 
+              <div class="pro_img">
                 <span ng-if="user.user_image == ''">
-                  <img class="importantHeight" src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
+                  <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
                 </span>
                 <span ng-if="user.user_image != ''">
-                  <img class="importantHeight" src="images/profile-photos/{{user.user_image}}" alt="{{user.name}}" /> 
-                </span> 
+                  <img class="importantHeight" src="images/profilePhotos/{{user.user_image}}" alt="{{user.name}}" />
+                </span>
               </div>
-              <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass" ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
+              <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass"
+                ng-mouseover="imgStDrop(1)" ng-mouseout="imgStDrop(0)">
                 <div class="fa fa-angle-down hidden stAngleDd"></div>
-              </div> 
-              <h4>{{user.name}}</h4>   
-              <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()"> 
+              </div>
+              <h4>{{user.name}}</h4>
+              <a href='javascript:void(0)' class='btn btn-default btnLogOut' ng-click="logout()">
                 <span class='glyphicon glyphicon-log-out'></span> Logout
               </a>
             </div>
           </div>
-          
+
           <div class="inbox_chat">
-            
-            <uib-tabset active="activeForm"> 
+
+            <uib-tabset active="activeForm">
               <!-- tab one content -->
               <!-- recent tab start-->
               <!-- recent tab start-->
-              <!-- recent tab start Desktop--> 
-              <uib-tab  select="chatActive()"  index="nchatIndex" heading="Recent Chat">
-                <div ng-if="allUsers.length > 0"> 
-                  <div ng-repeat="userA in allUsers" class='a3' ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
-                    <div class="chat_list active_chat posRelative" ng-if="userA._id != user._id"  ng-click="startChat({type:1,user:userA})">
+              <!-- recent tab start Desktop-->
+              <uib-tab select="chatActive()" index="nchatIndex" heading="Recent Chat">
+                <div ng-if="allUsers.length > 0">
+                  <div ng-repeat="userA in allUsers" class='a3' ng-class="{grpChecked: $parent.selection==$index}"
+                    ng-click="$parent.selection=$index">
+                    <div class="chat_list active_chat posRelative" ng-if="userA._id != user._id"
+                      ng-click="startChat({type:1,user:userA})">
                       <!-- <i class="fa fa-close text-danger removeUser" tooltip-placement="top" uib-tooltip="Delete user" ng-click="removeUser(userA._id)"></i> -->
-                      <div class="chat_people"> 
-                        
-                        <div class="chat_img"> 
-                         
+                      <div class="chat_people">
+
+                        <div class="chat_img">
+
                           <span ng-if="userA.onlineStatus == 0">
-                              <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
+                            <span class="status" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
                           </span>
                           <span ng-if="userA.onlineStatus == 1">
-                             <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span> 
-                          </span>  
-            
+                            <span class="status "
+                              ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
+                          </span>
+
                           <!-- <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span> -->
-                         
+
                           <span ng-if="userA.user_image == ''">
-                            <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="images/profile-photos/noProfile.png" alt="{{user.name}}" /> 
+                            <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
+                              alt="{{user.name}}" />
                           </span>
                           <span ng-if="userA.user_image != ''">
-                            <img class="importantHeight"   ng-if="userA.receiverId != user._id" src="images/profile-photos/{{userA.user_image }}" alt="{{userA.name}}" /> 
-                          </span> 
+                            <img class="" ng-if="userA.receiverId != user._id"
+                              src="images/profilePhotos/{{userA.user_image }}" alt="{{userA.name}}" />
+                          </span>
                         </div>
 
 
-                        <div class="chat_ib color-white userText"> 
-                          <span>{{userA.name}}</span> 
+                        <div class="chat_ib color-white userText">
+                          <span>{{userA.name}}</span>
                           <div ng-repeat="msg in userA.chat">
                             <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">
                               New message <span class="badge">{{msg.unreadMsg}}</span>
                             </p>
                             <p>
-                              <span class="wrap">{{msg.message }}</span> 
+                              <span class="wrap">{{msg.message }}</span>
                               <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span>
-                            </p> 
-                          </div> 
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div> 
-                  </div> 
+                    </div>
+                  </div>
                 </div>
                 <div ng-if="allUsers.length == 0">
                   <div class="notfound">
@@ -228,14 +248,19 @@
 
               <!-- group tab start-->
               <!-- group tab start-->
-              <!-- group tab start Desktop--> 
-              <uib-tab  select="groupChatActive()"  index="gchatIndex" heading="Group Chat"> 
+              <!-- group tab start Desktop-->
+              <uib-tab ng-if="user.projectId.groups == 1" select="groupChatActive()" index="gchatIndex"
+                heading="Group Chat">
+                <!-- <h1 style="color: #dadada">{{user.projectId.groups}}</h1> -->
                 <div ng-if="allGroups.length > 0">
-                  <div ng-repeat="groupA in allGroups" class='a4' ng-class="{grpChecked: $parent.selection==$index}" ng-click="$parent.selection=$index">
-                    <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})" > 
-                      <div><h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5></div>
+                  <div ng-repeat="groupA in allGroups" class='a4' ng-class="{grpChecked: $parent.selection==$index}"
+                    ng-click="$parent.selection=$index">
+                    <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})">
+                      <div>
+                        <h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5>
+                      </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
                 <div ng-if="allGroups.length <= 0">
                   <p class="text-center nGroupFound">No group found</p>
@@ -245,7 +270,7 @@
               <!-- group tab end -->
               <!-- group tab end -->
 
-              </uib-tabset>
+            </uib-tabset>
           </div>
 
           <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
@@ -260,45 +285,20 @@
         <!-- message container start -->
         <!-- message container start -->
 
-        <div class="mesgs col-sm-8 mesgs1"  id="msg-container-welcome" ng-show="welcomePage" ng-hide="!welcomePage">
+        <div class="mesgs col-sm-8 mesgs1" id="msg-container-welcome" ng-show="welcomePage" ng-hide="!welcomePage">
           <div class="well">
             <h1>welcome <small>{{user.name}}</small></h1>
           </div>
         </div>
 
-        <div  ng-class="{hidden: !isChatPanel && isSidePanel}" class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow posRelative"  ngClick="showContact()" ng-click="disableMsgEdit(); showDDwnDisabler()" ng-hide="welcomePage" ng-show="!welcomePage" style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
-          <div class="hidden-xs big-btn" style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
-            <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
-            <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
-              <div class="pull-right" ng-if="!groupSelected">
-                <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
-                  <span class="glyphicon glyphicon-earphone"></span> call
-                </button>
-                <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
-                  <span class="glyphicon glyphicon-facetime-video"></span> Video Call
-                </button>
-              </div>
-          </div>
-
-          <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
-          <div class=" big-btn">
-            <div class="chat_list active_groupChatMembers" ng-if="groupSelected">
-              <strong> Group Members:</strong>
-              <span ng-repeat="groupA in allGroups"  class='posRelative'> 
-                  <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
-                    <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}
-                      <span ng-if="(groupA.members.length-1) != $index">,</span>
-                    </span>
-                  </span>
-              </span>
-            </div> 
-         </div>
- 
-          <div class="small-btn hidden-lg hidden-md hidden-sm" style="background: #171717;padding: 10px;color: #fff; height: 44px;">
-           <!-- onclick="showContact()"  -->
-            <span> <i class="fa fa-arrow-left" ng-click="chatBack()"></i></span>
-            <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span> 
-            <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span> 
+        <div ng-class="{hidden: !isChatPanel && isSidePanel}"
+          class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow posRelative" ngClick="showContact()"
+          ng-click="disableMsgEdit(); showDDwnDisabler()" ng-hide="welcomePage" ng-show="!welcomePage"
+          style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
+          <div class="hidden-xs big-btn"
+            style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
+            <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span>
+            <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span>
             <div class="pull-right" ng-if="!groupSelected">
               <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
                 <span class="glyphicon glyphicon-earphone"></span> call
@@ -309,161 +309,239 @@
             </div>
           </div>
 
-          <div class="msg_history"  ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}" file-dropzone files-to-upload='files'>
-            
+          <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
+          <div class=" big-btn">
+            <div class="chat_list active_groupChatMembers" ng-if="groupSelected">
+              <strong> Group Members:</strong>
+              <span ng-repeat="groupA in allGroups" class='posRelative'>
+                <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
+                  <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}
+                    <span ng-if="(groupA.members.length-1) != $index">,</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="small-btn hidden-lg hidden-md hidden-sm"
+            style="background: #171717;padding: 10px;color: #fff; height: 44px;">
+            <!-- onclick="showContact()"  -->
+            <span> <i class="fa fa-arrow-left" ng-click="chatBack()"></i></span>
+            <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span>
+            <span class="status-bar" ng-if="!groupSelected">{{selUserName}} </span>
+            <div class="pull-right" ng-if="!groupSelected">
+              <button id="call" type="button" class="btn btn-default btn-sm" ng-click="videoCall(1,user._id)">
+                <span class="glyphicon glyphicon-earphone"></span> call
+              </button>
+              <button id="videoCall" type="button" ng-click="videoCall(0)" class="btn btn-info btn-sm">
+                <span class="glyphicon glyphicon-facetime-video"></span> Video Call
+              </button>
+            </div>
+          </div>
+
+          <div class="msg_history" ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}" file-dropzone
+            files-to-upload='files'>
+
             <div ng-repeat="groupMember in groupMembers">
               <div ng-if="groupMember.id === user._id" class="group_message">
                 <h4><strong>{{user.name}}</strong> your are added in this group as a member</h4>
                 <p><strong>members:</strong> <span ng-repeat="gMem in groupMembers">{{gMem.name}} </span></p>
               </div>
             </div>
-            
+
             <!-- ------------------------------------------------------------------------------ -->
             <!-- ------------------- NORMAL CHAT --------------------------------------------------- -->
             <!-- ------------------------------------------------------------------------------ -->
-         
+
             <div ng-if="!groupSelected">
               <div ng-repeat="chat in chats track by $index">
                 <div class="incoming_msg" ng-if="chat.senderId != user._id">
                   <div class="received_msg" ng-if="!chat.isDeleted">
                     <div class="received_withd_msg">
                       <strong>{{chat.senderId.name}}</strong>
-                      <p ng-if="chat.messageType == 'normal'">
+                      <p class="customMargin" ng-if="chat.messageType == 0">
                         {{chat.message}}
-                      </p> 
-                      <img ng-if="chat.messageType == 'file'"  src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" /> 
-
+                      </p>
+                      <a href="download/{{chat.message}}">
+                        <img class="customMargin" ng-if="chat.messageType == 1" src="{{ '/images/chatImages/' + chat.message }}"
+                          alt="{{chat.name}}" />
+                      </a>
+                      <a href="download/{{chat.message}}" ng-if="chat.messageType == 2"> 
+                        <img class="messageType2Width"  src="{{ '/images/fileIcon.png' }}"
+                          alt="{{chat.name}}" />
+                          <span>{{chat.message}}</span>
+                      </a>
+                 
                       <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
                     </div>
                   </div>
-  
+
                   <div class="incoming_msg" ng-if="chat.isDeleted">
                     <div class="received_msg">
                       <div class="received_withd_msg">
                         <div class="deleted_received_msg">this message has been deleted</div>
-                        <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
+                        <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}} </span>
                       </div>
                     </div>
                   </div>
                 </div>
-            
-                <div class="outgoing_msg"  ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)" ng-if="chat.senderId == user._id">
+
+                <div class="outgoing_msg" ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
+                  ng-if="chat.senderId == user._id">
                   <div class="sent_msg" ng-if="!chat.isDeleted">
-                        <!-- <div class="outgoing_msg_img  hidden-xs"> 
+                    <!-- <div class="outgoing_msg_img  hidden-xs"> 
                           <span ng-if="user.user_image == ''">
-                            <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{chat.name}}" /> 
+                            <img class="importantHeight"  src="images/noProfile.png" alt="{{chat.name}}" /> 
                           </span>
                           <span ng-if="user.user_image != ''">
-                            <img class="importantHeight" src="{{ 'https://localhost:4000/' + user.user_image }}" alt="{{chat.name}}" /> 
+                            <img class="importantHeight" src="images/profilePhotos/{{userA.user_image}}" alt="{{chat.name}}" /> 
                           </span>
                         </div> -->
-                      
-                      <p class="chat-mesg" ng-if="chat.messageType == 'normal'">
-                        {{chat.message}}
-                      </p> 
-                      <img ng-if="chat.messageType == 'file'"  src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" /> 
 
+                    <p class="chat-mesg customMargin" ng-if="chat.messageType == 0">
+                      {{chat.message}}
+                    </p>
+                    <a href="download/{{chat.message}}">
+                      <img class="customMargin" ng-if="chat.messageType == 1" src="{{ '/images/chatImages/' + chat.message }}"
+                        alt="{{chat.name}}" ng-click="download(chat.message)" />
+                    </a>
+                    <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
+                      <img class="messageType2Width"  src="{{ '/images/fileIcon.png' }}"
+                        alt="{{chat.name}}" />
+                        <span>{{chat.message}}</span>
+                    </a>
+
+                    <!-- <p>{{'/images/chatImages/' + chat.message}} </p>
+                    <a href="download/{{chat.message}}">
+                      <img ng-if="chat.messageType == 'file'" src="/images/noProfile.png" alt="{{chat.name}}" />
+                    </a> -->
+
+                    <!-- <a href="download/assassins_creed_odyssey_judgment_of_atlantis_5k-1366x768.jpg">asc</a> -->
                     <!-- <p class="chat-mesg">
                       <a class="color-white" href="share/{{chat.message}}" download="{{chat.originalName}}">{{chat.originalName}}</a>
                     </p> -->
-                    <span class="time_date"> 
+                    <span class="time_date">
                       {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
                     </span>
                     <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
                       <li>
-                        <span class='hoverIt fa fa-edit' tooltip-placement="left" uib-tooltip="Edit" ng-click="editMsg()"></span>
-                        <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me" ng-click="deleteMsg('fromMe')"></span>
-                      </li> 
+                        <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
+                          uib-tooltip="Edit" ng-click="editMsg()"></span>
+                        <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
+                          ng-click="deleteMsg('fromMe')"></span>
+                        <!-- <a ng-if="chat.messageType == 'file'" href="download/{{chat.message}}" class='hoverIt fa fa-download' tooltip-placement="left" uib-tooltip="For me" ></a> -->
+                      </li>
                     </ul>
-                    <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()"/>
+                    <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden"
+                      ng-click="editMenu(chat); $event.stopPropagation()" />
                   </div>
-  
-                  <div class="sent_msg" ng-if="chat.isDeleted">
-                      <div class="deleted_sent_msg">this message has been deleted</div>
-                      <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
 
-              <!-- ------------------------------------------------------------------------------ -->
-              <!-- ------------------- GROUP CHAT --------------------------------------------------- -->
-              <!-- ------------------------------------------------------------------------------ -->
-            <div ng-if="groupSelected">
-              <div ng-repeat="chat in groupchats track by $index">
-              
-                <div class="incoming_msg" ng-if="chat.senderId._id != user._id">
-                  <div class="" ng-if="!chat.isDeleted">
-                    <div class="received_withd_msg">
-                      <strong>{{chat.senderId.name}}</strong>
-                      <p ng-if="chat.messageType == 'normal'">
-                        {{chat.message}} 
-                      </p> 
-                      <img ng-if="chat.messageType == 'file'"  src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" /> 
-                      
-                      <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
-                    </div>
-                  </div>
-                  <div class="received_msg" ng-if="chat.isDeleted">
-                      <div class="received_msg">
-                        <div class="received_withd_msg">
-                          <div class="deleted_received_msg">this message has been deleted</div>
-                          <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}  </span>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-            
-                <div class="outgoing_msg"  ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)" ng-if="chat.senderId._id == user._id">
-             
-                  <div class="sent_msg" ng-if="!chat.isDeleted">
-                      <!-- <div class="outgoing_msg_img  hidden-xs"> 
-                          <span ng-if="user.user_image == ''">
-                            <img class="importantHeight"  src="images/profile-photos/noProfile.png" alt="{{chat.name}}" /> 
-                          </span>
-                          <span ng-if="user.user_image != ''">
-                            <img class="importantHeight" src="{{ 'https://localhost:4000/' + user.user_image }}" alt="{{chat.name}}" /> 
-                          </span>
-                        </div>
-   -->
-   <p class="chat-mesg" ng-if="chat.messageType == 'normal'">
-    {{chat.message}}
-  </p> 
-  <img ng-if="chat.messageType == 'file'"  src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" /> 
-
-                    <!-- <p class="chat-mesg">
-                      <a class="color-white" href="share/{{chat.message}}" download="{{chat.originalName}}">{{chat.originalName}}</a>
-                    </p> -->
-                    <span class="time_date"> 
-                      {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
-                    </span>
-  
-                    <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
-                      <li>
-                        <span class='hoverIt fa fa-edit' tooltip-placement="left" uib-tooltip="Edit" ng-click="editMsg()"></span>
-                        <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me" ng-click="deleteMsg('fromMe')"></span>
-                        <!-- <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span> -->
-                      </li> 
-                    </ul>
-                    <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
-                  </div>
-  
                   <div class="sent_msg" ng-if="chat.isDeleted">
                     <div class="deleted_sent_msg">this message has been deleted</div>
                     <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
                   </div>
-  
                 </div>
 
-              </div> 
+              </div>
+            </div>
+
+            <!-- ------------------------------------------------------------------------------ -->
+            <!-- ------------------- GROUP CHAT --------------------------------------------------- -->
+            <!-- ------------------------------------------------------------------------------ -->
+            <div ng-if="groupSelected">
+              <div ng-repeat="chat in groupchats track by $index">
+
+                <div class="incoming_msg" ng-if="chat.senderId._id != user._id">
+                  <div class="" ng-if="!chat.isDeleted">
+                    <div class="received_withd_msg">
+                      <strong>{{chat.senderId.name}}</strong>
+                      <p class="customMargin" ng-if="chat.messageType == 0">
+                        {{chat.message}}
+                      </p>
+                      <a href="download/{{chat.message}}">
+                        <img class="customMargin" ng-if="chat.messageType == 1" src="{{ '/images/chatImages/' + chat.message }}"
+                          alt="{{chat.name}}" />
+                        <a>
+                            <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
+                              <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}"
+                                alt="{{chat.name}}" />
+                                <span>{{chat.message}}</span>
+                            </a>
+
+                          <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}} </span>
+                    </div>
+                  </div>
+                  <div class="received_msg" ng-if="chat.isDeleted">
+                    <div class="received_msg">
+                      <div class="received_withd_msg">
+                        <div class="deleted_received_msg">this message has been deleted</div>
+                        <span class="time_date"> {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="outgoing_msg" ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
+                  ng-if="chat.senderId._id == user._id">
+
+                  <div class="sent_msg" ng-if="!chat.isDeleted">
+                    <!-- <div class="outgoing_msg_img  hidden-xs"> 
+                          <span ng-if="user.user_image == ''">
+                            <img class="importantHeight"  src="images/noProfile.png" alt="{{chat.name}}" /> 
+                          </span>
+                          <span ng-if="user.user_image != ''">
+                            <img class="importantHeight" src="images/profilePhotos/{{userA.user_image}}" alt="{{chat.name}}" /> 
+                          </span>
+                        </div> -->
+
+                    <p class="chat-mesg customMargin" ng-if="chat.messageType == 0">
+                      {{chat.message}}
+                    </p>
+                    <a href="download/{{chat.message}}">
+                      <img class= "customMargin" ng-if="chat.messageType == 1" src="{{ '/images/chatImages/' + chat.message }}"
+                        alt="{{chat.name}}" />
+                    </a>
+                    <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
+                      <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}"
+                        alt="{{chat.name}}" />
+                        <span>{{chat.message}}</span>
+                    </a>
+                    <!-- <p class="chat-mesg">
+                      <a class="color-white" href="share/{{chat.message}}" download="{{chat.originalName}}">{{chat.originalName}}</a>
+                    </p> -->
+                    <span class="time_date">
+                      {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                    </span>
+
+                    <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
+                      <li>
+                        <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
+                          uib-tooltip="Edit" ng-click="editMsg()"></span>
+                        <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
+                          ng-click="deleteMsg('fromMe')"></span>
+                        <!-- <span class='hoverIt fa fa-trash-o' tooltip-placement="left" uib-tooltip="For all" ng-click="deleteMsg('fromAll')"></span> -->
+                      </li>
+                    </ul>
+                    <img src="images/3dots.png" id='msg3dots-{{chat._id}}' class="msg3dotsNew hoverIt hidden"
+                      ng-click="editMenu(chat); $event.stopPropagation()" />
+                  </div>
+
+                  <div class="sent_msg" ng-if="chat.isDeleted">
+                    <div class="deleted_sent_msg">this message has been deleted</div>
+                    <span class="time_date"> {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}</span>
+                  </div>
+
+                </div>
+
+              </div>
             </div>
 
           </div>
-          <div  id='isTyping' class='hidden'> </div>
+          <div id='isTyping' class='hidden'> </div>
           <div class="row type_msg">
             <div class="col-md-11 col-xs-10">
-              <input type="text" id="sendMsg" class="form-control border0"  ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
+              <input type="text" id="sendMsg" class="form-control border0"
+                ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
             </div>
             <div class="col-md-1 col-xs-2 chatIcons">
               <span class='hoverIt' ng-click="sendMessage(0,message)">
@@ -476,14 +554,14 @@
           </div>
           <!-- data-emojiable="true" -->
         </div>
-      </div> 
+      </div>
 
       <div class="videoTab 2wayChat">
         <div id="remotes" class="ui large">
-            <video id="videoOutput" autoplay  poster="images/loading.gif"></video> 
+          <video id="videoOutput" autoplay poster="images/loading.gif"></video>
         </div>
-        <video id="local-video" autoplay poster="images/loading.gif" ></video>
-          
+        <video id="local-video" autoplay poster="images/loading.gif"></video>
+
         <div class="text-center screenButtons">
           <h4 id="timmer"></h4>
           <button class="trans-btn exitTheScreen hidden" title="Exit full screen">
@@ -492,13 +570,13 @@
           <button class="trans-btn makeFullScreen" title="Full screen">
             <img src="images/fullScreen.png">
           </button>
-          <button class="trans-btn " ng-if="openVoice"  ng-click='toggelMute()'  title="Mute video">
+          <button class="trans-btn " ng-if="openVoice" ng-click='toggelMute()' title="Mute video">
             <img src="images/unmute1.png">
           </button>
           <button class="trans-btn " ng-if="!openVoice" ng-click='toggelMute()' title="Unmute video">
             <img src="images/mute1.png">
           </button>
-          
+
           <button class="trans-btn" ng-if='showVideo' ng-click='toggelVideo()' title="Hide video">
             <img src="images/pause1.png">
           </button>
@@ -511,33 +589,33 @@
             <img src="images/calldrop2.png"></button>
         </div>
       </div>
-    </div> 
-    
+    </div>
+
   </div>
-   
+
   <!-- time show in this div which drop the call after 20 sec id the user does not pick  -->
 
   <div id="checker" style="display: none"></div>
-       
+
 
   <div class="audioTab">
     <div class='hidden'>
-        <audio id="audioOutput" autoplay controls></audio>
-        <audio id="audioInput" autoplay controls></audio>
+      <audio id="audioOutput" autoplay controls></audio>
+      <audio id="audioInput" autoplay controls></audio>
     </div>
     <div class="incomming-card">
       <h4 id="audioTimmer"></h4>
     </div>
     <div class="incomming-btn-container">
-        <button class="trans-btn " ng-if="openVoice" ng-click="toggelMute()" title="Mute video">
-          <img src="images/unmute1.png">
-        </button>
-        <button class="trans-btn " ng-if="!openVoice" ng-click="toggelMute()" title="Unmute video">  
-          <img src="images/mute1.png">
-        </button>
-        <button class="trans-btn" title="call drop" ng-click="stopK(1,chatWith || callerId);">
-          <img src="images/calldrop.png">
-        </button>
+      <button class="trans-btn " ng-if="openVoice" ng-click="toggelMute()" title="Mute video">
+        <img src="images/unmute1.png">
+      </button>
+      <button class="trans-btn " ng-if="!openVoice" ng-click="toggelMute()" title="Unmute video">
+        <img src="images/mute1.png">
+      </button>
+      <button class="trans-btn" title="call drop" ng-click="stopK(1,chatWith || callerId);">
+        <img src="images/calldrop.png">
+      </button>
     </div>
   </div>
 
@@ -552,8 +630,9 @@
       <h1 id="callerName"></h1>
     </div>
     <div class="incomming-btn-container">
-      <button title="Accept" class="incomming-card-btn success pull-left" ng-click="joinCall();connectUsers('updateconnectusers')">
-        <i class="fa fa-phone color-green"  aria-hidden="true"></i>
+      <button title="Accept" class="incomming-card-btn success pull-left"
+        ng-click="joinCall();connectUsers('updateconnectusers')">
+        <i class="fa fa-phone color-green" aria-hidden="true"></i>
       </button>
       <button title="Decline" ng-click="callDrop('notReceive')" class="incomming-card-btn danger pull-right">
         <i class="fa fa-ban color-red" aria-hidden="true"></i>
@@ -563,24 +642,24 @@
 
 </div>
 
-<script type="text/javascript">   
-  var socket = io.connect(); 
+<script type="text/javascript">
+  var socket = io.connect();
 
-  function triggerfile(){
+  function triggerfile() {
     console.log("trigerFile");
     $('input[name="avatar"]').trigger('click');
   }
 
-  $(document).ready(function(){
+  $(document).ready(function () {
     console.log("ready");
     $("#sendMsg").emojioneArea({
       events: {
-        keypress: function (editor, event) { 
-            socket.emit('typing');
+        keypress: function (editor, event) {
+          socket.emit('typing');
         },
-        keyup: function (editor, event) { 
+        keyup: function (editor, event) {
           this.source.val(this.getText());
-          if(event.keyCode == 13){
+          if (event.keyCode == 13) {
             var text = this.source.val();
             var scope = angular.element(document.getElementById("MainWrap")).scope();
             scope.$apply(function () {
@@ -590,18 +669,18 @@
           }
         }
       }
-    }); 
-    $('.chat_list').click(function(){
+    });
+    $('.chat_list').click(function () {
       $('.chat_list').css("border-left", "1px solid red");
       $('.chat_list').addClass("active");
     });
 
-    $('#side-btn').click(function(){
+    $('#side-btn').click(function () {
       $('#mobile-view-contact').toggle();
     });
 
     /* show docker*/
-    $("body").on('click','.addClass',function () {
+    $("body").on('click', '.addClass', function () {
       $('#sidebar_secondary').addClass('popup-box-on');
     });
     /* hide docker */
@@ -610,37 +689,37 @@
     });
 
     /* make dragable video audio call panels*/
-    $( ".videoTab" ).draggable({containment: ".container"});
-    $( ".audioTab" ).draggable({containment: ".container"});
-    $( "#incommingCall" ).draggable({containment: ".container"});
+    $(".videoTab").draggable({ containment: ".container" });
+    $(".audioTab").draggable({ containment: ".container" });
+    $("#incommingCall").draggable({ containment: ".container" });
   });
-  
 
-  function removeVideoTab(){
+
+  function removeVideoTab() {
     var ele = document.querySelector('.videoTab');
-        ele.style.display = 'none';
+    ele.style.display = 'none';
   }
 
-  function closeModal(id){
-    setTimeout(function(){
-      $('#'+id).trigger('click');
-    },100);
+  function closeModal(id) {
+    setTimeout(function () {
+      $('#' + id).trigger('click');
+    }, 100);
   }
- 
-  function scrollbottom(){
-    var con = document.getElementsByClassName('msg_history')[0]; 
-    setTimeout(function(){ 
-      con.scrollTo(0,$('.msg_history').prop("scrollHeight"));  
-    }, 100); 
+
+  function scrollbottom() {
+    var con = document.getElementsByClassName('msg_history')[0];
+    setTimeout(function () {
+      con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
+    }, 100);
   }
-  
-  function toggle(){
-      $('.mesgs1').show();
-      $('#mobile-view-contact').hide();
+
+  function toggle() {
+    $('.mesgs1').show();
+    $('#mobile-view-contact').hide();
     // $('#msg-container-welcome').hide();
     //  $('.navbar-header').hide();
   }
-  
+
   // function showContact(){
   //   $('.mesgs1').hide();
   //   $('#mobile-view-contact').show();
@@ -648,16 +727,16 @@
   //   $('.navbar-header').show();
   // }
 
-  $(document).on('click','.makeFullScreen',function(){
+  $(document).on('click', '.makeFullScreen', function () {
     $(".2wayChat").addClass('fullScreen');
     $(this).addClass('hidden');
     $(".exitTheScreen").removeClass('hidden');
   });
-   
-  $(document).on('click','.exitTheScreen',function(){
+
+  $(document).on('click', '.exitTheScreen', function () {
     $(".2wayChat").removeClass('fullScreen');
     $(this).addClass('hidden');
     $(".makeFullScreen").removeClass('hidden');
-  }); 
+  });
+
 </script>
- 

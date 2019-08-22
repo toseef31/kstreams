@@ -4,8 +4,10 @@
 */
 
 const chatController  = require('./controller/chatController');
+//const loginController = require('./public/controller/logincontroller')
 //const clientPushNotif  = require('./public/client');
 const multer          = require('multer');
+//const server = require('./public/webRtc/server');
 //const upload          = multer({ dest: 'public/share' });
 
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
@@ -15,7 +17,6 @@ const storage = multer.diskStorage({
     },
 
     filename: function (req, file, cb) {
-        console.log(file);
         cb(null, file.originalname)
     }
 })
@@ -31,6 +32,8 @@ module.exports = function(app,io,saveUser){
     //app.post('/notification', clientPushNotif.send);
     //app.post('/notification');
 
+    app.get('/download/:filename', chatCon.downloadFile);
+    //app.post('/download', chatCon.downloadFile);
     app.post('/login',chatCon.login);
     app.post('/groupChat',chatCon.groupChat);
 
@@ -74,4 +77,10 @@ module.exports = function(app,io,saveUser){
     app.post('/updateUser/image',chatCon.updateUserImage);
     app.post('/setPerStatus',chatCon.setPerStatus);
     app.get('/checkPerStatus',chatCon.checkPerStatus); 
+
+    // -------------- PROJECT ROUTES--------------------------------------
+    app.post('/getProjects', chatCon.getProjectData);
+   // app.post('/setProjectDomain', server.setProjectDomain);
+    // -------------------------------------------------------------------
+
 }

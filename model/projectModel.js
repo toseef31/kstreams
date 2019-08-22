@@ -6,6 +6,8 @@ const projectSchema = mongoose.Schema({
     "logo": String,
     "color1": String,
     "color2": String,
+    "profileImgLocation": String,
+    "domainUrl": { type: String, default: 'localhost'},
     //--------------------------------------------------------------------------------------------------
     "siteIntegration": { type: Number, default: 0 },
     //1=Yes, then on session logout show session destroyed + do not show login page and logout button 

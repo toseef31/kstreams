@@ -10,6 +10,10 @@ const groupSchema = mongoose.Schema({
 		type: Schema.ObjectId,
 		ref: 'users'
 	}],
+	"projectId": {
+		type: Schema.ObjectId,
+		ref: 'projects'
+	},
 	"name": String,
 	"status": {
 		type: Number,

@@ -70,7 +70,7 @@ module.exports = function(io){
 
 	helper.changeStatus = function (id,status,callback){
 		if(status){
-			userModel.findByIdAndUpdate(id).exec(function(err,data){
+			userModel.findByIdAndUpdate(id).populate('projectId').exec(function(err,data){
 				if(err) throw err;
 				callback(data);
 			});
@@ -79,9 +79,9 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-		
-			model.find({'email':obj.email, 'status': 1}).exec(function(err,data){
-				//console.log(data[0].password);
+
+			model.find({'email':obj.email, 'status': 1}).populate('projectId').exec(function(err,data){
+				
 				if(err){ 
 					callback({err:err});
 				}else{
@@ -98,7 +98,7 @@ module.exports = function(io){
 				}
 			});	
 		}else{
-			model.find({status:1}).exec(function(err,data){
+			model.find({status:1}).populate('projectId').exec(function(err,data){
 				callback(data);
 			});
 		}

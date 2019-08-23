@@ -82,12 +82,17 @@
                             </div>
                             <div class="chat_ib color-white">
                               <h5 ng-if="userA.receiverId != user._id">{{userA.name}} </h5>
-                              <div ng-repeat="msg in userA.chat">
+
+                             <!-- <span ng-repeat="msgCount in unSeenMessages">
+                                <span class="unreadMsgAlign" ng-if="userA._id == msgCount._id"> Unread {{msgCount.unseenMsgs}} </span>
+                              </span> -->
+
+                              <!-- <div ng-repeat="msg in userA.chat">
                                 <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">New
                                   message <span class="badge">{{msg.unreadMsg}}</span></p>
                                 <p><span class="wrap">{{msg.message }}</span>
                                   <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span></p>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>
@@ -218,7 +223,11 @@
 
                         <div class="chat_ib color-white userText">
                           <span>{{userA.name}}</span>
-                          <div ng-repeat="msg in userA.chat">
+                   
+                          <!-- <span ng-repeat="msgCount in unSeenMessages">
+                            <span class="unreadMsgAlign" ng-if="userA._id == msgCount._id"> Unread {{msgCount.unseenMsgs}} </span>
+                          </span> -->
+                          <!-- <div ng-repeat="msg in userA.chat">
                             <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">
                               New message <span class="badge">{{msg.unreadMsg}}</span>
                             </p>
@@ -226,7 +235,7 @@
                               <span class="wrap">{{msg.message }}</span>
                               <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span>
                             </p>
-                          </div>
+                          </div> -->
                         </div>
                       </div>
                     </div>
@@ -258,6 +267,7 @@
                     <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})">
                       <div>
                         <h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5>
+                          
                       </div>
                     </div>
                   </div>

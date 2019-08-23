@@ -23,16 +23,16 @@ module.exports = function (io, saveUser) {
     var helper = new helpers(io);
     /*main router object which contain all function*/
     var router = {};
-    var projectData;
+  //  var projectData;
 
-    router.getProjectData = function (req, res) {
-        var projectId = req.body.projectId;
-        projectModel.find({ '_id': projectId }).exec(function (err, projData) {
-            projectData = projData;
-          //  console.log('e');
-            res.send(projectData);
-        })
-    }
+    // router.getProjectData = function (req, res) {
+    //     var projectId = req.body.projectId;
+    //     projectModel.find({ '_id': projectId }).exec(function (err, projData) {
+    //         projectData = projData;
+    //       //  console.log('e');
+    //         res.send(projectData);
+    //     })
+    // }
 
 
     router.groupChat = function (req, res) {
@@ -68,6 +68,17 @@ module.exports = function (io, saveUser) {
             {}, { sort: '-updatedAt' })
             .lean()
             .exec(function (err, data) {
+
+                // let unSeenMsgCount = [];
+                // for (let i=0; i<data.length; i++){
+                //     chatModel.find({ 'senderId': data[i]._id}).count().exec(function (err, count) {
+                //      if (count != 0)  
+                //           unSeenMsgCount.push({'_id': data[i]._id, 'name': data[i].name, 'unseenMsgs': count})
+                //      if (i == data.length-1) 
+                //          res.json({'usersList':data, 'unseenMsgsCount': unSeenMsgCount});
+                //     })
+                // }
+               // console.log(unSeenMsgCount);
                 res.json(data);
             });
     }
@@ -78,15 +89,25 @@ module.exports = function (io, saveUser) {
         groupsModel.find({ 'status': 1 }).populate('members', { 'name': true }).exec(function (err, groups) {
             var tempGroups = [];
             if (err) { return console.log(err); }
+
             for (var i = 0; i < groups.length; i++) {
                 for (var j = 0; j < groups[i].members.length; j++) {
-                    // console.log(req.params.userId +" == "+ groups[i].members[j]._id);
                     if (req.params.userId == groups[i].members[j]._id) {
                         tempGroups.push(groups[i]);
-                        // break;
                     }
                 }
             }
+            
+            // let unSeenMsgCount = [];
+            // for (let i=0; i<groups.length; i++){
+            //     chatModel.find({ '_id': groups[i]._id, isGroup: 1}).count().exec(function (err, count) {
+            //      if (count != 0)  
+            //           unSeenMsgCount.push({'_id': groups[i]._id, 'unseenMsgs': count})
+            //      if (i == groups.length-1) 
+            //          res.json({'tempGroups':tempGroups, 'unseenMsgsCount': unSeenMsgCount});
+            //     })
+            // }
+
             res.send(tempGroups); // send groups list
         })
     }
@@ -178,6 +199,26 @@ module.exports = function (io, saveUser) {
             .lean()
             .exec(function (err, data) {
                 if (err) throw err;
+                
+                // let unSeenMsgCount = [];
+                // console.log(data);
+                // for (let i=0; i<data.length; i++){
+                //     console.log(data[i]._id + ' : '+ receiver);
+                //     chatModel.findByIdAndUpdate({'_id': data[i]._id, 'recevierId': receiver},{$set: {'isSeen': 1}}).exec(function (err, count) {
+                     
+                //         chatModel.find({ 'senderId': data[i]._id}).count().exec(function (err, count) {
+                //             if (count != 0)  
+                //                  unSeenMsgCount.push({'_id': data[i]._id, 'name': data[i].name, 'unseenMsgs': count})
+                //             if (i == data.length-1) 
+                //                 res.json({'userChat':data, 'unseenMsgsCount': unSeenMsgCount});
+                //            })
+                //     })
+                // }
+
+                // chatModel.distinct('isSeen').count().exec(function (err, count) {
+                //     console.log('The number of unique unseen messages:', count);
+                // });
+              
                 res.json(data);
             });
     }
@@ -208,9 +249,7 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         req.session.destroy();
-       // console.log('d'); //console.log(projectData[0].domainUrl);
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-      //  res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+        res.header('Access-Control-Allow-Origins', 'https://www.jobcallme.com, https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
@@ -221,11 +260,8 @@ module.exports = function (io, saveUser) {
         userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
-                req.session.user = data[0];
-               // console.log('c');
-                res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-              // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-
+               // req.session.user = data[0];
+                res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com , https://localhost:22000');
                 res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
                 res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
                 res.header('Access-Control-Allow-Credentials', 'true');
@@ -233,10 +269,7 @@ module.exports = function (io, saveUser) {
             })
     }
     router.get = (req, res) => {
-        //console.log('b');
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-
+        res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
@@ -254,9 +287,7 @@ module.exports = function (io, saveUser) {
         }
     }
     router.checkSession = function (req, res) {
-      //  console.log('a');
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+        res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');

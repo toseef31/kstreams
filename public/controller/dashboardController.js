@@ -18,6 +18,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.groupchats = [];
     $scope.allGroups;
     $scope.editMsgIconStatus = false;
+    $scope.unSeenMessages;
     /*socket io connection*/
 
     $scope.audio = new Audio('audio/call.mp3');
@@ -68,8 +69,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-  
-    let webSocketIp = $scope.user.projectId.domainUrl;  //localhost || www.jobcallme.com
+    let webSocketIp = 'www.jobcallme.com';  //localhost || www.jobcallme.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
     class Ws {
         get newClientPromise() {
@@ -375,11 +375,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all users*/
         $http.get("/getUsers/" + response.data._id)
             .then(function (response) {
-              //  console.log($scope.user);
-                $scope.allUsers = response.data;
+               // $scope.unSeenMessages = response.data.unseenMsgsCount;
+                $scope.allUsers = response.data;//.usersList;
                 for (i = 0; i < response.data.length; i++) {
                     if (response.data[i].email != $scope.user.email) {
-                        $scope.getmembers.push(response.data[i]);
+                        $scope.getmembers.push(response.data);
                     }
                 }
                 $scope.usersLoaded = true;
@@ -388,6 +388,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all group users*/
         $http.get("/getCreatedGroups/" + $scope.user._id)
             .then(function (response) {
+                //console.log(response);
                 $scope.allGroups = response.data;
                 $scope.groupsLoaded = true;
                 // for (i = 0; i < response.data.length; i++) {
@@ -538,8 +539,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 //chnId 3
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
                     .then(function (res) {
+                        console.log(res);
+                       // $scope.unSeenMessages = response.data.unseenMsgsCount;
                         $scope.groupMembers = '';
-                        $scope.chats = res.data;
+                        $scope.chats = res.data;//.userChat;
                         scrollbottom();
                     });
             } else {
@@ -897,7 +900,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.welcomePage = true;
                         $http.get("/getUsers/" + $scope.user._id)
                             .then(function (response) {
-                                $scope.allUsers = response.data;
+                                $scope.allUsers = response.data;//.usersList;
                             });
                     });
                 else if (type == 2)

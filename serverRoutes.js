@@ -79,7 +79,7 @@ module.exports = function(app,io,saveUser){
     app.get('/checkPerStatus',chatCon.checkPerStatus); 
 
     // -------------- PROJECT ROUTES--------------------------------------
-    app.post('/getProjects', chatCon.getProjectData);
+    //app.post('/getProjects', chatCon.getProjectData);
    // app.post('/setProjectDomain', server.setProjectDomain);
     // -------------------------------------------------------------------
 

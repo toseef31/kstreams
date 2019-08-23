@@ -1,17 +1,12 @@
-<html ng-app="chatApp" ng-controller="loginController">
+<html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="chatApp">
     <meta name="author" content="Peek International">
-
-    <title ng-if="projectTitle == ''">Chat | KSTREAMS </title>
-    <title ng-if="projectTitle != ''"> {{ projectTitle }} </title>
-
-    <link ng-if="projectTitleLogo == ''" rel="icon" href="images/favicon.png" sizes="192x192" />
-    <link ng-if="projectTitleLogo != ''" rel="icon" href="{{projectTitleLogo}}" sizes="192x192" />
-
+    <title>Chat | KSTREAMS</title>
+    <link rel="icon" href="images/favicon.png" sizes="192x192" />
     <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="./nodeModFiles/semantic.min.css">
     <!-- <link rel="stylesheet" href="style/jquery-ui.css"> -->
@@ -36,7 +31,7 @@
     <script src="./js/multiselect-template.js"></script>
     <!------ Include the above in your HEAD tag ---------->
   </head>
-  <body id="LoginForm"  >
+  <body id="LoginForm" ng-app="chatApp" >
     <div ng-view></div>
     <script type="text/javascript" src="./config/app.js"></script>
     <script type="text/javascript" src="./routes/routes.js"></script>
@@ -47,6 +42,6 @@
     <script src="./nodeModFiles/simplewebrtc-with-adapter.bundle.js"></script> -->
     <script src="./webRtc/static/bower_components/webrtc-adapter/release/adapter.js"></script>
     <script src="./webRtc/static/bower_components/kurento-utils/js/kurento-utils.js"></script>
-    <script src="/client/client.js"></script>
+    <script src="client.js"></script>
   </body>
 </html>

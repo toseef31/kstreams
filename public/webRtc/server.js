@@ -42,37 +42,24 @@ var https = require('https');
 
 var argv = minimist(process.argv.slice(2), {
   default: {
-      as_uri: "https://www.jobcallme.com:8443/",
+      as_uri: "https://www.businesschatapp.com:8443/",
       ws_uri: "ws://localhost:8888/kurento" // do not change localhost
   }
 });
 
-var options =
-{
-  key:  fs.readFileSync('keys/jcm/ssl.key'),
-  cert: fs.readFileSync('keys/jcm/ssl.crt')
+var options ={
+    key:  fs.readFileSync('../../private/ssl.key'),
+    cert: fs.readFileSync('../../private/ssl.crt')
 };
 
 // app.use(cors());
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 var app = express();
-
-app.use('/webRtc', routes);
-
-routes.route("/setProjectDomain").post(function (req, res) {
-    console.log(req.body);
-    var projectId = req.body.projectId;
-    projectModel.find({ '_id': projectId }).exec(function (err, projData) {
-        projectData = projData;
-     
-        res.send(projectData);
-    })
-})
-
+ 
 /*
- * Definition of global variables.
- */
+* Definition of global variables.
+*/
 
 var kurentoClient = null;
 var userRegistry = new UserRegistry();

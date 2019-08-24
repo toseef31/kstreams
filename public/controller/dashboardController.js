@@ -547,11 +547,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.allUsers[i].usCount = 0;
                    }
                 }
-                console.log( $scope.unSeenMessages);
+               // console.log( $scope.unSeenMessages);
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
                     .then(function (res) {
-                        console.log(res);
+                       // console.log(res);
                         //$scope.unSeenMessages = response.data.unseenMsgsCount;
                         $scope.groupMembers = '';
                         $scope.chats = res.data;//.userChat;
@@ -647,8 +647,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             updatechat();
                         })
                 else {
-                    var msgObj = { "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+                    var msgObj = {"isSeen": 0, "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
                     $scope.message = '';
+                    console.log(msgObj);
                     $scope.chats.push(msgObj);
                     socket.emit('checkmsg', msgObj);
                     scrollbottom();
@@ -986,13 +987,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
         //    console.log(msg);
-            $scope.$apply(function () {
+            $scope.$apply(function () { 
                 if ($scope.user._id == msg.receiverId && $scope.chatWithId == msg.senderId) {
                     //console.log('msg ',msg);
                     if ('serviceWorker' in navigator)
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
+                 
+                    for(var i =0; i<$scope.allUsers.length; i++){
+                         // check which user received the new msg ...
+                        if ($scope.allUsers[i]._id == msg.senderId){
+                            $scope.allUsers[i].usCount++; break;
+                        }
+                    }
 
                     $scope.chats.push(msg);
+                   // console.log(msg);
                     scrollbottom();
                 }
                 if ($scope.user._id == msg.receiverId) {
@@ -1001,6 +1010,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
 
                 if (msg.id == $scope.connectionId) {
+                   
                     $scope.chats.push(msg.data);
                     scrollbottom();
                 }

@@ -43,10 +43,6 @@ friendsRouter.route('/createfriend').post(function (req, res) {
 
 friendsRouter.route('/unfriend').post(function (req, res) {
 
-    let userId = req.body.userId;
-    let friendId = req.body.friendId;
-    let projectId = req.body.projectId;
-
     userModel.findOne({ 'userId':req.body.userId, 'projectId': req.body.projectId }, { password: false })
     .lean().exec(function (err, userResult) { 
         if (!userResult) res.send({ 'message': 'User Id doesnt exist', 'status': false }); 

@@ -24,8 +24,8 @@ var url = require('url');
 var kurento = require('kurento-client');
 var fs    = require('fs');
 var https = require('https'); 
-const config = require('../../config/DB');
-const mongoose    = require('mongoose'); 
+//const config = require('../../config/DB');
+//const mongoose    = require('mongoose'); 
 //var projectModel = require('../../model/projectModel');
 // const bodyParser  = require('body-parser');
 // const cors        = require('cors');
@@ -57,6 +57,18 @@ var options =
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 var app = express();
+
+app.use('/webRtc', routes);
+
+routes.route("/setProjectDomain").post(function (req, res) {
+    console.log(req.body);
+    var projectId = req.body.projectId;
+    projectModel.find({ '_id': projectId }).exec(function (err, projData) {
+        projectData = projData;
+     
+        res.send(projectData);
+    })
+})
 
 /*
  * Definition of global variables.

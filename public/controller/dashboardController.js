@@ -554,7 +554,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         console.log(res);
                         //$scope.unSeenMessages = response.data.unseenMsgsCount;
                         $scope.groupMembers = '';
-                        $scope.chats = res.data;
+                        $scope.chats = res.data;//.userChat;
                         scrollbottom();
                     });
             } else {

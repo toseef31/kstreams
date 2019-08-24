@@ -40,7 +40,7 @@ module.exports = function(app,io,saveUser){
     app.get('/checkSession',chatCon.checkSession);
     // app.get('/checkSession/:userId',chatCon.checkSession);
     app.get('/createUser/:name',chatCon.createUser);
-    app.get('/getUsers/:userId',chatCon.getUsers);
+    app.get('/getUsers/:userId/:allList',chatCon.getUsers);
 
     //app.get('/getCreatedGroups',chatCon.getCreatedGroups);
     app.get('/getCreatedGroups/:userId',chatCon.getCreatedGroups);
@@ -49,7 +49,7 @@ module.exports = function(app,io,saveUser){
     app.get('/getGroups/:userId',chatCon.getGroups);
     app.post('/chat',chatCon.chat);
     app.post('/updateChat/:id',chatCon.updateChat);
-    app.get('/getChat/:senderId/:recevierId',chatCon.getChat);
+    app.get('/getChat/:senderId/:receiverId',chatCon.getChat);
 
     //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
     app.get('/getGroup/:groupId',chatCon.getGroup);
@@ -79,7 +79,7 @@ module.exports = function(app,io,saveUser){
     app.get('/checkPerStatus',chatCon.checkPerStatus); 
 
     // -------------- PROJECT ROUTES--------------------------------------
-    app.post('/getProjects', chatCon.getProjectData);
+    app.post('/getProject', chatCon.getProjectData);
    // app.post('/setProjectDomain', server.setProjectDomain);
     // -------------------------------------------------------------------
 

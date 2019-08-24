@@ -459,6 +459,24 @@ img{ max-width:100%;}
   width: 60%;
 }
 
+.unreadMsgAlign{
+  float: right;
+  margin-right: 20%;
+  font-size: 12px;
+}
+
+.loadingLogin{
+  position: absolute;
+  left: 43%;
+  top: 30%;
+}
+
+.loadingImage{
+  position: absolute;
+  left: 45%;
+  top: 20%;
+}
+
 .sent_msg p {
   background: #94C2ED none repeat scroll 0 0;
   border-radius: 3px 0px 0px 3px;

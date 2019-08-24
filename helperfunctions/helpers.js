@@ -13,8 +13,8 @@ module.exports = function(io){
 	helper.RTU = function (data){
 		console.log('IN helper.RTU');
 	    // recentModel.find({$or:[{senderId:data.senderId},{receiverId:data.senderId}]}).sort({updatedAt:-1}).exec(function(err,senderUsers){
-	    //    recentModel.find({$or:[{receiverId:data.recevierId},{senderId:data.recevierId}]}).sort({updatedAt:-1}).exec(function(err,receiverUsers){
-	    //       io.emit('getUsers',{senderUsers:senderUsers,receiverUsers:receiverUsers,senderId:data.senderId,receiverId:data.recevierId});
+	    //    recentModel.find({$or:[{receiverId:data.receiverId},{senderId:data.receiverId}]}).sort({updatedAt:-1}).exec(function(err,receiverUsers){
+	    //       io.emit('getUsers',{senderUsers:senderUsers,receiverUsers:receiverUsers,senderId:data.senderId,receiverId:data.receiverId});
 	    //    });
 	    // });
 	}
@@ -34,14 +34,14 @@ module.exports = function(io){
 	    /*this promise update user last msg if has else add*/
 	    return new Promise((resolve,reject) =>{
 	       
-	        // var query = {$or:[{senderId:data.senderId,receiverId:data.recevierId},{senderId:data.recevierId,receiverId:data.senderId}],chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}] }}},
-	        //     update = {$set:{'chat.$._id':data._id,'chat.$.senderId':data.senderId,'chat.$.recevierId':data.recevierId,'chat.$.message':data.message,'chat.$.isseen':data.isseen,'chat.$.date':data.date }};
+	        // var query = {$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}],chat:{$elemMatch:{$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}] }}},
+	        //     update = {$set:{'chat.$._id':data._id,'chat.$.senderId':data.senderId,'chat.$.receiverId':data.receiverId,'chat.$.message':data.message,'chat.$.isseen':data.isseen,'chat.$.date':data.date }};
 	        
 	        // recentModel.update(query, update, function(error, result) {
 	        //     if(error) reject(error);
 	        //     if(result.n == 1 && result.nModified == 1 && result.ok == 1) resolve();
 	        //     if (result.n == 0 && result.nModified == 0 && result.ok == 1){
-	        //         recentModel.update({senderId:data.senderId,receiverId:data.recevierId}, {$push:{chat:data}}, function(error, result) {
+	        //         recentModel.update({senderId:data.senderId,receiverId:data.receiverId}, {$push:{chat:data}}, function(error, result) {
 	        //            if(error) reject('user not add');
 	        //             resolve();
 	        //         });
@@ -54,7 +54,7 @@ module.exports = function(io){
 	
 	helper.incrementUnReadMsg = function (data){
 		console.log('IN helper.incrementUnReadMsg');
-		// var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:data.senderId,recevierId:data.recevierId},{senderId:data.recevierId,recevierId:data.senderId}]}}},
+		// var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}]}}},
 	    // 	updatedata ={$inc:{'chat.$.unreadMsg':1}};
 	    // recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
 	    // 	if(err) throw err;
@@ -79,22 +79,21 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-
-			model.find({'email':obj.email, 'status': 1}).populate('projectId').exec(function(err,data){
-				
-				if(err){ 
-					callback({err:err});
-				}else{
-					if (!bcrypt.compareSync(obj.password, data[0].password)) {  
+			//console.log(obj);
+			if(typeof obj.password ===undefined) callback({err:err});
+			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
+			.populate('projectId').lean().exec(function(err,data){ 
+				if(err || !data) callback({err:err});
+				else{
+					//console.log(obj, ':' ,data);
+					if (!bcrypt.compareSync(obj.password, data.password))  
 						callback({err:err});
-					}
-					else{
-						userModel.update({'email': obj.email}, {'onlineStatus': 1}).exec(function (err, result) {
-						   if (result)
+					else
+						userModel.update({'email': obj.email}, {'onlineStatus': 1})
+						.lean().exec(function (err, result) { 
+							console.log('loaded-===');
 						     callback(data);
 						})
-					
-					}
 				}
 			});	
 		}else{

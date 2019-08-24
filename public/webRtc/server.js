@@ -17,6 +17,7 @@
 
 var path = require('path');
 var express = require('express');
+const routes = express.Router();
 var ws = require('ws');
 var minimist = require('minimist');
 var url = require('url');
@@ -24,25 +25,20 @@ var kurento = require('kurento-client');
 var fs    = require('fs');
 var https = require('https'); 
 const config = require('../../config/DB');
-var mongoose    = require('mongoose'); 
+const mongoose    = require('mongoose'); 
+//var projectModel = require('../../model/projectModel');
+// const bodyParser  = require('body-parser');
+// const cors        = require('cors');
 // let hostIs=location.host.split(':');
 // let webSocketIp='110.10.130.70';
 // if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //www.jobcallme.com
 
-mongoose.Promise = global.Promise;
-mongoose.connect(config.url, { useNewUrlParser: true }).then(
-	() => { console.log('Database is connected') },
-	err => { console.log('Cannot connect to the database' + err) }
-);
+// mongoose.Promise = global.Promise;
+// mongoose.connect(config.url, { useNewUrlParser: true }).then(
+// 	() => { console.log('Database is connected') },
+// 	err => { console.log('Cannot connect to the database' + err) }
+// );
 
-// registrationRoutes.route("/setProjectDomain").post(function (req, res) {
-//     var projectId = req.body.projectId;
-//     projectModel.find({ '_id': projectId }).exec(function (err, projData) {
-//         projectData = projData;
-//         console.log('e');
-//         res.send(projectData);
-//     })
-// })
 
 var argv = minimist(process.argv.slice(2), {
   default: {
@@ -57,6 +53,9 @@ var options =
   cert: fs.readFileSync('keys/jcm/ssl.crt')
 };
 
+// app.use(cors());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
 var app = express();
 
 /*

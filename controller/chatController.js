@@ -3,6 +3,7 @@
 * designBy => Peek International
 */
 const userModel = require('../model/users-model');
+const friendModel = require('../model/friendModel');
 // const recentModel = require('../model/recent-model');
 const chatModel = require('../model/chatModel');
 const groupsModel = require('../model/groupsModel');
@@ -22,15 +23,11 @@ module.exports = function (io, saveUser) {
     /*custom helper functions */
     var helper = new helpers(io);
     /*main router object which contain all function*/
-    var router = {};
-    var projectData;
+    var router = {}; 
 
-    router.getProjectData = function (req, res) {
-        var projectId = req.body.projectId;
-        projectModel.find({ '_id': projectId }).exec(function (err, projData) {
-            projectData = projData;
-          //  console.log('e');
-            res.send(projectData);
+    router.getProjectData = function (req, res) { 
+        projectModel.findOne({ '_id': req.body.projectId }).lean().exec(function (err, projData) { 
+            res.send(projData);
         })
     }
 
@@ -64,12 +61,43 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-        userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1 },
+     //   console.log ('allList: '+ req.params.allList);
+      //  console.log ('id: '+ req.params.userId);
+        
+        function chatModelFunc(data){ 
+           // console.log(data);
+            for (let i=0; i<data.length; i++) 
+                chatModel.find(
+                    { 'senderId': data[i]._id,
+                    'receiverId':req.params.userId,
+                    'isSeen': 0}
+                    ).count().exec(function (err, count) { 
+                        data[i]['usCount']=count;  
+                        if (i == data.length-1) res.json({'usersList':data}); 
+                    }) 
+
+                    if (data.length == 0) 
+                          res.json({'usersList':data})
+
+        }
+        if(req.params.allList==0){
+            var friendIds = [];
+            friendModel.find({'userId': req.params.userId, 'status': 1},{friendId: true})
+            .populate('friendId').lean().exec(function (err, friendsData){ 
+                friendsData.forEach(val => {
+                    friendIds.push(val.friendId);
+                }); 
+                chatModelFunc(friendIds);
+            })
+        }
+        else 
+            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1 },
             {}, { sort: '-updatedAt' })
             .lean()
-            .exec(function (err, data) {
-                res.json(data);
+            .exec(function (err, data) {  
+                chatModelFunc(data);
             });
+     
     }
 
 
@@ -78,15 +106,15 @@ module.exports = function (io, saveUser) {
         groupsModel.find({ 'status': 1 }).populate('members', { 'name': true }).exec(function (err, groups) {
             var tempGroups = [];
             if (err) { return console.log(err); }
+
             for (var i = 0; i < groups.length; i++) {
                 for (var j = 0; j < groups[i].members.length; j++) {
-                    // console.log(req.params.userId +" == "+ groups[i].members[j]._id);
                     if (req.params.userId == groups[i].members[j]._id) {
                         tempGroups.push(groups[i]);
-                        // break;
                     }
                 }
             }
+            
             res.send(tempGroups); // send groups list
         })
     }
@@ -121,14 +149,14 @@ module.exports = function (io, saveUser) {
         var sender = req.body.senderId;
 
         var name = req.body.senderName;
-        var recevier = req.body.recevierId;
+        var recevier = req.body.receiverId;
         var message = req.body.message;
         var senderImage = req.body.senderImage;
         var receiverImage = req.body.receiverImage;
         newMessage = new chatModel({
             "senderId": sender,
             "senderName": name,
-            "recevierId": recevier,
+            "receiverId": recevier,
             "message": message,
             // "msgType": "message",
             "senderImage": senderImage,
@@ -136,7 +164,7 @@ module.exports = function (io, saveUser) {
         });
         newMessage.save(function (err, data) {
             if (err) throw err;
-            chatModel.findOne({ senderId: sender, recevierId: recevier }).sort({ updatedAt: -1 }).exec(function (err, data) {
+            chatModel.findOne({ senderId: sender, receiverId: recevier }).sort({ updatedAt: -1 }).exec(function (err, data) {
                 // console.log(data);
                 helper.addNewMessage(data);
                 res.json(data);
@@ -147,7 +175,7 @@ module.exports = function (io, saveUser) {
         newNotification = new notifiModel({
             "senderId": sender,
             "senderName": name,
-            "recevierId": recevier,
+            "receiverId": recevier,
             "message": message,
         });
         newNotification.save(function (err, data) {
@@ -156,29 +184,39 @@ module.exports = function (io, saveUser) {
     }
     router.getNotification = (req, res) => {
         var userId = req.params.userId;
-        notifiModel.find({ recevierId: userId }, function (err, data) {
+        notifiModel.find({ receiverId: userId }, function (err, data) {
             if (err) throw err;
-            notifiModel.count({ recevierId: userId, isseen: false }, function (err, count) {
+            notifiModel.count({ receiverId: userId, isseen: false }, function (err, count) {
                 res.json({ count: count, noti: data });
             })
         })
     }
     router.getChat = function (req, res) {
         var sender = req.params.senderId;
-        var receiver = req.params.recevierId;
-
-        // var updateUnReadMsgQuery = {chat:{$elemMatch:{$or:[{senderId:receiver,recevierId:sender},{senderId:sender,revevierId:receiver}]}}},
-        //     updatedata ={$set:{'chat.$.unreadMsg':0}};
-        //     recentModel.update(updateUnReadMsgQuery,updatedata,function(err,data){
-        //     	helper.RTU({senderId:sender,recevierId:receiver});
-        //     })
-        chatModel.find({ $or: [{ senderId: sender, recevierId: receiver }, { senderId: receiver, recevierId: sender }] })
-            // .populate('senderInfo')
-            // .populate('receiverInfo')
+        var receiver = req.params.receiverId;
+     
+        chatModel.find({ $or: [
+            { senderId: sender, receiverId: receiver }, 
+            { senderId: receiver, receiverId: sender }] 
+        })
             .lean()
             .exec(function (err, data) {
                 if (err) throw err;
+   
+                chatModel.updateMany({ 
+                    $and:[
+                        {
+                            $or: [
+                                { senderId: sender, receiverId: receiver }, 
+                                { senderId: receiver, receiverId: sender }
+                            ]
+                        },
+                        {'isSeen': 0}
+                    ]  
+                },{$set: {'isSeen': 1}}).exec();
+
                 res.json(data);
+           
             });
     }
 
@@ -209,11 +247,11 @@ module.exports = function (io, saveUser) {
     router.out = (req, res) => {
         req.session.destroy();
        // console.log('d'); //console.log(projectData[0].domainUrl);
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-      //  res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        res.header('Access-Control-Allow-Credentials', 'true');
+      //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+        // res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+        // res.header('Access-Control-Allow-Credentials', 'true');
         res.json({ message: "session destroy" });
     }
 
@@ -223,23 +261,23 @@ module.exports = function (io, saveUser) {
             .then(function (data) {
                 req.session.user = data[0];
                // console.log('c');
-                res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-              // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+            //     res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+            //   // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
-                res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-                res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-                res.header('Access-Control-Allow-Credentials', 'true');
+            //     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+            //     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+            //     res.header('Access-Control-Allow-Credentials', 'true');
                 res.json(req.session.user);
             })
     }
     router.get = (req, res) => {
         //console.log('b');
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+      //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        res.header('Access-Control-Allow-Credentials', 'true');
+        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+        // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+        // res.header('Access-Control-Allow-Credentials', 'true');
         // console.log(sbs.authUser);
         if (req.session.user && typeof req.session.user._id !== 'undefiend') {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
@@ -255,11 +293,11 @@ module.exports = function (io, saveUser) {
     }
     router.checkSession = function (req, res) {
       //  console.log('a');
-        res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-       // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        res.header('Access-Control-Allow-Credentials', 'true');
+       // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+        // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+        // res.header('Access-Control-Allow-Credentials', 'true');
 
         if (req.session.user) {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
@@ -291,18 +329,19 @@ module.exports = function (io, saveUser) {
         var password = req.body.password;
 
         helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
-
-            if (user.length > 0) {
-                let User = user[0];
+         
+            if (user._id) { 
+               // console.log('if');
                 /*change status from offline to online*/
-                helper.changeStatus(User._id, {}, function (data) {
+                helper.changeStatus(user._id, {}, function (data) {
                     /*set session */
-                    req.session.user = User;
+                  
+                    req.session.user = user;
                     /*this function use to move user info to another view*/
-                    saveUser(User);
+                    saveUser(user);
                     /*get users to show order by newly messages*/
                     //helper.RTU();
-                    res.json(User);
+                    res.json(user);
                 });
             }
             else
@@ -385,7 +424,7 @@ module.exports = function (io, saveUser) {
 
     router.notificationseen = (req, res) => {
         userId = req.body.userId;
-        notifiModel.update({ recevierId: userId }, { isseen: true }, { multi: true }, function (err, data) {
+        notifiModel.update({ receiverId: userId }, { isseen: true }, { multi: true }, function (err, data) {
             if (err) throw err;
             res.json(data);
         })
@@ -414,7 +453,7 @@ module.exports = function (io, saveUser) {
     router.addfiles = function (req, res, next) {
         // var newchat = new chatModel({
         //     "senderId": req.body.senderId,
-        //     "recevierId": req.body.friendId,
+        //     "receiverId": req.body.friendId,
         //     "message": req.file.originalname,
         // });
         // newchat.save( function (err, data) {
@@ -432,7 +471,7 @@ module.exports = function (io, saveUser) {
 
             var newchat = new chatModel({
                 "senderId": req.body.senderId,
-                "recevierId": req.body.friendId,
+                "receiverId": req.body.friendId,
                 "message": req.files[i].originalname,
                 "messageType": isFileImage
             });
@@ -460,7 +499,7 @@ module.exports = function (io, saveUser) {
                 "groupId": req.body.id,
                 "senderId": req.body.senderId,
                 "isGroup": 1,
-                //  "recevierId": req.body.friendId,
+                //  "receiverId": req.body.friendId,
                 "message": req.files[i].originalname,
                 "messageType": isFileImage
             });
@@ -536,7 +575,7 @@ module.exports = function (io, saveUser) {
         console.log('removeUser: Logic need to be updated');
         // recentModel.findOneAndDelete({_id:req.body.id},(err, data) => {
         //     if (err) throw err;
-        //     chatModel.deleteMany({$or:[{senderId:data.senderId,recevierId:data.receiverId},{senderId:data.receiverId,recevierId:data.senderId}]},(err,data) => {
+        //     chatModel.deleteMany({$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}]},(err,data) => {
         //         if (err) throw err;
         //         res.json(data);
         //     })

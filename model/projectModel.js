@@ -4,6 +4,7 @@ const projectSchema = mongoose.Schema({
     "name": String,
     "metaTitle": String,
     "logo": String,
+    "favicon": String,
     "color1": String,
     "color2": String,
     "profileImgLocation": String,

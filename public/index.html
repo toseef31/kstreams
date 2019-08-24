@@ -6,11 +6,11 @@
     <meta name="description" content="chatApp">
     <meta name="author" content="Peek International">
 
-    <title ng-if="projectTitle == ''">Chat | KSTREAMS </title>
-    <title ng-if="projectTitle != ''"> {{ projectTitle }} </title>
+    <title ng-if="!projectData.metaTitle">Chat | KSTREAMS </title>
+    <title ng-if="projectData.metaTitle"> {{ projectData.metaTitle }} </title>
 
-    <link ng-if="projectTitleLogo == ''" rel="icon" href="images/favicon.png" sizes="192x192" />
-    <link ng-if="projectTitleLogo != ''" rel="icon" href="{{projectTitleLogo}}" sizes="192x192" />
+    <link ng-if="!projectData.favicon" rel="icon" href="images/favicon.png" sizes="192x192" />
+    <link ng-if="projectData.favicon" rel="icon" href="{{projectData.favicon}}" sizes="192x192" />
 
     <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="./nodeModFiles/semantic.min.css">

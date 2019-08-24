@@ -18,6 +18,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.groupchats = [];
     $scope.allGroups;
     $scope.editMsgIconStatus = false;
+    $scope.unSeenMessages;
     /*socket io connection*/
 
     $scope.audio = new Audio('audio/call.mp3');
@@ -69,7 +70,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     let hostIs = location.host.split(':');
   
-    let webSocketIp = $scope.user.projectId.domainUrl;  //localhost || www.jobcallme.com
+    let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
     class Ws {
         get newClientPromise() {
@@ -373,13 +374,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         /*get all users*/
-        $http.get("/getUsers/" + response.data._id)
+      
+        $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList)
             .then(function (response) {
-              //  console.log($scope.user);
-                $scope.allUsers = response.data;
+               
+                //$scope.unSeenMessages = response.data.unseenMsgsCount;
+                $scope.allUsers = response.data.usersList;
+              
                 for (i = 0; i < response.data.length; i++) {
                     if (response.data[i].email != $scope.user.email) {
-                        $scope.getmembers.push(response.data[i]);
+                        $scope.getmembers.push(response.data.usersList[i]);
                     }
                 }
                 $scope.usersLoaded = true;
@@ -388,6 +392,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all group users*/
         $http.get("/getCreatedGroups/" + $scope.user._id)
             .then(function (response) {
+                //console.log(response);
                 $scope.allGroups = response.data;
                 $scope.groupsLoaded = true;
                 // for (i = 0; i < response.data.length; i++) {
@@ -536,8 +541,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.status = obj.user.status;
                 $scope.connectionId = $scope.chatWithId;
                 //chnId 3
+              
+                for (var i=0; i<$scope.allUsers.length; i++){
+                   if ($scope.allUsers[i]._id == obj.user._id){
+                    $scope.allUsers[i].usCount = 0;
+                   }
+                }
+                console.log( $scope.unSeenMessages);
+
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
                     .then(function (res) {
+                        console.log(res);
+                        //$scope.unSeenMessages = response.data.unseenMsgsCount;
                         $scope.groupMembers = '';
                         $scope.chats = res.data;
                         scrollbottom();
@@ -632,7 +647,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             updatechat();
                         })
                 else {
-                    var msgObj = { "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "recevierId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+                    var msgObj = { "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
                     $scope.message = '';
                     $scope.chats.push(msgObj);
                     socket.emit('checkmsg', msgObj);
@@ -897,7 +912,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.welcomePage = true;
                         $http.get("/getUsers/" + $scope.user._id)
                             .then(function (response) {
-                                $scope.allUsers = response.data;
+                                $scope.allUsers = response.data.usersList;
                             });
                     });
                 else if (type == 2)
@@ -957,10 +972,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /* update the chat of the friend side after any action*/
         socket.on('updateChatAll', (conversation) => {
 
-            var recevierId = conversation.length >= 0 ? conversation[0].recevierId : conversation.recevierId;
+            var receiverId = conversation.length >= 0 ? conversation[0].receiverId : conversation.receiverId;
             var senderId = conversation.length >= 0 ? conversation[0].senderId : conversation.senderId;
             $scope.$apply(function () {
-                if ($scope.user._id == recevierId && $scope.chatWithId == senderId || $scope.user._id == senderId && $scope.chatWithId == recevierId) {
+                if ($scope.user._id == receiverId && $scope.chatWithId == senderId || $scope.user._id == senderId && $scope.chatWithId == receiverId) {
                     if (conversation.length >= 0) $scope.chats = conversation;
                     else $scope.chats = [];
                     scrollbottom();
@@ -972,7 +987,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         socket.on('remsg', function (msg) {
         //    console.log(msg);
             $scope.$apply(function () {
-                if ($scope.user._id == msg.recevierId && $scope.chatWithId == msg.senderId) {
+                if ($scope.user._id == msg.receiverId && $scope.chatWithId == msg.senderId) {
                     //console.log('msg ',msg);
                     if ('serviceWorker' in navigator)
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
@@ -980,7 +995,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.chats.push(msg);
                     scrollbottom();
                 }
-                if ($scope.user._id == msg.recevierId) {
+                if ($scope.user._id == msg.receiverId) {
                     var audio2 = new Audio('audio/message.mp3');
                     audio2.play();
                 }

@@ -36,7 +36,7 @@
                       <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
                     </span>
                     <span ng-if="user.user_image != ''">
-                      <img class="importantHeight" src="images/profilePhotos/{{user.user_image}}" alt="{{user.name}}" />
+                      <img class="importantHeight" src="{{projectData}}{{user.user_image}}" alt="{{user.name}}" />
                     </span>
                   </div>
                   <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()"
@@ -77,27 +77,33 @@
                               </span>
                               <span ng-if="userA.user_image != ''">
                                 <img class="importantHeight" ng-if="userA.receiverId != user._id"
-                                  src="images/profilePhotos/{{userA.user_image }}" alt="{{userA.name}}" />
+                                  src="{{projectData}}{{userA.user_image }}" alt="{{userA.name}}" />
                               </span>
                             </div>
                             <div class="chat_ib color-white">
                               <h5 ng-if="userA.receiverId != user._id">{{userA.name}} </h5>
-                              <div ng-repeat="msg in userA.chat">
-                                <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">New
+
+                              <span ng-repeat="msgCount in unSeenMessages">
+                                  <span class="unreadMsgAlign" ng-if="userA._id == msgCount._id && msgCount.unseenMsgs != 0"> Unread {{msgCount.unseenMsgs}} </span>
+                                </span>
+
+                              <!-- <div ng-repeat="msg in userA.chat">
+                                <p class="unreadMsg" ng-if="msg.receiverId == user._id && msg.unreadMsg != 0">New
                                   message <span class="badge">{{msg.unreadMsg}}</span></p>
                                 <p><span class="wrap">{{msg.message }}</span>
                                   <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span></p>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div ng-if="allUsers.length == 0">
+                    </div>
+                  
+                    <div ng-if="allUsers.length == 0">
                         <div class="notfound">
-                          <h3>You have no chat</h3>
+                            <h3>No friends found</h3>
                         </div>
                       </div>
-                    </div>
                     <!-- users end -->
 
                     <div ng-if="!usersLoaded">
@@ -108,7 +114,7 @@
                   <!-- recent tab end-->
                   <!-- recent tab end  mobile-->
 
-                  <uib-tab select="groupChatActive()" index="gchatIndex" heading="Group Chat">
+                  <uib-tab ng-if="projectData.groups == 1" select="groupChatActive()" index="gchatIndex" heading="Group Chat">
                     <!-- <p style="color: wheat">{{gchatIndex}}</p> -->
                     <!-- <div ng-if="allGroups.length > 0">
                     <div ng-repeat="groupA in allGroups">
@@ -163,7 +169,7 @@
                   <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
                 </span>
                 <span ng-if="user.user_image != ''">
-                  <img class="importantHeight" src="images/profilePhotos/{{user.user_image}}" alt="{{user.name}}" />
+                  <img class="importantHeight" src="{{projectData}}{{user.user_image}}" alt="{{user.name}}" />
                 </span>
               </div>
               <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass"
@@ -184,7 +190,9 @@
               <!-- recent tab start-->
               <!-- recent tab start-->
               <!-- recent tab start Desktop-->
+        
               <uib-tab select="chatActive()" index="nchatIndex" heading="Recent Chat">
+                
                 <div ng-if="allUsers.length > 0">
                   <div ng-repeat="userA in allUsers" class='a3' ng-class="{grpChecked: $parent.selection==$index}"
                     ng-click="$parent.selection=$index">
@@ -211,33 +219,38 @@
                           </span>
                           <span ng-if="userA.user_image != ''">
                             <img class="" ng-if="userA.receiverId != user._id"
-                              src="images/profilePhotos/{{userA.user_image }}" alt="{{userA.name}}" />
+                              src="{{projectData}}{{userA.user_image }}" alt="{{userA.name}}" />
                           </span>
                         </div>
 
 
                         <div class="chat_ib color-white userText">
                           <span>{{userA.name}}</span>
-                          <div ng-repeat="msg in userA.chat">
-                            <p class="unreadMsg" ng-if="msg.recevierId == user._id && msg.unreadMsg != 0">
+                   
+                          <!-- <span ng-repeat="msgCount in unSeenMessages"> -->
+                              <span class="unreadMsgAlign" ng-if="userA.usCount != 0"> Unread {{userA.usCount}} </span>
+                            <!-- </span> -->
+                          <!-- <div ng-repeat="msg in userA.chat">
+                            <p class="unreadMsg" ng-if="msg.receiverId == user._id && msg.unreadMsg != 0">
                               New message <span class="badge">{{msg.unreadMsg}}</span>
                             </p>
                             <p>
                               <span class="wrap">{{msg.message }}</span>
                               <span>{{msg.date | date:"MMM dd,yyyy 'at' h:mma"}}</span>
                             </p>
-                          </div>
+                          </div> -->
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+    
                 <div ng-if="allUsers.length == 0">
                   <div class="notfound">
-                    <h3>You have no chat</h3>
+                    <h3>No friends found</h3>
                   </div>
                 </div>
-
+             
                 <div ng-if="!usersLoaded">
                   <strong style="color:wheat">Loading ...</strong>
                 </div>
@@ -249,7 +262,7 @@
               <!-- group tab start-->
               <!-- group tab start-->
               <!-- group tab start Desktop-->
-              <uib-tab ng-if="user.projectId.groups == 1" select="groupChatActive()" index="gchatIndex"
+              <uib-tab ng-if="projectData.groups == 1" select="groupChatActive()" index="gchatIndex"
                 heading="Group Chat">
                 <!-- <h1 style="color: #dadada">{{user.projectId.groups}}</h1> -->
                 <div ng-if="allGroups.length > 0">
@@ -258,6 +271,7 @@
                     <div class="chat_list active_chat posRelative" ng-click="startChat({type:2,group:groupA})">
                       <div>
                         <h5><span class='glyphicon glyphicon-chevron-right'></span> {{groupA.name}}</h5>
+                          
                       </div>
                     </div>
                   </div>
@@ -394,7 +408,7 @@
                             <img class="importantHeight"  src="images/noProfile.png" alt="{{chat.name}}" /> 
                           </span>
                           <span ng-if="user.user_image != ''">
-                            <img class="importantHeight" src="images/profilePhotos/{{userA.user_image}}" alt="{{chat.name}}" /> 
+                            <img class="importantHeight" src="{{projectData}}{{userA.user_image}}" alt="{{chat.name}}" /> 
                           </span>
                         </div> -->
 
@@ -490,7 +504,7 @@
                             <img class="importantHeight"  src="images/noProfile.png" alt="{{chat.name}}" /> 
                           </span>
                           <span ng-if="user.user_image != ''">
-                            <img class="importantHeight" src="images/profilePhotos/{{userA.user_image}}" alt="{{chat.name}}" /> 
+                            <img class="importantHeight" src="{{projectData}}{{userA.user_image}}" alt="{{chat.name}}" /> 
                           </span>
                         </div> -->
 

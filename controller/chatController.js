@@ -82,12 +82,26 @@ module.exports = function (io, saveUser) {
         }
         if(req.params.allList==0){
             var friendIds = [];
-            friendModel.find({'userId': req.params.userId, 'status': 1},{friendId: true})
+            
+            friendModel.find({'userId': req.params.userId, 'status': 1} ,{friendId: true})
             .populate('friendId').lean().exec(function (err, friendsData){ 
-                friendsData.forEach(val => {
-                    friendIds.push(val.friendId);
-                }); 
-                chatModelFunc(friendIds);
+               
+                if (!friendsData.length){
+                    // now check the userId in friendId column and populate user data
+                    friendModel.find({'friendId': req.params.userId, 'status': 1} ,{userId: true})
+                    .populate('userId').lean().exec(function (err, friendsData){ 
+                        friendsData.forEach(val => {
+                            friendIds.push(val.userId);
+                        }); 
+                        chatModelFunc(friendIds);
+                    })
+                }
+                else{
+                    friendsData.forEach(val => {
+                        friendIds.push(val.friendId);
+                    }); 
+                    chatModelFunc(friendIds);
+                }
             })
         }
         else 

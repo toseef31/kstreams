@@ -79,7 +79,7 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-			//console.log(obj);
+			console.log(obj);
 			if(typeof obj.password ===undefined) callback({err:err});
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
 			.populate('projectId').lean().exec(function(err,data){ 

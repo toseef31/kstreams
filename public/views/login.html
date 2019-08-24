@@ -1,32 +1,37 @@
 <div class="container" ng-controller="loginController">
-    <div class="login-form" ng-if="projectData.length != 0">
-        <div class="main-div col-sm-4">
-            <div class="panel">
-                  <img ng-if="!projectData.logo" src="images/favicon.png"  />
-                  <img ng-if="projectData.logo" src="{{projectData.logo}}"  />
+    <div ng-init="user={}">
+        <div class="login-form" ng-if="projectData.length != 0">
+            <div class="main-div col-sm-4">
+                <div class="panel">
+                    <img ng-if="!projectData.logo" src="images/favicon.png" />
+                    <img ng-if="projectData.logo" src="{{projectData.logo}}" />
 
-                  <h2 ng-if="projectData.name == ''">Chat</h2>
-                  <h2 ng-if="projectData.name != ''">{{projectData.name}}</h2>
+                    <h2 ng-if="projectData.name == ''">Chat</h2>
+                    <h2 ng-if="projectData.name != ''">{{projectData.name}}</h2>
 
-                <p>Please enter your email and password</p>
+                    <p>Please enter your email and password</p>
+                </div>
+
+                <form id="Login" ng-submit="login()">
+                    <div ng-if="notAuthorize" class="alert alert-danger">invalid username or password</div>
+                    <div class="form-group">
+                        <input type="email" ng-model="user.email" class="form-control" id="inputEmail"
+                            placeholder="Email Address">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" ng-model="user.password" class="form-control" id="inputPassword"
+                            placeholder="Password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
             </div>
-            <form id="Login" ng-submit="login()">
-                <div ng-if="notAuthorize" class="alert alert-danger">invalid username or password</div>
-                <div class="form-group"> 
-                    <input type="email" ng-model="email" class="form-control" id="inputEmail" placeholder="Email Address">
-                </div>
-
-                <div class="form-group">
-                    <input type="password" ng-model="password" class="form-control" id="inputPassword" placeholder="Password">
-                </div>
-         
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form> 
         </div>
     </div>
 
-    <span ng-if="projectData.length == 0"> 
-            <h3 class="loadingLogin"> LOADING ... </h3>
-            <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
+    <span ng-if="projectData.length == 0">
+        <h3 class="loadingLogin"> LOADING ... </h3>
+        <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
     </span>
 </div>

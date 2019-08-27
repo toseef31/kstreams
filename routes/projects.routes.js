@@ -70,7 +70,9 @@ projectsRouter.route('/registerProject').post(function (req, res) {
 
 projectsRouter.route('/getProject').post(function (req, res) {
     var projectId = req.body.projectId;
-    projectModel.find({ '_id': projectId }).exec(function (err, projectData) {
+    projectModel.findOne({ 'status':1})
+    .lean().exec(function (err, projectData) {
+        console.log('projectData ',projectData);
         res.send(projectData);
     })
 })

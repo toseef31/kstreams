@@ -26,7 +26,7 @@ module.exports = function (io, saveUser) {
     var router = {}; 
 
     router.getProjectData = function (req, res) { 
-        projectModel.findOne({ '_id': req.body.projectId }).lean().exec(function (err, projData) { 
+        projectModel.findOne({ 'status':1}).lean().exec(function (err, projData) { 
             res.send(projData);
         })
     }

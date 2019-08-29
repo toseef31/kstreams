@@ -4,8 +4,6 @@ var bcrypt = require('bcrypt');
 var multer = require('multer');
 let regModel = require('../model/users-model');
 let projectModel = require('../model/projectModel');
-let configData = require('../public/lib/js/config');
-
 
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
 const storage = multer.diskStorage({
@@ -25,41 +23,31 @@ const upload = multer({
 registrationRoutes.route("/login").post(function (req, res) {
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
-    let myProjectId = configData.projectId; // getting the stored projectId in configVar
 
-    User.findOne({ email: req.body.email }).then(
-        (result) => {
-            if (!result) {
-                return res.json({ 'message': "Incorrect email", 'isUserExist': false });
-            }
-            else {
-                if (!bcrypt.compareSync(req.body.password, result.password)) {
-                    return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+    projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
+
+        User.findOne({ email: req.body.email }).then(
+            (result) => {
+                if (!result) {
+                    return res.json({ 'message': "Incorrect email", 'isUserExist': false });
                 }
+                else {
+                    if (!bcrypt.compareSync(req.body.password, result.password)) {
+                        return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+                    }
 
-                // var fileBuffer = null;
-                // if (result.user_image != '') {
-                //     fileBuffer = fs.readFileSync(imageDir + result.user_image);
-                // }
+                    var imageFile = "";
+                    if (result.user_image != '') {
+                        var imageFile = fullUrl + result.user_image;
+                    }
 
-                var imageFile = "";
-                if (result.user_image != '') {
-                    var imageFile = fullUrl + result.user_image;
+                    const data = { 'id': result.id, 'email': result.email, 'name': result.name };
+                    return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
                 }
-
-                //------------------- GET PROJECT DATA ----------------------------------------
-                // var projectId = req.body.projectId;
-                // projectModel.find({ '_id': projectId }).exec(function (err, projectData) {
-                //    res.send(projectData);
-                // })
-                //-----------------------------------------------------------------------------
-
-                const data = { 'id': result.id, 'email': result.email, 'name': result.name };
-                return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
-            }
-        }).catch(err => {
-            res.status(500).send(err);
-        });
+            }).catch(err => {
+                res.status(500).send(err);
+            });
+    })
 });
 
 registrationRoutes.route("/getloggeduser").post(function (req, res) {
@@ -68,11 +56,6 @@ registrationRoutes.route("/getloggeduser").post(function (req, res) {
 
     User.findOne({ email: req.body.email }).then(
         (result) => {
-
-            // var fileBuffer = null;
-            // if (result.user_image != '') {
-            //     fileBuffer = fs.readFileSync(imageDir + result.user_image);
-            // }
             var imageFile = "";
             if (result.user_image != '') {
                 var imageFile = fullUrl + result.user_image;
@@ -89,108 +72,86 @@ registrationRoutes.route("/getloggeduser").post(function (req, res) {
 registrationRoutes.post('/getusers', function (req, res) {
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
+    var activeProjectUsers = [];
 
-    User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
-        var tempUsers = users;
+    User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
 
-        for (var i = 0; i < tempUsers.length; i++) {
-            if (tempUsers[i].user_image != "")
-                tempUsers[i] = {
-                    "_id": tempUsers[i]._id,
-                    "name": tempUsers[i].name,
-                    "email": tempUsers[i].email,
-                    "country": tempUsers[i].country,
-                    "phone": tempUsers[i].phone,
-                    "user_image": tempUsers[i].user_image,
-                    "status": tempUsers[i].status,
-                    "userImageLink": (fullUrl + tempUsers[i].user_image)
-                };
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].user_image != "")
+                users[i]['userImageLink'] = (fullUrl + users[i].user_image);
+
+            if (users[i].projectId.status == 1)
+                activeProjectUsers.push(users[i]);
         }
-
-        res.send(tempUsers);
+        res.send(activeProjectUsers);
     });
 });
 
 
 registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
 
-    let newUserModel = new regModel(JSON.parse(req.body.userData));
     var userData = JSON.parse(req.body.userData);
     let userModel = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
-   
-    userModel.find({ 'email': userData.email }, {'email':true}, function (err, result) {
-     
+    var activeProjectUsers = [];
+
+    userModel.find({ 'email': userData.email }, { 'email': true }, function (err, result) {
+
         if (result.length == 0) {
-            newUserModel.save()
-                .then(reg => {
-                    var User = regModel;
+            projectModel.findOne({ status: 1 }, { projetId: true }).exec(function (err, resultpid) {
+                userData.projectId = resultpid._id;
+                let newUserModel = new regModel(userData);
 
-                    User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
-                        var tempUsers = users;
-                        for (var i = 0; i < users.length; i++) {
-                            if (users[i].user_image != "") {
-                                tempUsers[i] = {
-                                    "_id": tempUsers[i]._id,
-                                    "name": tempUsers[i].name,
-                                    "email": tempUsers[i].email,
-                                    "country": tempUsers[i].country,
-                                    "phone": tempUsers[i].phone,
-                                    "status": tempUsers[i].status,
-                                    "user_image": tempUsers[i].user_image,
-                                    "userImageLink": (fullUrl + tempUsers[i].user_image)
-                                };
+                newUserModel.save()
+                    .then(reg => {
+                        var User = regModel;
+
+                        User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
+                            for (var i = 0; i < users.length; i++) {
+                                if (users[i].user_image != "")
+                                    users[i]['userImageLink'] = (fullUrl + users[i].user_image);
+
+                                if (users[i].projectId.status == 1)
+                                    activeProjectUsers.push(users[i]);
                             }
-
-                        }
-                        res.send({ 'message': 'user added successfully', 'status': true, 'users': tempUsers });
+                            res.send({ 'message': 'user added successfully', 'status': true, 'users': activeProjectUsers });
+                        });
+                    })
+                    .catch(err => {
+                        res.status(400).send({ 'message': "unable to save in database", 'status': false });
                     });
-                })
-                .catch(err => {
-                    res.status(400).send({ 'message': "unable to save in database", 'status': false });
-                });
+            })
         }
         else {
-            res.send({ 'message': 'email already exist', 'status': false , 'users': null});
+            res.send({ 'message': 'email already exist', 'status': false, 'users': null });
         }
     }).catch(err => {
         res.send({ 'message': 'operation failed', 'status': false });
     });
-
-
 });
 
 registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
     var User = regModel;
     var newUserModel = new regModel(JSON.parse(req.body.userData));
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
+    var activeProjectUsers = [];
 
-    // if (req.body.userData.password != ""){
     bcrypt.hash(newUserModel.password, 10, function (err, hash) {
         newUserModel.password = hash;
 
         User.findByIdAndUpdate(newUserModel._id, { $set: newUserModel }).then(
             (result) => {
-
                 var User = regModel;
-                User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
-                    var tempUsers = users;
-                    for (var i = 0; i < users.length; i++) {
-                        if (users[i].user_image != "") {
-                            tempUsers[i] = {
-                                "_id": tempUsers[i]._id,
-                                "name": tempUsers[i].name,
-                                "email": tempUsers[i].email,
-                                "country": tempUsers[i].country,
-                                "phone": tempUsers[i].phone,
-                                "status": tempUsers[i].status,
-                                "user_image": tempUsers[i].user_image,
-                                "userImageLink": (fullUrl + tempUsers[i].user_image)
-                            };
-                        }
+                User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
 
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].user_image != "")
+                            users[i]['userImageLink'] = (fullUrl + users[i].user_image);
+
+                        if (users[i].projectId.status == 1)
+                            activeProjectUsers.push(users[i]);
                     }
-                    res.send({ 'message': 'user data updated successfully', 'status': true, 'users': tempUsers });
+                    res.send({ 'message': 'user data updated successfully', 'status': true, 'users': activeProjectUsers });
                 });
 
             }).catch(err => {
@@ -202,9 +163,9 @@ registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
 
 registrationRoutes.post('/deleteuser', function (req, res) {
     var User = regModel;
-    //const loggedUserId = req.body._id;
     const userIdToBeDeleted = req.body.userId;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
+    var activeProjectUsers = [];
 
     User.findByIdAndUpdate(userIdToBeDeleted, { 'status': 0 }).then(
         (result) => {
@@ -212,24 +173,15 @@ registrationRoutes.post('/deleteuser', function (req, res) {
                 res.status(400).send({ 'message': "unable to delete user", 'status': false });
             }
 
-            User.find({ 'isAdmin': 0, 'status': {$gt : 0} }, { 'password': false }, function (err, users) {
-                var tempUsers = users;
+            User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
                 for (var i = 0; i < users.length; i++) {
-                    if (users[i].user_image != "") {
-                        tempUsers[i] = {
-                            "_id": tempUsers[i]._id,
-                            "name": tempUsers[i].name,
-                            "email": tempUsers[i].email,
-                            "country": tempUsers[i].country,
-                            "phone": tempUsers[i].phone,
-                            "status": tempUsers[i].status,
-                            "user_image": tempUsers[i].user_image,
-                            "userImageLink": (fullUrl + tempUsers[i].user_image)
-                        };
-                    }
+                    if (users[i].user_image != "")
+                        users[i]['userImageLink'] = (fullUrl + users[i].user_image);
 
+                    if (users[i].projectId.status == 1)
+                        activeProjectUsers.push(users[i]);
                 }
-                res.send(tempUsers);
+                res.send(activeProjectUsers);
             })
         }
     )

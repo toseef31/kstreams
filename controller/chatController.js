@@ -61,23 +61,24 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-     //   console.log ('allList: '+ req.params.allList);
-      //  console.log ('id: '+ req.params.userId);
         
         function chatModelFunc(data){ 
-           // console.log(data);
-            for (let i=0; i<data.length; i++) 
+         // console.log("coming");
+            for (let i=0; i<data.length; i++) {
                 chatModel.find(
                     { 'senderId': data[i]._id,
                     'receiverId':req.params.userId,
                     'isSeen': 0}
                     ).count().exec(function (err, count) { 
-                        data[i]['usCount']=count;  
+                      
+                        data[i]['usCount']=count;    
+                      //  console.log(i+": "+data[i].name+': '+data[i].usCount);
+                      //  console.log(i + " == " + (data.length-1) );
                         if (i == data.length-1) res.json({'usersList':data}); 
                     }) 
-
-                    if (data.length == 0) 
-                          res.json({'usersList':data})
+                }
+                if (data.length == 0) 
+                    res.json({'usersList':data})
 
         }
         if(req.params.allList==0){

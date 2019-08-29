@@ -7,6 +7,9 @@ app.config(function($routeProvider) {
     .when("/", {
         templateUrl : "./views/login.html"
     })
+    .when("/dashNew", {
+        templateUrl : "./views/dashNew.html"
+    })
     .when("/dash", {
         templateUrl : "./views/dash.html"
     })

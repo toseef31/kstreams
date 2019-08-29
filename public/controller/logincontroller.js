@@ -10,7 +10,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     $http.post("/getProject", { 'projectId': $scope.testProjectId }).then(function (response) {
         $rootScope.projectData=response.data;  
-        console.log( $rootScope.projectData.metaTitle);
+       // console.log( $rootScope.projectData.metaTitle);
     });
 
     /*check session*/
@@ -19,19 +19,19 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         url: '/checkSession',
     }).then(function successCallback(response) { 
         $rootScope.user = response.data;
-        $location.path("/dash");
+        $location.path("/dashNew");
     });
 
     /*login function*/
     $scope.login = function () {
-        console.log($scope.email);
+      //  console.log($scope.email);
         $http({
             method: 'POST',
             url: '/login',
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
             $rootScope.user = response.data;
-            $location.path("/dash");
+            $location.path("/dashNew");
         }, function errorCallback(response) {
             $scope.notAuthorize = true;
         });

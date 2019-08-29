@@ -68,9 +68,9 @@ projectsRouter.route('/registerProject').post(function (req, res) {
     })
 })
 
-projectsRouter.route('/getProject').post(function (req, res) {
-    var projectId = req.body.projectId;
-    projectModel.find({ '_id': projectId }).exec(function (err, projectData) {
+projectsRouter.route('/getProject').get(function (req, res) {
+    //var projectId = req.body.projectId;
+    projectModel.findOne({ 'status': 1 }).exec(function (err, projectData) {
         res.send(projectData);
     })
 })

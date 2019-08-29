@@ -308,7 +308,7 @@
         <div ng-class="{hidden: !isChatPanel && isSidePanel}"
           class="mesgs col-sm-8 col-xs-12 mesgs1 parentRightWindow posRelative" ngClick="showContact()"
           ng-click="disableMsgEdit(); showDDwnDisabler()" ng-hide="welcomePage" ng-show="!welcomePage"
-          style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada; " id="msg-container">
+          style="padding-left: 0px;padding-right: 0px; border: 1px solid #dadada;" id="msg-container">
           <div class="hidden-xs big-btn"
             style="background: #171717;padding: 10px;color: #fff; height: 49px; line-height: 25px;">
             <span class="status-bar" ng-if="groupSelected">{{selGroupName}} </span>
@@ -369,6 +369,7 @@
 
             <div ng-if="!groupSelected">
               <div ng-repeat="chat in chats track by $index">
+                
                 <div class="incoming_msg" ng-if="chat.senderId != user._id">
                   <div class="received_msg" ng-if="!chat.isDeleted">
                     <div class="received_withd_msg">
@@ -668,10 +669,10 @@
     console.log("ready");
     $("#sendMsg").emojioneArea({
       events: {
-        keypress: function (editor, event) {
+        keypress: function (editor, event) { console.log('a');
           socket.emit('typing');
         },
-        keyup: function (editor, event) {
+        keyup: function (editor, event) { console.log('b');
           this.source.val(this.getText());
           if (event.keyCode == 13) {
             var text = this.source.val();

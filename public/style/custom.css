@@ -35,9 +35,19 @@
 }
 .msg3dotsNew{
     position: absolute;
-    /* left: 50%; */
+    left: -8px;
     top: 2px;
     height: 15px;
+}
+
+.rightAlign{
+    text-align: right;
+}
+.imageMsgBoxMaxWidth{
+    max-width: 60%;
+}
+.fileMsgBoxMaxWidth{
+    max-width: 50%;
 }
 .width100{
     width: 100%;
@@ -123,7 +133,7 @@
     color: #fff;    
 }
 .nav>li>a:focus, .nav>li>a:hover{
-    background-color:#195989;
+    background-color: #cfe6b1;
 }
 .nGroupFound{
     color:#fff;
@@ -153,7 +163,7 @@
 }
 .btnLogOut{
     position: absolute;
-    top: 10px;
+    top: 5px;
     right: 10px;
 }
 .groupMsgHistory{

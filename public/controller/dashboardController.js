@@ -340,7 +340,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }).then(function successCallback(response) {
         $scope.loggedUserId = response.data._id;
         $scope.check = function (event) {
-           // console.log(event);
+           // console.log(event); 
+         
         }
 
         /*login user */
@@ -349,6 +350,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.usersInGroup = 1;
         $scope.countGroupMembers = 1;
         $scope.groupOrUser = '';
+       
        // console.log($rootScope.user);
         $rootScope.user = response.data;
         socket.emit('user_connected', { userId: $rootScope.user._id });
@@ -377,7 +379,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
       
         $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList)
             .then(function (response) {
-               
+                console.log(response);
                 //$scope.unSeenMessages = response.data.unseenMsgsCount;
                 $scope.allUsers = response.data.usersList;
               
@@ -392,7 +394,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all group users*/
         $http.get("/getCreatedGroups/" + $scope.user._id)
             .then(function (response) {
-                //console.log(response);
+      
                 $scope.allGroups = response.data;
                 $scope.groupsLoaded = true;
                 // for (i = 0; i < response.data.length; i++) {
@@ -442,6 +444,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }).then(function (d) {
 
                     socket.emit('updateGroupFiles', d);
+                    scrollbottom();
                     // $http.post('/getLastGroupMsg', {id: $scope.connectionId, senderId: $scope.user._id}).then(function (groupchat) { 
                     //     console.log(groupchat);
                     //   //  $scope.groupchats = groupchat.data; 
@@ -505,6 +508,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.notiCount = response.data.count;
             });
 
+
         $scope.groupSelected = false;
         $scope.chatActive = function (index) {
             $scope.nchatIndex = 0;
@@ -512,10 +516,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.groupSelected = false;
         }
 
-        $scope.groupChatActive = function () {
+        $scope.groupChatActive = function () { 
             $scope.nchatIndex = 1;
             $scope.gchatIndex = 0;
-            $scope.groupSelected = true;
+            $scope.groupSelected = true;         
         }
 
         $scope.chatBack = function () {
@@ -527,7 +531,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
-
+        
             $scope.isSidePanel = false; $scope.isChatPanel = true;
             $scope.welcomePage = false;
             /*obj is an object send from view it may be a chat or a group info*/
@@ -551,7 +555,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
                     .then(function (res) {
-                       // console.log(res);
+                  
                         //$scope.unSeenMessages = response.data.unseenMsgsCount;
                         $scope.groupMembers = '';
                         $scope.chats = res.data;//.userChat;
@@ -566,10 +570,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.status = '';
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
                     $scope.groupchats = groupchat.data;
-                    scrollbottom();
+                   scrollbottom();
                 })
             }
+           
         }
+
         $scope.seenNotification = () => {
             $http.post('/notificationseen', { userId: $scope.user._id }).then(function (data) {
                 $scope.notiCount = 0;
@@ -581,6 +587,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.editMsgId = chat._id;
             $rootScope.editMsgMenu1 = ($rootScope.editMsgMenu1) ? false : true;
             $scope.msgEdit = chat.message;
+          
         }
         /* to edit message */
         $scope.editMsg = function () {
@@ -649,17 +656,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 else {
                     var msgObj = {"isSeen": 0, "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
                     $scope.message = '';
-                    console.log(msgObj);
-                    $scope.chats.push(msgObj);
-                    socket.emit('checkmsg', msgObj);
+              
+                    //$scope.chats.push(msgObj);
+                   // socket.emit('checkmsg', msgObj);
+
                     scrollbottom();
                     $http.post('/chat', msgObj)
                         .then(function (res) {
+                            $scope.chats.push(res.data);
+                            socket.emit('checkmsg', res.data);
+                            
                             if (res.data.length < 1) return;
                             // $scope.message = ''; 
                             // $scope.chats.push(res.data);
                             // socket.emit('checkmsg', res.data); 
-                            // scrollbottom(); 
+                           
                         })
                 }
 
@@ -682,6 +693,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'nodel' });
                             scrollbottom();
                         })
+
+                     
             }
 
             var ele = $('#sendMsg').emojioneArea();
@@ -723,12 +736,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* video calling functionality*/
         $scope.videoCall = function (type, callerId) {
-
+       
             if (type == 1) {
+                console.log("if");
                 $scope.timmerObj = new timmer('#audioTimmer');
                 document.querySelector('.audioTab').style.display = 'block';
             }
-            else {
+            else {console.log("else");
                 $scope.timmerObj = new timmer('#timmer');
                 document.querySelector('.videoTab').style.display = 'block';
             }
@@ -913,6 +927,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.welcomePage = true;
                         $http.get("/getUsers/" + $scope.user._id)
                             .then(function (response) {
+                              
                                 $scope.allUsers = response.data.usersList;
                             });
                     });
@@ -979,7 +994,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 if ($scope.user._id == receiverId && $scope.chatWithId == senderId || $scope.user._id == senderId && $scope.chatWithId == receiverId) {
                     if (conversation.length >= 0) $scope.chats = conversation;
                     else $scope.chats = [];
-                    scrollbottom();
+                //    scrollbottom();
                 }
             });
         })
@@ -1025,7 +1040,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 else if (chats.case == 'del') {
                     $scope.groupchats = chats.data;
                 }
-                scrollbottom();
+               // scrollbottom();
             });
         })
 
@@ -1056,7 +1071,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $location.path('/');
     });
 
-    $scope.showHideDots = function (id, isShow = 0) {
+    $scope.showHideDots = function (id, isShow = 0) { 
         if (isShow == 1) $("#msg3dots-" + id).removeClass('hidden');
         else $("#msg3dots-" + id).addClass('hidden');
     };
@@ -1095,8 +1110,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.showDDwnSt = function () {
         $scope.showDrpDwnSt = !$scope.showDrpDwnSt;
+        //console.log($scope.showDrpDwnSt);
     }
-
     $scope.showDDwnDisabler = function () {
         $scope.showDrpDwnSt = false;
     }
@@ -1124,3 +1139,4 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
 });
+

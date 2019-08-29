@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   activatedForm: number = 1;  // *[0: NoForm **** 1: LoginForm **** 2: ForgetPasswordForm]
   userLoggedIn: boolean = false;
   userImage: any;
+  projectData: any;
 
   constructor(
     private backendApi: BackendApiService,
@@ -33,6 +34,12 @@ export class LoginComponent implements OnInit {
     if (this.loginService.isUserLoggedIn()) {
       this.router.navigate([this.loginService.getCurrentUrl()]);
     }
+
+    this.backendApi.getProjectData().then(
+      (projectData: any) => {
+        this.projectData = projectData;
+      }
+    );
   }
 
   ngOnInit() {

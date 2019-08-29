@@ -1,29 +1,31 @@
 <div class="logo">
-    <a class="simple-text logo-mini" *ngIf="userImage != null && userImage != ''">
-        <div class="logo-img">
+    <!-- <a class="simple-text logo-mini" *ngIf="userImage != null && userImage != ''"> -->
+        <!-- <div class="logo-img"> -->
             <!-- <label for="profile_img"> -->
                 <!-- <span *ngIf="userImage == null || userImage == ''">
                     <img class="img-responsive overrideMaxWidth" src="/assets/img/noProfile.png" />
                 </span> -->
-                <span>
+                <!-- <span>
                     <img class="img-responsive overrideMaxWidth" [src]="userImage" />
-                </span>
+                </span> -->
             <!-- </label> -->
             <!-- <input type="file" id="profile_img" style="display: none" (click)="userImageUpload()"> -->
-        </div>
-    </a>
-    <a *ngIf="userImage != null && userImage != ''" class="simple-text logo-normal userNameTransform_withImage">
+        <!-- </div> -->
+    <!-- </a> -->
+    <h3 class="adminTitle logo-normal"> Admin Panel </h3>
+    <p class="nameLeftpading">   {{username}} </p>
+    <!-- <a *ngIf="userImage != null && userImage != ''" class="simple-text logo-normal userNameTransform_withImage">
         {{username}}
       
     </a>
     <a *ngIf="userImage == null || userImage == ''" class="userName_noImage">
         {{username}}
-    </a>
+    </a> -->
 </div>
 
-<span *ngIf="userImage != null && userImage != ''">
+<!-- <span *ngIf="userImage != null && userImage != ''">
     <br><br><br><br><br><br> 
-</span>
+</span> -->
 
 <div class="sidebar-wrapper">
     <ul class="nav">

@@ -28,6 +28,7 @@ export class TableListComponent implements OnInit, OnDestroy {
   passwordMessage: string = '';
   genericMessage: string = '';
   activatedForm: number = 0;
+  selectedUserStatus: number = 1;
 
   userImage: File = null;
   imageSrc: string = "/assets/img/noProfile.png";
@@ -63,8 +64,9 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.getUsersSubscription = this.backendService.updateUserList.subscribe(
       (backendResponse: any) => {
         this.loading = false;
+    
         if (backendResponse != null){
-         this.usersList = backendResponse;
+         this.usersList = backendResponse; 
          this.totalUsers = this.usersList.length;
         }
       }
@@ -79,6 +81,8 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.imageSrc = "";
     this.userImage = null;
     this.isSubmitted = false;
+    this.selectedUserStatus = 1;
+
     if (this.activatedForm == 0) {
       this.sessionService.set('activatedForm', 1);
       this.activatedForm = 1;
@@ -93,6 +97,7 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.passwordMessage = "";
     this.showPasswordFields = false;
     this.selectedUser = user;
+   
     if (user.userImageLink) {
       this.imageSrc = this.selectedUser.userImageLink;
     }
@@ -109,6 +114,7 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.isImageUploaded = false;
     this.selectedUser = [];
     this.activatedForm = 0;
+    this.selectedUserStatus = 1;
     this.backendService.getUsersRequest(this.loggedUserId);
   }
 
@@ -135,7 +141,9 @@ export class TableListComponent implements OnInit, OnDestroy {
       'password': password,
       'country': country,
       'phone': phone,
-      'user_image': tempUserImage
+      'user_image': tempUserImage,
+      'status': this.selectedUserStatus,
+      'projectId': 0
     };
 
     this.backendService.userAddRequest(userData, this.userImage, this.loggedUserId).then(
@@ -145,6 +153,7 @@ export class TableListComponent implements OnInit, OnDestroy {
           this.formReset();
           this.userImage = null;
           this.imageSrc = "";
+          this.selectedUserStatus = 1;
           setTimeout(() => { this.genericMessage = "" }, 2500);
         }
         else {
@@ -191,7 +200,8 @@ export class TableListComponent implements OnInit, OnDestroy {
         'country': country,
         'phone': phone,
         'password': password,
-        'user_image': tempUserImage
+        'user_image': tempUserImage,
+        'status': this.selectedUserStatus
       };
     }
     else {
@@ -201,7 +211,8 @@ export class TableListComponent implements OnInit, OnDestroy {
         'email': email,
         'country': country,
         'phone': phone,
-        'user_image': tempUserImage
+        'user_image': tempUserImage,
+        'status': this.selectedUserStatus
       };
     }
 
@@ -224,7 +235,10 @@ export class TableListComponent implements OnInit, OnDestroy {
     if (confirm("Are you sure to delete username: " + username)) {
       this.backendService.deleteUserRequest(userId, this.loggedUserId);
     }
+  }
 
+  SelectStatus(selectedStatus: number){
+    this.selectedUserStatus = selectedStatus;
   }
 
   initializeAddForm() {
@@ -234,6 +248,7 @@ export class TableListComponent implements OnInit, OnDestroy {
       password: ['', Validators.required],
       cpassword: ['', Validators.required],
       country: [''],
+      status: [],
       phone: ['']
     })
   }
@@ -245,7 +260,8 @@ export class TableListComponent implements OnInit, OnDestroy {
       password: ['', Validators.required],
       cpassword: ['', Validators.required],
       country: [this.selectedUser.country],
-      phone: [this.selectedUser.phone]
+      phone: [this.selectedUser.phone],
+      status: [this.selectedUser.status]
     });
   }
 

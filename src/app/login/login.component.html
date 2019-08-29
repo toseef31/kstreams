@@ -5,7 +5,8 @@
       <!-- ************************************* LOGIN FORM ************************************ -->
       <div class="card" *ngIf="activatedForm == 1">
         <div class="card-header">
-          <h5 class="title" style="text-align: center"> Admin Login </h5>
+          <h5 class="title" style="text-align: center" *ngIf="projectData"> {{projectData.name}} </h5>
+          <p class="title" style="text-align: center"> Admin Panel </p>
         </div>
         <div class="card-body">
 

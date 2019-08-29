@@ -27,6 +27,9 @@
               <th>
                 Phone
               </th>
+              <th>
+                Status
+              </th>
             </thead>
 
             <tbody *ngIf="this.totalUsers != 0">
@@ -44,6 +47,14 @@
                   {{user.phone}}
                 </td>
                 <td>
+                  <span *ngIf="user.status == 1; else inActiveStatus">
+                       active
+                  </span>
+                  <ng-template #inActiveStatus>
+                    inactive
+                  </ng-template>
+                </td>
+                <td>
                   <input type="hidden" value="{{ user._id }}" #userId>
                 </td>
                 <td>
@@ -58,7 +69,7 @@
           </table>
         </div>
         <span *ngIf="loading">
-            <div class="stats"  style="text-align: center"> <i class="now-ui-icons loader_refresh spin"></i> </div>
+          <div class="stats" style="text-align: center"> <i class="now-ui-icons loader_refresh spin"></i> </div>
         </span>
         <span *ngIf="!loading && totalUsers == 0">
           <p style="text-align: center">No data found</p>
@@ -127,6 +138,7 @@
                 </div>
               </div>
             </div>
+
             <div class="row">
               <div class="col-md-4 pl-1">
                 <div class="form-group">
@@ -134,8 +146,20 @@
                   <input type="number" class="form-control" formControlName="phone" placeholder="phone number">
                 </div>
               </div>
-
             </div>
+
+            <div class="row">
+              <div class="col-md-4 pl-1">
+                <div class="form-group">
+                  <select name="users" formControlName="status" class="form-control" (change)="SelectStatus($event.target.value)">
+                    <option value="null" selected disabled hidden> select status</option>
+                    <option value="1"> active </option>
+                    <option value="2"> inactive </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <br>
 
             <div class="row" style="position: relative;">
@@ -151,7 +175,7 @@
                         <img class="img-responsive" [src]="imageSrc"
                           style="border-radius: 50%; height: 120px; width: 120px; position: relative;" />
                       </span>
-                    
+
                       <input type="file" (change)="userImageUpload($event)" value="Upload"
                         style="position: absolute; margin-left: 15px; top: 35%;" #uploadedImage>
                     </label>
@@ -228,6 +252,17 @@
                   <label>Phone</label>
                   <input type="number" class="form-control" [value]="selectedUser.phone" formControlName="phone"
                     placeholder="phone number">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 pl-1">
+                <div class="form-group">
+                  <select class="form-control" formControlName="status" name="users" (change)="SelectStatus($event.target.value)">
+                    <option value="1"> active </option>
+                    <option value="2"> inactive </option>
+                  </select>
                 </div>
               </div>
             </div>

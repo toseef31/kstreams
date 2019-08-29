@@ -16,7 +16,7 @@
     transform: translate3d(40%, 0 ,0) !important;
     position: absolute;
     top: 200%;
-    margin-left: 105px;
+    margin-left: 50px;
 }
 
 .userName_noImage{
@@ -24,4 +24,14 @@
     font-weight: 600;
     font-size: xx-large;
     margin-left: 60px;
+}
+
+.adminTitle{
+    color: white !important;
+    font-weight: 400;
+    padding-left: 18px;
+}
+
+.nameLeftpading{
+    padding-left: 8px;
 }

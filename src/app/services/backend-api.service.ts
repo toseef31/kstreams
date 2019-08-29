@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,8 @@ export class BackendApiService {
 
   private userBaseUrl: string = 'https://localhost:22000/business';
   private groupsBaseUrl: string = 'https://localhost:22000/groups';
+  private projectBaseUrl: string = 'https://localhost:22000/projects';
+  public projectData;
 
   public updateUserList = new Subject<any>();
   public refreshLoggedUserData = new Subject<any>();
@@ -16,17 +19,29 @@ export class BackendApiService {
   public usersGroupUpdate = new Subject<any>();
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private titleService: Title
   ) { }
 
+  getProjectData(){
+    var promise = new Promise ((resolve, reject) => {
+      return this.http.get(this.projectBaseUrl + "/getProject").subscribe(
+         (projectData: any) => {
+            this.projectData = projectData;
+            this.titleService.setTitle( this.projectData.metaTitle );
+            resolve(projectData);
+            console.log(this.projectData);
+         } 
+      );
+    });
+    return promise;
+  }
+
   loginApiRequest(loginData: any) {
-    //var headers = new HttpHeaders();
-    //headers.append('Content-Type', 'application/x-www-form-urlencoded');
     var promise = new Promise((resolve, reject) => {
       return this.http.post(this.userBaseUrl + "/login", loginData).subscribe(
         (backendResponse: any) => {
           resolve(backendResponse);
-          console.log("login");
         }
       );
     });

@@ -149,7 +149,10 @@
 
           <select name="users" (change)="selectUser($event.target.value)" style="width: 70%">
             <option value="null" *ngIf="selectedUserId == 0" selected disabled hidden>{{dropdownDefaultText}}</option>
-            <option *ngFor="let user of usersList" [value]="user._id">{{user.name}}</option>
+            <option *ngFor="let user of usersList" [value]="user._id">
+              {{user.name}}
+              <span *ngIf="user.status == 2"> (inactive) </span>
+            </option>
           </select>
 
           &nbsp; &nbsp;
@@ -167,7 +170,9 @@
           <tbody>
             <tr *ngFor="let addedUser of addedUsersList">
               <td>
-                {{addedUser.name}}
+                {{addedUser.name}}  
+                <span *ngIf= "addedUser.status == 2"> ( inactive ) </span>
+
               </td>
               <td>
                 <span> <i class="fa fa-minus user-icon" (click)="excludeUser(addedUser._id)"> </i> </span>

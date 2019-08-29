@@ -16,6 +16,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getGroupsSubscription: Subscription;
 
   usersList = [];
+  inActiveUsersLength: number= 0;
   totalUsers: number= 0;
   totalGroups: number = 0;
   loggedUserId: number = 0;
@@ -37,8 +38,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.backendAPI.getUsersRequest(this.loggedUserId);
     this.getGroupsSubscription = this.getUsersSubscription = this.backendAPI.updateUserList.subscribe(
       (backendResponse: any) => {
+    
         this.usersList = backendResponse;
         this.totalUsers = this.usersList.length;
+       
+        for (let i= 0; i < this.totalUsers; i++){
+            if (this.usersList[i].status == 2)
+                 this.inActiveUsersLength++;
+        }
+
       }
     )
 

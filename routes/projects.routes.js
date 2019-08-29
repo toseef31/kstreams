@@ -68,9 +68,11 @@ projectsRouter.route('/registerProject').post(function (req, res) {
     })
 })
 
-projectsRouter.route('/getProject').get(function (req, res) {
-    //var projectId = req.body.projectId;
-    projectModel.findOne({ 'status': 1 }).exec(function (err, projectData) {
+projectsRouter.route('/getProject').post(function (req, res) {
+    var projectId = req.body.projectId;
+    projectModel.findOne({ 'status':1})
+    .lean().exec(function (err, projectData) {
+       // console.log('projectData ',projectData);
         res.send(projectData);
     })
 })

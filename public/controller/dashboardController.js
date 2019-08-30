@@ -522,7 +522,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.groupSelected = true;         
         }
 
-        $scope.chatBack = function () {
+        $scope.chatBack = function () { console.log("adsadada");
             $scope.isChatPanel = false;
             $scope.isSidePanel = true;
             $scope.welcomePage = true;

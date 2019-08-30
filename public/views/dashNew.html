@@ -24,7 +24,8 @@
     <!-- ---------------------------- LEFT BAR -------------------------------------------------- -->
     <!-- ----------------------------  -------------------------------------------------------- -->
 
-    <div class="col-sm-3 col-md-3 col-lg-3 mobilerightpane" ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
+    <div class="col-sm-3 col-md-3 col-lg-3 mobilerightpane"
+      ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
       <form method="post" class="messages-search-users-form">
         <div class="headind_srch">
           <div class="recent_heading width100">
@@ -33,7 +34,7 @@
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
               <span ng-if="user.user_image != ''">
-                <img class="importantHeight" src="{{projectData}}{{user.user_image}}" alt="{{user.name}}" />
+                <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}" alt="{{user.name}}" />
               </span>
             </div>
             <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass"
@@ -109,7 +110,7 @@
                             alt="{{user.name}}" />
                         </span>
                         <span ng-if="userA.user_image != ''">
-                          <img class="" ng-if="userA.receiverId != user._id" src="{{projectData}}{{userA.user_image }}"
+                          <img class="" ng-if="userA.receiverId != user._id" src="{{projectData.profileImgLocation}}{{userA.user_image }}"
                             alt="{{userA.name}}" />
                         </span>
                       </div>
@@ -118,10 +119,13 @@
                       </span>
                     </span>
                     <div class="messages-last-seen">
-                    
-                      <span class="unreadMsgAlign" ng-if="userA.usCount != 0"> 
-                        <p>Unread {{userA.usCount}} </p>
+
+                      <span ng-if="userA.hasOwnProperty('usCount')">
+                        <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
+                          <p>Unread {{userA.usCount}} </p>
+                        </span>
                       </span>
+
                     </div>
                     <div class="clear"></div>
                   </div>
@@ -135,7 +139,7 @@
               </div>
             </div>
 
-            <div ng-if="!usersLoaded"> 
+            <div ng-if="!usersLoaded">
               <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
               <strong class="loadingText">Loading</strong>
             </div>
@@ -171,7 +175,7 @@
           </div>
 
         </div>
-        
+
       </form>
 
       <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
@@ -188,8 +192,8 @@
     <!-- --------------------- CHAT PANEL ---------------------------------------------------- -->
     <!-- --------------------- ----- ------------------------------------------------------ -->
 
-    <div class="col-sm-9 col-md-9 col-lg-9 chatPanelPadding" ng-class="{hidden: !isChatPanel && isSidePanel}">
-      <ul class="list-group text-sender-container" 
+    <div class="col-sm-9 col-md-9 col-lg-9 mobileleftpane" ng-class="{hidden: !isChatPanel && isSidePanel}">
+      <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
 
         <!-- -------------------- HEADER -------------------------------------------------- -->
@@ -199,6 +203,8 @@
             class="feather feather-chevron-left mobilemsgclose" ng-click="chatBack()">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
+
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left mobilemsgclose"><polyline points="15 18 9 12 15 6"></polyline></svg> -->
           <span id="user-name" class="">
             <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
             <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
@@ -282,7 +288,7 @@
                     <div class="message-contnaier outgoing pull-right">
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
-                       
+
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.messageType == 0">
                           <p class="message-text" dir="auto">
@@ -295,34 +301,34 @@
 
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" 
-                             ng-click="download(chat.message)" />
-                          </a>
+                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
+                        </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
-                      
-                          <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}" ng-if="chat.messageType == 2">
-                            <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
-                            <span class="msgType2Margin">{{chat.message}}</span>
-                          </a>
-                   
+
+                        <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
+                          ng-if="chat.messageType == 2">
+                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <span class="msgType2Margin">{{chat.message}}</span>
+                        </a>
+
 
                         <div class="time ajax-time text-right" title="1 year ago">
                           {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
                         </div>
                       </div>
-                      
-                        <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1" >
-                          <li>  
-                            <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
-                              uib-tooltip="Edit" ng-click="editMsg()"></span>
-                            <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
-                              ng-click="deleteMsg('fromMe')"></span>
-                          </li>
-                        </ul>
-                        <div class="top-left">
+
+                      <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
+                        <li>
+                          <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
+                            uib-tooltip="Edit" ng-click="editMsg()"></span>
+                          <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
+                            ng-click="deleteMsg('fromMe')"></span>
+                        </li>
+                      </ul>
+                      <div class="top-left">
                         <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
-                          class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" /> 
+                          class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
                       </div>
 
                     </div>
@@ -349,7 +355,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="clear"></div>
               </div>
             </div>
@@ -380,8 +386,7 @@
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}"
-                            alt="{{chat.name}}" />
+                          <img src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" />
                         </a>
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
                           <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
@@ -414,46 +419,46 @@
                 <!-- ---------------------  SEND MESSAGES -------------------------------------->
 
                 <div ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
-                ng-if="chat.senderId._id == user._id">
-                <div ng-if="!chat.isDeleted">
+                  ng-if="chat.senderId._id == user._id">
+                  <div ng-if="!chat.isDeleted">
 
-                  <div class="clear"></div>
+                    <div class="clear"></div>
 
-                  <div class="message-contnaier outgoing pull-right">
-                    <div class="messages-wrapper messages-text message-model pull-right rightAlign">
-                      <div class="clear"></div>
-                     
-                      <!-- --------------- NORMAL MSG ---------------------------------------------- -->
-                      <div class="message" ng-if="chat.messageType == 0">
-                        <p class="message-text" dir="auto">
-                          {{chat.message}}
-                        </p>
-                        <div class="message-media">
-                          <div class="clear"></div>
+                    <div class="message-contnaier outgoing pull-right">
+                      <div class="messages-wrapper messages-text message-model pull-right rightAlign">
+                        <div class="clear"></div>
+
+                        <!-- --------------- NORMAL MSG ---------------------------------------------- -->
+                        <div class="message" ng-if="chat.messageType == 0">
+                          <p class="message-text" dir="auto">
+                            {{chat.message}}
+                          </p>
+                          <div class="message-media">
+                            <div class="clear"></div>
+                          </div>
                         </div>
-                      </div>
 
-                      <!-- --------------- IMAGE MSG ---------------------------------------------- -->
-                      <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                        <img src="{{ '/images/chatImages/' + chat.message }}" 
-                           ng-click="download(chat.message)" />
+                        <!-- --------------- IMAGE MSG ---------------------------------------------- -->
+                        <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
+                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
                         </a>
 
-                      <!-- --------------- FILE MSG ---------------------------------------------- -->
-                    
-                        <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}" ng-if="chat.messageType == 2">
+                        <!-- --------------- FILE MSG ---------------------------------------------- -->
+
+                        <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
+                          ng-if="chat.messageType == 2">
                           <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
                         </a>
-                 
 
-                      <div class="time ajax-time text-right" title="1 year ago">
-                        {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+
+                        <div class="time ajax-time text-right" title="1 year ago">
+                          {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                        </div>
                       </div>
-                    </div>
-                    
-                      <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1" >
-                        <li>  
+
+                      <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
+                        <li>
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
                             uib-tooltip="Edit" ng-click="editMsg()"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
@@ -461,34 +466,34 @@
                         </li>
                       </ul>
                       <div class="top-left">
-                      <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
-                        class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" /> 
+                        <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
+                          class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
+                      </div>
+
                     </div>
 
+                    <div class="clear"></div>
                   </div>
 
-                  <div class="clear"></div>
-                </div>
+                  <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
+                    <div class="messages-wrapper messages-text message-model pull-right">
+                      <div class="clear"></div>
+                      <div class="message">
+                        <p class="message-text" dir="auto">
+                          this message has been deleted
+                        </p>
+                        <div class="message-media">
+                          <div class="clear"></div>
+                        </div>
+                      </div>
 
-                <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
-                  <div class="messages-wrapper messages-text message-model pull-right">
-                    <div class="clear"></div>
-                    <div class="message">
-                      <p class="message-text" dir="auto">
-                        this message has been deleted
-                      </p>
-                      <div class="message-media">
-                        <div class="clear"></div>
+                      <div class="time ajax-time text-right" title="1 year ago">
+                        {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}
+
                       </div>
                     </div>
-
-                    <div class="time ajax-time text-right" title="1 year ago">
-                      {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}
-
-                    </div>
                   </div>
                 </div>
-              </div>
 
               </div>
             </div>
@@ -535,9 +540,31 @@
               <i class="fa fa-arrow-right"></i></button>
           </span>
         </div>
-        </ul>
+      </ul>
     </div>
 
+    <!-- ------------------ IF NO MSG CHATPANEL IS ACTIVATED ---------------------------------------- -->
+    <div class="col-sm-9 col-md-9 col-lg-9 hideNoMsgChatPanel" style="padding-left: 0; padding-right: 0"
+      ng-if="!isChatPanel">
+      <ul class="list-group text-sender-container"
+        ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
+
+        <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-chevron-left mobilemsgclose" ng-click="chatBack()">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg> -->
+
+          <span id="user-name" class="">
+            <span class="status-bar whiteTextColor"> Chat </span>
+          </span>
+        </li>
+
+        <div class="nomessage-container messagejoint msg_history"></div>
+
+      </ul>
+    </div>
 
 
     <div class="videoTab 2wayChat">
@@ -630,7 +657,7 @@
     $('.mobileleftpane').fadeIn(100);
   });
 
-  $('.mobilemsgclose').on('click', function () {
+  $('mobilemsgclose').on('click', function () {
     $('.mobileleftpane').fadeOut(100);
   });
   $('#groups-message-tab').on('click', function () {

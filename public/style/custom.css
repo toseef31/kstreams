@@ -1,11 +1,11 @@
-.chatIcons span{
+/* .chatIcons span{
     margin-left: 5px;
-}
-@media screen and (max-width: 786px) {
+} */
+/* @media screen and (max-width: 786px) {
     .chatIcons span{
         margin-left: 13px;
     }
-}
+} */
 .chatIcons .fa-paperclip{
     line-height: 2;
     font-weight: bold;
@@ -167,7 +167,8 @@
     right: 10px;
 }
 .groupMsgHistory{
-    height:408px;
+    /* height:408px; */
+    height: calc(100vh - 137px);
 }
 .posRelative{
     position: relative;

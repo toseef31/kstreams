@@ -543,7 +543,8 @@ img{ max-width:90%;}
 .msg_history {
   padding: 10px;
   background: #dadada;
-  height: 450px;
+  /* height: 450px; */
+  height: calc(100vh - 137px);
   overflow-y: auto;
 }
 
@@ -607,9 +608,11 @@ img{ max-width:90%;}
 .emojionearea.emojionearea-inline>.emojionearea-editor {
   height: 43px !important;
   line-height: 29px !important;
+  width: calc(100% - 95px)!important;
 }
 .emojionearea.emojionearea-inline>.emojionearea-button {
   top: 10px !important;
+  right: 15px;
 }
 /*    video call styling    */
  #chat-content { height: 180px;  overflow-y: scroll; }
@@ -961,9 +964,12 @@ img{ max-width:90%;}
   #msg-container-welcome{
     display: none !important;
   }
-  .headind_srch {
+
+  /* .headind_srch {
     padding: 10px 0px 10px 0px;
-  }
+  } */
+
+
   .incoming_msg_img{
     width: 7%;
   }

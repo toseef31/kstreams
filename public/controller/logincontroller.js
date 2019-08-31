@@ -10,7 +10,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData=response.data;  
-       // console.log( $rootScope.projectData.metaTitle);
+        console.log('$rootScope.projectData ', $rootScope.projectData);
     });
 
     /*check session*/

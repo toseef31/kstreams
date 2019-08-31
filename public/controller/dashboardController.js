@@ -69,14 +69,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-  
+    
+    console.log('Domain from db ',$rootScope.projectData.domainUrl);
     let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com
     if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
+    let reqUrl='wss://' + webSocketIp + ':8443/one2one';
+    console.log('reqUrl is ',reqUrl);
     class Ws {
         get newClientPromise() {
             return new Promise((resolve, reject) => {
 
-                let wsClient = new WebSocket('wss://' + webSocketIp + ':8443/one2one');
+                let wsClient = new WebSocket(reqUrl);
               //  console.log(wsClient)
                 wsClient.onopen = () => {
                    // console.log("connected");

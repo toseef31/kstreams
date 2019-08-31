@@ -173,3 +173,6 @@
 .posRelative{
     position: relative;
 }
+.login-form .panel img{
+    max-height: 145px;
+}

@@ -128,20 +128,7 @@ require('./serverRoutes')(app, io, saveUser);
 //**@param pass object which you wana search if get all pass null
 //**@param call back function 
 */
-function getData(model, obj = 0, callback) {
-	if (obj != 0 && obj != null)
-		model.find(obj).exec(function (err, data) {
-			if (err) {
-				callback({ err: err });
-			} else {
-				callback(data);
-			}
-		});
-	else
-		model.find({ status: 1 }).exec(function (err, data) {
-			callback(data);
-		});
-}
+
 /* save the current login user info in a variable */
 function saveUser(user) {
 	//console.log(user);

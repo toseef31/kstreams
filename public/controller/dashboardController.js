@@ -96,18 +96,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.sendKMessage = function (message) {
         var jsonMessage = JSON.stringify(message);
-     //   console.log('Senging message: ' + jsonMessage);
+        console.log('Senging message: ' + jsonMessage);
         //console.log(webSokt.readyState ,' check state b ',webSokt.OPEN);
         //webSokt.send(jsonMessage);
         $scope.wsSingleton.clientPromise
             .then(wsClient => {
                 wsClient.send(jsonMessage);
-             //   console.log('sendKMessage sent');
-
-
+             //   console.log('sendKMessage sent'); 
                 wsClient.onmessage = function (message) {
                     var parsedMessage = JSON.parse(message.data);
-                    //console.info('Received message: ' + message.data);
+                    console.info('Received message: ' + message.data);
 
                     switch (parsedMessage.id) {
                         case 'registerResponse':

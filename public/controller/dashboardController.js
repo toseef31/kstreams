@@ -19,6 +19,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.allGroups;
     $scope.editMsgIconStatus = false;
     $scope.unSeenMessages;
+    $scope.isGroupChatStarted = false;
     /*socket io connection*/
 
     $scope.audio = new Audio('audio/call.mp3');
@@ -145,7 +146,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 : 'Unknown reason for call rejection.';
            // console.log(errorMessage);
           //  console.log('Calling stop from 6');
-            $scope.stopK(true);
+           $scope.stopK(true);
         } else {
             $scope.setCallState(IN_CALL);
             $scope.webRtcPeer.processAnswer(message.sdpAnswer);
@@ -208,8 +209,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.startCall = function () {
-        let localAsset = document.getElementById('local-video');
-        let remoteAsset = document.getElementById('videoOutput');
+        let localAsset = document.getElementById('local-videoNew');
+        let remoteAsset = document.getElementById('videoOutputNew');
         let medConst = {};
 
         if ($scope.callType == 1) {
@@ -514,12 +515,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.nchatIndex = 0;
             $scope.gchatIndex = 1;
             $scope.groupSelected = false;
+            $scope.isGroupChatStarted = false;
         }
 
         $scope.groupChatActive = function () { 
             $scope.nchatIndex = 1;
             $scope.gchatIndex = 0;
-            $scope.groupSelected = true;         
+            $scope.groupSelected = true;    
+            $scope.isGroupChatStarted = false;     
         }
 
         $scope.chatBack = function () { console.log("adsadada");
@@ -536,6 +539,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.welcomePage = false;
             /*obj is an object send from view it may be a chat or a group info*/
             if (obj.type == 1) {
+                $scope.isGroupChatStarted = false;
                 $scope.groupSelected = false;
                 $scope.selGrpMembers = [];
                 $scope.selUserName = obj.user.name;
@@ -562,6 +566,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         scrollbottom();
                     });
             } else {
+                $scope.isGroupChatStarted = true;
                 $scope.groupSelected = true;
                 $scope.selectedGroupId = obj.group._id;
                 $scope.connectionId = obj.group._id;
@@ -601,7 +606,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.leaveRoom = function () {
             $scope.ringbell.pause();
             $scope.timmerObj.stopCallTimmer();
-            document.querySelector('.videoTab').style.display = 'none';
+            document.querySelector('.videoTabNew').style.display = 'none';
             document.querySelector('.audioTab').style.display = 'none';
         }
 
@@ -744,7 +749,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             else {console.log("else");
                 $scope.timmerObj = new timmer('#timmer');
-                document.querySelector('.videoTab').style.display = 'block';
+                document.querySelector('.videoTabNew').style.display = 'block';
             }
 
             $scope.toggleBtn(true);
@@ -848,7 +853,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 webrtc = '';
                 $scope.callCancelTimmer.stopCallTimmer();
                 $scope.ringbell.pause();
-                document.querySelector('.videoTab').style.display = 'none';
+                document.querySelector('.videoTabNew').style.display = 'none';
                 document.querySelector('.audioTab').style.display = 'none';
                // console.log('Calling stop from 3');
                 $scope.stopK();
@@ -951,7 +956,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /* this function join the call when the user receive the call*/
         $scope.joinCall = function () {
             if ($scope.callType == 1) document.querySelector('.audioTab').style.display = 'block';
-            else document.querySelector('.videoTab').style.display = 'block';
+            else document.querySelector('.videoTabNew').style.display = 'block';
 
             socket.emit('callStart', { callerId: $scope.callerId, friendId: $scope.friendId });
             $scope.startCall();
@@ -982,7 +987,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $.toaster({ priority: 'danger', title: 'call drop', message: 'The person you call is busy at the moment' });
                 if (data.type == 'group')
                     $.toaster({ priority: 'danger', title: 'call drop', message: 'no one pick the call' });
-                $scope.stopK();
+                 $scope.stopK();
             }
         })
         /* update the chat of the friend side after any action*/

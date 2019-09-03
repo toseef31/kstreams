@@ -352,7 +352,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
  color:white !important;
 }
 
-.messages-users-list{height:calc(100vh - 137px);border-radius:0;background-color:#fff;overflow:hidden;overflow-y:auto}
+.messages-users-list{height:calc(100vh - 149px);border-radius:0;background-color:#fff;overflow:hidden;overflow-y:auto}
 .messages-recipients-list{height:64px;position:relative;cursor:pointer;border-bottom:1px solid #f1f1f1}
 .messages-recipients-list:last-child{border-bottom:0 solid}
 .messages-recipients-list:hover{background-color:rgba(0,0,0,.05)}
@@ -443,7 +443,9 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 /*  ----------------- CHANGES DONE ----------------------- */
 @media (max-width:800px) {  
 .mobileleftpane{
-    position:fixed;height:100%;width:100%;z-index:1;padding:0;
+    position:fixed;
+    height:100%;
+    width:100%;z-index:1;padding:0;
     top:0px
 }
 /*  ------------------------------------------------------ */

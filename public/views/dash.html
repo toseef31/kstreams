@@ -211,8 +211,6 @@
                               ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
                           </span>
 
-                          <!-- <span class="status " ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span> -->
-
                           <span ng-if="userA.user_image == ''">
                             <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
                               alt="{{user.name}}" />
@@ -326,7 +324,7 @@
           <!-- -------------- SHOW GROUP MEMBER NAMES ------------------------------------------------ -->
           <div class=" big-btn">
             <div class="chat_list active_groupChatMembers" ng-if="groupSelected">
-              <strong> Group Members:</strong>
+              <strong> Group Members: </strong>
               <span ng-repeat="groupA in allGroups" class='posRelative'>
                 <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
                   <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}

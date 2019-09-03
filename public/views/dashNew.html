@@ -34,7 +34,8 @@
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
               <span ng-if="user.user_image != ''">
-                <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}" alt="{{user.name}}" />
+                <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}"
+                  alt="{{user.name}}" />
               </span>
             </div>
             <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass"
@@ -110,8 +111,8 @@
                             alt="{{user.name}}" />
                         </span>
                         <span ng-if="userA.user_image != ''">
-                          <img class="" ng-if="userA.receiverId != user._id" src="{{projectData.profileImgLocation}}{{userA.user_image }}"
-                            alt="{{userA.name}}" />
+                          <img class="" ng-if="userA.receiverId != user._id"
+                            src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
                         </span>
                       </div>
                       <span class="messages-user-name">
@@ -198,6 +199,7 @@
 
         <!-- -------------------- HEADER -------------------------------------------------- -->
         <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
+
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-chevron-left mobilemsgclose" ng-click="chatBack()">
@@ -222,7 +224,20 @@
           </span>
         </li>
 
-        <div class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}"
+        <!-- <div class=" big-btn">
+          <div class="chat_list active_groupChatMembers" ng-if="isGroupChatStarted">
+            <strong> Group Members:</strong>
+            <span ng-repeat="groupA in allGroups" class='posRelative'>
+              <span ng-repeat="groupM in groupA.members" ng-value="{{$index}}">
+                <span ng-if="selectedGroupId == groupA._id">{{groupM.name}}
+                  <span ng-if="(groupA.members.length-1) != $index">,</span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div> -->
+
+        <div class="messagejoint msg_history" ng-class="{groupMsgHistory: true}" id="{{connectionId}}"
           file-dropzone files-to-upload='files'>
           <div class="messages-container">
 
@@ -566,12 +581,11 @@
       </ul>
     </div>
 
-
-    <div class="videoTab 2wayChat">
+    <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
-        <video id="videoOutput" autoplay poster="images/loading.gif"></video>
+        <video id="videoOutputNew" autoplay poster="images/loading.gif"></video>
       </div>
-      <video id="local-video" autoplay poster="images/loading.gif"></video>
+      <video id="local-videoNew" autoplay poster="images/loading.gif"></video>
 
       <div class="text-center screenButtons">
         <h4 id="timmer"></h4>
@@ -595,13 +609,13 @@
           <img src="images/resume1.jpg">
         </button>
 
-        <!--<button class="trans-btn" title="share screen" onclick="shareScreen()"><img src="images/sharescreen.png"></button> -->
         <button class="trans-btn" title="call drop" ng-click="stopK(1,chatWith || callerId);">
           <img src="images/calldrop2.png"></button>
       </div>
     </div>
-  </div>
 
+
+  </div>
 
   <div id="checker" style="display: none"></div>
 

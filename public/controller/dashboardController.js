@@ -70,45 +70,49 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-  
-    let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com
-    if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
-    class Ws {
-        get newClientPromise() {
-            return new Promise((resolve, reject) => {
 
-                let wsClient = new WebSocket('wss://' + webSocketIp + ':8443/one2one');
-              //  console.log(wsClient)
-                wsClient.onopen = () => {
-                   // console.log("connected");
-                    resolve(wsClient);
-                };
-                wsClient.onerror = error => reject(error);
-            })
-        }
-        get clientPromise() {
-            if (!this.promise) {
-                this.promise = this.newClientPromise
+    $scope.$watch('$rootScope.projectData', function() {
+        
+        let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com
+        if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
+        let reqUrl='wss://' + webSocketIp + ':8443/one2one';
+  
+        class Ws {
+            get newClientPromise() {
+                return new Promise((resolve, reject) => {
+
+                    let wsClient = new WebSocket(reqUrl);
+                //  console.log(wsClient)
+                    wsClient.onopen = () => {
+                    // console.log("connected");
+                        resolve(wsClient);
+                    };
+                    wsClient.onerror = error => reject(error);
+                })
             }
-            return this.promise;
+            get clientPromise() {
+                if (!this.promise) {
+                    this.promise = this.newClientPromise
+                }
+                return this.promise;
+            }
         }
-    }
-    $scope.wsSingleton = new Ws();
+
+        $rootScope.wsSingleton = new Ws();
+    });
 
     $scope.sendKMessage = function (message) {
         var jsonMessage = JSON.stringify(message);
-     //   console.log('Senging message: ' + jsonMessage);
+       console.log('Senging message: ' + jsonMessage);
         //console.log(webSokt.readyState ,' check state b ',webSokt.OPEN);
         //webSokt.send(jsonMessage);
-        $scope.wsSingleton.clientPromise
+        $rootScope.wsSingleton.clientPromise
             .then(wsClient => {
                 wsClient.send(jsonMessage);
-             //   console.log('sendKMessage sent');
-
-
+             //   console.log('sendKMessage sent'); 
                 wsClient.onmessage = function (message) {
                     var parsedMessage = JSON.parse(message.data);
-                    //console.info('Received message: ' + message.data);
+                    console.info('Received message: ' + message.data);
 
                     switch (parsedMessage.id) {
                         case 'registerResponse':
@@ -263,7 +267,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.stopK(true);
     }
 
-    function videoKCall(from, to, userData, isAudio) {
+    function videoKCall(from, to, userData, isAudio) { 
         $scope.setCallState(PROCESSING_CALL);
         let localAsset = document.getElementById('local-video');
         let remoteAsset = document.getElementById('videoOutput');
@@ -747,7 +751,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.timmerObj = new timmer('#audioTimmer');
                 document.querySelector('.audioTab').style.display = 'block';
             }
-            else {console.log("else");
+            else {
+                if (document.querySelector('.videoTabNew') == null) return;
                 $scope.timmerObj = new timmer('#timmer');
                 document.querySelector('.videoTabNew').style.display = 'block';
             }

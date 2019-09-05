@@ -42,7 +42,7 @@ var https = require('https');
 
 var argv = minimist(process.argv.slice(2), {
     default: {
-        as_uri: "https://www.jobcallme.com:8443/", //www.jobcallme.com / www.businesschatapp.com
+        as_uri: "https://www.jobcallme.com:8443/", //www.jobcallme.com / www.businesschatapp.com / localhost
         ws_uri: "ws://localhost:8888/kurento" // do not change localhost
     }
 });

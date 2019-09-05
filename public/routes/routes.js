@@ -5,14 +5,13 @@
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
+        title: 'Login',
         templateUrl : "./views/login.html"
     })
-    .when("/dashNew", {
-        templateUrl : "./views/dashNew.html"
-    })
     .when("/dash", {
+        title: 'Dashboard',
         templateUrl : "./views/dash.html"
-    })
+    }) 
     .when("/videoCall", {
         templateUrl : "./views/videoCall.html"
     })

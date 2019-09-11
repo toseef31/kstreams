@@ -69,9 +69,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     let hostIs = location.host.split(':');
-    
-    
-
+     
     $scope.$watch('$rootScope.projectData', function() {
         console.log('Domain from db ',$rootScope.projectData.domainUrl);
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com
@@ -83,7 +81,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 return new Promise((resolve, reject) => {
 
                     let wsClient = new WebSocket(reqUrl);
-                //  console.log(wsClient)
+                    //  console.log(wsClient)
                     wsClient.onopen = () => {
                     // console.log("connected");
                         resolve(wsClient);
@@ -384,7 +382,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*get all users*/
       
-        $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList)
+        $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList+ '/' + $rootScope.projectData._id)
             .then(function (response) {
                 console.log(response);
                 //$scope.unSeenMessages = response.data.unseenMsgsCount;
@@ -399,7 +397,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
 
         /*get all group users*/
-        $http.get("/getCreatedGroups/" + $scope.user._id)
+        $http.get("/getCreatedGroups/" + $scope.user._id+"/"+$rootScope.projectData._id)
             .then(function (response) {
       
                 $scope.allGroups = response.data;
@@ -932,7 +930,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $http.post('/removeUser', { 'id': id }).then(function (d) {
                         $.toaster({ priority: 'danger', title: 'User deleted', message: 'User and its related chat deleted' });
                         $scope.welcomePage = true;
-                        $http.get("/getUsers/" + $scope.user._id)
+                        $http.get("/getUsers/"+$scope.user._id+'/'+$rootScope.projectData.allList+'/'+$rootScope.projectData._id)
                             .then(function (response) {
                               
                                 $scope.allUsers = response.data.usersList;

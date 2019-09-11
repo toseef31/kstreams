@@ -176,3 +176,14 @@
 .login-form .panel img{
     max-height: 145px;
 }
+
+.screenButtons{
+    position: absolute;
+    top: -16px;
+    left: 33%;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    z-index: 99999999999;
+}

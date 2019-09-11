@@ -40,10 +40,9 @@ module.exports = function(app,io,saveUser){
     app.get('/checkSession',chatCon.checkSession);
     // app.get('/checkSession/:userId',chatCon.checkSession);
     app.get('/createUser/:name',chatCon.createUser);
-    app.get('/getUsers/:userId/:allList',chatCon.getUsers);
-
-    //app.get('/getCreatedGroups',chatCon.getCreatedGroups);
-    app.get('/getCreatedGroups/:userId',chatCon.getCreatedGroups);
+    app.get('/getUsers/:userId/:allList/:projectId',chatCon.getUsers);
+ 
+    app.get('/getCreatedGroups/:userId/:projectId',chatCon.getCreatedGroups);
 
     app.post('/addgroup',chatCon.addGroup);
     app.get('/getGroups/:userId',chatCon.getGroups);

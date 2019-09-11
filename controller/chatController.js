@@ -62,31 +62,24 @@ module.exports = function (io, saveUser) {
 
     router.getUsers = function (req, res) {
         
-        function chatModelFunc(data){ 
-         // console.log("coming");
+        function chatModelFunc(data){  
             for (let i=0; i<data.length; i++) {
                 chatModel.find(
                     { 'senderId': data[i]._id,
                     'receiverId':req.params.userId,
                     'isSeen': 0}
                     ).count().exec(function (err, count) { 
-                      
-                        data[i]['usCount']=count;    
-                      //  console.log(i+": "+data[i].name+': '+data[i].usCount);
-                      //  console.log(i + " == " + (data.length-1) );
+                        data[i]['usCount']=count;     
                         if (i == data.length-1) res.json({'usersList':data}); 
                     }) 
                 }
-                if (data.length == 0) 
-                    res.json({'usersList':data})
-
+                if (data.length == 0) res.json({'usersList':data})
         }
+
         if(req.params.allList==0){
             var friendIds = [];
-            
             friendModel.find({'userId': req.params.userId, 'status': 1} ,{friendId: true})
             .populate('friendId').lean().exec(function (err, friendsData){ 
-               
                 if (!friendsData.length){
                     // now check the userId in friendId column and populate user data
                     friendModel.find({'friendId': req.params.userId, 'status': 1} ,{userId: true})
@@ -106,19 +99,20 @@ module.exports = function (io, saveUser) {
             })
         }
         else 
-            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1 },
-            {}, { sort: '-updatedAt' })
+            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1,projectId:req.params.projectId},
+            {}, { sort: '-updatedAt' }) 
             .lean()
-            .exec(function (err, data) {  
+            .exec(function (err, data) {   
                 chatModelFunc(data);
             });
-     
+     //,'projectId.status':1
     }
 
 
     router.getCreatedGroups = function (req, res) {
         // get all groups 
-        groupsModel.find({ 'status': 1 }).populate('members', { 'name': true }).exec(function (err, groups) {
+        groupsModel.find({'status': 1,'projectId':req.params.projectId})
+        .populate('members', { 'name': true }).exec(function (err, groups) {
             var tempGroups = [];
             if (err) { return console.log(err); }
 

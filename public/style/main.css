@@ -95,7 +95,7 @@
 .videoTab{
   position: absolute;
   right: 0;
-  top:20;
+  /* top:20; */
   background: #fff;
   width: 30%;
   height: auto;
@@ -105,9 +105,24 @@
   box-shadow: 0px 1px 5px rgba(0,0,0,0.5);
   z-index: 9999;
 }
+
+.videoTabNew{
+  position: absolute;
+  right: 2px;
+  top:20;
+  background: #fff;
+  /* width: 30%; */
+  height: 65%;
+  padding: 15px;
+  display: none;
+  border: 2px solid #666;
+  box-shadow: 0px 1px 5px rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
 .fullScreen{
-  width: 100% !important;
-  height: 100% !important;
+  width: 95% !important;
+  height: 95% !important;
 }
 .color-red{
   color: #ff4f4f;
@@ -540,11 +555,12 @@ img{ max-width:90%;}
   color:orange;
 }
 .messaging { background-color:#fff; position: relative;}
+
 .msg_history {
   padding: 10px;
   background: #dadada;
   /* height: 450px; */
-  height: calc(100vh - 137px);
+  height: calc(100vh - 150px);
   overflow-y: auto;
 }
 
@@ -617,8 +633,13 @@ img{ max-width:90%;}
 /*    video call styling    */
  #chat-content { height: 180px;  overflow-y: scroll; }
     #local-video{
-      width: 200px;
-      height: 150px;
+      width: 100%;
+      height: 170px;
+      margin-left:5px;
+    }
+    #local-videoNew{
+      width: 100%;
+      height: 45%;
       margin-left:5px;
     }
     .videoContainer,.ringingBell { 
@@ -954,6 +975,19 @@ img{ max-width:90%;}
     width: 60% !important;
   }
 }
+@media (max-width: 600px) and (min-width: 426px) {
+  #local-video{
+    height: 45% !important;
+  }
+  .videoTab{
+height: 70% !important;
+  }
+}
+@media (max-width: 425px){
+  #videoOutput{
+    max-height: 315px !important;
+  }
+}
 @media screen and (max-width: 786px) {
   .sidebar{
       width: 40%;
@@ -980,8 +1014,8 @@ img{ max-width:90%;}
   }
   .videoTab{
     left: 15px;
-    width: 93%;
-    height: 100%;
+    width: 42%;
+    height: 90%;
     top: 0;
     /*height: 45%;*/
   }
@@ -999,7 +1033,7 @@ img{ max-width:90%;}
     width: 60%;
   }
   #local-video{
-    height: 42%;
+    height: 37%;
     width: 100% !important;
     border: 0;
   }
@@ -1015,6 +1049,11 @@ img{ max-width:90%;}
   }
   .inbox_people {
     height: 95%;
+  }
+  .screenButtons{
+    position: absolute;
+    bottom: 13px;
+    left: 20%;;
   }
 }
 @media screen and (max-width: 485px) {
@@ -1081,7 +1120,7 @@ img{ max-width:90%;}
   }
   .videoTab{
     width: 100%;
-    height: 100%;
+    height: 90%;
   }
 }
 @media screen and (max-width: 425px) {

@@ -4,13 +4,12 @@
 */
 
 var dependencies = [
-"ngRoute",
-'ngAnimate',
-'ngSanitize',
-'ui.bootstrap',
-'btorfs.multiselect'
-]
-
+	"ngRoute", 
+	'ngSanitize',
+	'ui.bootstrap',
+	'ngWebsocket'
+];
+//'btorfs.multiselect', 
 var app = angular.module("chatApp", dependencies);
  
 app.directive('ngRightClick', function($parse) {

@@ -126,6 +126,13 @@
     width: 100%;
     max-height:340px;
 }
+
+#videoOutputNew{
+    width: 100%;
+    height:45%
+    /* max-height:340px; */
+}
+
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
     background-color:#195989;
 }
@@ -164,11 +171,14 @@
 .btnLogOut{
     position: absolute;
     top: 5px;
-    right: 10px;
+    right: 2px;
 }
 .groupMsgHistory{
     /* height:408px; */
-    height: calc(100vh - 137px);
+    /*     height: calc(100vh - 150px); */
+    height: calc(100vh - 150px);
+    /* overflow: hidden; */
+    overflow-y: auto;
 }
 .posRelative{
     position: relative;
@@ -186,4 +196,19 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     z-index: 99999999999;
+}
+
+.broadCastSec{
+    background-color: #5a9e02;
+    padding-right: 4px;
+    padding-left: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid white;
+}
+
+.forceWhiteColor{
+    float: right;
+    color: white !important;
+    cursor: pointer;
 }

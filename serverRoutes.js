@@ -82,4 +82,8 @@ module.exports = function(app,io,saveUser){
    // app.post('/setProjectDomain', server.setProjectDomain);
     // -------------------------------------------------------------------
 
+    app.post('/startPresenter',chatCon.startPresenter);
+    app.post('/joinViewer',chatCon.joinViewer);  
+    app.post('/stopViewer',chatCon.stopViewer); 
+    app.get('/stopPresenter',chatCon.stopPresenter); 
 }

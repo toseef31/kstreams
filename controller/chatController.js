@@ -12,7 +12,7 @@ const projectModel = require('../model/projectModel');
 const mongoose = require('mongoose');
 const helpers = require('../helperfunctions/helpers');
 const isImage = require('is-image');
-
+const broadModel  = require('../model/broadcast');
 // const readChunk = require('read-chunk');
 // const fileType = require('file-type');
 var path = require('path');
@@ -620,6 +620,91 @@ module.exports = function (io, saveUser) {
         else
             res.json({ status: false, message: 'Need authorization' });
     }
+    // Broadcast functions start =====
+    router.startPresenter = ( req, res ) => { 
+        if(req.session.user){
+            var broad = new broadModel({
+                "presenterId":req.session.user._id,
+                "password":req.body.password, 
+            });
+            broad.save(function(err,data){
+                if(err) console.log(err);
+            });
+            res.json({status:true,message:'Saved successfully'});
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    }
 
+    router.joinViewer= ( req, res ) => { 
+        if(req.session.user){
+            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });  
+                
+                if(ids.length>0){ 
+                    broadModel.findOneAndUpdate({_id:ids[0]},{ $push: { 'viewers': {viewerId:req.session.user} } },function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                } 
+                else
+                    res.json({status:false,message:'Update failed'});
+            } 
+        }
+    }
+
+    router.stopPresenter = ( req, res ) => { 
+        if(req.session.user){
+            broadModel.find({'presenterId':req.session.user._id}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });  
+                if(ids.length>0)
+                    broadModel.findOneAndUpdate({_id:ids[0]},{endDate:new Date()},function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                else
+                    res.json({status:false,message:'Update failed'});
+            }  
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    }
+
+    router.stopViewer = ( req, res ) => { 
+        if(req.session.user){ 
+            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });   
+                if(ids.length>0)
+                    broadModel.findOneAndUpdate(
+                        {_id:ids[0],'viewers.viewerId':req.session.user},
+                        { 
+                            "$set": {
+                                "viewers.$.endDate": new Date()
+                            }
+                        },
+                        {  
+                            sort: { 'viewers.$._id': -1 },  // Imp Needed: Need to update his last id
+                        },function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                else
+                    res.json({status:false,message:'Update failed'});
+            }  
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    } 
+
+    // Broadcast function end ======
     return router;
 }

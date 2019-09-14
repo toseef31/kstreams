@@ -39,6 +39,19 @@
           </div>
         </div>
 
+        <div class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
+          <div class="col-md-6  col-xs-6">
+              <button id="live" type="button" ng-click="openBrModal()" class="btn btn-info btn-sm">
+                  <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
+              </button>
+          </div>
+          <div class="col-md-6 col-xs-6 text-right broadCastAv">
+              <a class="forceWhiteColor" href='javascript:void(0)' data-toggle="modal"
+                  data-target="#avPresenterModal">
+                  Available ({{presenterArr.length}})
+              </a>
+          </div> 
+        </div>
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -126,13 +139,13 @@
 
             <div ng-if="allUsers.length == 0">
               <div class="notfound">
-                <h3>No friends found</h3>
+                <p class="text-center">No friends found</p>
               </div>
             </div>
 
             <div ng-if="!usersLoaded">
               <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
-              <strong class="loadingText">Loading</strong>
+              <strong class="loadingText">Loading...</strong>
             </div>
           </div>
           <!--  ----------------- ---------------------------------------------------------- -->
@@ -159,8 +172,8 @@
                 </div>
               </div>
 
-              <div ng-if="allGroups.length <= 0">
-                <p class="text-center nGroupFound">No group found</p>
+              <div ng-if="allGroups.length <= 0" class="notfound"> 
+                <p class="text-center">No groups found</p>
               </div>
             </div>
           </div>
@@ -558,11 +571,11 @@
     </div>
 
 
-    <div class="videoTab 2wayChat">
+    <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
-        <video id="videoOutput" autoplay poster="images/loading.gif"></video>
+        <video id="videoOutputNew" autoplay poster="images/loading.gif"></video>
       </div>
-      <video id="local-video" autoplay poster="images/loading.gif"></video>
+      <video id="local-videoNew" autoplay poster="images/loading.gif"></video>
 
       <div class="text-center screenButtons">
         <h4 id="timmer" class="hidden-xs"></h4>
@@ -638,6 +651,131 @@
     </div>
   </div>
 
+  <!-- Broadcasting modals start  -->
+  <!-- Initial 1 start -->
+  <div id="broadcastingModal" class="modal fade" role="dialog">
+    <form ng-submit="broadcasting('video')">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Live Streaming</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <div class="form-group col-md-12">
+                        <div class="col-md-3">
+                            <label>Set password for Live stream</label>
+                        </div>
+                        <div class="col-md-2 hoverIt">
+                            <input type="radio" id='setPas1' ng-model="setPassword" name="setPassword" value='1'
+                                ng-checked='setPassword == 1' />
+                            <label for="setPas1">Yes</label>
+                        </div>
+                        <div class="col-md-2 hoverIt">
+                            <input type="radio" id='setPas2' ng-model="setPassword" name="setPassword" value='0'
+                                ng-checked='setPassword == 0' />
+                            <label for="setPas2">No</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12" ng-class="{hidden:setPassword==0}">
+                        <div class="col-md-6 col-md-offset-3">
+                            <input type="text" placeholder="Set Password" ng-model="liveStreamCode" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12 text-center">
+                        <label>
+                            <button type="button" class="btn btn-info btn-sm" ng-click="broadCastNow()">
+                                <span class="glyphicon glyphicon-signal"></span>Broadcast Now !
+                            </button>
+                        </label>
+                    </div>
+                    <div class="col-md-12" ng-if='brErrorMsg'>
+                        <div class="alert alert-danger">Enter correct password</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="broadClose" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </form>
+  </div>
+  <!-- Present/View Broadcasting video -->
+  <div id="videoBroadCast" class='hidden broadCastContainer' style="text-align: center">
+      <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/webrtc.png"></video>
+
+      <button style="margin-top: 7px" class="btn btn-danger btn-sm" title="call drop" ng-click="stopBroadCast()">
+          <span class='fa fa-close'></span> Stop
+      </button> 
+  </div>
+  <!-- end -->
+
+  <!-- Show available presenter  -->
+  <div id="avPresenterModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Presenters broadcasting now</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group col-md-12 clearfix">
+                      <ol ng-if="presenterArr.length>0">
+                          <li ng-repeat=" opt in presenterArr" ng-bind-html-unsafe="opt">
+                              <a href='javascript:void(0)' data-dismiss="modal"
+                                  ng-click="becomeViewer(opt.preId,opt.password)">
+                                  {{ opt.preName }}
+                              </a>
+                              <i ng-if="opt.password">(Password required)</i>
+                          </li>
+                      </ol>
+                      <p class="text-center" ng-if="presenterArr.length==0">No presenter found</p>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- end -->
+
+  <!-- Password required for presenter  -->
+  <div id="passReqPre" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Enter password</h4>
+              </div>
+              <div class="modal-body clearfix">
+                  <div class="form-group col-md-12 clearfix">
+                      <div class="col-md-6 col-md-offset-3">
+                          <input type="text" placeholder="Password" ng-model="checkPassword"
+                              class="form-control">
+                      </div>
+                  </div>
+
+                  <div class="form-group col-md-12 text-center">
+                      <label>
+                          <button type="button" class="btn btn-info btn-sm" ng-click="checkBPass()">
+                              Submit
+                          </button>
+                      </label>
+                  </div>
+
+                  <div class="col-md-12" ng-if='brErrorMsg'>
+                      <div class="alert alert-danger"> Enter correct password !</div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- end -->
+
+  <!-- Broadcasting modals end  -->
 </div>
 
 <script type="text/javascript">
@@ -768,14 +906,14 @@
     });
 
     /* make dragable video audio call panels*/
-    $(".videoTab").draggable({ containment: ".container" });
+    $(".videoTabNew").draggable({ containment: ".container" });
     $(".audioTab").draggable({ containment: ".container" });
     $("#incommingCall").draggable({ containment: ".container" });
   });
 
 
   function removeVideoTab() {
-    var ele = document.querySelector('.videoTab');
+    var ele = document.querySelector('.videoTabNew');
     ele.style.display = 'none';
   }
 

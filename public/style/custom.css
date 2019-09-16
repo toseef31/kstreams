@@ -212,3 +212,37 @@
     color: white !important;
     cursor: pointer;
 }
+
+.broadCastContainer{
+    position: absolute;
+    z-index: 10;
+    bottom: 20%;
+    left: 54%;
+    width: 45%;
+}
+#moodtabs .tab:hover{
+    cursor: pointer;
+}
+@media screen and (max-width: 800px) {
+  .broadCastContainer{
+    width: 69% !important;
+    left: 29% !important;
+  }
+}
+
+@media screen and (max-width: 786px) {
+    .chatIcons span{
+        margin-left: 13px;
+    }
+
+    #videoBroadCast{
+        top: 33%;
+        left: 23%;
+        width: 240px;
+    }
+
+    .messaging .container-fluid{
+        padding-right: 9px;
+        padding-left: 9px;
+    }
+}

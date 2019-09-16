@@ -96,6 +96,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#broadcastingModal").modal();
     }
 
+    $scope.openAvModal=function(){ 
+        $("#avPresenterModal").modal();
+    }
+
     $scope.broadCastNow=function(){
         $rootScope.prePassword=$scope.liveStreamCode;
         //console.log($scope.liveStreamCode,' hmmm ',$rootScope.prePassword);
@@ -117,6 +121,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.brErrorMsg=0;
 
     $scope.becomeViewer=function(preId,password){
+        console.log('In becomeViewer ',preId,' and ',password);
         $rootScope.connWdPreId=preId;
         if(password){
             $scope.presenterPassword=password;

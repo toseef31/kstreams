@@ -3,8 +3,8 @@
         <div class="login-form" ng-if="projectData.length != 0">
             <div class="main-div col-sm-4">
                 <div class="panel">
-                    <img ng-if="!projectData.logo" src="images/favicon.png" />
-                    <img ng-if="projectData.logo" src="{{projectData.logo}}" />
+                    <img ng-if="!projectData || !projectData.logo" src="images/favicon.png" />
+                    <img ng-if="projectData && projectData.logo" src="{{projectData.logo}}" />
 
                     <h2 ng-if="projectData.name == ''">Chat</h2>
                     <h2 ng-if="projectData.name != ''">{{projectData.name}}</h2>
@@ -31,7 +31,7 @@
     </div>
 
     <span ng-if="projectData.length == 0">
-        <h3 class="loadingLogin"> LOADING ... </h3>
-        <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
+        <h3 class="loadingLogin">Loading...</h3>
+        <img class="loadingImage" src="/images/loading.gif" style="height: 50px; width: 50px">
     </span>
 </div>

@@ -129,7 +129,7 @@ factory('One2ManyCall', ['$rootScope',
     function hideSpinner() {
         for (var i = 0; i < arguments.length; i++) {
             arguments[i].src = '';
-            arguments[i].poster = './images/webrtc.png';
+            arguments[i].poster = './images/loading.gif';
             arguments[i].style.background = '';
         }
     }

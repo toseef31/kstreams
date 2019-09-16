@@ -11,7 +11,7 @@
     <title ng-bind="projectData.metaTitle"> Site title </title>
     <!-- ----------------------------- ------------------------------------ -->
 
-    <link rel="icon" href="{{projectData.favicon}}" sizes="192x192" />
+    <link rel="icon" ng-if="projectData && projectData.favicon" href="{{projectData.favicon}}" sizes="192x192" />
 
     <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <!-- <link rel="stylesheet" href="./nodeModFiles/semantic.min.css"> -->

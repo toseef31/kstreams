@@ -21,10 +21,10 @@
         <div class="headind_srch">
           <div class="recent_heading width100">
             <div class="pro_img">
-              <span ng-if="user.user_image == ''">
+              <span ng-if="!user.user_image || user.user_image=='' || !projectData.profileImgLocation">
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
-              <span ng-if="user.user_image != ''">
+              <span ng-if="user.user_image && user.user_image != '' && projectData.profileImgLocation">
                 <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}" alt="{{user.name}}" />
               </span>
             </div>
@@ -46,8 +46,7 @@
               </button>
           </div>
           <div class="col-md-6 col-xs-6 text-right broadCastAv">
-              <a class="forceWhiteColor" href='javascript:void(0)' data-toggle="modal"
-                  data-target="#avPresenterModal">
+              <a class="forceWhiteColor" href='javascript:void(0)'  ng-click="openAvModal()">
                   Available ({{presenterArr.length}})
               </a>
           </div> 
@@ -109,11 +108,11 @@
                             ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
                         </span>
 
-                        <span ng-if="userA.user_image == ''">
+                        <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
                           <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
                             alt="{{user.name}}" />
                         </span>
-                        <span ng-if="userA.user_image != ''">
+                        <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
                           <img class="" ng-if="userA.receiverId != user._id" src="{{projectData.profileImgLocation}}{{userA.user_image }}"
                             alt="{{userA.name}}" />
                         </span>
@@ -144,7 +143,7 @@
             </div>
 
             <div ng-if="!usersLoaded">
-              <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
+              <img class="loadingImage" src="/images/loading.gif" style="height: 50px; width: 50px">
               <strong class="loadingText">Loading...</strong>
             </div>
           </div>
@@ -255,10 +254,10 @@
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" />
+                          <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
                         </a>
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span>{{chat.message}}</span>
                         </a>
 
@@ -305,14 +304,14 @@
 
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
+                          <img src="/images/chatImages/{{chat.message}}" ng-click="download(chat.message)" />
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
 
                         <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
                           ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
                         </a>
 
@@ -390,10 +389,10 @@
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" />
+                          <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
                         </a>
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span>{{chat.message}}</span>
                         </a>
 
@@ -444,14 +443,14 @@
 
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
+                          <img src="/images/chatImages/{{chat.message}}" ng-click="download(chat.message)" />
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
 
                         <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
                           ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
                         </a>
 
@@ -684,12 +683,12 @@
                     <div class="form-group col-md-12 text-center">
                         <label>
                             <button type="button" class="btn btn-info btn-sm" ng-click="broadCastNow()">
-                                <span class="glyphicon glyphicon-signal"></span>Broadcast Now !
+                                <span class="glyphicon glyphicon-signal"></span> Broadcast Now !
                             </button>
                         </label>
                     </div>
                     <div class="col-md-12" ng-if='brErrorMsg'>
-                        <div class="alert alert-danger">Enter correct password</div>
+                        <div class="alert alert-danger"> Enter correct password</div>
                     </div>
 
                 </div>
@@ -703,7 +702,7 @@
   </div>
   <!-- Present/View Broadcasting video -->
   <div id="videoBroadCast" class='hidden broadCastContainer' style="text-align: center">
-      <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/webrtc.png"></video>
+      <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/loading.gif"></video>
 
       <button style="margin-top: 7px" class="btn btn-danger btn-sm" title="call drop" ng-click="stopBroadCast()">
           <span class='fa fa-close'></span> Stop

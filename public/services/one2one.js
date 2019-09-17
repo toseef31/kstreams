@@ -95,8 +95,8 @@ factory('One2OneCall', ['$rootScope',
         }
     
         function startCall(){
-            let localAsset=document.getElementById('local-videoNew');
-            let remoteAsset= document.getElementById('videoOutputNew'); 
+            let localAsset=document.getElementById('local-video');
+            let remoteAsset= document.getElementById('videoOutput'); 
             let medConst={};
             
             if($rootScope.callType==1){
@@ -143,8 +143,8 @@ factory('One2OneCall', ['$rootScope',
     
         function videoKCall(from,to,userData,isAudio){
             setCallState(PROCESSING_CALL); 
-            let localAsset=document.getElementById('local-videoNew');
-            let remoteAsset= document.getElementById('videoOutputNew'); 
+            let localAsset=document.getElementById('local-video');
+            let remoteAsset= document.getElementById('videoOutput'); 
             let medConst={};
             
             if(isAudio==1){

@@ -445,7 +445,8 @@ function register(id, name, ws, callback) {
 
     let checkVal=userRegistry.getByName(name);
     if (checkVal && typeof checkVal !=="undefined") { 
-        return onError("User " + name + " is already registered");
+        console.log("User " + name + " is already registered");
+        //return onError("User " + name + " is already registered");
     }
 
     userRegistry.register(new UserSession(id, name, ws));

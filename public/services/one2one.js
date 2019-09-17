@@ -63,6 +63,7 @@ factory('One2OneCall', ['$rootScope',
         };
     
         function incomingCall(message) {  
+            console.log('In incomingCall one2one 1');
             if (callState != NO_CALL) {
                 var response = {
                     id : 'incomingCallResponse',
@@ -77,6 +78,7 @@ factory('One2OneCall', ['$rootScope',
             $rootScope.showVideo=true;
             $rootScope.openVoice=true; 
             setCallState(PROCESSING_CALL); 
+            console.log('In incomingCall one2one 2');
             if ('serviceWorker' in navigator) {
                 send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
             } 
@@ -141,8 +143,8 @@ factory('One2OneCall', ['$rootScope',
     
         function videoKCall(from,to,userData,isAudio){
             setCallState(PROCESSING_CALL); 
-            let localAsset=document.getElementById('local-video');
-            let remoteAsset= document.getElementById('videoOutput'); 
+            let localAsset=document.getElementById('local-videoNew');
+            let remoteAsset= document.getElementById('videoOutputNew'); 
             let medConst={};
             
             if(isAudio==1){

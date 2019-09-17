@@ -599,7 +599,7 @@
         </button>
 
         <!--<button class="trans-btn" title="share screen" onclick="shareScreen()"><img src="images/sharescreen.png"></button> -->
-        <button class="trans-btn" title="call drop" ng-click="stopK(1,chatWith || callerId);">
+        <button class="trans-btn" title="call drop" ng-click="stopCall(1,chatWith || callerId);">
           <img src="images/calldrop2.png"></button>
       </div>
     </div>
@@ -623,7 +623,7 @@
       <button class="trans-btn " ng-if="!openVoice" ng-click="toggelMute()" title="Unmute video">
         <img src="images/mute1.png">
       </button>
-      <button class="trans-btn" title="call drop" ng-click="stopK(1,chatWith || callerId);">
+      <button class="trans-btn" title="call drop" ng-click="stopCall(1,chatWith || callerId);">
         <img src="images/calldrop.png">
       </button>
     </div>
@@ -908,6 +908,7 @@
     $(".videoTabNew").draggable({ containment: ".container" });
     $(".audioTab").draggable({ containment: ".container" });
     $("#incommingCall").draggable({ containment: ".container" });
+    $("#videoBroadCast").draggable({ containment: ".container" });
   });
 
 

@@ -61,19 +61,16 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-        
+     //   console.log(req.params.userId);
         function chatModelFunc(data){ 
-         // console.log("coming");
             for (let i=0; i<data.length; i++) {
                 chatModel.find(
                     { 'senderId': data[i]._id,
                     'receiverId':req.params.userId,
                     'isSeen': 0}
                     ).count().exec(function (err, count) { 
-                      
+                        // data[i]['activatedUser']='';  
                         data[i]['usCount']=count;    
-                      //  console.log(i+": "+data[i].name+': '+data[i].usCount);
-                      //  console.log(i + " == " + (data.length-1) );
                         if (i == data.length-1) res.json({'usersList':data}); 
                     }) 
                 }
@@ -81,28 +78,30 @@ module.exports = function (io, saveUser) {
                     res.json({'usersList':data})
 
         }
+
         if(req.params.allList==0){
             var friendIds = [];
-            
+
             friendModel.find({'userId': req.params.userId, 'status': 1} ,{friendId: true})
-            .populate('friendId').lean().exec(function (err, friendsData){ 
-               
-                if (!friendsData.length){
+            .populate('friendId').lean().exec(function (err, UserIdData){ 
                     // now check the userId in friendId column and populate user data
                     friendModel.find({'friendId': req.params.userId, 'status': 1} ,{userId: true})
-                    .populate('userId').lean().exec(function (err, friendsData){ 
-                        friendsData.forEach(val => {
+                    .populate('userId').lean().exec(function (err, friendsIdData){ 
+                        friendsIdData.forEach(val => {
                             friendIds.push(val.userId);
                         }); 
-                        chatModelFunc(friendIds);
+                        UserIdData.forEach(val => {
+                            friendIds.push(val.friendId);
+                        }); 
+
+                        //-----------------------------------------------
+                        userModel.findOne({ _id: req.params.userId , isAdmin: { $ne: 1 }, status: 1 },{}).lean().exec(function (err, data){
+                            friendIds.push(data);
+                            //console.log(data);
+                            chatModelFunc(friendIds);
+                        })
+                        
                     })
-                }
-                else{
-                    friendsData.forEach(val => {
-                        friendIds.push(val.friendId);
-                    }); 
-                    chatModelFunc(friendIds);
-                }
             })
         }
         else 
@@ -160,20 +159,21 @@ module.exports = function (io, saveUser) {
             });
     }
 
-    router.chat = function (req, res) {
+    router.chat = function (req, res) { console.log(req.body);
         var sender = req.body.senderId;
-
         var name = req.body.senderName;
         var recevier = req.body.receiverId;
         var message = req.body.message;
         var senderImage = req.body.senderImage;
         var receiverImage = req.body.receiverImage;
+        var isSeen = req.body.isSeen;
+
         newMessage = new chatModel({
             "senderId": sender,
             "senderName": name,
             "receiverId": recevier,
             "message": message,
-            // "msgType": "message",
+            "isSeen": isSeen,
             "senderImage": senderImage,
             "receiverImage": receiverImage,
         });
@@ -206,33 +206,36 @@ module.exports = function (io, saveUser) {
             })
         })
     }
+
+    router.chatWithId = function(req, res){
+         var sender = req.params._id;
+        // var receiver = req.params.receiverId;
+        // chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 },{$set: {'isSeen': 1}}).exec();
+        // res.send('true');
+
+        userModel.update({'_id': sender}, {$set: {'chatWithRefId': ''}}).exec();
+    }
+
     router.getChat = function (req, res) {
         var sender = req.params.senderId;
         var receiver = req.params.receiverId;
-     
-        chatModel.find({ $or: [
-            { senderId: sender, receiverId: receiver }, 
-            { senderId: receiver, receiverId: sender }] 
-        })
-            .lean()
-            .exec(function (err, data) {
-                if (err) throw err;
-   
-                chatModel.updateMany({ 
-                    $and:[
-                        {
-                            $or: [
-                                { senderId: sender, receiverId: receiver }, 
-                                { senderId: receiver, receiverId: sender }
-                            ]
-                        },
-                        {'isSeen': 0}
-                    ]  
-                },{$set: {'isSeen': 1}}).exec();
 
-                res.json(data);
-           
-            });
+          chatModel.updateMany({ senderId: receiver, receiverId: sender,'isSeen': 0 }
+                              ,{$set: {'isSeen': 1}}).exec(function (err, data){
+
+            chatModel.find({ $or: [
+                { senderId: sender, receiverId: receiver }, 
+                { senderId: receiver, receiverId: sender }] 
+            })
+                .lean()
+                .exec(function (err, data) {
+                    if (err) throw err;
+
+                    userModel.update({'_id': sender}, {$set: {'chatWithRefId': receiver}}).exec();
+
+                    res.json(data);
+                });
+          });
     }
 
     router.getGroup = function (req, res) {
@@ -389,6 +392,7 @@ module.exports = function (io, saveUser) {
                 // res.status(404).send();
             })
 
+            userModel.update({'_id': req.params.userId}, {$set: {'chatWithRefId': ''}}).exec();
             res.json({ msg: "session destroy" })
         }
     }

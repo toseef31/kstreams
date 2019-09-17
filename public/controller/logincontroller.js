@@ -9,7 +9,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     user={};
 
     $http.post("/getProject").then(function (response) {
-        $rootScope.projectData=response.data;  
+        $rootScope.projectData = response.data;  
         console.log('$rootScope.projectData ', $rootScope.projectData);
     });
 
@@ -19,6 +19,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         url: '/checkSession',
     }).then(function successCallback(response) { 
         $rootScope.user = response.data;
+      // $rootScope.activeUserPanel = '';
         $location.path("/dash");
     });
 
@@ -31,6 +32,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
             $rootScope.user = response.data;
+            //$rootScope.activeUserPanel = '';
             $location.path("/dash");
         }, function errorCallback(response) {
             $scope.notAuthorize = true;

@@ -10,6 +10,7 @@ var SALT_WORK_FACTOR = 10;
 const userSchema = new Schema({
 	"userId": { type: String },
 	"projectId": { type: Schema.ObjectId, ref: 'projects' },
+	"chatWithRefId": {type: String, default: ''},
 	"name": String,
 	"email": String,
 	"user_image": { type: String, default: ''},
@@ -17,6 +18,7 @@ const userSchema = new Schema({
 	"country": String,
 	"password": String,
 	"onlineStatus": { type: Number, default: 1 },
+	"seenStatus": { type: Number , default: 0},
 	"isAdmin": { type: Number, default: 0 },
 	"status": { type: Number, default: 1 },  //deleted=0/active=1/inActive=2
 	"pStatus": { type: Number, default: 0 },  //active=0/away=1/dNotDisturb=2/Invisible=3/Offline=4

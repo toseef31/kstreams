@@ -315,7 +315,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .video-icon, .delete-icon{
 	font-size: 20px;
 	cursor: pointer;
-    margin-right: 4px;
+    /* margin-right: 4px; */
 }
 .video-icon .fa, .delete-icon .fa{
 	vertical-align: super;
@@ -323,7 +323,9 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .clear{clear: both;}
 
 .btn-main.MS-File{
-    padding:9px;margin-right:-1px;border-radius:0!important
+    padding:13px;
+    /* margin-right:-1px;
+    border-radius:0!important */
 }
 
 .message-container{width:100%;height:100%}
@@ -352,7 +354,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
  color:white !important;
 }
 
-.messages-users-list{height:calc(100vh - 149px);border-radius:0;background-color:#fff;overflow:hidden;overflow-y:auto}
+.messages-users-list{height:calc(100vh - 158px);border-radius:0;background-color:#fff;overflow:hidden;overflow-y:auto}
 .messages-recipients-list{height:64px;position:relative;cursor:pointer;border-bottom:1px solid #f1f1f1}
 .messages-recipients-list:last-child{border-bottom:0 solid}
 .messages-recipients-list:hover{background-color:rgba(0,0,0,.05)}
@@ -375,11 +377,20 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .text-sender-container .sendMessages .charsLeft-message{position:absolute;z-index:9;right:115px;top:12px}
 .message-option-btns
 {
+    padding-right: 4px;
     position:absolute;z-index:9;
-    right:57px;
+    right:10%;
     top:2px;
     display:table
 }
+
+@media screen and (min-width: 600px) {
+    .message-option-btns
+    {
+        right: 6% !important;
+    }
+    }
+
 .marginSendButton {
     /* margin-bottom: 10px; */
     margin-right: 5px;

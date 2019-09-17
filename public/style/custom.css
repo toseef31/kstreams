@@ -8,7 +8,7 @@
 } */
 .chatIcons .fa-paperclip{
     line-height: 2;
-    font-weight: bold;
+    /* font-weight: bold; */
     font-size: 20px;
     transform: rotate(90deg);
 }

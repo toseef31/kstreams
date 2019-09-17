@@ -105,7 +105,7 @@ app.post('/subscribe',(req,res) => {
 //*****
 //***** 
 
-server.listen(port,() => {
+server.listen(port, () => {
 	// eslint-disable-next-line no-console
 	console.info('listening on %d', port);
 });
@@ -167,6 +167,14 @@ io.on('connection', function (socket) {
 		socket.rcv_id = data.rcv_id;
 	});
 
+	socket.on('updateUserSelection', (data) => {
+        io.emit('receiverUserStatus', data);
+	});
+
+	socket.on('updateChatWithId', (data) => {
+		io.emit('updateUserChatWithId', data);
+	})
+
 	//listen on typing
 	socket.on('typing', (data) => {
 		socket.broadcast.emit('typingRec', { username: socket.username, rcv_id: socket.rcv_id })
@@ -178,6 +186,10 @@ io.on('connection', function (socket) {
 	socket.on('checkmsg', function (chat) {
 		io.emit('remsg', chat);
 	});
+
+	socket.on('updateChatSeenStatus', (chatData) => {
+    io.emit('updateMsgSeenStatus', chatData);
+	})
 
 	socket.on('calldisconnect', function (data) {
 		io.emit('calldis', data);

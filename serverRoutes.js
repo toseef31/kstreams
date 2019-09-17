@@ -49,7 +49,10 @@ module.exports = function(app,io,saveUser){
     app.get('/getGroups/:userId',chatCon.getGroups);
     app.post('/chat',chatCon.chat);
     app.post('/updateChat/:id',chatCon.updateChat);
+
     app.get('/getChat/:senderId/:receiverId',chatCon.getChat);
+    //app.post('/unreadMsg/:senderId/:receiverId',chatCon.unreadMsg);
+    app.get('/emptyChatWithId/:_id', chatCon.chatWithId)
 
     //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
     app.get('/getGroup/:groupId',chatCon.getGroup);

@@ -79,19 +79,16 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
-			console.log(obj);
 			if(typeof obj.password ===undefined) callback({err:err});
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
 			.populate('projectId').lean().exec(function(err,data){ 
 				if(err || !data) callback({err:err});
 				else{
-					//console.log(obj, ':' ,data);
 					if (!bcrypt.compareSync(obj.password, data.password))  
 						callback({err:err});
 					else
 						userModel.update({'email': obj.email}, {'onlineStatus': 1})
 						.lean().exec(function (err, result) { 
-							console.log('loaded-===');
 						     callback(data);
 						})
 				}

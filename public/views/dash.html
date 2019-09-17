@@ -1,4 +1,3 @@
-<!-- <body> -->
 <div class="container-fluid" id="MainWrap" ng-controller="dashController">
   <!-- file upload throught button -->
   <form style="display: none">
@@ -8,7 +7,6 @@
   <!-- file upload code ends -->
 
   <h1 ng-if="sessionDestroy">Session destroyed please login</h1>
-  <!--  ng-if="!sessionDestroy" -->
   <div class="row" ng-if="!sessionDestroy">
 
     <!-- ----------------------------  -------------------------------------------------------- -->
@@ -81,8 +79,8 @@
               <div ng-if="allUsers.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
                   ng-repeat="userA in allUsers" ng-class="{grpChecked: $parent.selection==$index}"
-                  ng-click="$parent.selection=$index">
-                  <div ng-if="userA._id != user._id" ng-click="startChat({type:1,user:userA})">
+                  ng-click="$parent.selection=$index"  ng-if="userA._id != user._id">
+                  <div ng-click="startChat({type:1,user:userA})">
                     <span class="user-name-section">
                       <div class="pull-right">
                         <span class="new-message-alert hidden">0</span>
@@ -195,21 +193,17 @@
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
 
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left mobilemsgclose"><polyline points="15 18 9 12 15 6"></polyline></svg> -->
           <span id="user-name" class="">
             <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
             <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
           </span>
-          <span class="pull-right" ng-if="!groupSelected">
-            <span class="video-icon whiteTextColor">
+          <span class="pull-right video-icon" ng-if="!groupSelected">
+            <span class="whiteTextColor" style="margin-right: 20px">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
-            <span class="video-icon whiteTextColor">
+            <span class="whiteTextColor">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id)"></i>
             </span>
-            <!-- <span class="delete-icon" title="Delete Conversation">
-                <i class="fa fa-trash"></i>
-              </span> -->
           </span>
         </li>
 
@@ -228,9 +222,6 @@
                 <div ng-if="chat.senderId != user._id">
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
-                      <!-- <div class="message-user-image pull-left">
-                        <img src="../images/profile-photos/noProfile.png" alt="User image">
-                      </div> -->
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
 
@@ -277,13 +268,16 @@
                     <div class="clear"></div>
 
                     <div class="message-contnaier outgoing pull-right">
+                     
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
-
+                    
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.messageType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}}
+                            {{chat.message}}     
+                            <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" width="20px" height="20px">
+                            <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" width="20px" height="20px">
                           </p>
                           <div class="message-media">
                             <div class="clear"></div>
@@ -293,6 +287,9 @@
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
                           <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
+
+                          <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" width="20px" height="20px">
+                          <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" width="20px" height="20px">
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
@@ -301,8 +298,10 @@
                           ng-if="chat.messageType == 2">
                           <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
-                        </a>
 
+                          <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" style="float: right" width="20px" height="20px">
+                          <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" style="float: right" width="20px" height="20px">
+                        </a>
 
                         <div class="time ajax-time text-right" title="1 year ago">
                           {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
@@ -321,8 +320,9 @@
                         <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
                           class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
                       </div>
-
                     </div>
+
+                 
 
                     <div class="clear"></div>
                   </div>
@@ -496,13 +496,9 @@
         <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
 
         <div class="input-group type_msg">
-          <div style="position:relative">
-            <!-- <textarea id="sendMsg" class="form-control custom-controls messageTextArea"
-              ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message .."
-              cols="10" rows="4"></textarea> -->
+          <div style="position:relative"  ng-click="unreadMsg({userId:selectedUserId})">
             <input type="text" id="sendMsg" class="form-control border0"
               ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
-
 
             <span class="input-group-btn message-option-btns">
               <div class="col-md-1 col-xs-2 chatIcons">
@@ -513,16 +509,6 @@
                   <i class="fa fa-paperclip"></i>
                 </span>
               </div>
-
-              <!-- <span class="btn btn-file">
-                <i class="fa fa-smile-o"></i>
-              </span> -->
-
-              <!-- <label>
-                <span class="btn btn-file">
-                  <i class="fa fa-file-o" onclick="triggerfile()"></i>
-                </span>
-              </label> -->
             </span>
           </div>
 
@@ -541,19 +527,12 @@
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
 
         <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="feather feather-chevron-left mobilemsgclose" ng-click="chatBack()">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg> -->
-
           <span id="user-name" class="">
             <span class="status-bar whiteTextColor"> Chat </span>
           </span>
         </li>
 
         <div class="nomessage-container messagejoint msg_history"></div>
-
       </ul>
     </div>
 
@@ -617,8 +596,6 @@
     </div>
   </div>
 
-  <!-- incomming call modal -->
-  <!-- incomming call modal -->
   <!-- incomming call modal -->
   <!-- incomming call modal -->
 
@@ -729,7 +706,6 @@
 
 
   $(document).ready(function () {
-    console.log("ready 1");
     $("#sendMsg").emojioneArea({
       events: {
         keypress: function (editor, event) {

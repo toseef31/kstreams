@@ -2,7 +2,7 @@
 * author  => Peek International
 * designBy => Peek International
 */
-app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket) {
+app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,One2ManyCall) {
     $scope.notAuthorize = false; // show invalid username password message
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];
@@ -19,8 +19,40 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         let broadCastUrl='wss://'+webSocketIp+':8444/one2many';
         console.log('WebSocket: ',reqUrl);
         
-        $rootScope.O2OSoc= $websocket.$new(reqUrl);
+        $rootScope.O2OSoc= $websocket.$new(reqUrl); 
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
+        $rootScope.O2MSoc.$on('$open', function () {
+            console.log('O2M socket open'); 
+        })
+        .$on('$message', function (message) { // it listents for 'incoming event'
+            console.log('o2m incoming: ' + message);
+            var parsedMessage = JSON.parse(message);  
+            switch (parsedMessage.id) {
+                case 'presenterResponse':
+                    One2ManyCall.presenterResponse(parsedMessage);
+                    break;
+                case 'viewerResponse':
+                    One2ManyCall.viewerResponse(parsedMessage);
+                    break;
+                case 'stopCommunication':
+                    One2ManyCall.dispose();
+                    break;
+                case 'iceCandidate':
+                    $rootScope.webRtcO2MPeer.addIceCandidate(parsedMessage.candidate)
+                    break;  
+                case 'presenterDataResp': 
+                        if(!$rootScope.user) break;
+                        let presenterData=[];
+                        parsedMessage.data.forEach(preData => {
+                            if(preData.preId!=$rootScope.user._id) presenterData.push(preData)
+                        }); 
+                        $rootScope.presenterArr=presenterData;
+                    break;
+                default:
+                    console.error('Unrecognized message', parsedMessage);
+            }
+        });
+        
     });
 
     /*check session*/

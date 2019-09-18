@@ -49,37 +49,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     } 
 
     //initial websocket connection is in loginController   
-    $rootScope.O2MSoc.$on('$open', function () {
-        console.log('O2M socket open'); 
-    })
-    .$on('$message', function (message) { // it listents for 'incoming event'
-        console.log('o2m incoming: ' + message);
-        var parsedMessage = JSON.parse(message);  
-        switch (parsedMessage.id) {
-            case 'presenterResponse':
-                One2ManyCall.presenterResponse(parsedMessage);
-                break;
-            case 'viewerResponse':
-                One2ManyCall.viewerResponse(parsedMessage);
-                break;
-            case 'stopCommunication':
-                One2ManyCall.dispose();
-                break;
-            case 'iceCandidate':
-                $rootScope.webRtcO2MPeer.addIceCandidate(parsedMessage.candidate)
-                break;  
-            case 'presenterDataResp': 
-                    if(!$rootScope.user) break;
-                    let presenterData=[];
-                    parsedMessage.data.forEach(preData => {
-                        if(preData.preId!=$rootScope.user._id) presenterData.push(preData)
-                    }); 
-                    $rootScope.presenterArr=presenterData;
-                break;
-            default:
-                console.error('Unrecognized message', parsedMessage);
-        }
-    });
     
     
     $interval(One2ManyCall.getPresenterData, 6000);
@@ -199,7 +168,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
     
         socket.emit('user_connected', { userId: $rootScope.user._id });
-
         $rootScope.O2OSoc.$on('$open', function () {
             console.log('O2O socket open');
             One2OneCall.sendKMessage({ id : 'register', name : $rootScope.user._id }); 
@@ -231,7 +199,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     console.error('Unrecognized message', parsedMessage);
             }
         });
-
         $scope.receiveCall = false;
         $scope.welcomePage = true;
         $scope.caller = false;

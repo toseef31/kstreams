@@ -157,6 +157,7 @@
 }
 .msg_history{
     padding-top: 28px !important;
+    width:100%;
 }
 .outgoing_msg_img{
     padding: 0px;

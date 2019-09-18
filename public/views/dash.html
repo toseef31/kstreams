@@ -19,11 +19,12 @@
         <div class="headind_srch">
           <div class="recent_heading width100">
             <div class="pro_img">
-              <span ng-if="user.user_image == ''">
+              <span ng-if="!user.user_image || user.user_image=='' || !projectData.profileImgLocation">
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
-              <span ng-if="user.user_image != ''">
-                <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}" alt="{{user.name}}" />
+              <span ng-if="user.user_image && user.user_image != '' && projectData.profileImgLocation">
+                <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}"
+                  alt="{{user.name}}" />
               </span>
             </div>
             <div class="statusDropDown hoverIt" ng-click="showDDwnSt(); $event.stopPropagation()" ng-class="stClass"
@@ -37,6 +38,18 @@
           </div>
         </div>
 
+        <div class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
+          <div class="col-md-6  col-xs-6">
+            <button id="live" type="button" ng-click="openBrModal()" class="btn btn-info btn-sm">
+              <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
+            </button>
+          </div>
+          <div class="col-md-6 col-xs-6 text-right broadCastAv">
+            <a class="forceWhiteColor" href='javascript:void(0)' ng-click="openAvModal()">
+              Available ({{presenterArr.length}})
+            </a>
+          </div>
+        </div>
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -79,7 +92,7 @@
               <div ng-if="allUsers.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
                   ng-repeat="userA in allUsers" ng-class="{grpChecked: $parent.selection==$index}"
-                  ng-click="$parent.selection=$index"  ng-if="userA._id != user._id">
+                  ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
                   <div ng-click="startChat({type:1,user:userA})">
                     <span class="user-name-section">
                       <div class="pull-right">
@@ -94,13 +107,13 @@
                             ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
                         </span>
 
-                        <span ng-if="userA.user_image == ''">
+                        <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
                           <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
                             alt="{{user.name}}" />
                         </span>
-                        <span ng-if="userA.user_image != ''">
-                          <img class="" ng-if="userA.receiverId != user._id" src="{{projectData.profileImgLocation}}{{userA.user_image }}"
-                            alt="{{userA.name}}" />
+                        <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
+                          <img class="" ng-if="userA.receiverId != user._id"
+                            src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
                         </span>
                       </div>
                       <span class="messages-user-name">
@@ -124,13 +137,13 @@
 
             <div ng-if="allUsers.length == 0">
               <div class="notfound">
-                <h3>No friends found</h3>
+                <p class="text-center">No friends found</p>
               </div>
             </div>
 
             <div ng-if="!usersLoaded">
-              <img class="loadingImage" src="/images/loading.png" style="height: 50px; width: 50px">
-              <strong class="loadingText">Loading</strong>
+              <img class="loadingImage" src="/images/loading.gif" style="height: 50px; width: 50px">
+              <strong class="loadingText">Loading...</strong>
             </div>
           </div>
           <!--  ----------------- ---------------------------------------------------------- -->
@@ -157,8 +170,8 @@
                 </div>
               </div>
 
-              <div ng-if="allGroups.length <= 0">
-                <p class="text-center nGroupFound">No group found</p>
+              <div ng-if="allGroups.length <= 0" class="notfound">
+                <p class="text-center">No groups found</p>
               </div>
             </div>
           </div>
@@ -219,24 +232,53 @@
               <div ng-repeat="chat in chats track by $index">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
-                <div ng-if="chat.senderId != user._id">
+                <div ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)" ng-mouseout="showReplyIcon(chat._id,0)">
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
 
-                        <div class="message" ng-if="chat.messageType == 0">
+                        <div class="message" ng-if="chat.messageType == 0  && chat.chatType == 0">
                           <p class="message-text" dir="auto"> {{chat.message}} </p>
                           <div class="message-media">
                             <div class="clear"></div>
                           </div>
+                          <div class="message" ng-if="isReplying && commentReplyId == chat._id">
+                            <div class="message-media">
+                              <div class="clear"></div>
+                            </div>
+                            <p>@ {{chat.senderId.name}}</p> 
+                            <input ng-model="reply" ng-keydown="$event.keyCode === 13 && sendReply(reply, chat._id)" type="text"
+                              placeholder="enter reply">
+                          </div>
+                        </div>
+
+                        <!-- --------------- REPLY MSG ---------------------------------------------- -->
+                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 1">
+                          <p class="message-text" dir="auto">
+                            <div class="panel panel-default replyPanel">
+                              <div class="panel-body">{{chat.commentId.message}}</div>
+                            </div>
+                            {{chat.message}}
+                          </p>
+                          <div class="message-media">
+                            <div class="clear"></div>
+                          </div>
+                          <div class="message" ng-if="isReplying && commentReplyId == chat._id">
+                              <div class="message-media">
+                                <div class="clear"></div>
+                              </div>
+                              <p>@ {{chat.senderId.name}}</p> 
+                              <input ng-model="reply" ng-keydown="$event.keyCode === 13 && sendReply(reply, chat._id)" type="text"
+                                placeholder="enter reply">
+                            </div>
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" />
+                          <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
                         </a>
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span>{{chat.message}}</span>
                         </a>
 
@@ -244,8 +286,15 @@
                           {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
                         </div>
                       </div>
+                   
+                        <ul class="replyMenu" ng-if="replyIconId == chat._id && !replyMenuStatus" id="replyIcon-{{chat._id}}" >
+                          <li>
+                            <span class='hoverIt fa fa-reply' ng-click="activateReply(chat._id)"></span>
+                          </li>
+                        </ul>
                     </div>
                   </div>
+
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
@@ -262,45 +311,58 @@
 
                 <!-- ---------------------  SENDING MESSAGES -------------------------------------->
                 <div ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
-                  ng-if="chat.senderId == user._id">
+                  ng-if="chat.senderId._id == user._id">
                   <div ng-if="!chat.isDeleted">
 
                     <div class="clear"></div>
 
                     <div class="message-contnaier outgoing pull-right">
-                     
+
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
-                    
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
-                        <div class="message" ng-if="chat.messageType == 0">
+                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}}     
-                            <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" width="20px" height="20px">
-                            <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" width="20px" height="20px">
+                            {{chat.message}}
+                            <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
+                              width="20px" height="20px">
+                            <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
+                              width="20px" height="20px">
                           </p>
                           <div class="message-media">
                             <div class="clear"></div>
                           </div>
                         </div>
 
+                         <!-- --------------- REPLY MSG ---------------------------------------------- -->
+                         <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 1">
+                            <p class="message-text" dir="auto">
+                              <div class="panel panel-default replyPanel">
+                                <div class="panel-body">{{chat.commentId.message}}</div>
+                              </div>
+                              {{chat.message}}
+                            </p>
+                            <div class="message-media">
+                              <div class="clear"></div>
+                            </div>
+                          </div>
+
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
-
-                          <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" width="20px" height="20px">
-                          <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" width="20px" height="20px">
+                          <img src="/images/chatImages/{{chat.message}}" ng-click="download(chat.message)" />
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
 
                         <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
                           ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
 
-                          <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png" style="float: right" width="20px" height="20px">
-                          <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png" style="float: right" width="20px" height="20px">
+                          <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
+                            style="float: right" width="20px" height="20px">
+                          <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
+                            style="float: right" width="20px" height="20px">
                         </a>
 
                         <div class="time ajax-time text-right" title="1 year ago">
@@ -316,13 +378,12 @@
                             ng-click="deleteMsg('fromMe')"></span>
                         </li>
                       </ul>
+
                       <div class="top-left">
                         <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
                           class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
                       </div>
                     </div>
-
-                 
 
                     <div class="clear"></div>
                   </div>
@@ -377,10 +438,10 @@
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" alt="{{chat.name}}" />
+                          <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
                         </a>
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span>{{chat.message}}</span>
                         </a>
 
@@ -431,14 +492,14 @@
 
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
-                          <img src="{{ '/images/chatImages/' + chat.message }}" ng-click="download(chat.message)" />
+                          <img src="/images/chatImages/{{chat.message}}" ng-click="download(chat.message)" />
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
 
                         <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
                           ng-if="chat.messageType == 2">
-                          <img class="messageType2Width" src="{{ '/images/fileIcon.png' }}" alt="{{chat.name}}" />
+                          <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
                           <span class="msgType2Margin">{{chat.message}}</span>
                         </a>
 
@@ -496,7 +557,7 @@
         <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
 
         <div class="input-group type_msg">
-          <div style="position:relative"  ng-click="unreadMsg({userId:selectedUserId})">
+          <div style="position:relative" ng-click="unreadMsg({userId:selectedUserId})">
             <input type="text" id="sendMsg" class="form-control border0"
               ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
 
@@ -544,7 +605,7 @@
       <video id="local-videoNew" autoplay poster="images/loading.gif"></video>
 
       <div class="text-center screenButtons">
-        <h4 id="timmer"></h4>
+        <h4 id="timmer" class="hidden-xs"></h4>
         <button class="trans-btn exitTheScreen hidden" title="Exit full screen">
           <img src="images/exitFullScreen.png">
         </button>
@@ -615,6 +676,128 @@
     </div>
   </div>
 
+  <!-- Broadcasting modals start  -->
+  <!-- Initial 1 start -->
+  <div id="broadcastingModal" class="modal fade" role="dialog">
+    <form ng-submit="broadcasting('video')">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Live Streaming</h4>
+          </div>
+          <div class="modal-body clearfix">
+            <div class="form-group col-md-12">
+              <div class="col-md-3">
+                <label>Set password for Live stream</label>
+              </div>
+              <div class="col-md-2 hoverIt">
+                <input type="radio" id='setPas1' ng-model="setPassword" name="setPassword" value='1'
+                  ng-checked='setPassword == 1' />
+                <label for="setPas1">Yes</label>
+              </div>
+              <div class="col-md-2 hoverIt">
+                <input type="radio" id='setPas2' ng-model="setPassword" name="setPassword" value='0'
+                  ng-checked='setPassword == 0' />
+                <label for="setPas2">No</label>
+              </div>
+            </div>
+            <div class="form-group col-md-12" ng-class="{hidden:setPassword==0}">
+              <div class="col-md-6 col-md-offset-3">
+                <input type="text" placeholder="Set Password" ng-model="liveStreamCode" class="form-control">
+              </div>
+            </div>
+            <div class="form-group col-md-12 text-center">
+              <label>
+                <button type="button" class="btn btn-info btn-sm" ng-click="broadCastNow()">
+                  <span class="glyphicon glyphicon-signal"></span> Broadcast Now !
+                </button>
+              </label>
+            </div>
+            <div class="col-md-12" ng-if='brErrorMsg'>
+              <div class="alert alert-danger"> Enter correct password</div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="broadClose" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- Present/View Broadcasting video -->
+  <div id="videoBroadCast" class='hidden broadCastContainer' style="text-align: center">
+    <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/loading.gif"></video>
+
+    <button style="margin-top: 7px" class="btn btn-danger btn-sm" title="call drop" ng-click="stopBroadCast()">
+      <span class='fa fa-close'></span> Stop
+    </button>
+  </div>
+  <!-- end -->
+
+  <!-- Show available presenter  -->
+  <div id="avPresenterModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Presenters broadcasting now</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group col-md-12 clearfix">
+            <ol ng-if="presenterArr.length>0">
+              <li ng-repeat=" opt in presenterArr" ng-bind-html-unsafe="opt">
+                <a href='javascript:void(0)' data-dismiss="modal" ng-click="becomeViewer(opt.preId,opt.password)">
+                  {{ opt.preName }}
+                </a>
+                <i ng-if="opt.password">(Password required)</i>
+              </li>
+            </ol>
+            <p class="text-center" ng-if="presenterArr.length==0">No presenter found</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end -->
+
+  <!-- Password required for presenter  -->
+  <div id="passReqPre" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Enter password</h4>
+        </div>
+        <div class="modal-body clearfix">
+          <div class="form-group col-md-12 clearfix">
+            <div class="col-md-6 col-md-offset-3">
+              <input type="text" placeholder="Password" ng-model="checkPassword" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group col-md-12 text-center">
+            <label>
+              <button type="button" class="btn btn-info btn-sm" ng-click="checkBPass()">
+                Submit
+              </button>
+            </label>
+          </div>
+
+          <div class="col-md-12" ng-if='brErrorMsg'>
+            <div class="alert alert-danger"> Enter correct password !</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end -->
+
+  <!-- Broadcasting modals end  -->
 </div>
 
 <script type="text/javascript">

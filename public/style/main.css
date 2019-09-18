@@ -64,18 +64,27 @@
 .chatMenu{
   background: #fff;
   border: 1px solid #ccc;
-  /* width: 46px; */
   padding: 7px;
   font-weight: 600;
   position: absolute;
   top: 17px;
   left: -15%;
-  /* right: 100%; */
   border-radius: 5px;
   list-style: none;
   z-index: 9999;
 }
  
+.replyMenu{
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 4px;
+  font-weight: 600;
+  position: absolute;
+  right: 20%;
+  border-radius: 5px;
+  list-style: none;
+  z-index: 9999;
+}
 
 .audioTab{
   z-index: 10;
@@ -560,6 +569,7 @@ img{ max-width:90%;}
   padding: 10px;
   background: #dadada;
   /* height: 450px; */
+  width: 100%;
   height: calc(100vh - 150px);
   overflow-y: auto;
 }
@@ -1196,6 +1206,9 @@ height: 70% !important;
   color:black;
 }
 
+.replyPanel{
+  background-color: #c7f1c8;
+}
 
 /* 
 .deleteMessage {

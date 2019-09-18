@@ -11,10 +11,10 @@
     <title ng-bind="projectData.metaTitle"> Site title </title>
     <!-- ----------------------------- ------------------------------------ -->
 
-    <link rel="icon" href="{{projectData.favicon}}" sizes="192x192" />
+    <link rel="icon" ng-if="projectData && projectData.favicon" href="{{projectData.favicon}}" sizes="192x192" />
 
     <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <link rel="stylesheet" href="./nodeModFiles/semantic.min.css">
+    <!-- <link rel="stylesheet" href="./nodeModFiles/semantic.min.css"> -->
 
     <link href="style/font-awesome.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./style/main.css">
@@ -31,14 +31,15 @@
     <script src="js/jquery-ui.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
-    <script src="js/angular-route.js"></script>
+    <script src="js/translate/angular-route.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/angular-animate.js"></script>
-    <script src="js/angular-sanitize.js"></script>
+    <!-- <script src="js/angular-animate.js"></script> -->
+    <script src="js/translate/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="js/ng-websocket.js"></script>
     <script src="js/ui-bootstrap-tpls-2.5.0.js"></script>
-    <script src="./js/multiselect.js"></script>
+    <!-- <script src="./js/multiselect.js"></script> -->
     <script src="./js/helper.js"></script>
-    <script src="./js/multiselect-template.js"></script>
+    <!-- <script src="./js/multiselect-template.js"></script> -->
 
     <link rel="stylesheet" href="style/newDesign/stylesheet/jquery.ui.css">
     <script src="style/newDesign/javascript/autocomplete.jquery.js"></script>
@@ -48,14 +49,17 @@
   <body id="LoginForm" >
     <div ng-view></div>
     <script type="text/javascript" src="./config/app.js"></script>
+    <script type="text/javascript" src="./services/one2one.js"></script>
+    <script type="text/javascript" src="./services/one2many.js"></script>
+
     <script type="text/javascript" src="./routes/routes.js"></script>
     <script type="text/javascript" src="./controller/logincontroller.js"></script>
     <script type="text/javascript" src="./controller/dashboardController.js"></script>
     <!-- <script src="./nodeModFiles/semantic.min.js"></script>
     <script src="./nodeModFiles/handlebars.min.js "></script>
     <script src="./nodeModFiles/simplewebrtc-with-adapter.bundle.js"></script> -->
-    <script src="./webRtc/static/bower_components/webrtc-adapter/release/adapter.js"></script>
-    <script src="./webRtc/static/bower_components/kurento-utils/js/kurento-utils.js"></script>
+    <script src="./webRtc/one2one/static/bower_components/webrtc-adapter/release/adapter.js"></script>
+    <script src="./webRtc/one2one/static/bower_components/kurento-utils/js/kurento-utils.js"></script>
     <script src="client.js"></script>
   </body>
 </html>

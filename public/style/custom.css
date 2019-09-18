@@ -186,3 +186,63 @@
 .login-form .panel img{
     max-height: 145px;
 }
+
+.screenButtons{
+    position: absolute;
+    top: -16px;
+    left: 33%;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    z-index: 99999999999;
+}
+
+.broadCastSec{
+    background-color: #5a9e02;
+    padding-right: 4px;
+    padding-left: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid white;
+}
+
+.forceWhiteColor{
+    float: right;
+    color: white !important;
+    cursor: pointer;
+}
+
+.broadCastContainer{
+    position: absolute;
+    z-index: 10;
+    bottom: 20%;
+    left: 54%;
+    width: 45%;
+}
+#moodtabs .tab:hover{
+    cursor: pointer;
+}
+@media screen and (max-width: 800px) {
+  .broadCastContainer{
+    width: 69% !important;
+    left: 29% !important;
+  }
+}
+
+@media screen and (max-width: 786px) {
+    .chatIcons span{
+        margin-left: 13px;
+    }
+
+    #videoBroadCast{
+        top: 33%;
+        left: 23%;
+        width: 240px;
+    }
+
+    .messaging .container-fluid{
+        padding-right: 9px;
+        padding-left: 9px;
+    }
+}

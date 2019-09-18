@@ -186,6 +186,9 @@ io.on('connection', function (socket) {
 	socket.on('checkmsg', function (chat) {
 		io.emit('remsg', chat);
 	});
+	// socket.on('checkreply', function (chat) {
+	// 	io.emit('socketReply', chat);
+	// });
 
 	socket.on('updateChatSeenStatus', (chatData) => {
     io.emit('updateMsgSeenStatus', chatData);

@@ -6,13 +6,14 @@ const userModel = require('../model/users-model');
 const friendModel = require('../model/friendModel');
 // const recentModel = require('../model/recent-model');
 const chatModel = require('../model/chatModel');
+const replyModel = require('../model/replyModel');
 const groupsModel = require('../model/groupsModel');
 const notifiModel = require('../model/notificationModel');
 const projectModel = require('../model/projectModel');
 const mongoose = require('mongoose');
 const helpers = require('../helperfunctions/helpers');
 const isImage = require('is-image');
-
+const broadModel  = require('../model/broadcast');
 // const readChunk = require('read-chunk');
 // const fileType = require('file-type');
 var path = require('path');
@@ -30,7 +31,6 @@ module.exports = function (io, saveUser) {
             res.send(projData);
         })
     }
-
 
     router.groupChat = function (req, res) {
 
@@ -61,29 +61,26 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-     //   console.log(req.params.userId);
-        function chatModelFunc(data){ 
+        
+        function chatModelFunc(data){  
             for (let i=0; i<data.length; i++) {
                 chatModel.find(
                     { 'senderId': data[i]._id,
                     'receiverId':req.params.userId,
                     'isSeen': 0}
                     ).count().exec(function (err, count) { 
-                        // data[i]['activatedUser']='';  
-                        data[i]['usCount']=count;    
+                        data[i]['usCount']=count;     
                         if (i == data.length-1) res.json({'usersList':data}); 
                     }) 
                 }
-                if (data.length == 0) 
-                    res.json({'usersList':data})
-
+                if (data.length == 0) res.json({'usersList':data})
         }
 
         if(req.params.allList==0){
             var friendIds = [];
-
             friendModel.find({'userId': req.params.userId, 'status': 1} ,{friendId: true})
             .populate('friendId').lean().exec(function (err, UserIdData){ 
+                // if (!UserIdData.length){
                     // now check the userId in friendId column and populate user data
                     friendModel.find({'friendId': req.params.userId, 'status': 1} ,{userId: true})
                     .populate('userId').lean().exec(function (err, friendsIdData){ 
@@ -102,22 +99,23 @@ module.exports = function (io, saveUser) {
                         })
                         
                     })
+                // }
             })
         }
         else 
-            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1 },
-            {}, { sort: '-updatedAt' })
+            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1,projectId:req.params.projectId},
+            {}, { sort: '-updatedAt' }) 
             .lean()
-            .exec(function (err, data) {  
+            .exec(function (err, data) {   
                 chatModelFunc(data);
             });
-     
     }
 
 
     router.getCreatedGroups = function (req, res) {
         // get all groups 
-        groupsModel.find({ 'status': 1 }).populate('members', { 'name': true }).exec(function (err, groups) {
+        groupsModel.find({'status': 1,'projectId':req.params.projectId})
+        .populate('members', { 'name': true }).exec(function (err, groups) {
             var tempGroups = [];
             if (err) { return console.log(err); }
 
@@ -147,11 +145,9 @@ module.exports = function (io, saveUser) {
             res.json(data);
             helper.RTGU();
         })
-
     }
 
     router.getGroups = function (req, res) {
-
         groupsModel.find({ members: { $elemMatch: { id: req.params.userId } }, 'status': 1 })
             .lean().then(function (data) {
 
@@ -159,7 +155,26 @@ module.exports = function (io, saveUser) {
             });
     }
 
-    router.chat = function (req, res) { console.log(req.body);
+    // router.reply = function (req, res) {
+    //         newReply = new replyModel({
+    //             "commentId": req.body.commentId,
+    //             "senderId": req.body.senderId,
+    //             "receiverId": req.body.receiverId,
+    //             "senderName": req.body.senderName,
+    //             "message": req.body.message,
+    //         })
+
+    //         newReply.save(function (err, data){
+    //             if (err) throw err;
+    //             replyModel.findOne({commentId: req.body.commentId, senderId: req.body.senderId, receiverId: req.body.receiverId }).populate("commentId").sort({ updatedAt: -1 }).exec(function (err, data) {
+    //                 helper.addNewMessage(data);
+    //                 res.json(data);
+    //             })
+    //         })
+    // }
+
+    router.chat = function (req, res) {
+        var chatType = req.body.chatType;
         var sender = req.body.senderId;
         var name = req.body.senderName;
         var recevier = req.body.receiverId;
@@ -168,6 +183,7 @@ module.exports = function (io, saveUser) {
         var receiverImage = req.body.receiverImage;
         var isSeen = req.body.isSeen;
 
+        if (chatType == 0){
         newMessage = new chatModel({
             "senderId": sender,
             "senderName": name,
@@ -177,14 +193,32 @@ module.exports = function (io, saveUser) {
             "senderImage": senderImage,
             "receiverImage": receiverImage,
         });
+    }
+        else{
+          newMessage = new chatModel({
+                "commentId": req.body.commentId,
+                "senderId": req.body.senderId,
+                "receiverId": req.body.receiverId,
+                "senderName": req.body.senderName,
+                "chatType": chatType,
+                "message": req.body.message,
+            })
+        }
         newMessage.save(function (err, data) {
             if (err) throw err;
-            chatModel.findOne({ senderId: sender, receiverId: recevier }).sort({ updatedAt: -1 }).exec(function (err, data) {
-                // console.log(data);
+
+            if (chatType == 0){ 
+              chatModel.findOne({ senderId: sender, receiverId: recevier }).populate("senderId", {_id:true, name:true}).populate("receiverId", {_id:true, name:true}).sort({ updatedAt: -1 }).exec(function (err, data) {
+                helper.addNewMessage(data);
+                res.json(data);
+              })
+            }
+            else{
+            chatModel.findOne({commentId: req.body.commentId, senderId: sender, receiverId: recevier }).populate('commentId').populate("senderId", {_id:true, name:true}).populate("receiverId", {_id:true, name:true}).sort({ updatedAt: -1 }).exec(function (err, data) {
                 helper.addNewMessage(data);
                 res.json(data);
             })
-
+        }
         })
         /* add notification to notification table*/
         newNotification = new notifiModel({
@@ -227,6 +261,9 @@ module.exports = function (io, saveUser) {
                 { senderId: sender, receiverId: receiver }, 
                 { senderId: receiver, receiverId: sender }] 
             })
+                .populate("receiverId", {'_id': true, 'name': true})
+                .populate("senderId", {'_id': true, 'name': true})
+                .populate("commentId")
                 .lean()
                 .exec(function (err, data) {
                     if (err) throw err;
@@ -630,6 +667,91 @@ module.exports = function (io, saveUser) {
         else
             res.json({ status: false, message: 'Need authorization' });
     }
+    // Broadcast functions start =====
+    router.startPresenter = ( req, res ) => { 
+        if(req.session.user){
+            var broad = new broadModel({
+                "presenterId":req.session.user._id,
+                "password":req.body.password, 
+            });
+            broad.save(function(err,data){
+                if(err) console.log(err);
+            });
+            res.json({status:true,message:'Saved successfully'});
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    }
 
+    router.joinViewer= ( req, res ) => { 
+        if(req.session.user){
+            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });  
+                
+                if(ids.length>0){ 
+                    broadModel.findOneAndUpdate({_id:ids[0]},{ $push: { 'viewers': {viewerId:req.session.user} } },function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                } 
+                else
+                    res.json({status:false,message:'Update failed'});
+            } 
+        }
+    }
+
+    router.stopPresenter = ( req, res ) => { 
+        if(req.session.user){
+            broadModel.find({'presenterId':req.session.user._id}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });  
+                if(ids.length>0)
+                    broadModel.findOneAndUpdate({_id:ids[0]},{endDate:new Date()},function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                else
+                    res.json({status:false,message:'Update failed'});
+            }  
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    }
+
+    router.stopViewer = ( req, res ) => { 
+        if(req.session.user){ 
+            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) { 
+                var ids = preData.map(function(item){
+                    return item._id;
+                });   
+                if(ids.length>0)
+                    broadModel.findOneAndUpdate(
+                        {_id:ids[0],'viewers.viewerId':req.session.user},
+                        { 
+                            "$set": {
+                                "viewers.$.endDate": new Date()
+                            }
+                        },
+                        {  
+                            sort: { 'viewers.$._id': -1 },  // Imp Needed: Need to update his last id
+                        },function(err,data){
+                        if (err) throw err;
+                        res.json({status:true,message:'Date updated successfully'});
+                    }) 
+                else
+                    res.json({status:false,message:'Update failed'});
+            }  
+        }  
+        else
+            res.json({status:false,message:'Need authorization'});
+    } 
+
+    // Broadcast function end ======
     return router;
 }

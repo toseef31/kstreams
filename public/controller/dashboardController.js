@@ -42,18 +42,63 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.replyMenuStatus= true;
     $scope.replyIconId = "";
  
+  
     // Broadcast function start===============
     window.onbeforeunload = function() {
         $rootScope.O2OSoc.close();
         $rootScope.O2MSoc.close();
     } 
 
-    //initial websocket connection is in loginController   
+    let hostIs = location.host.split(':');
+    let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 
+    if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
+    let reqUrl='wss://'+webSocketIp+':8443/one2one';
+    let broadCastUrl='wss://'+webSocketIp+':8444/one2many';
+    console.log('WebSocket: ',reqUrl);
     
+    $rootScope.O2OSoc= $websocket.$new(reqUrl); 
+    $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
+    $rootScope.O2MSoc.$on('$open', function () {
+        console.log('O2M socket open'); 
+    })
+    .$on('$message', function (message) { // it listents for 'incoming event'
+        var parsedMessage = JSON.parse(message);  
+
+        switch (parsedMessage.id) {
+            case 'presenterResponse':
+                One2ManyCall.presenterResponse(parsedMessage);
+                break;
+            case 'viewerResponse':
+                One2ManyCall.viewerResponse(parsedMessage);
+                break;
+            case 'stopCommunication':
+                One2ManyCall.dispose();
+                break;
+            case 'iceCandidate':
+                $rootScope.webRtcO2MPeer.addIceCandidate(parsedMessage.candidate)
+                break;  
+            case 'presenterDataResp': 
+                    if(!$rootScope.user) break;
+                    let presenterData=[];
+                    
+                    parsedMessage.data.forEach(preData => {
+                        if(preData.preId!=$rootScope.user._id) presenterData.push(preData)
+                    }); 
+                  
+                    $rootScope.presenterArr=presenterData;
+            break;
+            default:
+                console.error('Unrecognized message', parsedMessage);
+        }
+    });
     
+    //One2ManyCall.video = document.getElementById('broadCastVideo');  
+    //console.log(One2ManyCall.video);
+
+    // initial websocket connection is in loginController   
     $interval(One2ManyCall.getPresenterData, 6000);
     One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
-    
+ 
     $scope.stopBroadCast=function(){
         One2ManyCall.stop();
         $("#videoBroadCast").addClass('hidden');
@@ -66,7 +111,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.openBrModal=function(){
         $scope.brErrorMsg=0;
+   
         $("#broadcastingModal").modal();
+        $("#broadcastingModal").show();
     }
 
     $scope.openAvModal=function(){ 
@@ -81,10 +128,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.brErrorMsg=1;
             return;
         }
+        $("#broadcastingModal").hide();
         $("#videoBroadCast").removeClass('hidden');
         $rootScope.connWdPreId=0;  
         One2ManyCall.presenter();
-        $("#broadcastingModal").modal('hide');
+        //$("#broadcastingModal").modal('hide');
         $http.post('/startPresenter',{ 
             password:$rootScope.prePassword
         }).then();
@@ -95,6 +143,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.becomeViewer=function(preId,password){
         console.log('In becomeViewer ',preId,' and ',password);
+        $("#avPresenterModal").hide();
         $rootScope.connWdPreId=preId;
         if(password){
             $scope.presenterPassword=password;
@@ -295,6 +344,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     .then(function(response) {
         //         $scope.allGroups = response.data;
         //     });
+        
         /*get All notifications*/
         $http.get("/getNotification/" + $rootScope.user._id)
         .then(function (response) {
@@ -305,6 +355,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.groupSelected = false;
         $scope.chatActive = function (index) {
+            $scope.deActivate();
             $scope.nchatIndex = 0;
             $scope.gchatIndex = 1;
             $scope.groupSelected = false;
@@ -312,6 +363,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.groupChatActive = function () { 
+            $scope.deActivate();
             $scope.nchatIndex = 1;
             $scope.gchatIndex = 0;
             $scope.groupSelected = true;    
@@ -345,6 +397,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
+            $scope.deActivate();
             $scope.isSidePanel = false; $scope.isChatPanel = true;
             $scope.welcomePage = false;
             /*obj is an object send from view it may be a chat or a group info*/
@@ -456,6 +509,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
         /* send message to the user group and chat both handle in this function through sendType*/
         $scope.sendMessage = function (message = 0, chkmsg = 0) {
+            
             if (!$scope.message && chkmsg) $scope.message = chkmsg;
             else if (!$scope.message && !chkmsg) return;
 
@@ -471,16 +525,26 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         updatechat();
                     })
                 else {
-                    var msgObj = {"chatType": 0, "isSeen": 0, "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
-                  
+                    var msgObj;
+                    if (!$scope.isReplying)
+                       msgObj = {"chatType": 0, "isSeen": 0, "isGroup": 0, "messageType": 0, "senderId": $scope.user._id, "senderImage": $scope.user.user_image, "receiverImage": $scope.chatWithImage, "receiverId": $scope.chatWithId, "senderName": $scope.user.name, "message": $scope.message };
+                    else{
+                        msgObj = {"commentId": $scope.commentReplyId, "senderId": $scope.user._id, 
+                        "receiverId": $scope.chatWithId, "senderName": $scope.user.name, 
+                        "message": $scope.message, "chatType": 1 };
+
+                        $scope.deActivate();
+                    }
+
                     for(var i =0; i<$scope.allUsers.length; i++){
                        if ($scope.allUsers[i]._id == $scope.chatWithId && $scope.allUsers[i].onlineStatus == 1){
+                          // console.log($scope.allUsers[i].chatWithRefId +' == '+ msgObj.senderId);
                            if ($scope.allUsers[i].chatWithRefId == msgObj.senderId){
                               msgObj.isSeen = 1; break;
                            }
                        }
                     }
-                   
+                  
                     $scope.message = ''; 
                     scrollbottom();
                     $http.post('/chat', msgObj)
@@ -501,8 +565,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.edit = false;
                         socket.emit('updateGroupChat', { data: res.data, case: 'del' });
                     })
-                else
-                    $http.post('/groupChat', {"chatType": 0, "isGroup": 1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId })
+                else{
+                    var groupmMsgObj;
+                
+                    if (!$scope.isReplying)
+                        groupmMsgObj = {"chatType": 0, "isGroup": 1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId };
+                    else{
+                        groupmMsgObj = {"commentId": $scope.commentReplyId, "chatType": 1, "isGroup": 1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId  };
+
+                        $scope.deActivate();
+                    }
+                 
+                    $http.post('/groupChat', groupmMsgObj)
                     .then(function (res) {
                         var last = res.data.message.length - 1;
                         var data = res.data.message[last];
@@ -510,47 +584,44 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'nodel' });
                         scrollbottom();
                     })   
+                }
             }
 
             var ele = $('#sendMsg').emojioneArea();
             ele[0].emojioneArea.setText('');
         }
 
-        $scope.sendReply = function (replyMessage, chatId) {
-               if(!replyMessage) return;
-     
-               if (!$scope.groupSelected) {
-                $scope.activateReply(chatId);
-                
-                 var replyObj = {"commentId": chatId, "senderId": $scope.user._id, 
-                 "receiverId": $scope.chatWithId, "senderName": $scope.user.name, 
-                 "message": replyMessage, "chatType": 1 };
-                 $scope.reply = ''; 
-                 scrollbottom();
-               
-                 $http.post('/chat', replyObj)
-                  .then(function (res) {
-                      console.log(res);
-                      $scope.chats.push(res.data);
-                      socket.emit('checkmsg', res.data); 
-                  })
-               }
-               else{
+        $scope.isReplying = false;
+        $scope.commentReplyId = '';
+       // $scope.messageToReply = "";
+        $scope.selectedMsg = null;
 
-               }
+        $scope.activateReply = function (chat){
+          
+          if ($scope.commentReplyId == chat._id){
+             $scope.commentReplyId = "";
+             $scope.isReplying = !$scope.isReplying;
+             $scope.selectedMsg = null;
+             $("#applyPic").removeClass('commentReplyPanel'); 
+             $("#sendMsgButton").removeClass('alignSendMsgButton');
+             document.querySelector('.showCommentsReply').style.display = 'none';
+          }
+          else{
+             $scope.commentReplyId = chat._id;
+             $scope.isReplying = true;
+             $scope.selectedMsg = chat;
+             $("#sendMsgButton").addClass('alignSendMsgButton');
+             document.querySelector('.showCommentsReply').style.display = 'block';
+          }
         }
 
-        $scope.isReplying = false;
-        $scope.commentReplyId = "";
-
-        $scope.activateReply = function (chatId){
-         
-          if ($scope.commentReplyId == chatId)
-             $scope.isReplying = !$scope.isReplying;
-          else
-             $scope.isReplying = true;
-     
-          $scope.commentReplyId = chatId;
+        $scope.deActivate = function (){
+            $scope.commentReplyId = "";
+            $scope.isReplying = false;
+            $scope.selectedMsg = null;
+            $("#applyPic").removeClass('commentReplyPanel'); 
+            $("#sendMsgButton").removeClass('alignSendMsgButton');
+            document.querySelector('.showCommentsReply').style.display = 'none';
         }
 
 
@@ -573,6 +644,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.logout = function () {
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
+
+                    socket.emit('logoutUpdate', $scope.loggedUserId);
                     $scope.user = undefined;
                     $location.path('/');
                 }
@@ -669,6 +742,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             // if ( $scope.reveiveGroupCall == true && $scope.liveStream === false) 
             // socket.emit('removeconnectUser',{check:check,members:$scope.receiveGroupMem});
         }
+
+        socket.on('logoutStatusUpdate', function (loggedOutUserId){
+            // on user logout, update user status for other users
+                    for(var i =0; i<$scope.allUsers.length; i++){
+                        if ($scope.allUsers[i]._id == loggedOutUserId){
+                            $scope.allUsers[i].chatWithRefId = "";
+                            $scope.allUsers[i].onlineStatus = 0;
+                            break;
+                        }
+                    }
+        })
+
         socket.on('deductConnectedUser', function (data) {
             var i = 0;
             for (i; i < data.members.length; i++)
@@ -857,14 +942,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 
                 if (data.chatWithId == $scope.user._id && data.isChatSeen == 1){
                    for(var i =0; i < $scope.chats.length; i++){
-                    console.log(data._id +' == '+ $scope.chats[i].receiverId._id);
+                   // console.log(data._id +' == '+ $scope.chats[i].receiverId._id);
                        if (data._id == $scope.chats[i].receiverId._id && $scope.chats[i].isSeen == 0){
                         
                         $scope.chats[i].isSeen = 1;
                        }   
                    }
                 }
-                console.log($scope.chats); 
+             //   console.log($scope.chats); 
         })
 
         // socket.on('socketReply', function (msg) {
@@ -877,18 +962,23 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         socket.on('remsg', function (msg) {
           
             $scope.$apply(function () { 
-                if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
-                    if ('serviceWorker' in navigator)
+                if ($scope.user._id == msg.receiverId._id) {
+                    if ($scope.chatWithId == msg.senderId._id)
+                      if ('serviceWorker' in navigator)
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                     
-                    let i=0;
-                    for(i; i<$scope.allUsers.length; i++){
-                         // check which user received the new msg ...
-                        if ($scope.allUsers[i]._id == msg.senderId._id){
-                            $scope.allUsers[i].usCount++; 
-                            break;
+                        let senderIdIndex = 0;
+                        for (var i =0; i<$scope.allUsers.length; i++){
+                            if ($scope.allUsers[i]._id == msg.senderId._id){
+                                senderIdIndex = i; 
+                            }
+                            
+                            if ($scope.allUsers[i]._id == msg.receiverId._id){
+                               if ($scope.allUsers[i].chatWithRefId != msg.senderId._id && $scope.allUsers[i].onlineStatus == 1){
+                                $scope.allUsers[senderIdIndex].usCount++; break;
+                               }
+                            }
                         }
-                    }
                 }
 
                 if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
@@ -940,6 +1030,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $window.onbeforeunload = $scope.onExit;
 
     }, function errorCallback(response) {
+      console.log('session destroyed');
+      console.log(response);
         $scope.sessionDestroy = true;
         $location.path('/');
     });

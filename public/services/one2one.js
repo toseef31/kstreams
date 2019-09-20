@@ -63,7 +63,6 @@ factory('One2OneCall', ['$rootScope',
         };
     
         function incomingCall(message) {  
-            console.log('In incomingCall one2one 1');
             if (callState != NO_CALL) {
                 var response = {
                     id : 'incomingCallResponse',
@@ -78,10 +77,9 @@ factory('One2OneCall', ['$rootScope',
             $rootScope.showVideo=true;
             $rootScope.openVoice=true; 
             setCallState(PROCESSING_CALL); 
-            console.log('In incomingCall one2one 2');
-            if ('serviceWorker' in navigator) {
-                send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
-            } 
+            // if ('serviceWorker' in navigator) {
+            //     send(message.userData.callerName +' is calling').catch(err => console.log('incomingCall ',err));
+            // } 
             $rootScope.toggleBtn(true); 
             $rootScope.callerId           = message.userData.callerId;
             $rootScope.friendId           = message.userData.friendId;

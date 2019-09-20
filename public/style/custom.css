@@ -123,8 +123,9 @@
     border-bottom:1px solid #ccc;
 }
 #videoOutput{
+    padding-top: 20px;
     width: 100%;
-    max-height:340px;
+    /* max-height:340px; */
 }
 
 #videoOutputNew{
@@ -190,8 +191,8 @@
 
 .screenButtons{
     position: absolute;
-    top: -16px;
-    left: 33%;
+    top: 0;
+    left: 23%;
     background-color: #fff;
     padding: 5px;
     border-radius: 5px;
@@ -217,18 +218,43 @@
 .broadCastContainer{
     position: absolute;
     z-index: 10;
-    bottom: 20%;
-    left: 54%;
-    width: 45%;
+    bottom: 30%;
+    left: 60%;
+    width: 30%;
+    /* width: 50%; */
 }
+
+.brStopButtonAlign{
+    margin-top: 3px; 
+    margin-bottom: 3px;
+}
+
+.brVideoSize{
+   width: 98%;
+}
+
+.bcModel{
+    text-align: center;
+    background-color: #231e1e;
+  }
+
+  @media screen and (max-width: 770px) {
+  .broadCastContainer{
+    width: 53% !important;
+    left: 30% !important;
+  }
+}
+
+@media screen and (max-width: 420px) {
+    .broadCastContainer{
+      width: 80% !important;
+      left: 10% !important;
+    }
+  }
+  
+
 #moodtabs .tab:hover{
     cursor: pointer;
-}
-@media screen and (max-width: 800px) {
-  .broadCastContainer{
-    width: 69% !important;
-    left: 29% !important;
-  }
 }
 
 @media screen and (max-width: 786px) {
@@ -236,11 +262,11 @@
         margin-left: 13px;
     }
 
-    #videoBroadCast{
+    /* #videoBroadCast{
         top: 33%;
         left: 23%;
         width: 240px;
-    }
+    } */
 
     .messaging .container-fluid{
         padding-right: 9px;

@@ -3,6 +3,7 @@ factory('One2ManyCall', ['$rootScope',
     function($rootScope) {
         
     var video = document.getElementById('broadCastVideo');    
+    console.log(video);
     function presenterResponse(message) {
         if (message.response != 'accepted') {
             var errorMsg = message.message ? message.message : 'Unknow error';
@@ -26,16 +27,17 @@ factory('One2ManyCall', ['$rootScope',
 
     function presenter() {
         if (!$rootScope.webRtcO2MPeer) {
+          
             showSpinner(video);
-
+             
             var options = {
                 localVideo: video,
                 onicecandidate : onIceCandidate
             }
-
+          
             $rootScope.webRtcO2MPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                 if(error) return onError(error);
-                
+      
                 this.generateOffer(onOfferPresenter);
             });
         }
@@ -43,7 +45,6 @@ factory('One2ManyCall', ['$rootScope',
 
     function onOfferPresenter(error, offerSdp) {
         if (error) return onError(error);
-
         var message = {
             id : 'presenter',
             sdpOffer : offerSdp,
@@ -116,10 +117,13 @@ factory('One2ManyCall', ['$rootScope',
     }
 
     function sendMessage(message) {
+        //console.log(message);
         $rootScope.O2MSoc.$emit(JSON.stringify(message)); 
     }
 
     function showSpinner() {
+      //  if (!arguments[0]) return; // included temporary to bypass error
+
         for (var i = 0; i < arguments.length; i++) {
             arguments[i].poster = './images/transparent-1px.png';
             arguments[i].style.background = 'center transparent url("./images/loading.gif") no-repeat';
@@ -127,9 +131,11 @@ factory('One2ManyCall', ['$rootScope',
     }
     
     function hideSpinner() {
+        //if (!arguments[0]) return; // included temporary to bypass error
+
         for (var i = 0; i < arguments.length; i++) {
             arguments[i].src = '';
-            arguments[i].poster = './images/loading.gif';
+            arguments[i].poster = './images/webrtc.png';
             arguments[i].style.background = '';
         }
     }

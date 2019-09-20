@@ -80,10 +80,34 @@
   padding: 4px;
   font-weight: 600;
   position: absolute;
-  right: 20%;
+  /* right: 20%; */
   border-radius: 5px;
   list-style: none;
   z-index: 9999;
+}
+
+.commentReplyPanel{
+  margin-top: 5px !important;
+}
+
+.showCommentsReply{
+  margin-top: 3px;
+  padding-left: 3px;
+  margin-bottom: -3px;
+  height: 40px;
+  display: none;
+  background-color: #c4ea9f;
+  border-radius: 8px;
+  border: 1px solid rgb(199, 194, 194);
+  border-left: 5px solid #6dbf04;
+}
+
+.alignSendMsgButton{
+  margin-top: 40px;
+}
+
+.exitReplyIcon{
+  float: right
 }
 
 .audioTab{
@@ -115,19 +139,42 @@
   z-index: 9999;
 }
 
+/* ********************************************************************************** */
 .videoTabNew{
   position: absolute;
   right: 2px;
-  top:20;
+  top:12px;
   background: #fff;
-  /* width: 30%; */
-  height: 65%;
+  width: 26%;
+  /* height: 65%; */
   padding: 15px;
   display: none;
   border: 2px solid #666;
   box-shadow: 0px 1px 5px rgba(0,0,0,0.5);
   z-index: 9999;
 }
+
+@media (min-width: 650px) and (max-width: 950px) {
+  .videoTabNew{
+  width: 35% !important;
+  right: 2px !important;
+  }
+}
+
+@media (min-width: 550px) and (max-width: 650px) {
+  .videoTabNew{
+  width: 45% !important;
+  right: 2px !important;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 550px) {
+  .videoTabNew{
+  width: 65% !important;
+  right: 2px !important;
+  }
+}
+/* ********************************************************************************** */
 
 .fullScreen{
   width: 95% !important;
@@ -514,8 +561,24 @@ img{ max-width:90%;}
 
 .loadingImage{
   position: absolute;
-  left: 45%;
-  top: 20%;
+  left: 40%;
+  top: 28%;
+  height: 30%;
+  width: 20%;
+}
+
+.contatctLoadingImage{
+    position: absolute;
+    width: 45%;
+    left: 50px;
+    top: 28%;
+}
+
+.loadingText{
+  position: absolute;
+  top: 30%;
+  left: 43%;
+  color:black;
 }
 
 .sent_msg p {
@@ -648,8 +711,9 @@ img{ max-width:90%;}
  #chat-content { height: 180px;  overflow-y: scroll; }
     #local-video{
       width: 100%;
-      height: 170px;
-      margin-left:5px;
+      margin-top: 3px;
+      /* height: 170px; */
+      /* margin-left: 5px; */
     }
     #local-videoNew{
       width: 100%;
@@ -990,9 +1054,9 @@ img{ max-width:90%;}
   }
 }
 @media (max-width: 600px) and (min-width: 426px) {
-  #local-video{
+  /* #local-video{
     height: 45% !important;
-  }
+  } */
   .videoTab{
 height: 70% !important;
   }
@@ -1046,11 +1110,11 @@ height: 70% !important;
   .sent_msg {
     width: 60%;
   }
-  #local-video{
+  /* #local-video{
     height: 37%;
     width: 100% !important;
     border: 0;
-  }
+  } */
   .emojionearea.emojionearea-inline {
     /* height: 45px !important; */
     /* border: none !important; */
@@ -1064,11 +1128,11 @@ height: 70% !important;
   .inbox_people {
     height: 95%;
   }
-  .screenButtons{
+  /* .screenButtons{
     position: absolute;
     bottom: 13px;
     left: 20%;;
-  }
+  } */
 }
 @media screen and (max-width: 485px) {
     .inbox_people{
@@ -1199,15 +1263,14 @@ height: 70% !important;
   margin-left: 8px;
 }
 
-.loadingText{
-  position: absolute;
-  top: 30%;
-  left: 43%;
-  color:black;
-}
-
 .replyPanel{
   background-color: #c7f1c8;
+}
+
+.inputBoxImage{
+  padding-top: 2px;
+  border-radius: 6px;
+  height: 92%;
 }
 
 /* 

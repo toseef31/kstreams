@@ -44,7 +44,7 @@
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
             </button>
           </div>
-          <div class="col-md-6 col-xs-6 text-right broadCastAv">
+          <div class="col-md-6 col-sm-7 col-xs-6 text-right broadCastAv">
             <a class="forceWhiteColor" href='javascript:void(0)' ng-click="openAvModal()">
               Available ({{presenterArr.length}})
             </a>
@@ -140,10 +140,10 @@
                 <p class="text-center">No friends found</p>
               </div>
             </div>
-
+         
             <div ng-if="!usersLoaded">
-              <img class="loadingImage" src="/images/loading.gif" style="height: 50px; width: 50px">
-              <strong class="loadingText">Loading...</strong>
+              <img class="contatctLoadingImage" src="/images/loading.gif">
+              <!-- <strong class="loadingText">Loading...</strong> -->
             </div>
           </div>
           <!--  ----------------- ---------------------------------------------------------- -->
@@ -243,18 +243,10 @@
                           <div class="message-media">
                             <div class="clear"></div>
                           </div>
-                          <div class="message" ng-if="isReplying && commentReplyId == chat._id">
-                            <div class="message-media">
-                              <div class="clear"></div>
-                            </div>
-                            <p>@ {{chat.senderId.name}}</p> 
-                            <input ng-model="reply" ng-keydown="$event.keyCode === 13 && sendReply(reply, chat._id)" type="text"
-                              placeholder="enter reply">
-                          </div>
                         </div>
 
                         <!-- --------------- REPLY MSG ---------------------------------------------- -->
-                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 1">
+                        <div class="message" ng-if="chat.chatType == 1">
                           <p class="message-text" dir="auto">
                             <div class="panel panel-default replyPanel">
                               <div class="panel-body">{{chat.commentId.message}}</div>
@@ -264,14 +256,6 @@
                           <div class="message-media">
                             <div class="clear"></div>
                           </div>
-                          <div class="message" ng-if="isReplying && commentReplyId == chat._id">
-                              <div class="message-media">
-                                <div class="clear"></div>
-                              </div>
-                              <p>@ {{chat.senderId.name}}</p> 
-                              <input ng-model="reply" ng-keydown="$event.keyCode === 13 && sendReply(reply, chat._id)" type="text"
-                                placeholder="enter reply">
-                            </div>
                         </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
@@ -286,12 +270,11 @@
                           {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
                         </div>
                       </div>
-                   
-                        <ul class="replyMenu" ng-if="replyIconId == chat._id && !replyMenuStatus" id="replyIcon-{{chat._id}}" >
-                          <li>
-                            <span class='hoverIt fa fa-reply' ng-click="activateReply(chat._id)"></span>
-                          </li>
-                        </ul>
+
+                        <span class="replyMenu" ng-if="replyIconId == chat._id" id="replyIcon-{{chat._id}}" >
+                            <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                        </span>
+
                     </div>
                   </div>
 
@@ -320,8 +303,9 @@
 
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
+
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
-                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
+                        <div class="message" ng-if="chat.chatType == 0">
                           <p class="message-text" dir="auto">
                             {{chat.message}}
                             <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
@@ -341,6 +325,10 @@
                                 <div class="panel-body">{{chat.commentId.message}}</div>
                               </div>
                               {{chat.message}}
+                              <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
+                              width="20px" height="20px">
+                             <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
+                              width="20px" height="20px">
                             </p>
                             <div class="message-media">
                               <div class="clear"></div>
@@ -372,6 +360,9 @@
 
                       <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
                         <li>
+                          <span id="replyIcon-{{chat._id}}" >
+                            <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                          </span>
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
                             uib-tooltip="Edit" ng-click="editMsg()"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
@@ -420,22 +411,32 @@
               <div ng-repeat="chat in groupchats track by $index">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
-                <div ng-if="chat.senderId._id != user._id">
+                <div ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)" ng-mouseout="showReplyIcon(chat._id,0)">
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
-                      <!-- <div class="message-user-image pull-left">
-                        <img src="../images/profile-photos/noProfile.png" alt="User image">
-                      </div> -->
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
 
-                        <div class="message" ng-if="chat.messageType == 0">
+                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
                           <strong>{{chat.senderId.name}}</strong>
                           <p class="message-text" dir="auto"> {{chat.message}} </p>
                           <div class="message-media">
                             <div class="clear"></div>
                           </div>
                         </div>
+
+                         <!-- --------------- REPLY GROUP MSG ------------------------------------------ -->
+                         <div class="message" ng-if="chat.chatType == 1">
+                            <p class="message-text" dir="auto">
+                              <div class="panel panel-default replyPanel">
+                                <div class="panel-body">{{chat.commentId.message}}</div>
+                              </div>
+                              {{chat.message}}
+                            </p>
+                            <div class="message-media">
+                              <div class="clear"></div>
+                            </div>
+                          </div>
 
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
                           <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
@@ -449,6 +450,11 @@
                           {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
                         </div>
                       </div>
+                     
+                      <span class="replyMenu" ng-if="replyIconId == chat._id" id="replyIcon-{{chat._id}}" >
+                          <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                      </span>
+
                     </div>
                     <div class="clear"></div>
                   </div>
@@ -481,7 +487,7 @@
                         <div class="clear"></div>
 
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
-                        <div class="message" ng-if="chat.messageType == 0">
+                        <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
                           <p class="message-text" dir="auto">
                             {{chat.message}}
                           </p>
@@ -489,6 +495,19 @@
                             <div class="clear"></div>
                           </div>
                         </div>
+
+                           <!-- --------------- REPLY GROUP MSG ------------------------------------------ -->
+                           <div class="message" ng-if="chat.chatType == 1">
+                              <p class="message-text" dir="auto">
+                                <div class="panel panel-default replyPanel">
+                                  <div class="panel-body">{{chat.commentId.message}}</div>
+                                </div>
+                                {{chat.message}}
+                              </p>
+                              <div class="message-media">
+                                <div class="clear"></div>
+                              </div>
+                            </div>
 
                         <!-- --------------- IMAGE MSG ---------------------------------------------- -->
                         <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
@@ -511,6 +530,9 @@
 
                       <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
                         <li>
+                            <span id="replyIcon-{{chat._id}}" >
+                                <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                              </span>
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
                             uib-tooltip="Edit" ng-click="editMsg()"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
@@ -556,7 +578,20 @@
 
         <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
 
-        <div class="input-group type_msg">
+        <div id="applyPic" class="input-group type_msg">
+     
+            <div id="commentsReply" class="showCommentsReply panel panel-default">
+              <span ng-if="selectedMsg.messageType == 0">
+                  {{selectedMsg.message}}
+              </span>
+         
+              <span ng-if="selectedMsg.messageType == 1">
+                  <img class="inputBoxImage" src="/images/chatImages/{{selectedMsg.message}}" />
+              </span>
+            
+                <i class="fa fa-close exitReplyIcon" ng-click="deActivate()"></i>
+            </div>
+
           <div style="position:relative" ng-click="unreadMsg({userId:selectedUserId})">
             <input type="text" id="sendMsg" class="form-control border0"
               ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
@@ -571,11 +606,12 @@
                 </span>
               </div>
             </span>
-          </div>
+        </div>
 
           <span class="input-group-btn" ng-click="sendMessage(0,message)">
-            <button class="btn-main btn btn-file MS-File send-button marginSendButton" type="button">
+            <button id="sendMsgButton" class="btn-main btn btn-file MS-File send-button marginSendButton" type="button">
               <i class="fa fa-arrow-right"></i></button>
+              
           </span>
         </div>
       </ul>
@@ -598,7 +634,7 @@
     </div>
 
 
-    <div class="videoTab 2wayChat">
+    <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
         <video id="videoOutput" autoplay poster="images/loading.gif"></video>
       </div>
@@ -726,10 +762,10 @@
     </form>
   </div>
   <!-- Present/View Broadcasting video -->
-  <div id="videoBroadCast" class='hidden broadCastContainer' style="text-align: center">
-    <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/loading.gif"></video>
+  <div id="videoBroadCast" class='hidden broadCastContainer bcModel'>
+    <video class="videoScreenSize brVideoSize" id="broadCastVideo" autoplay poster="images/loading.gif"></video>
 
-    <button style="margin-top: 7px" class="btn btn-danger btn-sm" title="call drop" ng-click="stopBroadCast()">
+    <button class="btn btn-danger btn-sm brStopButtonAlign" title="call drop" ng-click="stopBroadCast()">
       <span class='fa fa-close'></span> Stop
     </button>
   </div>

@@ -13,7 +13,7 @@ const projectModel = require('../model/projectModel');
 const mongoose = require('mongoose');
 const helpers = require('../helperfunctions/helpers');
 const isImage = require('is-image');
-const broadModel  = require('../model/broadcast');
+const broadModel = require('../model/broadcast');
 // const readChunk = require('read-chunk');
 // const fileType = require('file-type');
 var path = require('path');
@@ -24,111 +24,127 @@ module.exports = function (io, saveUser) {
     /*custom helper functions */
     var helper = new helpers(io);
     /*main router object which contain all function*/
-    var router = {}; 
+    var router = {};
 
-    router.getProjectData = function (req, res) { 
-        projectModel.findOne({ 'status':1}).lean().exec(function (err, projData) { 
+    router.getProjectData = function (req, res) {
+        projectModel.findOne({ 'status': 1 }).lean().exec(function (err, projData) {
             res.send(projData);
         })
     }
 
     router.groupChat = function (req, res) {
+        var chatType = req.body.chatType;
 
-        newMessage = new chatModel({
-            "groupId": req.body.id,
-            "senderId": req.body.senderId,
-            "message": req.body.message,
-            "isGroup": 1
-        });
+        if (chatType == 0) {
+            newMessage = new chatModel({
+                "groupId": req.body.id,
+                "senderId": req.body.senderId,
+                "message": req.body.message,
+                "isGroup": 1
+            });
+        }
+        else {
+            newMessage = new chatModel({
+                "commentId": req.body.commentId,
+                "chatType": chatType,
+                "groupId": req.body.id,
+                "senderId": req.body.senderId,
+                "message": req.body.message,
+                "isGroup": 1
+            })
+        }
 
         newMessage.save(function (err, data) {
             if (err) throw err;
-            chatModel.findOne({ groupId: req.body.id, senderId: req.body.senderId }).populate('senderId').sort({ updatedAt: -1 }).exec(function (err, data) {
-                helper.addNewMessage(data);
-                if (err) throw err;
-                res.json(data);
-            })
-        })
 
-        // groupsModel.update({_id:id},{$push:{message:{name:name,sender:senderId,message:message,msgType:msgType}},lastMsg:message},function(err,data){
-        //     if(err) throw err;
-        //     groupsModel.findOne({_id:id}).limit(1).exec(function(err,data){
-        //         if(err) throw err;
-        //         res.json(data);
-        //         helper.RTGU();
-        //     })
-        // })
+            if (chatType == 0) {
+                chatModel.findOne({ groupId: req.body.id, senderId: req.body.senderId }).populate('senderId').sort({ updatedAt: -1 }).exec(function (err, data) {
+                    helper.addNewMessage(data);
+                    if (err) throw err;
+                    res.json(data);
+                })
+            }
+            else {
+                chatModel.findOne({ commentId: req.body.commentId, groupId: req.body.id, senderId: req.body.senderId }).populate('commentId').populate("senderId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
+                    helper.addNewMessage(data);
+                    res.json(data);
+                })
+            }
+        })
     }
 
     router.getUsers = function (req, res) {
-        
-        function chatModelFunc(data){  
-            for (let i=0; i<data.length; i++) {
+
+        function chatModelFunc(data) {
+            for (let i = 0; i < data.length; i++) {
                 chatModel.find(
-                    { 'senderId': data[i]._id,
-                    'receiverId':req.params.userId,
-                    'isSeen': 0}
-                    ).count().exec(function (err, count) { 
-                        data[i]['usCount']=count;     
-                        if (i == data.length-1) res.json({'usersList':data}); 
-                    }) 
-                }
-                if (data.length == 0) res.json({'usersList':data})
+                    {
+                        'senderId': data[i]._id,
+                        'receiverId': req.params.userId,
+                        'isSeen': 0
+                    }
+                ).count().exec(function (err, count) {
+                    data[i]['usCount'] = count;
+                    if (i == data.length - 1) res.json({ 'usersList': data });
+                })
+            }
+            if (data.length == 0) res.json({ 'usersList': data })
         }
 
-        if(req.params.allList==0){
+        if (req.params.allList == 0) {
             var friendIds = [];
-            friendModel.find({'userId': req.params.userId, 'status': 1} ,{friendId: true})
-            .populate('friendId').lean().exec(function (err, UserIdData){ 
-                // if (!UserIdData.length){
+            friendModel.find({ 'userId': req.params.userId, 'status': 1 }, { friendId: true })
+                .populate('friendId').lean().exec(function (err, UserIdData) {
+                    // if (!UserIdData.length){
                     // now check the userId in friendId column and populate user data
-                    friendModel.find({'friendId': req.params.userId, 'status': 1} ,{userId: true})
-                    .populate('userId').lean().exec(function (err, friendsIdData){ 
-                        friendsIdData.forEach(val => {
-                            friendIds.push(val.userId);
-                        }); 
-                        UserIdData.forEach(val => {
-                            friendIds.push(val.friendId);
-                        }); 
+                    friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
+                        .populate('userId').lean().exec(function (err, friendsIdData) {
+                            friendsIdData.forEach(val => {
+                                friendIds.push(val.userId);
+                            });
+                            UserIdData.forEach(val => {
+                                friendIds.push(val.friendId);
+                            });
 
-                        //-----------------------------------------------
-                        userModel.findOne({ _id: req.params.userId , isAdmin: { $ne: 1 }, status: 1 },{}).lean().exec(function (err, data){
-                            friendIds.push(data);
-                            //console.log(data);
-                            chatModelFunc(friendIds);
+                            //-----------------------------------------------
+                            userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).lean().exec(function (err, data) {
+                                friendIds.push(data);
+                                //console.log(data);
+                                chatModelFunc(friendIds);
+                            })
+
                         })
-                        
-                    })
-                // }
-            })
+                    // }
+                })
         }
-        else 
-            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1,projectId:req.params.projectId},
-            {}, { sort: '-updatedAt' }) 
-            .lean()
-            .exec(function (err, data) {   
-                chatModelFunc(data);
-            });
+        else
+            userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1, projectId: req.params.projectId },
+                {}, { sort: '-updatedAt' })
+                .lean()
+                .exec(function (err, data) {
+                    chatModelFunc(data);
+                });
     }
 
 
     router.getCreatedGroups = function (req, res) {
         // get all groups 
-        groupsModel.find({'status': 1,'projectId':req.params.projectId})
-        .populate('members', { 'name': true }).exec(function (err, groups) {
-            var tempGroups = [];
-            if (err) { return console.log(err); }
 
-            for (var i = 0; i < groups.length; i++) {
-                for (var j = 0; j < groups[i].members.length; j++) {
-                    if (req.params.userId == groups[i].members[j]._id) {
-                        tempGroups.push(groups[i]);
+        groupsModel.find({ 'status': 1, 'projectId': req.params.projectId })
+            .populate('members', { 'name': true }).exec(function (err, groups) {
+                var tempGroups = [];
+                if (err) { return console.log(err); }
+
+                for (var i = 0; i < groups.length; i++) {
+                    for (var j = 0; j < groups[i].members.length; j++) {
+                        if (req.params.userId == groups[i].members[j]._id) {
+                            tempGroups.push(groups[i]);
+                        }
                     }
                 }
-            }
-            
-            res.send(tempGroups); // send groups list
-        })
+
+                res.send(tempGroups); // send groups list
+            })
     }
 
     router.addGroup = function (req, res) {
@@ -148,30 +164,14 @@ module.exports = function (io, saveUser) {
     }
 
     router.getGroups = function (req, res) {
+
         groupsModel.find({ members: { $elemMatch: { id: req.params.userId } }, 'status': 1 })
             .lean().then(function (data) {
 
                 res.json(data);
             });
+
     }
-
-    // router.reply = function (req, res) {
-    //         newReply = new replyModel({
-    //             "commentId": req.body.commentId,
-    //             "senderId": req.body.senderId,
-    //             "receiverId": req.body.receiverId,
-    //             "senderName": req.body.senderName,
-    //             "message": req.body.message,
-    //         })
-
-    //         newReply.save(function (err, data){
-    //             if (err) throw err;
-    //             replyModel.findOne({commentId: req.body.commentId, senderId: req.body.senderId, receiverId: req.body.receiverId }).populate("commentId").sort({ updatedAt: -1 }).exec(function (err, data) {
-    //                 helper.addNewMessage(data);
-    //                 res.json(data);
-    //             })
-    //         })
-    // }
 
     router.chat = function (req, res) {
         var chatType = req.body.chatType;
@@ -183,19 +183,19 @@ module.exports = function (io, saveUser) {
         var receiverImage = req.body.receiverImage;
         var isSeen = req.body.isSeen;
 
-        if (chatType == 0){
-        newMessage = new chatModel({
-            "senderId": sender,
-            "senderName": name,
-            "receiverId": recevier,
-            "message": message,
-            "isSeen": isSeen,
-            "senderImage": senderImage,
-            "receiverImage": receiverImage,
-        });
-    }
-        else{
-          newMessage = new chatModel({
+        if (chatType == 0) {
+            newMessage = new chatModel({
+                "senderId": sender,
+                "senderName": name,
+                "receiverId": recevier,
+                "message": message,
+                "isSeen": isSeen,
+                "senderImage": senderImage,
+                "receiverImage": receiverImage,
+            });
+        }
+        else {
+            newMessage = new chatModel({
                 "commentId": req.body.commentId,
                 "senderId": req.body.senderId,
                 "receiverId": req.body.receiverId,
@@ -207,18 +207,18 @@ module.exports = function (io, saveUser) {
         newMessage.save(function (err, data) {
             if (err) throw err;
 
-            if (chatType == 0){ 
-              chatModel.findOne({ senderId: sender, receiverId: recevier }).populate("senderId", {_id:true, name:true}).populate("receiverId", {_id:true, name:true}).sort({ updatedAt: -1 }).exec(function (err, data) {
-                helper.addNewMessage(data);
-                res.json(data);
-              })
+            if (chatType == 0) {
+                chatModel.findOne({ senderId: sender, receiverId: recevier }).populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
+                    helper.addNewMessage(data);
+                    res.json(data);
+                })
             }
-            else{
-            chatModel.findOne({commentId: req.body.commentId, senderId: sender, receiverId: recevier }).populate('commentId').populate("senderId", {_id:true, name:true}).populate("receiverId", {_id:true, name:true}).sort({ updatedAt: -1 }).exec(function (err, data) {
-                helper.addNewMessage(data);
-                res.json(data);
-            })
-        }
+            else {
+                chatModel.findOne({ commentId: req.body.commentId, senderId: sender, receiverId: recevier }).populate('commentId').populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
+                    helper.addNewMessage(data);
+                    res.json(data);
+                })
+            }
         })
         /* add notification to notification table*/
         newNotification = new notifiModel({
@@ -241,53 +241,50 @@ module.exports = function (io, saveUser) {
         })
     }
 
-    router.chatWithId = function(req, res){
-         var sender = req.params._id;
+    router.chatWithId = function (req, res) {
+        var sender = req.params._id;
         // var receiver = req.params.receiverId;
         // chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 },{$set: {'isSeen': 1}}).exec();
         // res.send('true');
 
-        userModel.update({'_id': sender}, {$set: {'chatWithRefId': ''}}).exec();
+        userModel.update({ '_id': sender }, { $set: { 'chatWithRefId': '' } }).exec();
     }
 
     router.getChat = function (req, res) {
         var sender = req.params.senderId;
         var receiver = req.params.receiverId;
 
-          chatModel.updateMany({ senderId: receiver, receiverId: sender,'isSeen': 0 }
-                              ,{$set: {'isSeen': 1}}).exec(function (err, data){
+        chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 }
+            , { $set: { 'isSeen': 1 } }).exec(function (err, data) {
 
-            chatModel.find({ $or: [
-                { senderId: sender, receiverId: receiver }, 
-                { senderId: receiver, receiverId: sender }] 
-            })
-                .populate("receiverId", {'_id': true, 'name': true})
-                .populate("senderId", {'_id': true, 'name': true})
-                .populate("commentId")
-                .lean()
-                .exec(function (err, data) {
-                    if (err) throw err;
+                chatModel.find({
+                    $or: [
+                        { senderId: sender, receiverId: receiver },
+                        { senderId: receiver, receiverId: sender }]
+                })
+                    .populate("receiverId", { '_id': true, 'name': true })
+                    .populate("senderId", { '_id': true, 'name': true })
+                    .populate("commentId")
+                    .lean()
+                    .exec(function (err, data) {
+                        if (err) throw err;
 
-                    userModel.update({'_id': sender}, {$set: {'chatWithRefId': receiver}}).exec();
+                        userModel.update({ '_id': sender }, { $set: { 'chatWithRefId': receiver } }).exec();
 
-                    res.json(data);
-                });
-          });
+                        res.json(data);
+                    });
+            });
     }
 
     router.getGroup = function (req, res) {
         var id = req.params.groupId;
-        chatModel.find({ groupId: id }).populate('senderId').lean().then(function (data) {
+        // chatModel.find({ groupId: id }).populate('senderId').lean().then(function (data) {
+        //     res.json(data);
+        // })
+
+        chatModel.find({ groupId: id  }).populate('commentId').populate("senderId", { _id: true, name: true }).exec(function (err, data) {
             res.json(data);
         })
-
-        //    groupsModel.update({_id:id,members:{$elemMatch:{id:memId}}},{$set:{'members.$.isSeen':true}},function(err,data){
-        //     if(err) throw err;
-        //     helper.getData(groupsModel,{_id:id},function(data){
-        //         helper.RTGU();
-        //         res.json(data);
-        //     })
-        //    })
     }
 
     router.getLastGroupMsg = function (req, res) {
@@ -301,8 +298,8 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         req.session.destroy();
-       // console.log('d'); //console.log(projectData[0].domainUrl);
-      //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // console.log('d'); //console.log(projectData[0].domainUrl);
+        //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         // res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
@@ -315,25 +312,25 @@ module.exports = function (io, saveUser) {
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
-               // console.log('c');
-            //     res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-            //   // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
+                // console.log('c');
+                //     res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+                //   // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
-            //     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-            //     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-            //     res.header('Access-Control-Allow-Credentials', 'true');
+                //     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+                //     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+                //     res.header('Access-Control-Allow-Credentials', 'true');
                 res.json(req.session.user);
             })
     }
     router.get = (req, res) => {
-        //console.log('b');
-      //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // console.log('get');
+        //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         // res.header('Access-Control-Allow-Credentials', 'true');
-        // console.log(sbs.authUser);
+
         if (req.session.user && typeof req.session.user._id !== 'undefiend') {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
@@ -347,8 +344,8 @@ module.exports = function (io, saveUser) {
         }
     }
     router.checkSession = function (req, res) {
-      //  console.log('a');
-       // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        //console.log('check session');
+        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
@@ -384,13 +381,13 @@ module.exports = function (io, saveUser) {
         var password = req.body.password;
 
         helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
-         
-            if (user._id) { 
-               // console.log('if');
+
+            if (user._id) {
+                // console.log('if');
                 /*change status from offline to online*/
                 helper.changeStatus(user._id, {}, function (data) {
                     /*set session */
-                  
+
                     req.session.user = user;
                     /*this function use to move user info to another view*/
                     saveUser(user);
@@ -422,14 +419,10 @@ module.exports = function (io, saveUser) {
     router.logout = function (req, res) {
         if (req.session.user) {
             req.session.destroy(function (err) {
-                userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0 }).exec(function (err, result) {
+                userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
                     res.status(404).send();
                 })
-
-                // res.status(404).send();
             })
-
-            userModel.update({'_id': req.params.userId}, {$set: {'chatWithRefId': ''}}).exec();
             res.json({ msg: "session destroy" })
         }
     }
@@ -668,89 +661,89 @@ module.exports = function (io, saveUser) {
             res.json({ status: false, message: 'Need authorization' });
     }
     // Broadcast functions start =====
-    router.startPresenter = ( req, res ) => { 
-        if(req.session.user){
+    router.startPresenter = (req, res) => {
+        if (req.session.user) {
             var broad = new broadModel({
-                "presenterId":req.session.user._id,
-                "password":req.body.password, 
+                "presenterId": req.session.user._id,
+                "password": req.body.password,
             });
-            broad.save(function(err,data){
-                if(err) console.log(err);
+            broad.save(function (err, data) {
+                if (err) console.log(err);
             });
-            res.json({status:true,message:'Saved successfully'});
-        }  
+            res.json({ status: true, message: 'Saved successfully' });
+        }
         else
-            res.json({status:false,message:'Need authorization'});
+            res.json({ status: false, message: 'Need authorization' });
     }
 
-    router.joinViewer= ( req, res ) => { 
-        if(req.session.user){
-            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
-            function updateAllFound(err, preData) { 
-                var ids = preData.map(function(item){
+    router.joinViewer = (req, res) => {
+        if (req.session.user) {
+            broadModel.find({ 'presenterId': req.body.preId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) {
+                var ids = preData.map(function (item) {
                     return item._id;
-                });  
-                
-                if(ids.length>0){ 
-                    broadModel.findOneAndUpdate({_id:ids[0]},{ $push: { 'viewers': {viewerId:req.session.user} } },function(err,data){
+                });
+
+                if (ids.length > 0) {
+                    broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
                         if (err) throw err;
-                        res.json({status:true,message:'Date updated successfully'});
-                    }) 
-                } 
+                        res.json({ status: true, message: 'Date updated successfully' });
+                    })
+                }
                 else
-                    res.json({status:false,message:'Update failed'});
-            } 
+                    res.json({ status: false, message: 'Update failed' });
+            }
         }
     }
 
-    router.stopPresenter = ( req, res ) => { 
-        if(req.session.user){
-            broadModel.find({'presenterId':req.session.user._id}).sort({_id:-1}).limit(1).exec(updateAllFound);
-            function updateAllFound(err, preData) { 
-                var ids = preData.map(function(item){
+    router.stopPresenter = (req, res) => {
+        if (req.session.user) {
+            broadModel.find({ 'presenterId': req.session.user._id }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) {
+                var ids = preData.map(function (item) {
                     return item._id;
-                });  
-                if(ids.length>0)
-                    broadModel.findOneAndUpdate({_id:ids[0]},{endDate:new Date()},function(err,data){
+                });
+                if (ids.length > 0)
+                    broadModel.findOneAndUpdate({ _id: ids[0] }, { endDate: new Date() }, function (err, data) {
                         if (err) throw err;
-                        res.json({status:true,message:'Date updated successfully'});
-                    }) 
+                        res.json({ status: true, message: 'Date updated successfully' });
+                    })
                 else
-                    res.json({status:false,message:'Update failed'});
-            }  
-        }  
+                    res.json({ status: false, message: 'Update failed' });
+            }
+        }
         else
-            res.json({status:false,message:'Need authorization'});
+            res.json({ status: false, message: 'Need authorization' });
     }
 
-    router.stopViewer = ( req, res ) => { 
-        if(req.session.user){ 
-            broadModel.find({'presenterId':req.body.preId}).sort({_id:-1}).limit(1).exec(updateAllFound);
-            function updateAllFound(err, preData) { 
-                var ids = preData.map(function(item){
+    router.stopViewer = (req, res) => {
+        if (req.session.user) {
+            broadModel.find({ 'presenterId': req.body.preId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
+            function updateAllFound(err, preData) {
+                var ids = preData.map(function (item) {
                     return item._id;
-                });   
-                if(ids.length>0)
+                });
+                if (ids.length > 0)
                     broadModel.findOneAndUpdate(
-                        {_id:ids[0],'viewers.viewerId':req.session.user},
-                        { 
+                        { _id: ids[0], 'viewers.viewerId': req.session.user },
+                        {
                             "$set": {
                                 "viewers.$.endDate": new Date()
                             }
                         },
-                        {  
+                        {
                             sort: { 'viewers.$._id': -1 },  // Imp Needed: Need to update his last id
-                        },function(err,data){
-                        if (err) throw err;
-                        res.json({status:true,message:'Date updated successfully'});
-                    }) 
+                        }, function (err, data) {
+                            if (err) throw err;
+                            res.json({ status: true, message: 'Date updated successfully' });
+                        })
                 else
-                    res.json({status:false,message:'Update failed'});
-            }  
-        }  
+                    res.json({ status: false, message: 'Update failed' });
+            }
+        }
         else
-            res.json({status:false,message:'Need authorization'});
-    } 
+            res.json({ status: false, message: 'Need authorization' });
+    }
 
     // Broadcast function end ======
     return router;

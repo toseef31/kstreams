@@ -49,7 +49,7 @@
             return wss.$$websocketList[url];
         };
 
-        wss.$new = function (cfg) {
+        wss.$new = function (cfg) {     
             cfg = cfg || {};
 
             // Url or url + protocols initialization
@@ -65,7 +65,9 @@
 
             // If the websocket already exists, return that instance
             var ws = wss.$get(cfg.url);
+           
             if (typeof ws === 'undefined') {
+           
                 var wsCfg = angular.extend({}, wss.$$config, cfg);
 
                 ws = new $websocket(wsCfg, $http);

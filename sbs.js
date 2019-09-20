@@ -105,7 +105,7 @@ app.post('/subscribe',(req,res) => {
 //*****
 //***** 
 
-server.listen(port, () => {
+server.listen(port ,() => {
 	// eslint-disable-next-line no-console
 	console.info('listening on %d', port);
 });
@@ -145,7 +145,6 @@ function setUserStatus(status, userId) {
 }
 
 io.on('connection', function (socket) {
-
 	socket.on('user_connected', (data) => {
 		socket.userId = data.userId;
 		setUserStatus(1, socket.userId);
@@ -175,6 +174,10 @@ io.on('connection', function (socket) {
 		io.emit('updateUserChatWithId', data);
 	})
 
+	socket.on('logoutUpdate', (data) => {
+		io.emit('logoutStatusUpdate', data);
+	})
+
 	//listen on typing
 	socket.on('typing', (data) => {
 		socket.broadcast.emit('typingRec', { username: socket.username, rcv_id: socket.rcv_id })
@@ -186,9 +189,6 @@ io.on('connection', function (socket) {
 	socket.on('checkmsg', function (chat) {
 		io.emit('remsg', chat);
 	});
-	// socket.on('checkreply', function (chat) {
-	// 	io.emit('socketReply', chat);
-	// });
 
 	socket.on('updateChatSeenStatus', (chatData) => {
     io.emit('updateMsgSeenStatus', chatData);
@@ -210,9 +210,11 @@ io.on('connection', function (socket) {
 		io.emit('reveiceGroupVideoCall', data);
 	});
 	socket.on('broadcasting', function (data) {
+		console.log('bc socket');
 		io.emit('receiveBroadcasting', data);
 	});
 	socket.on('connectUsers', function (data) {
+		console.log('ucu socket');
 		io.emit('updateConnectedUsers', data);
 	})
 	socket.on('removeconnectUser', function (data) {

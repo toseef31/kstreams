@@ -12,6 +12,9 @@ app.config(function($routeProvider) {
         title: 'Dashboard',
         templateUrl : "./views/dash.html"
     }) 
+    .when("/screenshare", {
+        templateUrl : "./views/screenshare.html"
+    })
     .when("/videoCall", {
         templateUrl : "./views/videoCall.html"
     })

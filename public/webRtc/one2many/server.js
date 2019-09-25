@@ -34,8 +34,8 @@ var argv = minimist(process.argv.slice(2), {
 
 var options =
 {
-  key:  fs.readFileSync('../keys/ssl.key'),
-  cert: fs.readFileSync('../keys/ssl.crt')
+  key:  fs.readFileSync('../../../private/ssl.key'),
+  cert: fs.readFileSync('../../../private/ssl.crt')
 };
 
 var app = express();

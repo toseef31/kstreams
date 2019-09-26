@@ -11,7 +11,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;  
-        //console.log('$rootScope.projectData ', $rootScope.projectData);
+      //  console.log($rootScope.projectData.ssl);
+        socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
+        console.log('$rootScope.projectData', $rootScope.projectData);
 
         let hostIs = location.host.split(':');
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 
@@ -65,7 +67,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     }).then(function successCallback(response) { 
         $rootScope.user = response.data;
         socket.emit('logoutUpdate', $scope.loggedUserId);
-        $location.path("/screenshare");
+        $location.path("/dash");
     });
 
     /*login function*/
@@ -78,7 +80,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         }).then(function successCallback(response) {
             $rootScope.user = response.data;
             //$rootScope.activeUserPanel = '';
-            $location.path("/screenshare");
+            $location.path("/dash");
         }, function errorCallback(response) {
             $scope.notAuthorize = true;
         });

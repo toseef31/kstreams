@@ -38,7 +38,7 @@
           </div>
         </div>
 
-        <div class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
+        <div ng-if="projectData.broadcasting == 1" class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
           <div class="col-md-6  col-xs-6">
             <button id="live" type="button" ng-click="openBrModal()" class="btn btn-info btn-sm">
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
@@ -211,10 +211,10 @@
             <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
           </span>
           <span class="pull-right video-icon" ng-if="!groupSelected">
-            <span class="whiteTextColor" style="margin-right: 20px">
+            <span ng-if="projectData.videoCall == 1" class="whiteTextColor" style="margin-right: 20px">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
-            <span class="whiteTextColor">
+            <span ng-if="projectData.audioCall == 1" class="whiteTextColor">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id)"></i>
             </span>
           </span>

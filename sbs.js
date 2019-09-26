@@ -12,13 +12,12 @@ const bodyParser  = require('body-parser');
 const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
-const options     = {
+var options       = {
     	key: sslConfig.privateKey,
     	cert: sslConfig.certificate,
       };
 const server    = require('https').Server(options,app);
 const io       = require('socket.io')(server);
-
 const config = require('./config/DB');
 
 //*****
@@ -105,7 +104,7 @@ app.post('/subscribe',(req,res) => {
 //*****
 //***** 
 
-server.listen(port, '192.168.100.11' ,() => {
+server.listen(port, () => {
 	// eslint-disable-next-line no-console
 	console.info('listening on %d', port);
 });
@@ -145,6 +144,12 @@ function setUserStatus(status, userId) {
 }
 
 io.on('connection', function (socket) {
+
+	socket.on('setSSL', function (SSLData){
+		options.key = SSLData.sslKey;
+		options.key = SSLData.sslCert;
+	})
+
 	socket.on('user_connected', (data) => {
 		socket.userId = data.userId;
 		setUserStatus(1, socket.userId);

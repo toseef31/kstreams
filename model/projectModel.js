@@ -16,7 +16,11 @@ const projectSchema = mongoose.Schema({
     //--------------------------------------------------------------------------------------------------
     "allList": { type: Number, default: 0 }, //1=Show complete list in recent chat / 0=Show only friends     
     "groups": { type: Number, default: 0 },  //1=Show , 0=Hide     
-    "broadcasting": { type: Number, default: 0 }, //1=Show /0=Hide             
+    "broadcasting": { type: Number, default: 0 }, //1=Show /0=Hide     
+    "audioCall": {type: Number, default: 0}, //1=Show /0=Hide   
+    "videoCall": {type: Number, default: 0}, //1=Show /0=Hide   
+    "sslKey": {type: String, default: ''}, 
+    "sslCert": {type: String, default: ''},
     "status": { type: Number, default: 0 },  //1=Active /0=Inactive
 },
     { timestamps: true });

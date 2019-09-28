@@ -22,13 +22,13 @@ Object.keys(ifaces).forEach(function (ifname) {
   ifaces[ifname].forEach(function (iface) {
     if ('IPv4' !== iface.family || iface.internal !== false) return;
 	console.log(alias,' and ',ifname,' and ',iface.address);
-    if (alias < 1 && ifname=='eno1') {
+    if (alias < 1) {
 		if(iface.address=='58.229.208.176') 
 			keysOpt       = {
 				key: sslConfig.keyJcm,
 				cert: sslConfig.certJcm,
 			}; //Job callme
-		else if(iface.address=='203.99.61.173')
+		else if(iface.address=='192.168.1.10')
 			keysOpt       = {
 				key: sslConfig.keyPh,
 				cert: sslConfig.certPh,

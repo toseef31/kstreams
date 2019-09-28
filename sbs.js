@@ -37,10 +37,7 @@ Object.keys(ifaces).forEach(function (ifname) {
     ++alias;
   });
 });
-keysOpt       = {
-	key: sslConfig.keyJcm,
-	cert: sslConfig.certJcm,
-};
+ 
 const server    = require('https').Server(keysOpt,app);
 const io       = require('socket.io')(server);
 const config = require('./config/DB');

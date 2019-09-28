@@ -21,7 +21,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 
   ifaces[ifname].forEach(function (iface) {
     if ('IPv4' !== iface.family || iface.internal !== false) return;
-	console.log(alias,' and ',ifname,' and ',iface.address);
+	console.log(alias,' and ',iface.address);
     if (alias < 1) {
 		if(iface.address=='58.229.208.176') 
 			keysOpt       = {
@@ -37,7 +37,7 @@ Object.keys(ifaces).forEach(function (ifname) {
     ++alias;
   });
 });
-
+console.log('keysOpt ',keysOpt);
 const server    = require('https').Server(keysOpt,app);
 const io       = require('socket.io')(server);
 const config = require('./config/DB');

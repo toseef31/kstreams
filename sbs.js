@@ -15,31 +15,30 @@ const sslConfig   = require('./ssl-config');
 var os = require( 'os' );
 var ifaces = os.networkInterfaces();
 
+var keysOpt       = {};
 Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0;
 
   ifaces[ifname].forEach(function (iface) {
-    if ('IPv4' !== iface.family || iface.internal !== false) {
-	  // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-	  console.log('1 ');
-      return;
-    }
-
-    if (alias >= 1) {
-      // this single interface has multiple ipv4 addresses
-      console.log('2ip= ',ifname + ':' + alias, iface.address);
-    } else {
-      // this interface has only one ipv4 adress
-      console.log('3ip= ',ifname, iface.address);
+    if ('IPv4' !== iface.family || iface.internal !== false) return;
+	console.log(alias,' and ',ifname,' and ',iface.address);
+    if (alias < 1 && ifname=='eno1') {
+		if(iface.address=='58.229.208.176') 
+			keysOpt       = {
+				key: sslConfig.keyJcm,
+				cert: sslConfig.certJcm,
+			}; //Job callme
+		else if(iface.address=='203.99.61.173')
+			keysOpt       = {
+				key: sslConfig.keyPh,
+				cert: sslConfig.certPh,
+			}; // Peekhelpers
     }
     ++alias;
   });
 });
-var options       = {
-    	key: sslConfig.privateKey,
-    	cert: sslConfig.certificate,
-      };
-const server    = require('https').Server(options,app);
+
+const server    = require('https').Server(keysOpt,app);
 const io       = require('socket.io')(server);
 const config = require('./config/DB');
 

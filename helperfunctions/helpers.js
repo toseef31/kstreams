@@ -81,7 +81,12 @@ module.exports = function(io){
 		if(obj != 0 && obj != null){
 			if(typeof obj.password ===undefined) callback({err:err});
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
-			.populate('projectId').lean().exec(function(err,data){ 
+			.populate({
+				path: 'projectId',
+				match: {
+				  status: 1 
+				}
+			  }).lean().exec(function(err,data){ 
 				if(err || !data) callback({err:err});
 				else{
 					if (!bcrypt.compareSync(obj.password, data.password))  

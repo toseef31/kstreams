@@ -75,15 +75,13 @@ module.exports = function (io, saveUser) {
 
     router.getUsers = function (req, res) {
 
-        function chatModelFunc(data) {
+        function chatModelFunc(data) { 
             for (let i = 0; i < data.length; i++) {
-                chatModel.find(
-                    {
+                chatModel.find({
                         'senderId': data[i]._id,
                         'receiverId': req.params.userId,
                         'isSeen': 0
-                    }
-                ).count().exec(function (err, count) {
+                }).count().exec(function (err, count) {
                     data[i]['usCount'] = count;
                     if (i == data.length - 1) res.json({ 'usersList': data });
                 })
@@ -93,28 +91,46 @@ module.exports = function (io, saveUser) {
 
         if (req.params.allList == 0) {
             var friendIds = [];
-            friendModel.find({ 'userId': req.params.userId, 'status': 1 }, { friendId: true })
-                .populate('friendId').lean().exec(function (err, UserIdData) {
-                    // if (!UserIdData.length){
+            friendModel.find(
+                { 'userId': req.params.userId, 'status': 1 }, 
+                { friendId: true }
+            ).populate({
+                path : 'friendId',
+                populate : {
+                    path : 'projectId',
+                    select:'_id, status',
+                    match: {
+                        status: 1 
+                    }
+                }
+            }).lean().exec(function (err, UserIdData) { 
                     // now check the userId in friendId column and populate user data
                     friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
-                        .populate('userId').lean().exec(function (err, friendsIdData) {
-                            friendsIdData.forEach(val => {
-                                friendIds.push(val.userId);
-                            });
-                            UserIdData.forEach(val => {
-                                friendIds.push(val.friendId);
-                            });
+                    .populate({
+                        path : 'userId',
+                        populate : {
+                            path : 'projectId', 
+                            select:'_id, status',
+                            match: {
+                                'status': 1 
+                            },
+                        },  
+                    }).lean().exec(function (err, friendsIdData) { 
 
-                            //-----------------------------------------------
-                            userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).lean().exec(function (err, data) {
-                                friendIds.push(data);
-                                //console.log(data);
-                                chatModelFunc(friendIds);
-                            })
-
+                        friendsIdData.forEach(val => {
+                            if(val.userId && val.userId.projectId) friendIds.push(val.userId);
+                        });
+                        UserIdData.forEach(val => {
+                            if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
+                        }); 
+                        //-----------------------------------------------
+                        userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {})
+                        .lean().exec(function (err, data) {
+                            friendIds.push(data); 
+                            chatModelFunc(friendIds);
                         })
-                    // }
+
+                    }) 
                 })
         }
         else

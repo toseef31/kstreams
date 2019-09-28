@@ -89,7 +89,7 @@
 
           <div ng-if="!groupSelected">
             <div id="users-message" class="messages-chat-list">
-              <div ng-if="allUsers.length > 0">
+              <div ng-if="allUsers.length > 1">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
                   ng-repeat="userA in allUsers" ng-class="{grpChecked: $parent.selection==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
@@ -135,7 +135,7 @@
               </div>
             </div>
 
-            <div ng-if="allUsers.length == 0">
+            <div ng-if="allUsers.length <=1">
               <div class="notfound">
                 <p class="text-center">No friends found</p>
               </div>

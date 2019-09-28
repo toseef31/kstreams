@@ -2,7 +2,7 @@
 * author  => Peek International
 * designBy => Peek International
 */
-app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket) {
+app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval) {
     $scope.notAuthorize = false; // show invalid username password message
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];
@@ -12,7 +12,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;  
       //  console.log($rootScope.projectData.ssl);
-        socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
+        //socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
         console.log('$rootScope.projectData', $rootScope.projectData);
 
         let hostIs = location.host.split(':');
@@ -26,6 +26,8 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
         $rootScope.O2MSoc.$on('$open', function () {
             console.log('O2M socket open'); 
+            $interval(One2ManyCall.getPresenterData, 6000);
+            One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
             var parsedMessage = JSON.parse(message);  

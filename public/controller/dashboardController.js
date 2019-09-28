@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,One2OneCall,One2ManyCall,$websocket,$interval) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,One2OneCall,One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -51,8 +51,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
   
 
     // initial websocket connection is in loginController   
-    $interval(One2ManyCall.getPresenterData, 6000);
-    One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
+    
  
     $scope.stopBroadCast=function(){
         One2ManyCall.stop();
@@ -218,8 +217,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
       
         $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList+ '/' + $rootScope.projectData._id)
         .then(function (response) {
-            //console.log(response); 
-            $scope.allUsers = response.data.usersList;
+            $scope.allUsers = response.data.usersList; 
             let i=0;
             for (i; i < response.data.length; i++)
                 if (response.data[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
@@ -700,13 +698,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on('logoutStatusUpdate', function (loggedOutUserId){
             // on user logout, update user status for other users
-                    for(var i =0; i<$scope.allUsers.length; i++){
-                        if ($scope.allUsers[i]._id == loggedOutUserId){
-                            $scope.allUsers[i].chatWithRefId = "";
-                            $scope.allUsers[i].onlineStatus = 0;
-                            break;
-                        }
-                    }
+            let i =0;
+            if($scope.allUsers)
+                for(i; i<$scope.allUsers.length; i++)
+                    if ($scope.allUsers[i]._id == loggedOutUserId){
+                        $scope.allUsers[i].chatWithRefId = "";
+                        $scope.allUsers[i].onlineStatus = 0;
+                        break;
+                    } 
         })
 
         socket.on('deductConnectedUser', function (data) {

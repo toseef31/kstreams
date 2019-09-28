@@ -12,6 +12,8 @@ const bodyParser  = require('body-parser');
 const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
+var ip = require("ip");
+console.dir ('IP ADDRESS', ip.address() );
 var options       = {
     	key: sslConfig.privateKey,
     	cert: sslConfig.certificate,
@@ -145,10 +147,10 @@ function setUserStatus(status, userId) {
 
 io.on('connection', function (socket) {
 
-	socket.on('setSSL', function (SSLData){
-		options.key = SSLData.sslKey;
-		options.key = SSLData.sslCert;
-	})
+	// socket.on('setSSL', function (SSLData){
+	// 	options.key = SSLData.sslKey;
+	// 	options.key = SSLData.sslCert;
+	// })
 
 	socket.on('user_connected', (data) => {
 		socket.userId = data.userId;

@@ -6,8 +6,8 @@
 var path = require('path');
 var fs = require('fs');
 
-exports.keyJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.key')).toString();
-exports.certJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.crt')).toString();
-exports.keyPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.key')).toString();
-exports.certPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.crt')).toString();
+exports.keyJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.key'), 'utf8').toString();
+exports.certJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.crt'), 'utf8').toString();
+exports.keyPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.key'), 'utf8').toString();
+exports.certPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.crt'), 'utf8').toString();
 

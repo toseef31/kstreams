@@ -13,11 +13,28 @@ const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
 var os = require( 'os' );
-var networkInterfaces = os.networkInterfaces( );
-var arr = networkInterfaces['Local Area Connection 3']
-var ip = arr[1].address;
+var ifaces = os.networkInterfaces();
 
-console.dir ('IP ADDRESS',ip);
+Object.keys(ifaces).forEach(function (ifname) {
+  var alias = 0;
+
+  ifaces[ifname].forEach(function (iface) {
+    if ('IPv4' !== iface.family || iface.internal !== false) {
+	  // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+	  console.log('1 ');
+      return;
+    }
+
+    if (alias >= 1) {
+      // this single interface has multiple ipv4 addresses
+      console.log('2ip= ',ifname + ':' + alias, iface.address);
+    } else {
+      // this interface has only one ipv4 adress
+      console.log('3ip= ',ifname, iface.address);
+    }
+    ++alias;
+  });
+});
 var options       = {
     	key: sslConfig.privateKey,
     	cert: sslConfig.certificate,

@@ -12,8 +12,12 @@ const bodyParser  = require('body-parser');
 const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
-var ip = require("ip");
-console.dir ('IP ADDRESS', ip.address() );
+var os = require( 'os' );
+var networkInterfaces = os.networkInterfaces( );
+var arr = networkInterfaces['Local Area Connection 3']
+var ip = arr[1].address;
+
+console.dir ('IP ADDRESS',ip);
 var options       = {
     	key: sslConfig.privateKey,
     	cert: sslConfig.certificate,

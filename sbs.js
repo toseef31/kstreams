@@ -23,7 +23,7 @@ Object.keys(ifaces).forEach(function (ifname) {
     if ('IPv4' !== iface.family || iface.internal !== false) return;
 	console.log(alias,' and ',iface.address);
     if (alias < 1) {
-		if(iface.address=='58.229.208.176') 
+		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10') 
 			keysOpt       = {
 				key: sslConfig.keyJcm,
 				cert: sslConfig.certJcm,

@@ -11,7 +11,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;  
-      //  console.log($rootScope.projectData.ssl);
+       
+      //  if ($rootScope.projectData.broadcasting == 0) return;
+
         socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
         console.log('$rootScope.projectData', $rootScope.projectData);
 

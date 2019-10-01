@@ -220,7 +220,7 @@
           </span>
         </li>
 
-        <div class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}"
+        <div onscroll="scrolled(this)" class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}" id="{{connectionId}}"
           file-dropzone files-to-upload='files'>
           <div class="messages-container">
 
@@ -980,14 +980,6 @@
       $('#' + id).trigger('click');
     }, 100);
   }
-
-  function scrollbottom() {
-    var con = document.getElementsByClassName('msg_history')[0];
-    setTimeout(function () {
-      con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
-    }, 100);
-  }
-
   function toggle() {
     $('.mesgs1').show();
     $('#mobile-view-contact').hide();
@@ -1025,6 +1017,51 @@
     });
   });
 
+  function scrollbottom() {
+    var con = document.getElementsByClassName('msg_history')[0];
+   
+    setTimeout(function () { 
+      con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
+    }, 200);
+  }
+  
+  var executeOnce = false;
+  var secondScrollHeight;
+  var fTotalHeight;
+
+  function scrollCustom() {
+    var con = document.getElementsByClassName('msg_history')[0];
+    setTimeout(function () {
+            secondScrollHeight = con.scrollHeight - fTotalHeight;
+            con.scrollTop = secondScrollHeight;
+            fTotalHeight = con.scrollHeight;
+    }, 200);
+  }
+
+  function scrolled(o)
+    {   
+        if (!executeOnce){
+          executeOnce = true;
+          fTotalHeight = o.scrollHeight;
+        }
+
+        //visible height + pixel scrolled = total height
+        if(o.offsetHeight + o.scrollTop == o.scrollHeight)
+        {
+          // right now, no use ...
+          console.log('scroll bottom');
+        }
+        else if (o.scrollTop == 0){
+          console.log('scroll top');
+          angular.element(document.getElementById('MainWrap')).scope().getMoreChat();
+        }
+    }
+
+   function resetScrollVar(){
+       executeOnce = false;
+       secondScrollHeight = 0;
+       fTotalHeight = 0;
+   }
 
 </script>
 <!-- </body> -->

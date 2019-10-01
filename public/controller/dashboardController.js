@@ -42,17 +42,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.replyMenuStatus= true;
     $scope.replyIconId = "";
  
-  
+    var ctrl = this;
+
     // Broadcast function start===============
     window.onbeforeunload = function() {
         $rootScope.O2OSoc.close();
         $rootScope.O2MSoc.close();
     } 
-  
 
-    // initial websocket connection is in loginController   
-    $interval(One2ManyCall.getPresenterData, 6000);
-    One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
+   // if ($rootScope.projectData.broadcasting == 1) {
+            // initial websocket connection is in loginController   
+        $interval(One2ManyCall.getPresenterData, 6000);
+        One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
+   // }
  
     $scope.stopBroadCast=function(){
         One2ManyCall.stop();
@@ -172,6 +174,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
     
         socket.emit('user_connected', { userId: $rootScope.user._id });
+
+      //  if ($rootScope.projectData.audioCall == 0 && $rootScope.projectData.videoCall == 0) return;
+
         $rootScope.O2OSoc.$on('$open', function () {
             console.log('O2O socket open');
             One2OneCall.sendKMessage({ id : 'register', name : $rootScope.user._id }); 
@@ -349,9 +354,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
              }
         }
+                
+        $scope.getMoreChat = function() {
+             $http.get('/getMoreChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20 + '/' + ($scope.chats[0].createdAt))
+            .then(function (res) { 
+                for(let i= 0; i< res.data.length; i++){
+                    $scope.chats.unshift(res.data[i]);
+                } 
+                if (res.data.length > 0) scrollCustom();
+            });
+        }
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
+            resetScrollVar();
+
             $scope.deActivate();
             $scope.isSidePanel = false; $scope.isChatPanel = true;
             $scope.welcomePage = false;
@@ -375,9 +392,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 for (i; i<$scope.allUsers.length; i++)
                    if ($scope.allUsers[i]._id == obj.user._id) $scope.allUsers[i].usCount = 0;
                    
-                $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
+                $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                 .then(function (res) { 
-                
                     $scope.groupMembers = '';
                     $scope.chats = res.data;//.userChat;
                     socket.emit('updateChatSeenStatus', {'isChatSeen':1 , '_id': $scope.user._id, 'chatWithId':$scope.chatWithId});
@@ -504,6 +520,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     scrollbottom();
                     $http.post('/chat', msgObj)
                     .then(function (res) {
+                        console.log(res);
                         $scope.chats.push(res.data);
                         socket.emit('checkmsg', res.data); 
                         if (res.data.length < 1) return;  
@@ -754,7 +771,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* update chat after performing any action on reall time*/
         function updatechat(deletedItem) {
-            $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId)
+            $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                 .then(function (res) {
 
                     $scope.groupMembers = '';

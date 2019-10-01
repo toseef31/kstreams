@@ -117,8 +117,8 @@ factory('One2ManyCall', ['$rootScope',
     }
 
     function sendMessage(message) {
-        //console.log(message);
-        $rootScope.O2MSoc.$emit(JSON.stringify(message)); 
+    //    console.log(message);
+        $rootScope.O2MSoc.$emit(JSON.stringify(message));
     }
 
     function showSpinner() {

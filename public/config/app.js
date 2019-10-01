@@ -65,27 +65,6 @@ app.directive('fileDropzone',function(){
 				if( e != null ){
 					e.preventDefault();
 				}
-				/*preview code*/
-				/*var fileObjectArray = [];
-				angular.forEach(e.originalEvent.dataTransfer.files,function(file){
-					var reader = new FileReader();
-					reader.onload = function(e){
-						scope.$apply(function(){
-							var newFilePreview = e.target.result;
-							var newFileName    = file.name;
-							var newFileSize    = file.size;
-							var fileObject  = {
-								file:file,
-								name:newFileName,
-								size:newFileSize,
-								preview:newFilePreview
-							}
-							fileObjectArray.push(fileObject);
-							scope.filesToUpload = fileObjectArray;
-						});
-					}
-					reader.readAsDataURL(file);
-				});*/
 				var scope2 = angular.element(document.getElementById("MainWrap")).scope();
 				scope2.$apply(function(){
 					scope2.files = e.originalEvent.dataTransfer.files;
@@ -95,3 +74,40 @@ app.directive('fileDropzone',function(){
 		}
 	}
 })
+
+app.directive('execOnScrollToTop', function () {
+	return {
+	  restrict: 'A',
+	  link: function (scope, element, attrs) {
+		var fn = scope.$eval(attrs.execOnScrollToTop);
+  
+		element.on('scroll', function (e) {
+  
+		  if (!e.target.scrollTop) {
+			console.log("scrolled to top...");
+			scope.$apply(fn);
+		  }
+  
+		});
+	  }
+	};
+  });
+
+  app.directive('execOnScrollToBottom', function () {
+	return {
+	  restrict: 'A',
+	  link: function (scope, element, attrs) {
+		var fn = scope.$eval(attrs.execOnScrollToBottom),
+			clientHeight = element[0].clientHeight;
+  
+		element.on('scroll', function (e) {
+		  var el = e.target;
+  
+		  if ((el.scrollHeight - el.scrollTop) === clientHeight) { // fully scrolled
+			console.log("scrolled to bottom...");
+			scope.$apply(fn);
+		  }
+		});
+	  }
+	};
+  });

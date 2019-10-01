@@ -4,20 +4,15 @@
 */
 const userModel = require('../model/users-model');
 const friendModel = require('../model/friendModel');
-// const recentModel = require('../model/recent-model');
 const chatModel = require('../model/chatModel');
-const replyModel = require('../model/replyModel');
 const groupsModel = require('../model/groupsModel');
 const notifiModel = require('../model/notificationModel');
 const projectModel = require('../model/projectModel');
-const mongoose = require('mongoose');
 const helpers = require('../helperfunctions/helpers');
 const isImage = require('is-image');
 const broadModel = require('../model/broadcast');
-// const readChunk = require('read-chunk');
-// const fileType = require('file-type');
+
 var path = require('path');
-var sbs = require('../sbs')
 
 module.exports = function (io, saveUser) {
     var User;
@@ -206,7 +201,7 @@ module.exports = function (io, saveUser) {
         }
         newMessage.save(function (err, data) {
             if (err) throw err;
-
+                 console.log(chatType);
             if (chatType == 0) {
                 chatModel.findOne({ senderId: sender, receiverId: recevier }).populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
                     helper.addNewMessage(data);
@@ -253,6 +248,7 @@ module.exports = function (io, saveUser) {
     router.getChat = function (req, res) {
         var sender = req.params.senderId;
         var receiver = req.params.receiverId;
+        var msgCountLimit = parseInt(req.params.limit); 
 
         chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 }
             , { $set: { 'isSeen': 1 } }).exec(function (err, data) {
@@ -264,15 +260,36 @@ module.exports = function (io, saveUser) {
                 })
                     .populate("receiverId", { '_id': true, 'name': true })
                     .populate("senderId", { '_id': true, 'name': true })
+                    .sort({ 'createdAt': -1 }).limit(msgCountLimit)
                     .populate("commentId")
                     .lean()
                     .exec(function (err, data) {
                         if (err) throw err;
-
+                        data.reverse();
                         userModel.update({ '_id': sender }, { $set: { 'chatWithRefId': receiver } }).exec();
 
                         res.json(data);
                     });
+            });
+    }
+
+    router.getMoreChat = function (req, res) {
+        var sender = req.params.senderId;
+        var receiver = req.params.receiverId;
+        var msgCountLimit = parseInt(req.params.limit);
+        var chatTime = req.params.chatTime;
+    
+        chatModel.find({createdAt: {$lt: chatTime} ,  $or: [ { senderId: sender, receiverId: receiver },
+                                { senderId: receiver, receiverId: sender }]})
+
+            .populate("receiverId", { '_id': true, 'name': true })
+            .populate("senderId", { '_id': true, 'name': true })
+            .sort({ 'createdAt': -1 }).limit(msgCountLimit)
+            .populate("commentId")
+            .lean()
+            .exec(function (err, data) {
+                if (err) throw err;
+                res.json(data);
             });
     }
 
@@ -282,7 +299,7 @@ module.exports = function (io, saveUser) {
         //     res.json(data);
         // })
 
-        chatModel.find({ groupId: id  }).populate('commentId').populate("senderId", { _id: true, name: true }).exec(function (err, data) {
+        chatModel.find({ groupId: id }).populate('commentId').populate("senderId", { _id: true, name: true }).exec(function (err, data) {
             res.json(data);
         })
     }

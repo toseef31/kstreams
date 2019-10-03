@@ -24,12 +24,12 @@ Object.keys(ifaces).forEach(function (ifname) {
 	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
     if (alias < 1) { 
 		// || iface.address=='127.0.0.1'
-		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10') 
-			keysOpt       = {
-				key: sslConfig.keyJcm,
-				cert: sslConfig.certJcm,
-			}; //Job callme
-		else if(iface.address=='192.168.1.10')
+		// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10') 
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyJcm,
+		// 		cert: sslConfig.certJcm,
+		// 	}; //Job callme
+		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
 				key: sslConfig.keyPl,
 				cert: sslConfig.certPl,

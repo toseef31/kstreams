@@ -31,7 +31,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 	}; //Job callme
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
-				key: sslConfig.keyPl,
+				//key: sslConfig.keyPl,
 				cert:sslConfig.certPl
 			}; // Peekhelpers
     }

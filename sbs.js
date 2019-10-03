@@ -32,7 +32,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
 				key: sslConfig.keyPl,
-				cert: sslConfig.certPl,
+				cert:sslConfig.certPl
 			}; // Peekhelpers
     }
     ++alias;

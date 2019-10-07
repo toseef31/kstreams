@@ -333,7 +333,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .message-container .page-margin .col-lg-8,.message-container .page-margin .col-md-4{padding:0}
 .mobilerightpane, .mobileleftpane{padding:0 !important}
 .user-name-section{cursor:pointer;color:#555;}
-.mobilerightpane .inner-addon{margin-bottom:0;padding:10px;background:#fff}
+.mobilerightpane .inner-addon{margin-bottom:0;padding:10px;background:#498102}
 .mobilerightpane .inner-addon svg.feather{position:absolute;margin:7px;pointer-events:none}
 .mobilerightpane .inner-addon input{background-color:#f6f7f9;border-radius:16px}
 .wo_msg_tabs{border-color:#ddd;background-color:#fff}

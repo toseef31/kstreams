@@ -10,6 +10,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.nchatIndex = 0;
     $scope.gchatIndex = 1;
     $scope.loggedUserId = 0;
+    $scope.search = '';
     /*save with whom user are chatting*/ 
     $scope.chatWithId = '';
     /*save all chats */
@@ -349,6 +350,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                  $scope.allUsers[i].usCount = 0;
                 }
              }
+        }
+
+        $scope.searchFriends = function (){
+            console.log($scope.search);
         }
                 
         $scope.getMoreChat = function() {

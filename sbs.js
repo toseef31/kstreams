@@ -12,11 +12,33 @@ const bodyParser  = require('body-parser');
 const webpush     = require('web-push');
 const cors        = require('cors');
 const sslConfig   = require('./ssl-config');
-var options       = {
-    	key: sslConfig.privateKey,
-    	cert: sslConfig.certificate,
-      };
-const server    = require('https').Server(options,app);
+var os = require( 'os' );
+var ifaces = os.networkInterfaces();
+
+var keysOpt       = {};
+Object.keys(ifaces).forEach(function (ifname) {
+  var alias = 0;
+
+  ifaces[ifname].forEach(function (iface) {
+    if ('IPv4' !== iface.family || iface.internal !== false) return;
+	console.log(alias,' and ',iface.address);
+    if (alias < 1) {
+		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.22') 
+			keysOpt       = {
+				key: sslConfig.keyJcm,
+				cert: sslConfig.certJcm,
+			}; //Job callme
+		else if(iface.address=='192.168.1.10')
+			keysOpt       = {
+				key: sslConfig.keyPh,
+				cert: sslConfig.certPh,
+			}; // Peekhelpers
+    }
+    ++alias;
+  });
+});
+ 
+const server    = require('https').Server(keysOpt,app);
 const io       = require('socket.io')(server);
 const config = require('./config/DB');
 
@@ -145,10 +167,10 @@ function setUserStatus(status, userId) {
 
 io.on('connection', function (socket) {
 
-	socket.on('setSSL', function (SSLData){
-		options.key = SSLData.sslKey;
-		options.key = SSLData.sslCert;
-	})
+	// socket.on('setSSL', function (SSLData){
+	// 	options.key = SSLData.sslKey;
+	// 	options.key = SSLData.sslCert;
+	// })
 
 	socket.on('user_connected', (data) => {
 		socket.userId = data.userId;

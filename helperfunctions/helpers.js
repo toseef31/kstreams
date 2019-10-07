@@ -81,13 +81,42 @@ module.exports = function(io){
 		if(obj != 0 && obj != null){
 			if(typeof obj.password ===undefined) callback({err:err});
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
-			.populate('projectId').lean().exec(function(err,data){ 
+			.populate({
+				path: 'projectId',
+				match: {
+				  status: 1 
+				}
+			  }).lean().exec(function(err,data){ 
 				if(err || !data) callback({err:err});
 				else{
 					if (!bcrypt.compareSync(obj.password, data.password))  
 						callback({err:err});
 					else
 						userModel.update({'email': obj.email}, {'onlineStatus': 1})
+						.lean().exec(function (err, result) { 
+						     callback(data);
+						})
+				}
+			});	
+		}else{
+			model.find({status:1}).populate('projectId').exec(function(err,data){
+				callback(data);
+			});
+		}
+	}
+
+	helper.getPData = function (model,obj = 0, callback){
+		if(obj != 0 && obj != null){
+			model.findOne({'phone':obj.phone, 'status': 1, 'isAdmin': 0})
+			.populate({
+				path: 'projectId',
+				match: {
+				  status: 1 
+				}
+			  }).lean().exec(function(err,data){ 
+				if(err || !data) callback({err:err});
+				else{
+						userModel.update({'phone': obj.phone}, {'onlineStatus': 1})
 						.lean().exec(function (err, result) { 
 						     callback(data);
 						})

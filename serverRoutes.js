@@ -69,7 +69,7 @@ module.exports = function(app,io,saveUser){
     app.post('/getgroupchat',chatCon.getgroupchat);
     app.post('/getcurrentgroupchat',chatCon.getcurrentgroupchat);
 
-   // app.post('/chatFilesShare', upload.single('file'), chatCon.addfiles);
+    // app.post('/chatFilesShare', upload.single('file'), chatCon.addfiles);
     app.post('/chatFilesShare', upload.array('file'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
     // app.get('/changeStatus',chatCon.changeStatus);

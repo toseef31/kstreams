@@ -70,15 +70,13 @@ module.exports = function (io, saveUser) {
 
     router.getUsers = function (req, res) {
 
-        function chatModelFunc(data) {
+        function chatModelFunc(data) { 
             for (let i = 0; i < data.length; i++) {
-                chatModel.find(
-                    {
+                chatModel.find({
                         'senderId': data[i]._id,
                         'receiverId': req.params.userId,
                         'isSeen': 0
-                    }
-                ).count().exec(function (err, count) {
+                }).count().exec(function (err, count) {
                     data[i]['usCount'] = count;
                     if (i == data.length - 1) res.json({ 'usersList': data });
                 })
@@ -88,28 +86,45 @@ module.exports = function (io, saveUser) {
 
         if (req.params.allList == 0) {
             var friendIds = [];
-            friendModel.find({ 'userId': req.params.userId, 'status': 1 }, { friendId: true })
-                .populate('friendId').lean().exec(function (err, UserIdData) {
-                    // if (!UserIdData.length){
+            friendModel.find(
+                { 'userId': req.params.userId, 'status': 1 }, 
+                { friendId: true }
+            ).populate({
+                path : 'friendId',
+                populate : {
+                    path : 'projectId',
+                    select:'_id, status',
+                    match: {
+                        status: 1 
+                    }
+                }
+            }).lean().exec(function (err, UserIdData) {
                     // now check the userId in friendId column and populate user data
                     friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
-                        .populate('userId').lean().exec(function (err, friendsIdData) {
-                            friendsIdData.forEach(val => {
-                                friendIds.push(val.userId);
-                            });
-                            UserIdData.forEach(val => {
-                                friendIds.push(val.friendId);
-                            });
-
-                            //-----------------------------------------------
-                            userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).lean().exec(function (err, data) {
-                                friendIds.push(data);
-                                //console.log(data);
-                                chatModelFunc(friendIds);
-                            })
-
+                    .populate({
+                        path : 'userId',
+                        populate : {
+                            path : 'projectId', 
+                            select:'_id, status',
+                            match: {
+                                'status': 1 
+                            },
+                        },  
+                    }).lean().exec(function (err, friendsIdData) { 
+                        friendsIdData.forEach(val => {
+                            if(val.userId && val.userId.projectId) friendIds.push(val.userId);
+                        });
+                        UserIdData.forEach(val => {
+                            if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
+                        }); 
+                        //-----------------------------------------------
+                        userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {})
+                        .lean().exec(function (err, data) {
+                            friendIds.push(data); 
+                            chatModelFunc(friendIds);
                         })
-                    // }
+
+                    }) 
                 })
         }
         else
@@ -325,23 +340,29 @@ module.exports = function (io, saveUser) {
     }
 
     router.set = (req, res) => {
-        userModel.find({ email: req.body.email })
+        // if email is empty then check it by phone number
+        if (req.body.email == ""){
+            userModel.find({ phone: req.body.phone })
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
-                // console.log('c');
-                //     res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-                //   // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-
-                //     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-                //     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-                //     res.header('Access-Control-Allow-Credentials', 'true');
                 res.json(req.session.user);
             })
+        }
+        // if phone number is empty then check it by email
+        else if (req.body.phone == ""){
+            userModel.find({ email: req.body.email })
+            .lean()
+            .then(function (data) {
+                req.session.user = data[0];
+                res.json(req.session.user);
+            })
+        }
     }
+
     router.get = (req, res) => {
         // console.log('get');
-        //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -396,27 +417,42 @@ module.exports = function (io, saveUser) {
     router.login = function (req, res) {
         var email = req.body.email;
         var password = req.body.password;
-
-        helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
-
-            if (user._id) {
-                // console.log('if');
-                /*change status from offline to online*/
-                helper.changeStatus(user._id, {}, function (data) {
-                    /*set session */
-
-                    req.session.user = user;
-                    /*this function use to move user info to another view*/
-                    saveUser(user);
-                    /*get users to show order by newly messages*/
-                    //helper.RTU();
-                    res.json(user);
-                });
-            }
-            else
-                res.status(401).send();
-
-        });
+        var phone = req.body.phone;
+        
+        if (email != ''){
+            helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
+                if (user._id) {
+                    /*change status from offline to online*/
+                    helper.changeStatus(user._id, {}, function (data) {
+                        /*set session */
+                        req.session.user = user;
+                        /*this function use to move user info to another view*/
+                        saveUser(user);
+                        /*get users to show order by newly messages*/
+                        //helper.RTU();
+                        res.json(user);
+                    });
+                }
+                else res.status(401).send();
+            });
+        }
+        else if (phone != ''){
+            helper.getPData(userModel, { 'phone': phone }, function (user) {
+                if (user) {
+                    /*change status from offline to online*/
+                    helper.changeStatus(user._id, {}, function (data) {
+                        /*set session */
+                        req.session.user = user;
+                        /*this function use to move user info to another view*/
+                        saveUser(user);
+                        /*get users to show order by newly messages*/
+                        //helper.RTU();
+                        res.json(user);
+                    });
+                }
+                else res.status(401).send();
+            });
+        }
     }
     router.createUser = function (req, res) {
         var name = req.params.name;

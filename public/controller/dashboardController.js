@@ -10,7 +10,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.nchatIndex = 0;
     $scope.gchatIndex = 1;
     $scope.loggedUserId = 0;
-    $scope.search = '';
+    $scope.tempUsers = null;
     /*save with whom user are chatting*/ 
     $scope.chatWithId = '';
     /*save all chats */
@@ -220,7 +220,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
       
         $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList+ '/' + $rootScope.projectData._id)
         .then(function (response) {
-            console.log(response);
+            $scope.tempUsers = response.data.usersList; // used for user search result
             $scope.allUsers = response.data.usersList; 
             let i=0;
             for (i; i < response.data.length; i++)
@@ -350,10 +350,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                  $scope.allUsers[i].usCount = 0;
                 }
              }
-        }
-
-        $scope.searchFriends = function (){
-            console.log($scope.search);
         }
                 
         $scope.getMoreChat = function() {

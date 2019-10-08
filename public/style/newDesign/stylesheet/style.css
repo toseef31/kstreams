@@ -485,3 +485,8 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 
 .tabContent        {display:none;}
 .tabContent.current{display:block;}
+
+
+.customPadding{
+    padding: 13px 31px !important;
+}

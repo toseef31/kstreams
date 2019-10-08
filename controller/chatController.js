@@ -418,7 +418,7 @@ module.exports = function (io, saveUser) {
         var email = req.body.email;
         var password = req.body.password;
         var phone = req.body.phone;
-        
+       
         if (email != ''){
             helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
                 if (user._id) {

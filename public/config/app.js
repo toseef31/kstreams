@@ -111,3 +111,33 @@ app.directive('execOnScrollToTop', function () {
 	  }
 	};
   });
+
+  app.filter('search', function() {
+	return function(items, keyword) {
+	  // if no keyword is entered, just display all the items
+	  if (!keyword) { 
+		return items; 
+	  } 
+	  // return subset of new items 
+	  else {
+		var newItems = [];
+		var keyword = keyword.toLowerCase();
+		// create new set of items where 'keyword' exists in object data
+		for (var i of items) {
+		  if (i.name.toLowerCase().indexOf(keyword) > -1// || 
+			  //checkChat(i.materials, keyword)
+			  ) { newItems.push(i); }
+		}
+		// loop through user's chat checking if 'keyword' exists in it also
+		// function checkMaterials(mat, keyword) {
+		//   for (var m of mat) {
+		// 	if (m.toLowerCase().indexOf(keyword) > -1) {
+		// 	  return true;
+		// 	}
+		//   }
+		//   return false;
+		// }
+		return newItems;
+	  }
+	};
+  });

@@ -30,18 +30,18 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 		cert: sslConfig.certJcm,
 		// 	}; //Job callme
 			
-		// if (alias < 1) {
-		// 	if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.12') 
-		// 		keysOpt       = {
-		// 			key: sslConfig.keyJcm,
-		// 			cert: sslConfig.certJcm,
-		// 		}; //Job callme
-		// 	else if(iface.address=='192.168.1.10')
-		// 		keysOpt       = {
-		// 			key: sslConfig.keyPh,
-		// 			cert: sslConfig.certPh,
-		// 		}; // Peekhelpers
-		// }
+	
+			// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.12') 
+			// 	keysOpt       = {
+			// 		key: sslConfig.keyJcm,
+			// 		cert: sslConfig.certJcm,
+			// 	}; //Job callme
+			// else if(iface.address=='192.168.1.10')
+			// 	keysOpt       = {
+			// 		key: sslConfig.keyPh,
+			// 		cert: sslConfig.certPh,
+			// 	}; // Peekhelpers
+	
 
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {

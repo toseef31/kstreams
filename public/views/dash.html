@@ -218,6 +218,7 @@
             <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
           </span>
           <span class="pull-right video-icon" ng-if="!groupSelected">
+       
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor" style="margin-right: 20px">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
@@ -274,7 +275,7 @@
                         </a>
 
                         <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                          {{ chat.createdAt | timeago}}
                         </div>
                       </div>
 
@@ -291,7 +292,7 @@
                         <div class="deleted_received_msg">this message has been deleted
                         </div>
                         <div class="time ajax-time text-right" title="1 year ago">
-                          {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                          {{chat.createdAt | timeago}}
                         </div>
                       </div>
                     </div>
@@ -361,7 +362,7 @@
                         </a>
 
                         <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                          {{ chat.createdAt | timeago}}
                         </div>
                       </div>
 
@@ -399,7 +400,7 @@
                       </div>
 
                       <div class="time ajax-time text-right" title="1 year ago">
-                        {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}
+                        {{ chat.createdAt | timeago }}
 
                       </div>
                     </div>

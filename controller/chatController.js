@@ -331,7 +331,7 @@ module.exports = function (io, saveUser) {
     router.out = (req, res) => {
         req.session.destroy();
         // console.log('d'); //console.log(projectData[0].domainUrl);
-        //  res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
+        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         // res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');

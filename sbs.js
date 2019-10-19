@@ -29,19 +29,17 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 		key: sslConfig.keyJcm,
 		// 		cert: sslConfig.certJcm,
 		// 	}; //Job callme
-			
 	
-			// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.12') 
-			// 	keysOpt       = {
-			// 		key: sslConfig.keyJcm,
-			// 		cert: sslConfig.certJcm,
-			// 	}; //Job callme
-			// else if(iface.address=='192.168.1.10')
-			// 	keysOpt       = {
-			// 		key: sslConfig.keyPh,
-			// 		cert: sslConfig.certPh,
-			// 	}; // Peekhelpers
-	
+		// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyJcm,
+		// 		cert: sslConfig.certJcm,
+		// 	}; //Job callme
+		// else if(iface.address=='192.168.1.10')
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyPh,
+		// 		cert: sslConfig.certPh,
+		// 	}; // Peekhelpers
 
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
@@ -135,6 +133,8 @@ app.post('/subscribe',(req,res) => {
 	//pass object into send notification
 	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
 });
+
+
 //*****
 //*****
 // server start
@@ -287,11 +287,17 @@ app.route('/subscribe').post(function (req, res) {
 	res.status(201).json({});
 	const payload = JSON.stringify({ title: 'test' });
 
-
 	webpush.sendNotification(subscription, payload).catch(error => {
 		console.error(error.stack);
 	});
 })
+
+app.post('/pauseChatFunc',(req,res) => {
+	console.log('pauseCH sbs');
+	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
+	res.status(200).json({});
+});
+
 
 var serveStatic = require('serve-static');
 app.use(serveStatic('./'));

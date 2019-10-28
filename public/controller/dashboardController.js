@@ -227,6 +227,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 if (response.data[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
                     
             $scope.usersLoaded = true;
+
         });
 
         /*get all group users*/
@@ -926,6 +927,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     console.log(msg);
         //     $scope.chats.push(msg.data);
         // })
+
+        socket.on('pauseChatFunctionality', function (userRefId){
+            if ($scope.user._id == userRefId){
+                console.log('ifff');
+                $rootScope.webRtcO2OPeer=null;
+                $rootScope.webRtcO2MPeer=null;
+
+                $rootScope.audio.pause();
+                $scope.ringbell.pause();
+
+                $scope.dropCall();
+            }
+    })
 
 
         /*update the new message friend side */

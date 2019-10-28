@@ -10,5 +10,6 @@ exports.keyJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.key'), 
 exports.certJcm = fs.readFileSync(path.join(__dirname, './private/jcm/ssl.crt'), 'utf8').toString();
 exports.keyPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.key'), 'utf8').toString();
 exports.certPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.crt'), 'utf8').toString();
-
+exports.caPh = fs.readFileSync(path.join(__dirname, './private/ph/ssl.ca'), 'utf8').toString();
 exports.certPl = fs.readFileSync(path.join(__dirname, './private/pl/ssl.crt'), 'utf8').toString();
+exports.keyPl = fs.readFileSync(path.join(__dirname, './private/pl/ssl.key'), 'utf8').toString();

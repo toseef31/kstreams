@@ -20,6 +20,7 @@ module.exports = function (io, saveUser) {
     var helper = new helpers(io);
     /*main router object which contain all function*/
     var router = {};
+    var session = null;
 
     router.getProjectData = function (req, res) {
         projectModel.findOne({ 'status': 1 }).lean().exec(function (err, projData) {
@@ -343,21 +344,23 @@ module.exports = function (io, saveUser) {
     }
 
     router.set = (req, res) => {
-        // if email is empty then check it by phone number
-        if (req.body.email == ""){
-            userModel.find({ phone: req.body.phone })
-            .lean()
-            .then(function (data) {
-                req.session.user = data[0];
-                res.json(req.session.user);
-            })
-        }
-        // if phone number is empty then check it by email
-        else if (req.body.phone == ""){
+         // if email is empty then check it by phone number
+         if (req.body.email != ""){ 
             userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
+                session = req.session.user;
+                res.json(req.session.user);
+            })
+        }
+        // if phone number is empty then check it by email
+        else if (req.body.phone != ""){
+            userModel.find({ phone: req.body.phone })
+            .lean()
+            .then(function (data) {
+                req.session.user = data[0];
+                session = req.session.user;
                 res.json(req.session.user);
             })
         }
@@ -373,6 +376,13 @@ module.exports = function (io, saveUser) {
         // res.header('Access-Control-Allow-Credentials', 'true');
 
         if (req.session.user && typeof req.session.user._id !== 'undefiend') {
+            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
+                res.json(data);
+            });
+        }
+          // -------- if session laod has some problem then, get session value from this part -------------
+        else if (session){
+            req.session.user = session;
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
             });

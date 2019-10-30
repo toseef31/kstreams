@@ -16,6 +16,7 @@ var path = require('path');
 
 module.exports = function (io, saveUser) {
     var User;
+    var session = null;
     /*custom helper functions */
     var helper = new helpers(io);
     /*main router object which contain all function*/
@@ -330,6 +331,8 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         req.session.destroy();
+        session = null;
+        console.log('session destroy');
         // console.log('d'); //console.log(projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
@@ -341,27 +344,28 @@ module.exports = function (io, saveUser) {
 
     router.set = (req, res) => {
         // if email is empty then check it by phone number
-        if (req.body.email == ""){
-            userModel.find({ phone: req.body.phone })
-            .lean()
-            .then(function (data) {
-                req.session.user = data[0];
-                res.json(req.session.user);
-            })
-        }
-        // if phone number is empty then check it by email
-        else if (req.body.phone == ""){
+        if (req.body.email != ""){ 
             userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
                 req.session.user = data[0];
+                session = req.session.user;
+                res.json(req.session.user);
+            })
+        }
+        // if phone number is empty then check it by email
+        else if (req.body.phone != ""){
+            userModel.find({ phone: req.body.phone })
+            .lean()
+            .then(function (data) {
+                req.session.user = data[0];
+                session = req.session.user;
                 res.json(req.session.user);
             })
         }
     }
 
     router.get = (req, res) => {
-        // console.log('get');
         // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
 
@@ -374,6 +378,13 @@ module.exports = function (io, saveUser) {
                 res.json(data);
             });
         }
+        // -------- if session laod has some problem then, get session value from this part -------------
+        else if (session){
+            req.session.user = session;
+            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
+                res.json(data);
+            });
+        }
         else {
             res.status(401).send();
             // userModel.update({'_id': sbs.authUser._id}, {'onlineStatus': 0}).exec(function (err, result) {
@@ -382,13 +393,12 @@ module.exports = function (io, saveUser) {
         }
     }
     router.checkSession = function (req, res) {
-        //console.log('check session');
         // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
         // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
         // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
         // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
         // res.header('Access-Control-Allow-Credentials', 'true');
-
+         
         if (req.session.user) {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
@@ -418,7 +428,7 @@ module.exports = function (io, saveUser) {
         var email = req.body.email;
         var password = req.body.password;
         var phone = req.body.phone;
-       
+
         if (email != ''){
             helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
                 if (user._id) {
@@ -436,7 +446,7 @@ module.exports = function (io, saveUser) {
                 else res.status(401).send();
             });
         }
-        else if (phone != ''){
+        else if (phone != ''){  
             helper.getPData(userModel, { 'phone': phone }, function (user) {
                 if (user) {
                     /*change status from offline to online*/
@@ -470,7 +480,9 @@ module.exports = function (io, saveUser) {
     }
 
     router.logout = function (req, res) {
+        console.log('logout');
         if (req.session.user) {
+            session = null;
             req.session.destroy(function (err) {
                 userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
                     res.status(404).send();

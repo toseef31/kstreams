@@ -17,12 +17,6 @@
       ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
       <form method="post" class="messages-search-users-form">
 
-        <!-- ------------------- SEARCH FIELD ---------------------------------------------------- -->
-        <div class="form-group inner-addon left-addon messages-search-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input ng-model="keyword" type="text" name="query" id="query" class="form-control customPadding" placeholder="Search" autocomplete="off">
-        </div>
-
         <div class="headind_srch">
           <div class="recent_heading width100">
             <div class="pro_img">
@@ -44,6 +38,12 @@
             </a> -->
           </div>
         </div>
+
+        <!-- ------------------- SEARCH FIELD ---------------------------------------------------- -->
+        <div class="form-group inner-addon left-addon messages-search-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input ng-model="keyword" type="text" name="query" id="query" class="form-control customPadding" placeholder="Search" autocomplete="off">
+          </div>
 
         <div ng-if="projectData.broadcasting == 1" class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
           <div class="col-md-6  col-xs-6">
@@ -100,7 +100,8 @@
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
                   ng-repeat="userA in allUsers | search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
-                  <div ng-click="startChat({type:1,user:userA})">
+              
+                  <div ng-click="startChat({type:1,user:userA, userIndex:$index })" ng-class="{selectedUserColor: selectedUser==$index}">
                     <span class="user-name-section">
                       <div class="pull-right">
                         <span class="new-message-alert hidden">0</span>
@@ -123,9 +124,9 @@
                             src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
                         </span>
                       </div>
-                      <span class="messages-user-name">
+                      <div class="messages-user-name" style="padding: 10px 0 0 0;">
                         <span>{{userA.name}}</span>
-                      </span>
+                      </div>
                     </span>
                     <div class="messages-last-seen">
 
@@ -209,7 +210,7 @@
         <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="feather feather-chevron-left mobilemsgclose" ng-click="chatBack()">
+            class="feather feather-chevron-left mobilemsgclose" style="color:white" ng-click="chatBack()">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
 
@@ -217,8 +218,8 @@
             <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
             <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
           </span>
-          <span class="pull-right video-icon" ng-if="!groupSelected">
-       
+
+          <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor" style="margin-right: 20px">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>

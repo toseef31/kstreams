@@ -377,7 +377,8 @@ img{ max-width:90%;}
   width: 60%; 
 }
 .headind_srch{ 
-  padding: 4px 3px 3px 8px; overflow:hidden; border-bottom:1px solid #fff;  background-color: #498102; 
+  padding: 4px 3px 3px 8px; overflow:hidden; border-bottom:1px solid #fff;  
+  background-color: rgb(90, 158, 2); 
 }
 
 .customHeadind_srch{
@@ -684,16 +685,17 @@ img{ max-width:90%;}
   margin-right: 2px;
   margin-top: -3px;
   margin-left: 3px;
+  z-index: 9999;
   /* border: 1px solid green; */
   /* border-radius: 3px; */
 }
 .type_msg .col-md-11{
   padding-right: 0;
 }
-.type_msg .col-md-1{
+/* .type_msg .col-md-1{ */
   /* padding-right: 0;
   padding-left: 0; */
-}
+/* } */
 .emojionearea.emojionearea-inline {
   height: 43px !important;
   /* border: none !important; */
@@ -1115,16 +1117,16 @@ height: 70% !important;
     width: 100% !important;
     border: 0;
   } */
-  .emojionearea.emojionearea-inline {
+  /* .emojionearea.emojionearea-inline { */
     /* height: 45px !important; */
     /* border: none !important; */
-  }
+  /* } */
   .messaging{
     height: 88%; 
   }
-  .msg_history{
+  /* .msg_history{
     height: 82%;
-  }
+  } */
   .inbox_people {
     height: 95%;
   }
@@ -1173,9 +1175,9 @@ height: 70% !important;
     border:none;
 } */
 @media screen and (max-width: 436px) {
-  .msg_history {
+  /* .msg_history {
     height: 368px;
-  }
+  } */
   .time_date {
     font-size: 11px;
   }
@@ -1190,9 +1192,9 @@ height: 70% !important;
   .sent_msg {
     width: 70%;
   }
-  .msg_history {
+  /* .msg_history {
     height: 346px;
-  }
+  } */
   .inbox_people {
         height: 440px;
   }
@@ -1202,9 +1204,9 @@ height: 70% !important;
   }
 }
 @media screen and (max-width: 425px) {
-  .msg_history {
+  /* .msg_history {
     height: 82%;
-  }
+  } */
   /*.messaging{
     height: 88%;
   }*/
@@ -1216,9 +1218,9 @@ height: 70% !important;
   }
 }
 @media screen and (max-width: 320px){
-   .msg_history {
+   /* .msg_history {
     height: 77%;
- }
+ } */
   .messaging {
     height: 85%;
 }

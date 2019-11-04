@@ -25,28 +25,59 @@ registrationRoutes.route("/login").post(function (req, res) {
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
     projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
-
-        User.findOne({ email: req.body.email }).then(
-            (result) => {
-                if (!result) {
-                    return res.json({ 'message': "Incorrect email", 'isUserExist': false });
-                }
-                else {
-                    if (!bcrypt.compareSync(req.body.password, result.password)) {
-                        return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+        //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
+        console.log(req.body);
+        if (req.body.email != ''){   
+            User.findOne({'email':req.body.email}).then(
+                (result) => {
+                   
+                    if (!result) {     console.log('if email');
+                        return res.json({ 'message': "Incorrect email", 'isUserExist': false });
                     }
-
-                    var imageFile = "";
-                    if (result.user_image != '') {
-                        var imageFile = fullUrl + result.user_image;
+                    else {
+                        console.log('else email');
+                        if (!bcrypt.compareSync(req.body.password, result.password)) {
+                            return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+                        }
+                        console.log('pswd passed');
+                        var imageFile = "";
+                        if (result.user_image != '') {
+                            var imageFile = fullUrl + result.user_image;
+                        }
+    
+                        const data = { 'id': result.id, 'email': result.email, 'name': result.name };
+                        return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
                     }
-
-                    const data = { 'id': result.id, 'email': result.email, 'name': result.name };
-                    return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
-                }
-            }).catch(err => {
-                res.status(500).send(err);
-            });
+                }).catch(err => {
+                    res.status(500).send(err);
+                });
+        }
+        else{
+            User.findOne({'phone':req.body.phone}).then(
+                (result) => {
+                
+                    if (!result) {     console.log('if phone');
+                        return res.json({ 'message': "Incorrect phone", 'isUserExist': false });
+                    }
+                    else {
+                        console.log('else phone');
+                        if (!bcrypt.compareSync(req.body.password, result.password)) {
+                            return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+                        }
+                        console.log('pswd passed');
+                        var imageFile = "";
+                        if (result.user_image != '') {
+                            var imageFile = fullUrl + result.user_image;
+                        }
+    
+                        const data = { 'id': result.id, 'email': result.email, 'name': result.name };
+                        return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
+                    }
+                }).catch(err => {
+                    res.status(500).send(err);
+                });
+        }
+      
     })
 });
 

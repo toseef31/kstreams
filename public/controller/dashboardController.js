@@ -42,7 +42,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.replyMenuStatus= true;
     $scope.replyIconId = "";
- 
+    $scope.selectedUser = -1;
+
     var ctrl = this;
 
     // Broadcast function start===============
@@ -329,6 +330,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.chatBack = function () { 
+            $scope.selectedUser = -1;
             $scope.isChatPanel = false;
             $scope.isSidePanel = true;
             $scope.welcomePage = true;
@@ -365,8 +367,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
+            console.log(obj.userIndex);
             resetScrollVar();
-
+            $scope.selectedUser = obj.userIndex;
             $scope.deActivate();
             $scope.isSidePanel = false; $scope.isChatPanel = true;
             $scope.welcomePage = false;

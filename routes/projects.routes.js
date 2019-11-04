@@ -6,7 +6,6 @@ let userModel = require('../model/users-model');
 let projectModel = require('../model/projectModel')
 
 projectsRouter.route('/register-user').post(function (req, res) {
- 
     var userData = req.body;
     let newUserModel = new userModel(userData);
     var fullUrl = req.protocol + '://' + req.get('host') + 'profilePhotos';
@@ -43,7 +42,6 @@ projectsRouter.route('/register-user').post(function (req, res) {
                 res.send({ 'message': 'User Id or email already exist', 'status': false, 'users': null }); 
         })
     }
-    
 })
 
 projectsRouter.route('/registerProject').post(function (req, res) {

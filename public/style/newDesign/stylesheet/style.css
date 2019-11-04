@@ -168,7 +168,7 @@ a.unread-update {
      color: #444;
      background-color: #fcfcfc;
      border-bottom: 1px solid #f1f1f1;
-     padding: 18px;
+     padding: 13px;
 }
 .admin-panel .col-md-9 .list-group-item:first-child a, .setting-panel .col-md-8 .list-group-item:first-child a, .profile-lists .list-group-item:first-child a, .col-md-8 .list-group-item:first-child a, .col-md-7 .list-group-item:first-child a, .active.list-group-item:first-child a {
     color: #444 !important;
@@ -333,7 +333,12 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .message-container .page-margin .col-lg-8,.message-container .page-margin .col-md-4{padding:0}
 .mobilerightpane, .mobileleftpane{padding:0 !important}
 .user-name-section{cursor:pointer;color:#555;}
-.mobilerightpane .inner-addon{margin-bottom:0;padding:10px;background:#498102}
+.mobilerightpane .inner-addon{
+    margin-bottom:0;
+    margin-top: -1px;
+    padding:10px;
+    background:rgb(90, 158, 2)
+}
 .mobilerightpane .inner-addon svg.feather{position:absolute;margin:7px;pointer-events:none}
 .mobilerightpane .inner-addon input{background-color:#f6f7f9;border-radius:16px}
 .wo_msg_tabs{border-color:#ddd;background-color:#fff}
@@ -360,14 +365,18 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .messages-recipients-list:hover{background-color:rgba(0,0,0,.05)}
 .messages-recipients-list img{border-radius:50%;width:50px;height:50px;margin-right:20px;margin-top:7px;margin-left:20px}
 .messages-recipients-list .messages-last-seen{font-size:11px;color:#999;margin-bottom:8px;margin-top:-15px}
-.messages-recipients-list .messages-user-name{font-size:14px;line-height:47px;font-weight:700}
+.messages-recipients-list .messages-user-name{
+    font-size:14px;
+    /* line-height:47px; */
+    font-weight:700
+}
 .new-message-alert{background-color:#ce3d3d;padding:3px 6px;border-radius:2px;color:#fff}
 .mobilerightpane .new-message-alert{margin:19px 12px;display:block}
 .text-sender-container{background:#f8f3f3;position:relative;border-radius:0;box-shadow:inset 6px 0 6px -3px rgba(0,0,0,.1);margin-bottom:0}
 .text-sender-container .red-list{height:50px;box-shadow:0 1px 1px rgba(0,0,0,.19);padding:13px;z-index:10;background-color:#fff;position:relative}
 .text-sender-container .red-list .ball-pulse{position:absolute;line-height:normal;margin:0;float:none;left:50%;top:50%;transform:translate(-50%,-50%)}
 .text-sender-container .red-list .ball-pulse>div{background-color:#fff}
-.text-sender-container .red-list .mobilemsgclose{display:none;cursor:pointer;margin:-1px 10px 0 0;width:23px;height:23px;stroke-width:2.5px}
+.text-sender-container .red-list .mobilemsgclose{display:none;cursor:pointer;margin:-5px 10px 0 0;width:23px;height:23px;stroke-width:2.5px}
 .mobileleftpane .text-sender-container textarea{height:50px;padding:15px 140px 15px 13px;outline:0;width:calc(100% - 10px)!important;margin-bottom:9px;border-radius:8px!important;box-shadow:0 1px 4px rgba(0,0,0,.1);overflow:hidden}
 .text-sender-container .message-contnaier{
     max-width:60%;margin:0 0px 0px;position:relative
@@ -489,4 +498,8 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 
 .customPadding{
     padding: 13px 31px !important;
+}
+
+.selectedUserColor{
+    background-color: #a7d867;
 }

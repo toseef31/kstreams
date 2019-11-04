@@ -30,22 +30,22 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 		cert: sslConfig.certJcm,
 		// 	}; //Job callme
 	
-		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
-			keysOpt       = {
-				key: sslConfig.keyJcm,
-				cert: sslConfig.certJcm,
-			}; //Job callme
-		else if(iface.address=='192.168.1.10')
-			keysOpt       = {
-				key: sslConfig.keyPh,
-				cert: sslConfig.certPh,
-			}; // Peekhelpers
+		// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyJcm,
+		// 		cert: sslConfig.certJcm,
+		// 	}; //Job callme
+		// else if(iface.address=='192.168.1.10')
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyPh,
+		// 		cert: sslConfig.certPh,
+		// 	}; // Peekhelpers
 
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
 				key: sslConfig.keyPl,
 				cert: sslConfig.certPl
-			}; // Peeklet
+			}; // Peekhelpers
     }
     ++alias;
   });
@@ -293,7 +293,7 @@ app.route('/subscribe').post(function (req, res) {
 })
 
 app.post('/pauseChatFunc',(req,res) => {
-	console.log('pauseCH sbs');
+	console.log('pauseCH sbs'); 	console.log(req.body.chatId);
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});
 });

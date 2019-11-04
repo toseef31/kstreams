@@ -70,7 +70,7 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-    
+
         function chatModelFunc(data) { 
             for (let i = 0; i < data.length; i++) {
                 chatModel.find({
@@ -100,7 +100,6 @@ module.exports = function (io, saveUser) {
                     }
                 }
             }).lean().exec(function (err, UserIdData) {
-               
                     // now check the userId in friendId column and populate user data
                     friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
                     .populate({
@@ -113,14 +112,12 @@ module.exports = function (io, saveUser) {
                             },
                         },  
                     }).lean().exec(function (err, friendsIdData) { 
-                      
                         friendsIdData.forEach(val => {
                             if(val.userId && val.userId.projectId) friendIds.push(val.userId);
                         });
                         UserIdData.forEach(val => {
                             if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
                         }); 
-                    
                         //-----------------------------------------------
                         userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {})
                         .lean().exec(function (err, data) {
@@ -449,7 +446,7 @@ module.exports = function (io, saveUser) {
                 else res.status(401).send();
             });
         }
-        else if (phone != ''){  
+        else if (phone != ''){  console.log('phone');
             helper.getPData(userModel, { 'phone': phone }, function (user) {
                 if (user) {
                     /*change status from offline to online*/

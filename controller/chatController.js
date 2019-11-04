@@ -21,6 +21,7 @@ module.exports = function (io, saveUser) {
     var helper = new helpers(io);
     /*main router object which contain all function*/
     var router = {};
+    var session = null;
 
     router.getProjectData = function (req, res) {
         projectModel.findOne({ 'status': 1 }).lean().exec(function (err, projData) {
@@ -343,8 +344,8 @@ module.exports = function (io, saveUser) {
     }
 
     router.set = (req, res) => {
-        // if email is empty then check it by phone number
-        if (req.body.email != ""){ 
+         // if email is empty then check it by phone number
+         if (req.body.email != ""){ 
             userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
@@ -378,7 +379,7 @@ module.exports = function (io, saveUser) {
                 res.json(data);
             });
         }
-        // -------- if session laod has some problem then, get session value from this part -------------
+          // -------- if session laod has some problem then, get session value from this part -------------
         else if (session){
             req.session.user = session;
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {

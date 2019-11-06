@@ -30,16 +30,16 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 		cert: sslConfig.certJcm,
 		// 	}; //Job callme
 	
-		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
-			keysOpt       = {
-				key: sslConfig.keyJcm,
-				cert: sslConfig.certJcm,
-			}; //Job callme
-		else if(iface.address=='192.168.1.10')
-			keysOpt       = {
-				key: sslConfig.keyPh,
-				cert: sslConfig.certPh,
-			}; // Peekhelpers
+		// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyJcm,
+		// 		cert: sslConfig.certJcm,
+		// 	}; //Job callme
+		// else if(iface.address=='192.168.1.10')
+		// 	keysOpt       = {
+		// 		key: sslConfig.keyPh,
+		// 		cert: sslConfig.certPh,
+		// 	}; // Peekhelpers
 
 		// else if(iface.address=='192.168.1.10')
 			keysOpt       = {
@@ -98,6 +98,7 @@ app.use(cors());
 app.use(session({ secret: "kstreams@123", resave: true, saveUninitialized: true })); //resave changed to 'true'
 app.use(express.static('public'));
 app.use(express.static('images'));
+//app.use(express.static(path.join(__dirname, 'public/client'))); // *--- Recheck Needed ------*
 
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));
@@ -123,7 +124,21 @@ app.use('/friends', friendRoute);
 // const vapidKeys = webpush.generateVAPIDKeys();
 // console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
 webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
+
 app.post('/subscribe',(req,res) => {
+	
+	// let endpoint = req.body['endpoint'];
+    // let publicKey = req.body['p256dh'];
+    // let auth = req.body['auth'];
+    
+    // let subscription = {
+    //     endpoint: endpoint,
+    //     keys: {
+    //         p256dh: publicKey,
+    //         auth: auth
+    //     }
+	// };
+	
 	//Get push subcription object
 	const subscription = req.body.subscription;
 	//send 201 resource created
@@ -281,16 +296,6 @@ io.on('connection', function (socket) {
 	});
 
 });
-
-app.route('/subscribe').post(function (req, res) {
-	const subscription = req.body.subscription;
-	res.status(201).json({});
-	const payload = JSON.stringify({ title: 'test' });
-
-	webpush.sendNotification(subscription, payload).catch(error => {
-		console.error(error.stack);
-	});
-})
 
 app.post('/pauseChatFunc',(req,res) => {
 	console.log('pauseCH sbs');

@@ -5,7 +5,7 @@
 
 const chatController  = require('./controller/chatController');
 //const loginController = require('./public/controller/logincontroller')
-//const clientPushNotif  = require('./public/client');
+const clientPushNotif  = require('./public/client');
 const multer          = require('multer');
 //const server = require('./public/webRtc/server');
 //const upload          = multer({ dest: 'public/share' });
@@ -39,10 +39,9 @@ module.exports = function(app,io,saveUser){
 
     app.get('/checkSession',chatCon.checkSession);
     // app.get('/checkSession/:userId',chatCon.checkSession);
-    app.get('/createUser/:name',chatCon.createUser);
-    app.get('/getUsers/:userId/:allList/:projectId',chatCon.getUsers);
- 
-    app.get('/getCreatedGroups/:userId/:projectId',chatCon.getCreatedGroups);
+    app.get('/createUser/:name', chatCon.createUser);
+    app.get('/getUsers/:userId/:allList/:projectId', chatCon.getUsers);
+    app.get('/getCreatedGroups/:userId/:projectId', chatCon.getCreatedGroups);
 
     app.post('/addgroup',chatCon.addGroup);
     app.get('/getGroups/:userId',chatCon.getGroups);

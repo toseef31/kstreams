@@ -13,7 +13,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         $rootScope.projectData = response.data;  
       //  console.log($rootScope.projectData.ssl);
         //socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
-        console.log('$rootScope.projectData', $rootScope.projectData);
+       // console.log('$rootScope.projectData', $rootScope.projectData);
 
         let hostIs = location.host.split(':');
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 

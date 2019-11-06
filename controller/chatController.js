@@ -122,7 +122,7 @@ module.exports = function (io, saveUser) {
                         }); 
                     
                         //-----------------------------------------------
-                        userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {})
+                        userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).sort({ 'updatedByMsg': -1 })
                         .lean().exec(function (err, data) {
                             friendIds.push(data); 
                             chatModelFunc(friendIds);
@@ -188,14 +188,14 @@ module.exports = function (io, saveUser) {
     }
 
     router.chat = function (req, res) {
-        var chatType = req.body.chatType;
-        var sender = req.body.senderId;
-        var name = req.body.senderName;
-        var recevier = req.body.receiverId;
-        var message = req.body.message;
-        var senderImage = req.body.senderImage;
-        var receiverImage = req.body.receiverImage;
-        var isSeen = req.body.isSeen;
+        var chatType = req.body.msgData.chatType;
+        var sender = req.body.msgData.senderId;
+        var name = req.body.msgData.senderName;
+        var recevier = req.body.msgData.receiverId;
+        var message = req.body.msgData.message;
+        var senderImage = req.body.msgData.senderImage;
+        var receiverImage = req.body.msgData.receiverImage;
+        var isSeen = req.body.msgData.isSeen;
 
         if (chatType == 0) {
             newMessage = new chatModel({
@@ -210,17 +210,20 @@ module.exports = function (io, saveUser) {
         }
         else {
             newMessage = new chatModel({
-                "commentId": req.body.commentId,
-                "senderId": req.body.senderId,
-                "receiverId": req.body.receiverId,
-                "senderName": req.body.senderName,
+                "commentId": req.body.msgData.commentId,
+                "senderId": req.body.msgData.senderId,
+                "receiverId": req.body.msgData.receiverId,
+                "senderName": req.body.msgData.senderName,
                 "chatType": chatType,
-                "message": req.body.message,
+                "message": req.body.msgData.message,
             })
         }
+        
         newMessage.save(function (err, data) {
             if (err) throw err;
-                 console.log(chatType);
+            let date_ob = new Date();
+            userModel.update({ '_id': req.body.selectedUserData._id }, { $set: { 'updatedByMsg': date_ob } }).exec();
+
             if (chatType == 0) {
                 chatModel.findOne({ senderId: sender, receiverId: recevier }).populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
                     helper.addNewMessage(data);
@@ -228,12 +231,13 @@ module.exports = function (io, saveUser) {
                 })
             }
             else {
-                chatModel.findOne({ commentId: req.body.commentId, senderId: sender, receiverId: recevier }).populate('commentId').populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
+                chatModel.findOne({ commentId: req.body.msgData.commentId, senderId: sender, receiverId: recevier }).populate('commentId').populate("senderId", { _id: true, name: true }).populate("receiverId", { _id: true, name: true }).sort({ updatedAt: -1 }).exec(function (err, data) {
                     helper.addNewMessage(data);
                     res.json(data);
                 })
             }
         })
+
         /* add notification to notification table*/
         newNotification = new notifiModel({
             "senderId": sender,
@@ -245,6 +249,7 @@ module.exports = function (io, saveUser) {
             if (err) throw err;
         })
     }
+
     router.getNotification = (req, res) => {
         var userId = req.params.userId;
         notifiModel.find({ receiverId: userId }, function (err, data) {

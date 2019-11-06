@@ -98,10 +98,10 @@
             <div id="users-message" class="messages-chat-list">
               <div ng-if="allUsers.length > 1">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
-                  ng-repeat="userA in allUsers | search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
+                  ng-repeat="userA in allUsers | search: keyword | orderBy: '-tempDate'" ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
               
-                  <div ng-click="startChat({type:1,user:userA, userIndex:$index })" ng-class="{selectedUserColor: selectedUser==$index}">
+                  <div ng-click="startChat({type:1,user:userA, userIndex:$index })">
                     <span class="user-name-section">
                       <div class="pull-right">
                         <span class="new-message-alert hidden">0</span>

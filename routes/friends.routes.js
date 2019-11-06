@@ -7,12 +7,16 @@ let friendModel = require('../model/friendModel');
 
 
 friendsRouter.route('/createfriend').post(function (req, res) {
-
+     console.log("creatingFriend....");
+     console.log("userId: "+ req.body.userId);
+     console.log("projectId: "+ req.body.projectId);
     // check userId and projectId exist in userTable or not
     userModel.findOne({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { password: false })
-        .lean().exec(function (err, userResult) { 
+        .lean().exec(function (err, userResult) {
+        console.log(userResult); 
         if (!userResult) res.send({ 'message': 'User Id doesnt exist', 'status': false }); 
         else {
+            console.log('else'); 
             // check friendId and projectId exist in userTable or not
             userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
             .lean().exec(function (err, friendResult) { 

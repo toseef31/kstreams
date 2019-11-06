@@ -87,6 +87,7 @@ module.exports = function (io, saveUser) {
         }
 
         if (req.params.allList == 0) {
+            console.log(req.params.userId);
             var friendIds = [];
             friendModel.find(
                 { 'userId': req.params.userId, 'status': 1 }, 
@@ -101,6 +102,8 @@ module.exports = function (io, saveUser) {
                     }
                 }
             }).lean().exec(function (err, UserIdData) {
+                console.log("=========UserIdData============");
+                console.log(UserIdData);
                     // now check the userId in friendId column and populate user data
                     friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
                     .populate({
@@ -113,12 +116,15 @@ module.exports = function (io, saveUser) {
                             },
                         },  
                     }).lean().exec(function (err, friendsIdData) { 
+                        console.log("=========friendsIdData============");
+                        console.log(friendsIdData);
                         friendsIdData.forEach(val => {
                             if(val.userId && val.userId.projectId) friendIds.push(val.userId);
                         });
                         UserIdData.forEach(val => {
                             if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
                         }); 
+                      
                         //-----------------------------------------------
                         userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).sort({ 'updatedByMsg': -1 })
                         .lean().exec(function (err, data) {

@@ -124,7 +124,7 @@ module.exports = function (io, saveUser) {
                         UserIdData.forEach(val => {
                             if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
                         }); 
-                      
+                        
                         //-----------------------------------------------
                         userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).sort({ 'updatedByMsg': -1 })
                         .lean().exec(function (err, data) {

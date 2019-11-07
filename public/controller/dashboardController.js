@@ -738,6 +738,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             // socket.emit('removeconnectUser',{check:check,members:$scope.receiveGroupMem});
         }
 
+        socket.on('openSelectedChatMsg', function (friendData){
+            console.log('im in dashBoard now...');
+            $scope.selectedUserNo = 0;
+            $scope.selectedUserData = friendData;
+        })
+
         socket.on('logoutStatusUpdate', function (loggedOutUserId){
             // on user logout, update user status for other users
             let i =0;
@@ -972,17 +978,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         socket.on('remsg', function (msg) {
             //console.log("1");
             $scope.$apply(function () { 
-                //console.log("2");
+               // console.log("2");
                 if ($scope.user._id == msg.receiverId._id) {
-                   // console.log("3:" + $scope.chatWithId + ' == '+ msg.senderId._id);
+                  //  console.log("3:" + $scope.chatWithId + ' == '+ msg.senderId._id);
                   //  if ($scope.chatWithId == msg.senderId._id){
-                       // console.log("4");
+                     //   console.log("4");
                       if ('serviceWorker' in navigator){
                         console.log("Push Notification 1");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                       }
                    // }
-                   // console.log("5");
+                 //   console.log("5");
                         let senderIdIndex = 0;
                         for (var i =0; i<$scope.allUsers.length; i++){
                             if ($scope.allUsers[i]._id == msg.senderId._id){
@@ -996,9 +1002,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             }
                         }
                 }
-                console.log("6");
+            //    console.log("6");
                 if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
-                    console.log("7");
+                   // console.log("7");
                     if ('serviceWorker' in navigator){
                         console.log("Push Notification 2");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));

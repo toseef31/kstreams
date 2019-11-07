@@ -21,7 +21,11 @@ async function send() {
 		userVisibleOnly:true,
 		applicationServerKey:urlBase64ToUint8Array(publicVapidKey)
 	}).then(function (pushSubscription){
+<<<<<<< HEAD
 		// console.log(pushSubscription);
+=======
+	
+>>>>>>> bf2a00847b9d44a83833d4be8c34eb44eda4ef32
         const pushSub = {
             endpoint: pushSubscription.endpoint,
             keys:{

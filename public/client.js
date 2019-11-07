@@ -7,6 +7,7 @@ const publicVapidKey = 'BOkWsflrOnCVOs19RXCMiHl-tAbRzKC3BlAwxzTo7rJYWGAgGFzDweF9
 
 // register sw, register push , send push
 async function send() {
+	var tempSubs;
 	//registering service worker
 	console.log('regitering service worker.....');
 	const register = await navigator.serviceWorker.register('/worker.js',{
@@ -16,26 +17,29 @@ async function send() {
 	//register push
 	console.log('registering push');
 	
-	const subscription = await register.pushManager.subscribe({
+	const _subscription = await register.pushManager.subscribe({
 		userVisibleOnly:true,
 		applicationServerKey:urlBase64ToUint8Array(publicVapidKey)
 	}).then(function (pushSubscription){
+		// console.log(pushSubscription);
         const pushSub = {
             endpoint: pushSubscription.endpoint,
             keys:{
                 p256dh: pushSubscription.getKey('p256dh'),
                 auth: pushSubscription.getKey('auth')
             }
-        };
+		};
+		
+		tempSubs = pushSub;
 	});
 
 	console.log('push registered');
-
+    console.log(tempSubs);
 	// send push notifications
 	console.log('sending push');
 	await fetch('/subscribe',{
 		method: 'POST',
-		body: JSON.stringify({subscription:subscription,title:title}),
+		body: JSON.stringify({subscription:tempSubs,title:'title'}),
 		headers:{
 			'content-type':'application/json'
 		}

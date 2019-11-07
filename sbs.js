@@ -124,28 +124,17 @@ app.use('/friends', friendRoute);
 // const vapidKeys = webpush.generateVAPIDKeys();
 // console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
 webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
-
 app.post('/subscribe',(req,res) => {
-	
-	// let endpoint = req.body['endpoint'];
-    // let publicKey = req.body['p256dh'];
-    // let auth = req.body['auth'];
-    
-    // let subscription = {
-    //     endpoint: endpoint,
-    //     keys: {
-    //         p256dh: publicKey,
-    //         auth: auth
-    //     }
-	// };
-	
+
 	//Get push subcription object
 	const subscription = req.body.subscription;
+	console.log(subscription);
 	//send 201 resource created
 	res.status(201).json({});
 	//create payload
 	const payload = JSON.stringify({ title :req.body.title});
 	//pass object into send notification
+	console.log('subscribe pusher');
 	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
 });
 
@@ -296,6 +285,18 @@ io.on('connection', function (socket) {
 	});
 
 });
+
+
+app.route('/subscribe').post(function (req, res) {
+	const subscription = req.body.subscription;
+	res.status(201).json({});
+	const payload = JSON.stringify({ title: 'test' });
+
+
+	webpush.sendNotification(subscription, payload).catch(error => {
+		console.error(error.stack);
+	});
+})
 
 app.post('/pauseChatFunc',(req,res) => {
 	console.log('pauseCH sbs'); 	console.log(req.body.chatId);

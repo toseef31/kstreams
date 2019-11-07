@@ -42,7 +42,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 	}; // Peekhelpers
 
 		// else if(iface.address=='192.168.1.10')
-			keysOpt       = {
+			keysOpt = {
 				key: sslConfig.keyPl,
 				cert: sslConfig.certPl
 			}; // Peeklet
@@ -51,8 +51,8 @@ Object.keys(ifaces).forEach(function (ifname) {
   });
 });
  
-const server    = require('https').Server(keysOpt,app);
-const io       = require('socket.io')(server);
+const server = require('https').Server(keysOpt,app);
+const io     = require('socket.io')(server);
 const config = require('./config/DB');
 
 //*****
@@ -195,6 +195,12 @@ function setUserStatus(status, userId) {
 	userModel.update({ '_id': userId }, { 'onlineStatus': status }).exec();
 }
 
+function openSelectedUserChat(friendData){
+	console.log('open selected user chat');
+	console.log('friendId: '+ friendData);
+	io.emit('openSelectedChatMsg', friendData); // this emitted function is after line#900
+}
+
 io.on('connection', function (socket) {
 
 	// socket.on('setSSL', function (SSLData){
@@ -302,6 +308,7 @@ app.post('/pauseChatFunc',(req,res) => {
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});
 });
+
 
 
 var serveStatic = require('serve-static');

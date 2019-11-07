@@ -20,6 +20,7 @@ async function send() {
 		userVisibleOnly:true,
 		applicationServerKey:urlBase64ToUint8Array(publicVapidKey)
 	}).then(function (pushSubscription){
+	
         const pushSub = {
             endpoint: pushSubscription.endpoint,
             keys:{

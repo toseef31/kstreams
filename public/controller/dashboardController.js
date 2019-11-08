@@ -218,7 +218,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         .then(function (response) {
             $scope.tempUsers = response.data.usersList; // used for user search result
             $scope.allUsers = response.data.usersList; 
-         
+            
+            $scope.selectedUserNo = 0;
             let i=0; 
             let userChatToOpen;  
             for (i; i < response.data.usersList.length; i++){ // ******** RECHECK NEEDED ***********
@@ -227,11 +228,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 if (response.data.usersList[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
             
                 if (response.data.usersList[i]._id == $scope.user.chatWithRefId && $scope.user.chatWithRefId){
-                   // console.log("inside 1");
-                    //console.log($scope.allUsers[i].tempDate);
                     userChatToOpen = {'user': response.data.usersList[i], 'userIndex': 0, 'type': 1};
                     $scope.allUsers[i].tempDate =  new Date().getTime();
-                   // console.log($scope.allUsers[i].tempDate);
+                
                     $scope.selectedUserNo = 0;
                     $scope.selectedUserData = $scope.user;
                     $scope.isChatPanel = true;

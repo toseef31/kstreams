@@ -45,7 +45,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 			keysOpt = {
 				key: sslConfig.keyPl,
 				cert: sslConfig.certPl
-			}; // Peekhelpers
+			}; // Peeklet
     }
     ++alias;
   });
@@ -124,17 +124,16 @@ app.use('/friends', friendRoute);
 // const vapidKeys = webpush.generateVAPIDKeys();
 // console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
 webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
-app.post('/subscribe',(req,res) => {
 
+app.post('/subscribe',(req,res) => {
+	
 	//Get push subcription object
 	const subscription = req.body.subscription;
-	console.log(subscription);
 	//send 201 resource created
 	res.status(201).json({});
 	//create payload
 	const payload = JSON.stringify({ title :req.body.title});
 	//pass object into send notification
-	console.log('subscribe pusher');
 	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
 });
 
@@ -182,12 +181,6 @@ function saveUser(user) {
 //*****
 function setUserStatus(status, userId) {
 	userModel.update({ '_id': userId }, { 'onlineStatus': status }).exec();
-}
-
-function openSelectedUserChat(friendData){
-	console.log('open selected user chat');
-	console.log('friendId: '+ friendData);
-	io.emit('openSelectedChatMsg', friendData); // this emitted function is after line#900
 }
 
 io.on('connection', function (socket) {
@@ -292,25 +285,11 @@ io.on('connection', function (socket) {
 
 });
 
-
-app.route('/subscribe').post(function (req, res) {
-	const subscription = req.body.subscription;
-	res.status(201).json({});
-	const payload = JSON.stringify({ title: 'test' });
-
-
-	webpush.sendNotification(subscription, payload).catch(error => {
-		console.error(error.stack);
-	});
-})
-
 app.post('/pauseChatFunc',(req,res) => {
-	console.log('pauseCH sbs'); 	console.log(req.body.chatId);
+	console.log('pauseCH sbs');
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});
 });
-
-
 
 var serveStatic = require('serve-static');
 app.use(serveStatic('./'));

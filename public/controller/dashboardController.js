@@ -219,14 +219,30 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.tempUsers = response.data.usersList; // used for user search result
             $scope.allUsers = response.data.usersList; 
          
-            let i=0;   
-            for (i; i < response.data.usersList.length; i++){ // ************ RECHECK NEEDED ***********
+            let i=0; 
+            let userChatToOpen;  
+            for (i; i < response.data.usersList.length; i++){ // ******** RECHECK NEEDED ***********
              
                 $scope.allUsers[i].tempDate = new Date($scope.allUsers[i].updatedByMsg).getTime(); 
                 if (response.data.usersList[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
+            
+                if (response.data.usersList[i]._id == $scope.user.chatWithRefId && $scope.user.chatWithRefId){
+                   // console.log("inside 1");
+                    //console.log($scope.allUsers[i].tempDate);
+                    userChatToOpen = {'user': response.data.usersList[i], 'userIndex': 0, 'type': 1};
+                    $scope.allUsers[i].tempDate =  new Date().getTime();
+                   // console.log($scope.allUsers[i].tempDate);
+                    $scope.selectedUserNo = 0;
+                    $scope.selectedUserData = $scope.user;
+                    $scope.isChatPanel = true;
+                    $scope.isSidePanel = false;
+                }
             }
             $scope.usersLoaded = true;
-          //  console.log($scope.allUsers);
+
+            if ($scope.user.chatWithRefId){
+               $scope.startChat(userChatToOpen);
+            }
         });
 
         /*get all group users*/
@@ -253,6 +269,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             for(var i =0; i<$scope.allUsers.length; i++){
                // Check, to which user message has been sent, to move senderUser up in the userList
                if ($scope.selectedUserData._id == $scope.allUsers[i]._id){
+                 //  console.log('move on top:'+ $scope.allUsers[i].name);
                  $scope.allUsers[i].tempDate =  new Date().getTime();
                  $scope.selectedUserNo = 0;
                //  console.log($scope.allUsers[i]);    
@@ -378,7 +395,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
-          //  console.log(obj);
+            console.log(obj);
+      
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
             
@@ -737,12 +755,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             // if ( $scope.reveiveGroupCall == true && $scope.liveStream === false) 
             // socket.emit('removeconnectUser',{check:check,members:$scope.receiveGroupMem});
         }
-
-        socket.on('openSelectedChatMsg', function (friendData){
-            console.log('im in dashBoard now...');
-            $scope.selectedUserNo = 0;
-            $scope.selectedUserData = friendData;
-        })
 
         socket.on('logoutStatusUpdate', function (loggedOutUserId){
             // on user logout, update user status for other users

@@ -389,12 +389,12 @@ module.exports = function (io, saveUser) {
         }
         // <<<<<<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
           // -------- if session load has some problem then, get session value from this part -------------
-        // else if (session){
-        //     req.session.user = session;
-        //     helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
-        //         res.json(data);
-        //     });
-        // }
+        else if (session){
+            req.session.user = session;
+            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
+                res.json(data);
+            });
+        }
         else {
             res.status(401).send();
             // userModel.update({'_id': sbs.authUser._id}, {'onlineStatus': 0}).exec(function (err, result) {

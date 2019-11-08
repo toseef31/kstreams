@@ -173,7 +173,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
     
         socket.emit('user_connected', { userId: $rootScope.user._id });
-
+        console.log($rootScope.user);
+        
       //  if ($rootScope.projectData.audioCall == 0 && $rootScope.projectData.videoCall == 0) return;
 
         $rootScope.O2OSoc.$on('$open', function () {
@@ -239,11 +240,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             $scope.usersLoaded = true;
 
-            console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
+            //console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
             if ($scope.user.chatWithRefId){console.log('if');
                $scope.startChat(userChatToOpen);
             }
-            else { console.log('else');
+            else { //console.log('else');
                 $scope.selectedUserNo = -1;
                 $scope.selectedUserData = null;
             }

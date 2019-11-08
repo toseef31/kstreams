@@ -68,6 +68,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         url: '/checkSession',
     }).then(function successCallback(response) { 
         $rootScope.user = response.data;
+        console.log($rootScope.user);
         socket.emit('logoutUpdate', $scope.loggedUserId);
         $location.path("/dash");
     });

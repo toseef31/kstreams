@@ -244,7 +244,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                $scope.startChat(userChatToOpen);
             }
             else { console.log('else');
-                $scope.selectedUserNo = 0;
+                $scope.selectedUserNo = -1;
                 $scope.selectedUserData = null;
             }
         });

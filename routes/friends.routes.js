@@ -1,5 +1,4 @@
 const express = require('express');
-const sbs = require('../sbs');
 const friendsRouter = express.Router();
 
 let userModel = require('../model/users-model');
@@ -30,14 +29,14 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                         if (result){
                             result.status=1;
                             result.save();
-                            sbs.openSelectedUserChat(friendResult._id);
+                           // sbs.openSelectedUserChat(friendResult._id);
                             res.send({ 'message': 'Success', 'status': true });
                         } 
                         else {
                             // get reference ids of both iserId and friendId 
                             let newFriendModel = new friendModel({ 'userId': userResult._id, 'friendId': friendResult._id });
                             newFriendModel.save().then(reslt => { // save both ref-Ids in friend table
-                                sbs.openSelectedUserChat(friendResult);
+                                // sbs.openSelectedUserChat(friendResult._id);
                                 res.send({ 'message': 'Success', 'status': true });
                             })
                         }

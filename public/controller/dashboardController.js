@@ -738,11 +738,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             // socket.emit('removeconnectUser',{check:check,members:$scope.receiveGroupMem});
         }
 
-        socket.on('openSelectedChatMsg', function (friendData){
-            console.log('im in dashBoard now...');
-            $scope.selectedUserNo = 0;
-            $scope.selectedUserData = friendData;
-        })
+        // socket.on('openSelectedChatMsg', function (friendData){
+        //     console.log('im in dashBoard now...');
+        //     $scope.selectedUserNo = 0;
+        //     $scope.selectedUserData = friendData;
+        // })
 
         socket.on('logoutStatusUpdate', function (loggedOutUserId){
             // on user logout, update user status for other users

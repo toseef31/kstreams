@@ -362,7 +362,11 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .messages-users-list{height:calc(100vh - 198px);border-radius:0;background-color:#fff;overflow:hidden;overflow-y:auto}
 .messages-recipients-list{height:64px;position:relative;cursor:pointer;border-bottom:1px solid #f1f1f1}
 .messages-recipients-list:last-child{border-bottom:0 solid}
-.messages-recipients-list:hover{background-color:rgba(0,0,0,.05)}
+
+.messages-recipients-list:hover{
+    background-color:#c5e0a1
+}
+
 .messages-recipients-list img{border-radius:50%;width:50px;height:50px;margin-right:20px;margin-top:7px;margin-left:20px}
 .messages-recipients-list .messages-last-seen{font-size:11px;color:#999;margin-bottom:8px;margin-top:-15px}
 .messages-recipients-list .messages-user-name{
@@ -490,7 +494,10 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 }
 
 .mbutton        {background:none;}
-.mbutton.current{  background-color:rgb(210, 238, 157);}
+.mbutton.current{  
+    background-color:rgb(210, 238, 157);
+    margin-bottom: 1px !important;
+}
 
 .tabContent        {display:none;}
 .tabContent.current{display:block;}
@@ -502,4 +509,17 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 
 .selectedUserColor{
     background-color: #a7d867;
+}
+
+.noMessageContainerText{
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    padding: 20%;
+    opacity: 0.6;
+}
+
+.chatIcon{
+    color: green;
+    font-size: xx-large;
 }

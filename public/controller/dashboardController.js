@@ -242,6 +242,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if ($scope.user.chatWithRefId){
                $scope.startChat(userChatToOpen);
             }
+            else {
+                $scope.selectedUserNo = 0;
+                $scope.selectedUserData = null;
+            }
         });
 
         /*get all group users*/

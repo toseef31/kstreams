@@ -350,9 +350,6 @@ module.exports = function (io, saveUser) {
 
     router.set = (req, res) => {
          // if email is empty then check it by phone number
-      
-        
-
         if (req.body.email != ""){ 
             userModel.update({ 'email': req.body.email }, { $set: { 'chatWithRefId': '' } }).exec();
             userModel.find({ email: req.body.email })

@@ -350,7 +350,11 @@ module.exports = function (io, saveUser) {
 
     router.set = (req, res) => {
          // if email is empty then check it by phone number
-         if (req.body.email != ""){ 
+      
+        
+
+        if (req.body.email != ""){ 
+            userModel.update({ 'email': req.body.email }, { $set: { 'chatWithRefId': '' } }).exec();
             userModel.find({ email: req.body.email })
             .lean()
             .then(function (data) {
@@ -361,6 +365,7 @@ module.exports = function (io, saveUser) {
         }
         // if phone number is empty then check it by email
         else if (req.body.phone != ""){
+            userModel.update({ 'phone': req.body.phone }, { $set: { 'chatWithRefId': '' } }).exec();
             userModel.find({ phone: req.body.phone })
             .lean()
             .then(function (data) {

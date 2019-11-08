@@ -239,10 +239,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             $scope.usersLoaded = true;
 
-            if ($scope.user.chatWithRefId){
+            console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
+            if ($scope.user.chatWithRefId){console.log('if');
                $scope.startChat(userChatToOpen);
             }
-            else {
+            else { console.log('else');
                 $scope.selectedUserNo = 0;
                 $scope.selectedUserData = null;
             }

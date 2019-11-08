@@ -81,7 +81,7 @@ friendsRouter.route('/getfriends').post(function (req, res) {
 friendsRouter.route('/resetChatRefId').post(function (req, res) {
     var userId = req.body.userId;
     userModel.update({ 'userId': userId }, { $set: { 'chatWithRefId': '' } }).exec();
-    res.send(201);
+    res.send(true);
 })
 
 module.exports = friendsRouter;

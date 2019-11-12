@@ -352,7 +352,7 @@ module.exports = function (io, saveUser) {
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                    let unreadMsgs = chatModel.find({'receiverId': req.params.userId, 'isSeen': 0}).count().exec();
+                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec();
 
                     res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
                 })
@@ -364,7 +364,8 @@ module.exports = function (io, saveUser) {
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                    let unreadMsgs = chatModel.find({'receiverId': req.params.userId, 'isSeen': 0}).count().exec();
+                    console.log(data._id);
+                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec();
 
                     if (data.length == 0) res.json({ 'usersList': data })
                     res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});

@@ -352,9 +352,11 @@ module.exports = function (io, saveUser) {
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec();
-
-                    res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
+                        function (err, unreadMsgs) {
+                            console.log(unreadMsgs);
+                            res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                        });
                 })
         }
         // if phone number is empty then check it by email
@@ -364,18 +366,14 @@ module.exports = function (io, saveUser) {
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                    console.log(data._id);
+                   // console.log(data._id);
                      chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
                         function (err, unreadMsgs) {
                             console.log(unreadMsgs);
 
                             if (data.length == 0) res.json({ 'usersList': data })
                             res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
-                        }
-                        );
-                   
-
-                 
+                        });
                 })
         }
     }

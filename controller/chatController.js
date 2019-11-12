@@ -365,10 +365,17 @@ module.exports = function (io, saveUser) {
                 .then(function (data) {
                     req.session.user = data;
                     console.log(data._id);
-                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec();
+                     chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
+                        function (err, unreadMsgs) {
+                            console.log(unreadMsgs);
 
-                    if (data.length == 0) res.json({ 'usersList': data })
-                    res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                            if (data.length == 0) res.json({ 'usersList': data })
+                            res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                        }
+                        );
+                   
+
+                 
                 })
         }
     }

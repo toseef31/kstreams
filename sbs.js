@@ -94,7 +94,12 @@ var authUser;
 //*****
 //*****
 
-app.use(cors());
+const corsOptions = {
+	origin: ["https://peekhelpers.com","https://www.peekhelpers.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
+	credentials: true,
+  };
+
+app.use(cors(corsOptions));
 app.use(session({ secret: "kstreams@123", resave: true, saveUninitialized: true })); //resave changed to 'true'
 app.use(express.static('public'));
 app.use(express.static('images'));
@@ -103,7 +108,7 @@ app.use(express.static('images'));
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 /*get data from url and encode in to json*/
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const registrationRoute = require('./routes/registration.routes');
@@ -126,18 +131,6 @@ app.use('/friends', friendRoute);
 webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
 
 app.post('/subscribe',(req,res) => {
-	
-	// let endpoint = req.body['endpoint'];
-    // let publicKey = req.body['p256dh'];
-    // let auth = req.body['auth'];
-    
-    // let subscription = {
-    //     endpoint: endpoint,
-    //     keys: {
-    //         p256dh: publicKey,
-    //         auth: auth
-    //     }
-	// };
 	
 	//Get push subcription object
 	const subscription = req.body.subscription;
@@ -182,7 +175,6 @@ require('./serverRoutes')(app, io, saveUser);
 
 /* save the current login user info in a variable */
 function saveUser(user) {
-
 	authUser = user;
 	setUserStatus(1, authUser._id);
 }
@@ -193,12 +185,6 @@ function saveUser(user) {
 //*****
 function setUserStatus(status, userId) {
 	userModel.update({ '_id': userId }, { 'onlineStatus': status }).exec();
-}
-
-function openSelectedUserChat(friendData){
-	console.log('open selected user chat');
-	console.log('friendId: '+ friendData);
-	io.emit('openSelectedChatMsg', friendData); // this emitted function is after line#900
 }
 
 io.on('connection', function (socket) {
@@ -308,8 +294,6 @@ app.post('/pauseChatFunc',(req,res) => {
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});
 });
-
-
 
 var serveStatic = require('serve-static');
 app.use(serveStatic('./'));

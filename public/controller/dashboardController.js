@@ -239,7 +239,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
             $scope.usersLoaded = true;
-
+           // console.log($scope.allUsers);
             //console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
             if ($scope.user.chatWithRefId){console.log('if');
                $scope.startChat(userChatToOpen);
@@ -660,6 +660,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*logout the user and destroy the session*/
         $scope.logout = function () {
+            console.log("logg outtt");
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
 
@@ -993,8 +994,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
-            $scope.$apply(function () { 
-               console.log($scope.user._id +' == '+ msg.receiverId._id);
+             $scope.$apply(function () { 
                 if ($scope.user._id == msg.receiverId._id) {
                   //  if ($scope.chatWithId == msg.senderId._id){
                       if ('serviceWorker' in navigator){
@@ -1002,8 +1002,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                       }
                    // }
-            
-                   let senderIdIndex = -1;
+      
+                        let senderIdIndex = -1;
                         
                         for (var i =0; i<$scope.allUsers.length; i++){
                             if ($scope.allUsers[i]._id == msg.senderId._id){
@@ -1022,9 +1022,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         }
 
                 }
-            
+           
                 if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
-                
+                  
                     if ('serviceWorker' in navigator){
                         console.log("Push Notification 2");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
@@ -1081,6 +1081,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $window.onbeforeunload = $scope.onExit;
 
     }, function errorCallback(response) {
+        console.log('im destroying the session');
+        console.log(response);
         $scope.sessionDestroy = true;
         $location.path('/');
     });

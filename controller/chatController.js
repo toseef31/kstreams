@@ -20,7 +20,6 @@ module.exports = function (io, saveUser) {
     var helper = new helpers(io);
     /*main router object which contain all function*/
     var router = {};
-    var session = null;
 
     router.getProjectData = function (req, res) {
         projectModel.findOne({ 'status': 1 }).lean().exec(function (err, projData) {
@@ -70,13 +69,13 @@ module.exports = function (io, saveUser) {
     }
 
     router.getUsers = function (req, res) {
-    
-        function chatModelFunc(data) { 
+
+        function chatModelFunc(data) {
             for (let i = 0; i < data.length; i++) {
                 chatModel.find({
-                        'senderId': data[i]._id,
-                        'receiverId': req.params.userId,
-                        'isSeen': 0
+                    'senderId': data[i]._id,
+                    'receiverId': req.params.userId,
+                    'isSeen': 0
                 }).count().exec(function (err, count) {
                     data[i]['usCount'] = count;
                     if (i == data.length - 1) res.json({ 'usersList': data });
@@ -88,48 +87,48 @@ module.exports = function (io, saveUser) {
         if (req.params.allList == 0) {
             var friendIds = [];
             friendModel.find(
-                { 'userId': req.params.userId, 'status': 1 }, 
+                { 'userId': req.params.userId, 'status': 1 },
                 { friendId: true }
             ).populate({
-                path : 'friendId',
-                populate : {
-                    path : 'projectId',
-                    select:'_id, status',
+                path: 'friendId',
+                populate: {
+                    path: 'projectId',
+                    select: '_id, status',
                     match: {
-                        status: 1 
+                        status: 1
                     }
                 }
             }).lean().exec(function (err, UserIdData) {
-               
-                    // now check the userId in friendId column and populate user data
-                    friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
+
+                // now check the userId in friendId column and populate user data
+                friendModel.find({ 'friendId': req.params.userId, 'status': 1 }, { userId: true })
                     .populate({
-                        path : 'userId',
-                        populate : {
-                            path : 'projectId', 
-                            select:'_id, status',
+                        path: 'userId',
+                        populate: {
+                            path: 'projectId',
+                            select: '_id, status',
                             match: {
-                                'status': 1 
+                                'status': 1
                             },
-                        },  
-                    }).lean().exec(function (err, friendsIdData) { 
-                      
+                        },
+                    }).lean().exec(function (err, friendsIdData) {
+
                         friendsIdData.forEach(val => {
-                            if(val.userId && val.userId.projectId) friendIds.push(val.userId);
+                            if (val.userId && val.userId.projectId) friendIds.push(val.userId);
                         });
                         UserIdData.forEach(val => {
-                            if(val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
-                        }); 
-                        
+                            if (val.friendId && val.friendId.projectId) friendIds.push(val.friendId);
+                        });
+
                         //-----------------------------------------------
                         userModel.findOne({ _id: req.params.userId, isAdmin: { $ne: 1 }, status: 1 }, {}).sort({ 'updatedByMsg': -1 })
-                        .lean().exec(function (err, data) {
-                            friendIds.push(data); 
-                            chatModelFunc(friendIds);
-                        })
+                            .lean().exec(function (err, data) {
+                                friendIds.push(data);
+                                chatModelFunc(friendIds);
+                            })
 
-                    }) 
-                })
+                    })
+            })
         }
         else
             userModel.find({ _id: { $ne: req.params.userId }, isAdmin: { $ne: 1 }, status: 1, projectId: req.params.projectId },
@@ -218,7 +217,7 @@ module.exports = function (io, saveUser) {
                 "message": req.body.msgData.message,
             })
         }
-        
+
         newMessage.save(function (err, data) {
             if (err) throw err;
             let date_ob = new Date();
@@ -272,7 +271,7 @@ module.exports = function (io, saveUser) {
     router.getChat = function (req, res) {
         var sender = req.params.senderId;
         var receiver = req.params.receiverId;
-        var msgCountLimit = parseInt(req.params.limit); 
+        var msgCountLimit = parseInt(req.params.limit);
 
         chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 }
             , { $set: { 'isSeen': 1 } }).exec(function (err, data) {
@@ -302,9 +301,11 @@ module.exports = function (io, saveUser) {
         var receiver = req.params.receiverId;
         var msgCountLimit = parseInt(req.params.limit);
         var chatTime = req.params.chatTime;
-    
-        chatModel.find({createdAt: {$lt: chatTime} ,  $or: [ { senderId: sender, receiverId: receiver },
-                                { senderId: receiver, receiverId: sender }]})
+
+        chatModel.find({
+            createdAt: { $lt: chatTime }, $or: [{ senderId: sender, receiverId: receiver },
+            { senderId: receiver, receiverId: sender }]
+        })
 
             .populate("receiverId", { '_id': true, 'name': true })
             .populate("senderId", { '_id': true, 'name': true })
@@ -338,79 +339,50 @@ module.exports = function (io, saveUser) {
     }
 
     router.out = (req, res) => {
+        console.log("GOOING OUTTT");
         req.session.destroy();
-        // console.log('d'); //console.log(projectData[0].domainUrl);
-        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        // res.header('Access-Control-Allow-addfiles', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        // res.header('Access-Control-Allow-Credentials', 'true');
         res.json({ message: "session destroy" });
     }
 
     router.set = (req, res) => {
-         // if email is empty then check it by phone number
-        if (req.body.email != ""){ 
-            //userModel.update({ 'email': req.body.email }, { $set: { 'chatWithRefId': '' } }).exec();
-            userModel.find({ email: req.body.email })
-            .lean()
-            .then(function (data) {
-                req.session.user = data[0];
-                session = req.session.user;
-                res.json(req.session.user);
-            })
+        // if email is empty then check it by phone number
+        if (req.body.email != "") {
+           // console.log('if set');
+            userModel.findOne({ email: req.body.email })
+                .lean()
+                .then(function (data) {
+                    req.session.user = data;
+                    let unreadMsgs = chatModel.find({'receiverId': req.params.userId, 'isSeen': 0}).count().exec();
+
+                    res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                })
         }
         // if phone number is empty then check it by email
-        else if (req.body.phone != ""){
-           // userModel.update({ 'phone': req.body.phone }, { $set: { 'chatWithRefId': '' } }).exec();
-            userModel.find({ phone: req.body.phone })
-            .lean()
-            .then(function (data) {
-                req.session.user = data[0];
-                session = req.session.user;
-                res.json(req.session.user);
-            })
+        else if (req.body.phone != "") {
+         //   console.log('else set');
+            userModel.findOne({ phone: req.body.phone })
+                .lean()
+                .then(function (data) {
+                    req.session.user = data;
+                    let unreadMsgs = chatModel.find({'receiverId': req.params.userId, 'isSeen': 0}).count().exec();
+
+                    if (data.length == 0) res.json({ 'usersList': data })
+                    res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
+                })
         }
     }
 
     router.get = (req, res) => {
-        // console.log('get');
-        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-
-        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        // res.header('Access-Control-Allow-Credentials', 'true');
-
         if (req.session.user && typeof req.session.user._id !== 'undefiend') {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
             });
         }
-        // <<<<<<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-          // -------- if session load has some problem then, get session value from this part -------------
-        else if (session){
-            req.session.user = session;
-            helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
-                res.json(data);
-            });
-        }
-        else {
-            res.status(401).send();
-            // userModel.update({'_id': sbs.authUser._id}, {'onlineStatus': 0}).exec(function (err, result) {
-            //     res.status(401).send();
-            //  })
-        }
+        else res.status(401).send();
     }
-    
-    router.checkSession = function (req, res) {
-        // console.log('check session');
-        // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);
-        // res.header('Access-Control-Allow-Origin', 'https://www.jobcallme.com,https://localhost:22000');
-        // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-        // res.header('Access-Control-Allow-Credentials', 'true');
 
+    router.checkSession = function (req, res) {
+        console.log(req.session.user);
         if (req.session.user) {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
@@ -440,14 +412,16 @@ module.exports = function (io, saveUser) {
         var email = req.body.email;
         var password = req.body.password;
         var phone = req.body.phone;
-       
-        if (email != ''){
-            helper.getData(userModel, { 'email': email, 'password': password }, function (user) {
+
+
+        if (email != '') {   //console.log('if');
+            helper.getData(userModel, { 'email': email, 'phone': '', 'password': password }, function (user) {
                 if (user._id) {
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */
                         req.session.user = user;
+
                         /*this function use to move user info to another view*/
                         saveUser(user);
                         /*get users to show order by newly messages*/
@@ -458,13 +432,16 @@ module.exports = function (io, saveUser) {
                 else res.status(401).send();
             });
         }
-        else if (phone != ''){
-            helper.getPData(userModel, { 'phone': phone }, function (user) {
+        else if (phone != '') {
+            console.log('else Login phone');
+            helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
                 if (user) {
+                    // console.log(user);
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */
                         req.session.user = user;
+                        //console.log(req.session.user);
                         /*this function use to move user info to another view*/
                         saveUser(user);
                         /*get users to show order by newly messages*/
@@ -493,6 +470,7 @@ module.exports = function (io, saveUser) {
 
     router.logout = function (req, res) {
         if (req.session.user) {
+            console.log("LOOG OUTTTT");
             req.session.destroy(function (err) {
                 userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
                     res.status(404).send();

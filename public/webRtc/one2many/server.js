@@ -23,7 +23,7 @@ var ws = require('ws');
 var kurento = require('kurento-client');
 var fs    = require('fs');
 var https = require('https');
-
+const sslConfig = require('../../../ssl-config');
 var os = require( 'os' );
 var ifaces = os.networkInterfaces();
 

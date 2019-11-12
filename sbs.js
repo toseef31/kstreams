@@ -30,11 +30,16 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 		cert: sslConfig.certJcm,
 		// 	}; //Job callme
 	
-		// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
-		// 	keysOpt       = {
-		// 		key: sslConfig.keyJcm,
-		// 		cert: sslConfig.certJcm,
-		// 	}; //Job callme
+		if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+			keysOpt = {
+				key: sslConfig.keyJcm,
+				cert: sslConfig.certJcm,
+			}; //Job callme
+		else
+			keysOpt = {
+				key: sslConfig.keyPl,
+				cert: sslConfig.certPl
+			}; // Peeklet
 		// else if(iface.address=='192.168.1.10')
 		// 	keysOpt       = {
 		// 		key: sslConfig.keyPh,
@@ -42,10 +47,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 		// 	}; // Peekhelpers
 
 		// else if(iface.address=='192.168.1.10')
-			keysOpt = {
-				key: sslConfig.keyPl,
-				cert: sslConfig.certPl
-			}; // Peeklet
+			
     }
     ++alias;
   });

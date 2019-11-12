@@ -27,15 +27,15 @@ var https = require('https');
 //localhost
 var argv = minimist(process.argv.slice(2), {
     default: {
-        as_uri: 'https://searchbysearch.com:8444/',
+        as_uri: 'https://www.jobcallme.com:8444/',
         ws_uri: 'ws://localhost:8888/kurento'
     }
 });
 
 var options =
 {
-  key:  fs.readFileSync('../../../private/ssl.key'),
-  cert: fs.readFileSync('../../../private/ssl.crt')
+  key:  fs.readFileSync('../../../private/jcm/ssl.key'),
+  cert: fs.readFileSync('../../../private/jcm/ssl.crt')
 };
 
 var app = express();

@@ -94,7 +94,12 @@ var authUser;
 //*****
 //*****
 
-app.use(cors());
+const corsOptions = {
+	origin: ["https://peekhelpers.com","https://www.peekhelpers.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
+	credentials: true,
+  };
+
+app.use(cors(corsOptions));
 app.use(session({ secret: "kstreams@123", resave: true, saveUninitialized: true })); //resave changed to 'true'
 app.use(express.static('public'));
 app.use(express.static('images'));
@@ -103,7 +108,7 @@ app.use(express.static('images'));
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 /*get data from url and encode in to json*/
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const registrationRoute = require('./routes/registration.routes');
@@ -170,7 +175,6 @@ require('./serverRoutes')(app, io, saveUser);
 
 /* save the current login user info in a variable */
 function saveUser(user) {
-	//console.log(user);
 	authUser = user;
 	setUserStatus(1, authUser._id);
 }

@@ -239,7 +239,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
             $scope.usersLoaded = true;
-
+           // console.log($scope.allUsers);
             //console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
             if ($scope.user.chatWithRefId){console.log('if');
                $scope.startChat(userChatToOpen);
@@ -660,6 +660,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*logout the user and destroy the session*/
         $scope.logout = function () {
+            console.log("logg outtt");
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
 
@@ -993,35 +994,36 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
-            //console.log("1");
-            $scope.$apply(function () { 
-               // console.log("2");
+             $scope.$apply(function () { 
                 if ($scope.user._id == msg.receiverId._id) {
-                  //  console.log("3:" + $scope.chatWithId + ' == '+ msg.senderId._id);
                   //  if ($scope.chatWithId == msg.senderId._id){
-                     //   console.log("4");
                       if ('serviceWorker' in navigator){
                         console.log("Push Notification 1");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                       }
                    // }
-                 //   console.log("5");
-                        let senderIdIndex = 0;
+      
+                        let senderIdIndex = -1;
+                        
                         for (var i =0; i<$scope.allUsers.length; i++){
                             if ($scope.allUsers[i]._id == msg.senderId._id){
-                                senderIdIndex = i;
+                                senderIdIndex= i; 
+                                break;
                             }
-                            
-                            if ($scope.allUsers[i]._id == msg.receiverId._id){
-                               if ($scope.allUsers[i].chatWithRefId != msg.senderId._id && $scope.allUsers[i].onlineStatus == 1){
-                                $scope.allUsers[senderIdIndex].usCount++; break;
+                        }
+
+                        for (var j =0; j<$scope.allUsers.length; j++){
+                            if ($scope.allUsers[j]._id == msg.receiverId._id && senderIdIndex != -1){
+                               if ($scope.allUsers[j].chatWithRefId != msg.senderId._id && $scope.allUsers[j].onlineStatus == 1){
+                                    $scope.allUsers[senderIdIndex].usCount++;
+                                    break;
                                }
                             }
                         }
                 }
-            //    console.log("6");
+           
                 if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
-                   // console.log("7");
+                  
                     if ('serviceWorker' in navigator){
                         console.log("Push Notification 2");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
@@ -1078,6 +1080,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $window.onbeforeunload = $scope.onExit;
 
     }, function errorCallback(response) {
+        console.log('im destroying the session');
+        console.log(response);
         $scope.sessionDestroy = true;
         $location.path('/');
     });

@@ -35,16 +35,21 @@ registrationRoutes.route("/login").post(function (req, res) {
                         return res.json({ 'message': "Incorrect email", 'isUserExist': false });
                     }
                     else {
-                        console.log('else email');
+                      //  console.log('else email');
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
-                        console.log('pswd passed');
+                      //  console.log('pswd passed');
                         var imageFile = "";
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
     
+                         req.session.user = result;
+                        // req.session.save();
+                        // console.log(req.session.user);
+                      //  saveUser(user);
+
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
                     }
@@ -60,16 +65,19 @@ registrationRoutes.route("/login").post(function (req, res) {
                         return res.json({ 'message': "Incorrect phone", 'isUserExist': false });
                     }
                     else {
-                        console.log('else phone');
+                      //  console.log('else phone');
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
-                        console.log('pswd passed');
+                      //  console.log('pswd passed');
                         var imageFile = "";
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
-    
+                        
+                        req.session.user = result;
+                        console.log(req.session.user);
+
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
                     }

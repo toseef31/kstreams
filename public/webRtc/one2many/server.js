@@ -23,6 +23,22 @@ var ws = require('ws');
 var kurento = require('kurento-client');
 var fs    = require('fs');
 var https = require('https');
+
+var os = require( 'os' );
+var ifaces = os.networkInterfaces();
+
+var options   = {};
+var serverIpAdd=[]; 
+Object.keys(ifaces).forEach(function (ifname) {
+  var alias = 0; 
+  ifaces[ifname].forEach(function (iface) { 
+    if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
+	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+    if (alias < 1) serverIpAdd.push(iface.address);  
+    ++alias;
+  });
+});
+
 //searchbysearch.com
 //localhost
 var argv = minimist(process.argv.slice(2), {
@@ -32,11 +48,18 @@ var argv = minimist(process.argv.slice(2), {
     }
 });
 
-var options =
-{
-  key:  fs.readFileSync('../../../private/jcm/ssl.key'),
-  cert: fs.readFileSync('../../../private/jcm/ssl.crt')
-};
+if(serverIpAdd.includes('58.229.208.176')){ //Job callme
+	options = {
+		key: sslConfig.keyJcm,
+		cert: sslConfig.certJcm,
+	}; 
+}
+else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
+	options       = {
+		key: sslConfig.keyPl,
+		cert: sslConfig.keyPl,
+	};
+}
 
 var app = express();
 

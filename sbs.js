@@ -182,7 +182,7 @@ require('./serverRoutes')(app, io, saveUser);
 
 /* save the current login user info in a variable */
 function saveUser(user) {
-	//console.log(user);
+
 	authUser = user;
 	setUserStatus(1, authUser._id);
 }

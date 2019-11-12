@@ -402,6 +402,7 @@ module.exports = function (io, saveUser) {
             //  })
         }
     }
+    
     router.checkSession = function (req, res) {
         // console.log('check session');
         // res.header('Access-Control-Allow-Origin', 'https://'+projectData[0].domainUrl);

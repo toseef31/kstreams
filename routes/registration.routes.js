@@ -44,6 +44,9 @@ registrationRoutes.route("/login").post(function (req, res) {
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
+
+                        req.session.user = user;
+                        saveUser(user);
     
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });

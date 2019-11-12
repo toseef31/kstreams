@@ -165,7 +165,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         xhrFields: { withCredentials: true }
     }).then(function successCallback(response) {
         $scope.loggedUserId = response.data._id;
-        /*login user */
+        /* login user */
         /* store video of calling sound*/
         $scope.usersInGroup = 1;
         $scope.countGroupMembers = 1;
@@ -173,7 +173,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
     
         socket.emit('user_connected', { userId: $rootScope.user._id });
-        console.log($rootScope.user);
+        console.log(response);
         
       //  if ($rootScope.projectData.audioCall == 0 && $rootScope.projectData.videoCall == 0) return;
 
@@ -993,37 +993,38 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
-            //console.log("1");
             $scope.$apply(function () { 
-               // console.log("2");
                console.log($scope.user._id +' == '+ msg.receiverId._id);
                 if ($scope.user._id == msg.receiverId._id) {
-                  //  console.log("3:" + $scope.chatWithId + ' == '+ msg.senderId._id);
                   //  if ($scope.chatWithId == msg.senderId._id){
-                     //   console.log("4");
                       if ('serviceWorker' in navigator){
                         console.log("Push Notification 1");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                       }
                    // }
-                 //   console.log("5");
-                        let senderIdIndex = 0;
+            
+                   let senderIdIndex = -1;
+                        
                         for (var i =0; i<$scope.allUsers.length; i++){
                             if ($scope.allUsers[i]._id == msg.senderId._id){
-                                senderIdIndex = i;
+                                senderIdIndex= i; 
+                                break;
                             }
-                            
-                            if ($scope.allUsers[i]._id == msg.receiverId._id){
-                               if ($scope.allUsers[i].chatWithRefId != msg.senderId._id && $scope.allUsers[i].onlineStatus == 1){
-                                console.log($scope.allUsers[senderIdIndex]);
-                                $scope.allUsers[senderIdIndex].usCount++; break;
+                        }
+
+                        for (var j =0; j<$scope.allUsers.length; j++){
+                            if ($scope.allUsers[j]._id == msg.receiverId._id && senderIdIndex != -1){
+                               if ($scope.allUsers[j].chatWithRefId != msg.senderId._id && $scope.allUsers[j].onlineStatus == 1){
+                                    $scope.allUsers[senderIdIndex].usCount++;
+                                    break;
                                }
                             }
                         }
+
                 }
-            //    console.log("6");
+            
                 if ($scope.user._id == msg.receiverId._id && $scope.chatWithId == msg.senderId._id) {
-                   // console.log("7");
+                
                     if ('serviceWorker' in navigator){
                         console.log("Push Notification 2");  
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));

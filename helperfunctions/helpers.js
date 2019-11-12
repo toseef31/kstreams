@@ -80,6 +80,8 @@ module.exports = function(io){
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
 			if(typeof obj.password ===undefined) callback({err:err});
+
+           if (obj.email != ''){
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
 			.populate({
 				path: 'projectId',
@@ -98,6 +100,28 @@ module.exports = function(io){
 						})
 				}
 			});	
+		}
+		else if (obj.phone != ''){ console.log("helper login phone")
+			model.findOne({'phone':obj.phone, 'status': 1, 'isAdmin': 0})
+			.populate({
+				path: 'projectId',
+				match: {
+				  status: 1 
+				}
+			  }).lean().exec(function(err,data){ 
+				if(err || !data) callback({err:err});
+				else{
+					if (!bcrypt.compareSync(obj.password, data.password))  
+						callback({err:err});
+					else
+						userModel.update({'phone': obj.phone}, {'onlineStatus': 1})
+						.lean().exec(function (err, result) { 
+						     callback(data);
+						})
+				}
+			});	
+		}
+
 		}else{
 			model.find({status:1}).populate('projectId').exec(function(err,data){
 				callback(data);

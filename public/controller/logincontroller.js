@@ -2,7 +2,7 @@
 * author  => Peek International
 * designBy => Peek International
 */
-app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval) {
+app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall) {
     $scope.notAuthorize = false; // show invalid username password message
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];

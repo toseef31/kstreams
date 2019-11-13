@@ -345,14 +345,14 @@ module.exports = function (io, saveUser) {
     }
 
     router.set = (req, res) => {
+        console.log(req.body.userSession);
         // if email is empty then check it by phone number
         if (req.body.email != "") {
-           // console.log('if set');
             userModel.findOne({ email: req.body.email })
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                    let unreadMsgs = chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
+                    chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
                         function (err, unreadMsgs) {
                             console.log(unreadMsgs);
                             res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
@@ -361,16 +361,12 @@ module.exports = function (io, saveUser) {
         }
         // if phone number is empty then check it by email
         else if (req.body.phone != "") {
-         //   console.log('else set');
             userModel.findOne({ phone: req.body.phone })
                 .lean()
                 .then(function (data) {
                     req.session.user = data;
-                   // console.log(data._id);
                      chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
                         function (err, unreadMsgs) {
-                            console.log(unreadMsgs);
-
                             if (data.length == 0) res.json({ 'usersList': data })
                             res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
                         });

@@ -21,11 +21,27 @@ var ws = require('ws');
 var minimist = require('minimist');
 var url = require('url');
 var kurento = require('kurento-client');
-var fs    = require('fs');
-var https = require('https'); 
+var fs = require('fs');
+var https = require('https');
+const sslConfig = require('../../../ssl-config');
 // let hostIs=location.host.split(':');
 // let webSocketIp='110.10.130.70';
 // if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //searchbysearch.com
+
+var os = require( 'os' );
+var ifaces = os.networkInterfaces();
+
+var options   = {};
+var serverIpAdd=[]; 
+Object.keys(ifaces).forEach(function (ifname) {
+  var alias = 0; 
+  ifaces[ifname].forEach(function (iface) { 
+    if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
+	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+    if (alias < 1) serverIpAdd.push(iface.address);  
+    ++alias;
+  });
+});
 
 var argv = minimist(process.argv.slice(2), {
     default: {
@@ -34,11 +50,30 @@ var argv = minimist(process.argv.slice(2), {
     }
 });
 
-var options =
-{
-    key:  fs.readFileSync('../../../private/ssl.key'),
-    cert: fs.readFileSync('../../../private/ssl.crt')
-};
+if(serverIpAdd.includes('58.229.208.176')){ //Job callme
+	options = {
+		key: sslConfig.keyJcm,
+		cert: sslConfig.certJcm,
+	}; 
+}
+else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
+	options       = {
+		key: sslConfig.keyPl,
+		cert: sslConfig.keyPl,
+	};
+}
+
+// var options ={};
+// if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+//     options = {
+//         key: sslConfig.keyJcm,
+//         cert: sslConfig.certJcm,
+//     }; //Job callme
+// else
+//     options = {
+//         key: sslConfig.keyPl,
+//         cert: sslConfig.certPl
+//     }; // Peeklet
 
 var app = express();
 
@@ -70,8 +105,8 @@ function UserSession(id, name, ws) {
     this.sdpOffer = null;
 }
 
-UserSession.prototype.sendMessage = function(message) {
-    console.log('Sending message from server ================ ',message);
+UserSession.prototype.sendMessage = function (message) {
+    console.log('Sending message from server ================ ', message);
     this.ws.send(JSON.stringify(message));
 }
 
@@ -81,26 +116,26 @@ function UserRegistry() {
     this.usersByName = {};
 }
 
-UserRegistry.prototype.register = function(user) {
+UserRegistry.prototype.register = function (user) {
     this.usersById[user.id] = user;
     this.usersByName[user.name] = user;
 }
 
-UserRegistry.prototype.unregister = function(id) {
+UserRegistry.prototype.unregister = function (id) {
     var user = this.getById(id);
     if (user) delete this.usersById[id]
     if (user && this.getByName(user.name)) delete this.usersByName[user.name];
 }
 
-UserRegistry.prototype.getById = function(id) {
+UserRegistry.prototype.getById = function (id) {
     return this.usersById[id];
 }
 
-UserRegistry.prototype.getByName = function(name) {
+UserRegistry.prototype.getByName = function (name) {
     return this.usersByName[name];
 }
 
-UserRegistry.prototype.removeById = function(id) {
+UserRegistry.prototype.removeById = function (id) {
     var userSession = this.usersById[id];
     if (!userSession) return;
     delete this.usersById[id];
@@ -113,67 +148,67 @@ function CallMediaPipeline() {
     this.webRtcEndpoint = {};
 }
 
-CallMediaPipeline.prototype.createPipeline = function(callerId, calleeId, ws, callback) {
+CallMediaPipeline.prototype.createPipeline = function (callerId, calleeId, ws, callback) {
     var self = this;
-    getKurentoClient(function(error, kurentoClient) {
+    getKurentoClient(function (error, kurentoClient) {
         if (error) {
             return callback(error);
         }
 
-        kurentoClient.create('MediaPipeline', function(error, pipeline) {
+        kurentoClient.create('MediaPipeline', function (error, pipeline) {
             if (error) {
                 return callback(error);
             }
 
-            pipeline.create('WebRtcEndpoint', function(error, callerWebRtcEndpoint) {
+            pipeline.create('WebRtcEndpoint', function (error, callerWebRtcEndpoint) {
                 if (error) {
                     pipeline.release();
                     return callback(error);
                 }
 
                 if (candidatesQueue[callerId]) {
-                    while(candidatesQueue[callerId].length) {
+                    while (candidatesQueue[callerId].length) {
                         var candidate = candidatesQueue[callerId].shift();
                         callerWebRtcEndpoint.addIceCandidate(candidate);
                     }
                 }
 
-                callerWebRtcEndpoint.on('OnIceCandidate', function(event) {
+                callerWebRtcEndpoint.on('OnIceCandidate', function (event) {
                     var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
                     userRegistry.getById(callerId).ws.send(JSON.stringify({
-                        id : 'iceCandidate',
-                        candidate : candidate
+                        id: 'iceCandidate',
+                        candidate: candidate
                     }));
                 });
 
-                pipeline.create('WebRtcEndpoint', function(error, calleeWebRtcEndpoint) {
+                pipeline.create('WebRtcEndpoint', function (error, calleeWebRtcEndpoint) {
                     if (error) {
                         pipeline.release();
                         return callback(error);
                     }
 
                     if (candidatesQueue[calleeId]) {
-                        while(candidatesQueue[calleeId].length) {
+                        while (candidatesQueue[calleeId].length) {
                             var candidate = candidatesQueue[calleeId].shift();
                             calleeWebRtcEndpoint.addIceCandidate(candidate);
                         }
                     }
 
-                    calleeWebRtcEndpoint.on('OnIceCandidate', function(event) {
+                    calleeWebRtcEndpoint.on('OnIceCandidate', function (event) {
                         var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
                         userRegistry.getById(calleeId).ws.send(JSON.stringify({
-                            id : 'iceCandidate',
-                            candidate : candidate
+                            id: 'iceCandidate',
+                            candidate: candidate
                         }));
                     });
 
-                    callerWebRtcEndpoint.connect(calleeWebRtcEndpoint, function(error) {
+                    callerWebRtcEndpoint.connect(calleeWebRtcEndpoint, function (error) {
                         if (error) {
                             pipeline.release();
                             return callback(error);
                         }
 
-                        calleeWebRtcEndpoint.connect(callerWebRtcEndpoint, function(error) {
+                        calleeWebRtcEndpoint.connect(callerWebRtcEndpoint, function (error) {
                             if (error) {
                                 pipeline.release();
                                 return callback(error);
@@ -191,16 +226,16 @@ CallMediaPipeline.prototype.createPipeline = function(callerId, calleeId, ws, ca
     })
 }
 
-CallMediaPipeline.prototype.generateSdpAnswer = function(id, sdpOffer, callback) {
+CallMediaPipeline.prototype.generateSdpAnswer = function (id, sdpOffer, callback) {
     this.webRtcEndpoint[id].processOffer(sdpOffer, callback);
-    this.webRtcEndpoint[id].gatherCandidates(function(error) {
+    this.webRtcEndpoint[id].gatherCandidates(function (error) {
         if (error) {
             return callback(error);
         }
     });
 }
 
-CallMediaPipeline.prototype.release = function() {
+CallMediaPipeline.prototype.release = function () {
     if (this.pipeline) this.pipeline.release();
     this.pipeline = null;
 }
@@ -211,62 +246,62 @@ CallMediaPipeline.prototype.release = function() {
 
 var asUrl = url.parse(argv.as_uri);
 var port = asUrl.port;
-var server = https.createServer(options, app).listen(port, function() {
+var server = https.createServer(options, app).listen(port, function () {
     console.log('Kurento Tutorial started');
     console.log('Open ' + url.format(asUrl) + ' with a WebRTC capable browser');
 });
 
 var wss = new ws.Server({
-    server : server,
-    path : '/one2one'
+    server: server,
+    path: '/one2one'
 });
 
-wss.on('connection', function(ws) {
+wss.on('connection', function (ws) {
     var sessionId = nextUniqueId();
     console.log('Connection received with sessionId ' + sessionId);
 
-    ws.on('error', function(error) {
+    ws.on('error', function (error) {
         console.log('Connection ' + sessionId + ' error');
         stop(sessionId);
     });
 
-    ws.on('close', function() {
+    ws.on('close', function () {
         console.log('Connection ' + sessionId + ' closed');
         stop(sessionId);
         userRegistry.unregister(sessionId);
     });
 
-    ws.on('message', function(_message) {
-        var message = JSON.parse(_message); 
-        if(typeof message.event!=="undefined") message=JSON.parse(message.event);
-        console.log(message.id,' = Connection ' + sessionId + ' received message ', message);
+    ws.on('message', function (_message) {
+        var message = JSON.parse(_message);
+        if (typeof message.event !== "undefined") message = JSON.parse(message.event);
+        console.log(message.id, ' = Connection ' + sessionId + ' received message ', message);
         switch (message.id) {
-        case 'register':
-            register(sessionId, message.name, ws);
-            break;
+            case 'register':
+                register(sessionId, message.name, ws);
+                break;
 
-        case 'call':
-            call(sessionId, message.to, message.from, message.sdpOffer,message.userData);
-            break;
+            case 'call':
+                call(sessionId, message.to, message.from, message.sdpOffer, message.userData);
+                break;
 
-        case 'incomingCallResponse':
-            incomingCallResponse(sessionId, message.from, message.callResponse, message.sdpOffer, ws);
-            break;
+            case 'incomingCallResponse':
+                incomingCallResponse(sessionId, message.from, message.callResponse, message.sdpOffer, ws);
+                break;
 
-        case 'stop':
-            stop(sessionId);
-            break;
+            case 'stop':
+                stop(sessionId);
+                break;
 
-        case 'onIceCandidate':
-            onIceCandidate(sessionId, message.candidate);
-            break;
+            case 'onIceCandidate':
+                onIceCandidate(sessionId, message.candidate);
+                break;
 
-        default:
-            ws.send(JSON.stringify({
-                id : 'error',
-                message : 'Invalid message ' + message
-            }));
-            break;
+            default:
+                ws.send(JSON.stringify({
+                    id: 'error',
+                    message: 'Invalid message ' + message
+                }));
+                break;
         }
 
     });
@@ -278,7 +313,7 @@ function getKurentoClient(callback) {
         return callback(null, kurentoClient);
     }
 
-    kurento(argv.ws_uri, function(error, _kurentoClient) {
+    kurento(argv.ws_uri, function (error, _kurentoClient) {
         if (error) {
             var message = 'Coult not find media server at address ' + argv.ws_uri;
             return callback(message + ". Exiting with error " + error);
@@ -347,17 +382,17 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
         pipelines[caller.id] = pipeline;
         pipelines[callee.id] = pipeline;
 
-        pipeline.createPipeline(caller.id, callee.id, ws, function(error) {
+        pipeline.createPipeline(caller.id, callee.id, ws, function (error) {
             if (error) {
                 return onError(error, error);
             }
 
-            pipeline.generateSdpAnswer(caller.id, caller.sdpOffer, function(error, callerSdpAnswer) {
+            pipeline.generateSdpAnswer(caller.id, caller.sdpOffer, function (error, callerSdpAnswer) {
                 if (error) {
                     return onError(error, error);
                 }
 
-                pipeline.generateSdpAnswer(callee.id, calleeSdp, function(error, calleeSdpAnswer) {
+                pipeline.generateSdpAnswer(callee.id, calleeSdp, function (error, calleeSdpAnswer) {
                     if (error) {
                         return onError(error, error);
                     }
@@ -370,7 +405,7 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
 
                     message = {
                         id: 'callResponse',
-                        response : 'accepted',
+                        response: 'accepted',
                         sdpAnswer: callerSdpAnswer
                     };
                     caller.sendMessage(message);
@@ -387,13 +422,13 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
     }
 }
 
-function call(callerId, to, from, sdpOffer,userData) {
+function call(callerId, to, from, sdpOffer, userData) {
     console.log('In call ==================== ');
     clearCandidatesQueue(callerId);
 
     var caller = userRegistry.getById(callerId);
     var rejectCause = 'User ' + to + ' is not registered';
-    console.log(callerId,'===============================================Caller ',from,' and callee ',to);
+    console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
     if (userRegistry.getByName(to)) {
         var callee = userRegistry.getByName(to);
         caller.sdpOffer = sdpOffer
@@ -402,30 +437,29 @@ function call(callerId, to, from, sdpOffer,userData) {
         var message = {
             id: 'incomingCall',
             from: from,
-            userData:userData
+            userData: userData
         };
-        
-        if(userData && typeof userData.friendId !== "undefined"){
-            let sendToSbs='sbsSite-'+userData.friendId; 
-            if (userRegistry.getByName(sendToSbs)){
-                let siteCallee=userRegistry.getByName(sendToSbs);
+
+        if (userData && typeof userData.friendId !== "undefined") {
+            let sendToSbs = 'sbsSite-' + userData.friendId;
+            if (userRegistry.getByName(sendToSbs)) {
+                let siteCallee = userRegistry.getByName(sendToSbs);
                 siteCallee.peer = from;
                 siteCallee.sendMessage(message);
             }
         }
-        
-        
+
+
         console.log('Sending incomingCall ===========================================');
-        try{
+        try {
             return callee.sendMessage(message);
-        } catch(exception) {
+        } catch (exception) {
             rejectCause = "Error " + exception;
         }
-    }
-    else{
+    } else {
         console.log('Call else case =========');
     }
-    var message  = {
+    var message = {
         id: 'callResponse',
         response: 'rejected: ',
         message: rejectCause
@@ -436,23 +470,30 @@ function call(callerId, to, from, sdpOffer,userData) {
 
 function register(id, name, ws, callback) {
     function onError(error) {
-        ws.send(JSON.stringify({id:'registerResponse', response : 'rejected ', message: error}));
+        ws.send(JSON.stringify({
+            id: 'registerResponse',
+            response: 'rejected ',
+            message: error
+        }));
     }
 
     if (!name) {
         return onError("empty user name");
     }
 
-    let checkVal=userRegistry.getByName(name);
-    if (checkVal && typeof checkVal !=="undefined") { 
+    let checkVal = userRegistry.getByName(name);
+    if (checkVal && typeof checkVal !== "undefined") {
         console.log("User " + name + " is already registered");
         //return onError("User " + name + " is already registered");
     }
 
     userRegistry.register(new UserSession(id, name, ws));
     try {
-        ws.send(JSON.stringify({id: 'registerResponse', response: 'accepted'}));
-    } catch(exception) {
+        ws.send(JSON.stringify({
+            id: 'registerResponse',
+            response: 'accepted'
+        }));
+    } catch (exception) {
         onError(exception);
     }
 }
@@ -470,8 +511,7 @@ function onIceCandidate(sessionId, _candidate) {
     if (pipelines[user.id] && pipelines[user.id].webRtcEndpoint && pipelines[user.id].webRtcEndpoint[user.id]) {
         var webRtcEndpoint = pipelines[user.id].webRtcEndpoint[user.id];
         webRtcEndpoint.addIceCandidate(candidate);
-    }
-    else {
+    } else {
         if (!candidatesQueue[user.id]) {
             candidatesQueue[user.id] = [];
         }

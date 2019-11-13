@@ -164,6 +164,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         url: '/get',
         xhrFields: { withCredentials: true }
     }).then(function successCallback(response) {
+        console.log(response);
+
         $scope.loggedUserId = response.data._id;
         /* login user */
         /* store video of calling sound*/
@@ -173,9 +175,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
     
         socket.emit('user_connected', { userId: $rootScope.user._id });
-        console.log(response);
-        
-      //  if ($rootScope.projectData.audioCall == 0 && $rootScope.projectData.videoCall == 0) return;
 
         $rootScope.O2OSoc.$on('$open', function () {
             console.log('O2O socket open');
@@ -329,11 +328,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 scrollbottom(); 
             }); 
         })
-        /*get All groups*/
-        // $http.get("/getGroups/"+$rootScope.user._id)
-        //     .then(function(response) {
-        //         $scope.allGroups = response.data;
-        //     });
         
         /*get All notifications*/
         $http.get("/getNotification/" + $rootScope.user._id)
@@ -1081,8 +1075,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $window.onbeforeunload = $scope.onExit;
 
     }, function errorCallback(response) {
-        console.log('im destroying the session');
-        console.log(response);
         $scope.sessionDestroy = true;
         $location.path('/');
     });

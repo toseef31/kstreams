@@ -139,7 +139,7 @@ module.exports = function(io){
 				  status: 1 
 				}
 			  }).lean().exec(function(err,data){ 
-				console.log('2');
+				console.log(data);
 				if(err || !data) callback({err:err});
 				else{
 						userModel.update({'phone': obj.phone}, {'onlineStatus': 1})

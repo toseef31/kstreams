@@ -436,7 +436,9 @@ module.exports = function (io, saveUser) {
         }
         else if (phone != '') {
             console.log('else Login phone');
+            console.log(phone);
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
+               console.log(user);
                 if (user) {
                     // console.log(user);
                     /*change status from offline to online*/

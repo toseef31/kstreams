@@ -16,29 +16,63 @@ var os = require( 'os' );
 var ifaces = os.networkInterfaces();
 
 var keysOpt       = {};
-var serverIpAdd=[]; 
 Object.keys(ifaces).forEach(function (ifname) {
-  var alias = 0; 
-  ifaces[ifname].forEach(function (iface) { 
-    if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
-	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
-    if (alias < 1) serverIpAdd.push(iface.address);  
-    ++alias;
+	var alias = 0;
+  
+	ifaces[ifname].forEach(function (iface) { 
+	  if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
+	  console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+	  if (alias < 1) { 
+		  // || iface.address=='127.0.0.1'
+		  // if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10') 
+		  // 	keysOpt       = {
+		  // 		key: sslConfig.keyJcm,
+		  // 		cert: sslConfig.certJcm,
+		  // 	}; //Job callme
+	  
+		  // if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
+		  // 	keysOpt       = {
+		  // 		key: sslConfig.keyJcm,
+		  // 		cert: sslConfig.certJcm,
+		  // 	}; //Job callme
+		  // else if(iface.address=='192.168.1.10')
+		  // 	keysOpt       = {
+		  // 		key: sslConfig.keyPh,
+		  // 		cert: sslConfig.certPh,
+		  // 	}; // Peekhelpers
+  
+		  // else if(iface.address=='192.168.1.10')
+			  keysOpt = {
+				  key: sslConfig.keyPl,
+				  cert: sslConfig.certPl
+			  }; // Peeklet
+	  }
+	  ++alias;
+	});
   });
-});
+// var serverIpAdd=[]; 
+// Object.keys(ifaces).forEach(function (ifname) {
+//   var alias = 0; 
+//   ifaces[ifname].forEach(function (iface) { 
+//     if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
+// 	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+//     if (alias < 1) serverIpAdd.push(iface.address);  
+//     ++alias;
+//   });
+// });
 
-if(serverIpAdd.includes('58.229.208.176')){ //Job callme
-	keysOpt = {
-		key: sslConfig.keyJcm,
-		cert: sslConfig.certJcm,
-	}; 
-}
-else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
-	keysOpt       = {
-		key: sslConfig.keyPl,
-		cert: sslConfig.keyPl,
-	};
-}
+// if(serverIpAdd.includes('58.229.208.176')){ //Job callme
+// 	keysOpt = {
+// 		key: sslConfig.keyJcm,
+// 		cert: sslConfig.certJcm,
+// 	}; 
+// }
+// else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
+// 	keysOpt       = {
+// 		key: sslConfig.keyPl,
+// 		cert: sslConfig.keyPl,
+// 	};
+// }
 
 const server = require('https').Server(keysOpt,app);
 const io     = require('socket.io')(server);

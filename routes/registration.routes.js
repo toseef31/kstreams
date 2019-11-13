@@ -45,7 +45,7 @@ registrationRoutes.route("/login").post(function (req, res) {
                             var imageFile = fullUrl + result.user_image;
                         }
 
-                        req.session.user = user;
+                       // req.session.user = user;
 
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
@@ -72,7 +72,7 @@ registrationRoutes.route("/login").post(function (req, res) {
                             var imageFile = fullUrl + result.user_image;
                         }
                         
-                        req.session.user = result;
+                        // req.session.user = result;
 
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });

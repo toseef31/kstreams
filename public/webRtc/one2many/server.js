@@ -51,7 +51,7 @@ if(serverIpAdd.includes('58.229.208.176')){ //Job callme
 else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
 	options       = {
 		key: sslConfig.keyPl,
-		cert: sslConfig.keyPl,
+		cert: sslConfig.certPl,
 	};
 	siteLink='https://www.peeklet.com:8444/';
 }

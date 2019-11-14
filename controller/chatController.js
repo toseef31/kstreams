@@ -417,8 +417,9 @@ module.exports = function (io, saveUser) {
 
         userModel.update({ '_id': id }, { $set: { 'name': name, 'image': image, 'skill': skill } }).exec(
             function (err, result){
+                console.log (result)
                 if (err) res.json(false);
-                res.json(true);
+                else {res.json(true);}
             }
         );
     }

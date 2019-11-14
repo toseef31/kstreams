@@ -336,6 +336,7 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         console.log("GOOING OUTTT");
+        console.log(req.session.user);
         console.log(req.params.chatId);
         // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
         userModel.update({ '_id': req.params.chatId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {

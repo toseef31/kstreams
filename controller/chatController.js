@@ -436,7 +436,7 @@ module.exports = function (io, saveUser) {
                 if (user._id) {
                     
                     if (user.user_image == "" || user.userTitle == "")
-                        userModel.update({ 'userId': userId }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+                        userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
                  
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
@@ -457,8 +457,9 @@ module.exports = function (io, saveUser) {
     
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
                 if (user) {
+                    console.log (user);
                     if (user.user_image == "" || user.userTitle == "")
-                    userModel.update({ 'userId': userId }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+                    userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
 
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {

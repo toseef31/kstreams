@@ -336,8 +336,9 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         console.log("GOOING OUTTT");
+        console.log(req.params.chatId);
         // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-        userModel.update({ '_id': req.session.user._id }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
+        userModel.update({ '_id': req.params.chatId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
             req.session.destroy();
             res.json({ message: "session destroy" });
         })

@@ -428,10 +428,16 @@ module.exports = function (io, saveUser) {
         var email = req.body.email;
         var password = req.body.password;
         var phone = req.body.phone;
+        var userTitle = req.body.userskill;
+        var userImage = req.body.userImage;
 
         if (email != '') {   //console.log('if');
             helper.getData(userModel, { 'email': email, 'phone': '', 'password': password }, function (user) {
                 if (user._id) {
+                    
+                    if (user.user_image == "" || user.userTitle == "")
+                        userModel.update({ 'userId': userId }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+                 
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */
@@ -448,12 +454,12 @@ module.exports = function (io, saveUser) {
             });
         }
         else if (phone != '') {
-         //   console.log('else Login phone');
-         //   console.log(phone);
+    
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
-            //   console.log(user);
                 if (user) {
-                    // console.log(user);
+                    if (user.user_image == "" || user.userTitle == "")
+                    userModel.update({ 'userId': userId }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */

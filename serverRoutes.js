@@ -78,6 +78,7 @@ module.exports = function(app,io,saveUser){
     app.get('/logout',chatCon.out);
 
     // app.post('/recent',chatCon.recent);
+    app.post('/updateUser', chatCon.updateUser);
     app.post('/removeUser',chatCon.removeUser);
     app.post('/updateUser/image',chatCon.updateUserImage);
     app.post('/setPerStatus',chatCon.setPerStatus);

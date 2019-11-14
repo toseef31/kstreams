@@ -338,14 +338,13 @@ module.exports = function (io, saveUser) {
         console.log("GOOING OUTTT");
         console.log(req.session.user);
         // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-        userModel.update({ '_id': req.params.user._id }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
+        userModel.update({ '_id': req.session.user._id }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
             req.session.destroy();
             res.json({ message: "session destroy" });
         })
     }
 
     router.set = (req, res) => {
-     //   console.log(req.body.userSession);
         // if email is empty then check it by phone number
         if (req.body.email != "") {
             userModel.findOne({ email: req.body.email })
@@ -410,11 +409,24 @@ module.exports = function (io, saveUser) {
     //     res.sendFile(filepath);
     // }
 
+    router.updateUser = function (req, res) {
+        var id = req.body.id;
+        var name = req.body.name;
+        var image = req.body.imageName;
+        var skill = req.body.skill;
+
+        userModel.update({ '_id': id }, { $set: { 'name': name, 'image': image, 'skill': skill } }).exec(
+            function (err, result){
+                if (err) res.json(false);
+                res.json(true);
+            }
+        );
+    }
+
     router.login = function (req, res) {
         var email = req.body.email;
         var password = req.body.password;
         var phone = req.body.phone;
-
 
         if (email != '') {   //console.log('if');
             helper.getData(userModel, { 'email': email, 'phone': '', 'password': password }, function (user) {

@@ -109,10 +109,10 @@ module.exports = function(io){
 				  status: 1 
 				}
 			  }).lean().exec(function(err,data){ 
-				if(err || !data) callback({err:err});
+				if(err || !data) callback(null);
 				else{
 					if (!bcrypt.compareSync(obj.password, data.password))  
-						callback({err:err});
+						callback(null);
 					else
 						userModel.update({'phone': obj.phone}, {'onlineStatus': 1})
 						.lean().exec(function (err, result) { 

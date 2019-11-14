@@ -430,7 +430,7 @@ module.exports = function (io, saveUser) {
                         res.json(user);
                     });
                 }
-                else res.status(401).send();
+                else res.json(null);
             });
         }
         else if (phone != '') {
@@ -452,7 +452,7 @@ module.exports = function (io, saveUser) {
                         res.json(user);
                     });
                 }
-                else res.status(401).send();
+                else res.json(null);
             });
         }
     }

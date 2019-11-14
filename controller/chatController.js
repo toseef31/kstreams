@@ -410,12 +410,12 @@ module.exports = function (io, saveUser) {
     // }
 
     router.updateUser = function (req, res) {
-        var id = req.body.id;
+        var userId = req.body.id;
         var name = req.body.name;
         var image = req.body.imageName;
         var skill = req.body.skill;
 
-        userModel.update({ '_id': id }, { $set: { 'name': name, 'image': image, 'skill': skill } }).exec(
+        userModel.update({ 'userId': userId }, { $set: { 'name': name, 'image': image, 'skill': skill } }).exec(
             function (err, result){
                 console.log (result)
                 if (err) res.json(false);

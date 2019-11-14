@@ -26,26 +26,22 @@ registrationRoutes.route("/login").post(function (req, res) {
 
     projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
         //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
-        console.log(req.body);
+       // console.log(req.body);
         if (req.body.email != ''){   
             User.findOne({'email':req.body.email}).then(
                 (result) => {
                    
-                    if (!result) {     console.log('if email');
+                    if (!result) {     
                         return res.json({ 'message': "Incorrect email", 'isUserExist': false });
                     }
                     else {
-                      //  console.log('else email');
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
-                      //  console.log('pswd passed');
                         var imageFile = "";
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
-
-                       // req.session.user = user;
 
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
@@ -57,22 +53,18 @@ registrationRoutes.route("/login").post(function (req, res) {
         else{
             User.findOne({'phone':req.body.phone}).then(
                 (result) => {
-                
-                    if (!result) {     console.log('if phone');
+                    if (!result) {     
                         return res.json({ 'message': "Incorrect phone", 'isUserExist': false });
                     }
                     else {
-                      //  console.log('else phone');
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
-                      //  console.log('pswd passed');
+                  
                         var imageFile = "";
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
-                        
-                        // req.session.user = result;
 
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });

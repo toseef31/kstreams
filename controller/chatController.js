@@ -261,10 +261,6 @@ module.exports = function (io, saveUser) {
 
     router.chatWithId = function (req, res) {
         var sender = req.params._id;
-        // var receiver = req.params.receiverId;
-        // chatModel.updateMany({ senderId: receiver, receiverId: sender, 'isSeen': 0 },{$set: {'isSeen': 1}}).exec();
-        // res.send('true');
-
         userModel.update({ '_id': sender }, { $set: { 'chatWithRefId': '' } }).exec();
     }
 
@@ -340,12 +336,15 @@ module.exports = function (io, saveUser) {
 
     router.out = (req, res) => {
         console.log("GOOING OUTTT");
-        req.session.destroy();
-        res.json({ message: "session destroy" });
+        // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
+        userModel.update({ '_id': req.session.user._id }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
+            req.session.destroy();
+            res.json({ message: "session destroy" });
+        })
     }
 
     router.set = (req, res) => {
-        console.log(req.body.userSession);
+     //   console.log(req.body.userSession);
         // if email is empty then check it by phone number
         if (req.body.email != "") {
             userModel.findOne({ email: req.body.email })
@@ -354,7 +353,7 @@ module.exports = function (io, saveUser) {
                     req.session.user = data;
                     chatModel.find({'receiverId': data._id, 'isSeen': 0}).count().exec(
                         function (err, unreadMsgs) {
-                            console.log(unreadMsgs);
+                           // console.log(unreadMsgs);
                             res.json({'sessionData': req.session.user , 'unreadMsgs': unreadMsgs});
                         });
                 })
@@ -384,7 +383,7 @@ module.exports = function (io, saveUser) {
     }
 
     router.checkSession = function (req, res) {
-        console.log(req.session.user);
+       // console.log(req.session.user);
         if (req.session.user) {
             helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
                 res.json(data);
@@ -435,10 +434,10 @@ module.exports = function (io, saveUser) {
             });
         }
         else if (phone != '') {
-            console.log('else Login phone');
-            console.log(phone);
+         //   console.log('else Login phone');
+         //   console.log(phone);
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
-               console.log(user);
+            //   console.log(user);
                 if (user) {
                     // console.log(user);
                     /*change status from offline to online*/
@@ -474,7 +473,7 @@ module.exports = function (io, saveUser) {
 
     router.logout = function (req, res) {
         if (req.session.user) {
-            console.log("LOOG OUTTTT");
+           
             req.session.destroy(function (err) {
                 userModel.update({ '_id': req.params.userId }, { 'onlineStatus': 0, 'chatWithRefId': '' }).exec(function (err, result) {
                     res.status(404).send();

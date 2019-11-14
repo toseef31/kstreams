@@ -218,7 +218,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         .then(function (response) {
             $scope.tempUsers = response.data.usersList; // used for user search result
             $scope.allUsers = response.data.usersList; 
-            
+           
             $scope.selectedUserNo = 0;
             let i=0; 
             let userChatToOpen;  
@@ -238,12 +238,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
             $scope.usersLoaded = true;
-           // console.log($scope.allUsers);
-            //console.log('chatWithRefId: '+ $scope.user.chatWithRefId);
             if ($scope.user.chatWithRefId){console.log('if');
                $scope.startChat(userChatToOpen);
             }
-            else { //console.log('else');
+            else { 
                 $scope.selectedUserNo = -1;
                 $scope.selectedUserData = null;
             }

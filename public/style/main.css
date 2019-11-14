@@ -549,8 +549,8 @@ img{ max-width:90%;}
 }
 
 .unreadMsgAlign{
-  float: right;
-  margin-right: 20%;
+  /* float: right; */
+  /* margin-right: 8%; */
   font-size: 12px;
 }
 

@@ -101,7 +101,7 @@ module.exports = function(io){
 				}
 			});	
 		}
-		else if (obj.phone != ''){ console.log("helper login phone")
+		else if (obj.phone != ''){ 
 			model.findOne({'phone':obj.phone, 'status': 1, 'isAdmin': 0})
 			.populate({
 				path: 'projectId',
@@ -130,7 +130,7 @@ module.exports = function(io){
 	}
 
 	helper.getPData = function (model,obj = 0, callback){
-		console.log('1');
+		
 		if(obj != 0 && obj != null){
 			model.findOne({'phone':obj.phone, 'status': 1, 'isAdmin': 0})
 			.populate({
@@ -139,7 +139,7 @@ module.exports = function(io){
 				  status: 1 
 				}
 			  }).lean().exec(function(err,data){ 
-				console.log(data);
+				
 				if(err || !data) callback({err:err});
 				else{
 						userModel.update({'phone': obj.phone}, {'onlineStatus': 1})

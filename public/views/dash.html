@@ -23,7 +23,7 @@
               <span ng-if="!user.user_image || user.user_image=='' || !projectData.profileImgLocation">
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
-              <span ng-if="user.user_image && user.user_image != '' && projectData.profileImgLocation">
+              <span ng-if ="user.user_image && user.user_image != '' && projectData.profileImgLocation">
                 <img class="importantHeight" src="{{projectData.profileImgLocation}}{{user.user_image}}"
                   alt="{{user.name}}" />
               </span>
@@ -126,17 +126,16 @@
                       </div>
                       <div class="messages-user-name" style="padding: 10px 0 0 0;">
                         <span>{{userA.name}}</span>
+                        <span ng-if="userA.hasOwnProperty('usCount')">
+                          <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
+                            <span class="badge badge-pill badge-warning unreadBadge">{{userA.usCount}}</span>
+                          </span>
+                        </span>
+                      </div>
+                      <div>
+                        <span class="userTitleText">{{userA.userTitle}}</span>
                       </div>
                     </span>
-
-                    <div class="messages-last-seen">
-                      <span ng-if="userA.hasOwnProperty('usCount')">
-                        <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
-                          <p>Unread {{userA.usCount}} </p>
-                        </span>
-                      </span>
-                    </div>
-
                     <div class="clear"></div>
                   </div>
                 </div>

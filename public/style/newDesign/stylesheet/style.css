@@ -523,3 +523,12 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     color: green;
     font-size: xx-large;
 }
+
+.unreadBadge{
+    background-color: #59bb0ff2 !important;
+}
+
+.userTitleText{
+    font-size: smaller;
+    opacity: 0.9;
+}

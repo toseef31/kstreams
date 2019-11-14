@@ -415,7 +415,7 @@ module.exports = function (io, saveUser) {
         var image = req.body.imageName;
         var skill = req.body.skill;
 
-        userModel.update({ 'userId': userId }, { $set: { 'name': name, 'image': image, 'skill': skill } }).exec(
+        userModel.update({ 'userId': userId }, { $set: { 'name': name, 'user_image': image, 'userTitle': skill } }).exec(
             function (err, result){
                 console.log (result)
                 if (err) res.json(false);

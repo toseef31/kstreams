@@ -217,9 +217,13 @@
             <!-- https://peekhelpers.com/job-detail/office-staff-required-1 -->
              <!-- http://peekhelpers.com/profile/4489 -->
             <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
-             <a href="{{userProfileUrl}}">
+             
+            <a ng-if="userProfileUrl != ''" href="{{userProfileUrl}}" target="_blank">
               <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
             </a>
+            <span ng-if="userProfileUrl = '' && !groupSelected" class="status-bar whiteTextColor"> 
+              {{selUserName}} 
+            </span>
          
           </span>
 

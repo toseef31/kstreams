@@ -39,27 +39,29 @@ Object.keys(ifaces).forEach(function (ifname) {
   });
 });
 
-//searchbysearch.com
-//localhost
-var argv = minimist(process.argv.slice(2), {
-    default: {
-        as_uri: 'https://www.jobcallme.com:8444/',
-        ws_uri: 'ws://localhost:8888/kurento'
-    }
-});
-
+ 
+var siteLink='https://localhost:8444/';
 if(serverIpAdd.includes('58.229.208.176')){ //Job callme
 	options = {
 		key: sslConfig.keyJcm,
 		cert: sslConfig.certJcm,
 	}; 
+	siteLink='https://www.jobcallme.com:8444/';
 }
 else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
 	options       = {
 		key: sslConfig.keyPl,
-		cert: sslConfig.keyPl,
+		cert: sslConfig.certPl,
 	};
+	siteLink='https://www.peeklet.com:8444/';
 }
+
+var argv = minimist(process.argv.slice(2), {
+    default: {
+        as_uri: siteLink,
+        ws_uri: 'ws://localhost:8888/kurento'
+    }
+});
 
 var app = express();
 

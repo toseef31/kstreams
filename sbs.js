@@ -1,81 +1,47 @@
 /*
-* author  => Peek International
-* designBy => Peek International
-*/
+ * author  => Peek International
+ * designBy => Peek International
+ */
 
-const express     = require('express');
-const app         = express();
-const mongoose    = require('mongoose'); 
-const session     = require('express-session');
-const userModel   = require('./model/users-model'); 
-const bodyParser  = require('body-parser');
-const webpush     = require('web-push');
-const cors        = require('cors');
-const sslConfig   = require('./ssl-config');
-var os = require( 'os' );
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const session = require('express-session');
+const userModel = require('./model/users-model');
+const bodyParser = require('body-parser');
+const webpush = require('web-push');
+const cors = require('cors');
+const sslConfig = require('./ssl-config');
+var os = require('os');
 var ifaces = os.networkInterfaces();
 
-var keysOpt       = {};
+var keysOpt = {};
+var serverIpAdd = [];
 Object.keys(ifaces).forEach(function (ifname) {
 	var alias = 0;
-  
-	ifaces[ifname].forEach(function (iface) { 
-	  if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
-	  console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
-	  if (alias < 1) { 
-		  // || iface.address=='127.0.0.1'
-		  // if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10') 
-		  // 	keysOpt       = {
-		  // 		key: sslConfig.keyJcm,
-		  // 		cert: sslConfig.certJcm,
-		  // 	}; //Job callme
-	  
-		  // if(iface.address=='58.229.208.176' || iface.address=='192.168.1.10' || iface.address == '192.168.100.11') 
-		  // 	keysOpt       = {
-		  // 		key: sslConfig.keyJcm,
-		  // 		cert: sslConfig.certJcm,
-		  // 	}; //Job callme
-		  // else if(iface.address=='192.168.1.10')
-		  // 	keysOpt       = {
-		  // 		key: sslConfig.keyPh,
-		  // 		cert: sslConfig.certPh,
-		  // 	}; // Peekhelpers
-  
-		  // else if(iface.address=='192.168.1.10')
-			  keysOpt = {
-				  key: sslConfig.keyPl,
-				  cert: sslConfig.certPl
-			  }; // Peeklet
-	  }
-	  ++alias;
+	ifaces[ifname].forEach(function (iface) {
+		if (('IPv4' !== iface.family || iface.internal !== false) && iface.address != '127.0.0.1') return;
+		console.log(alias, ' and ', iface.address, ' and ', iface.family, ' and ', iface.internal);
+		if (alias < 1) serverIpAdd.push(iface.address);
+		++alias;
 	});
-  });
-// var serverIpAdd=[]; 
-// Object.keys(ifaces).forEach(function (ifname) {
-//   var alias = 0; 
-//   ifaces[ifname].forEach(function (iface) { 
-//     if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
-// 	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
-//     if (alias < 1) serverIpAdd.push(iface.address);  
-//     ++alias;
-//   });
-// });
+});
 
-// if(serverIpAdd.includes('58.229.208.176')){ //Job callme
-// 	keysOpt = {
-// 		key: sslConfig.keyJcm,
-// 		cert: sslConfig.certJcm,
-// 	}; 
-// }
-// else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
-// 	keysOpt       = {
-// 		key: sslConfig.keyPl,
-// 		cert: sslConfig.keyPl,
-// 	};
-// }
+ 
+if (serverIpAdd.includes('58.229.208.176')) { //Job callme
+	keysOpt = {
+		key: sslConfig.keyJcm,
+		cert: sslConfig.certJcm,
+	};
+} else if (serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')) { // Peek let 
+	keysOpt = {
+		key: sslConfig.keyPl,
+		cert: sslConfig.certPl,
+	};
+}
 
-const server = require('https').Server(keysOpt,app);
-const io     = require('socket.io')(server);
+const server = require('https').Server(keysOpt, app);
+const io = require('socket.io')(server);
 const config = require('./config/DB');
 
 //*****
@@ -86,9 +52,15 @@ const config = require('./config/DB');
 //mongodb://localhost/kstreams
 //const db = "./config/DB";
 mongoose.Promise = global.Promise;
-mongoose.connect(config.url, { useNewUrlParser: true }).then(
-	() => { console.log('Database is connected') },
-	err => { console.log('Cannot connect to the database' + err) }
+mongoose.connect(config.url, {
+	useNewUrlParser: true
+}).then(
+	() => {
+		console.log('Database is connected')
+	},
+	err => {
+		console.log('Cannot connect to the database' + err)
+	}
 );
 
 const publicVapidKey = 'BOkWsflrOnCVOs19RXCMiHl-tAbRzKC3BlAwxzTo7rJYWGAgGFzDweF9jgSvlZ17AwV-fIlXPRxPVp_-Hr9gwk4';
@@ -118,12 +90,16 @@ var authUser;
 //*****
 
 const corsOptions = {
-	origin: ["https://peekhelpers.com","https://www.peekhelpers.com", "http://127.0.0.1:8000"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
+	origin: ["https://peekhelpers.com", "https://www.peekhelpers.com", "http://127.0.0.1:8000"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
 	credentials: true,
-  };
+};
 
 app.use(cors(corsOptions));
-app.use(session({ secret: "kstreams@123", resave: true, saveUninitialized: true })); //resave changed to 'true'
+app.use(session({
+	secret: "kstreams@123",
+	resave: true,
+	saveUninitialized: true
+})); //resave changed to 'true'
 app.use(express.static('public'));
 app.use(express.static('images'));
 
@@ -131,7 +107,9 @@ app.use(express.static('images'));
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 /*get data from url and encode in to json*/
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
 app.use(bodyParser.json());
 
 const registrationRoute = require('./routes/registration.routes');
@@ -151,18 +129,20 @@ app.use('/friends', friendRoute);
 //****
 // const vapidKeys = webpush.generateVAPIDKeys();
 // console.log('vapidKeys: ',publicVapidKey,' and ',privateVapidKey);
-webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com',publicVapidKey,privateVapidKey);
+webpush.setVapidDetails('mailto:muhammadsajid9005@gmail.com', publicVapidKey, privateVapidKey);
 
-app.post('/subscribe',(req,res) => {
-	
+app.post('/subscribe', (req, res) => {
+
 	//Get push subcription object
 	const subscription = req.body.subscription;
 	//send 201 resource created
 	res.status(201).json({});
 	//create payload
-	const payload = JSON.stringify({ title :req.body.title});
+	const payload = JSON.stringify({
+		title: req.body.title
+	});
 	//pass object into send notification
-	webpush.sendNotification(subscription,payload).catch(err => console.error(err));
+	webpush.sendNotification(subscription, payload).catch(err => console.error(err));
 });
 
 
@@ -172,7 +152,7 @@ app.post('/subscribe',(req,res) => {
 //*****
 //***** 
 
-server.listen(port,() => {
+server.listen(port, () => {
 	// eslint-disable-next-line no-console
 	console.info('listening on %d', port);
 });
@@ -207,7 +187,11 @@ function saveUser(user) {
 //*****
 //*****
 function setUserStatus(status, userId) {
-	userModel.update({ '_id': userId }, { 'onlineStatus': status }).exec();
+	userModel.update({
+		'_id': userId
+	}, {
+		'onlineStatus': status
+	}).exec();
 }
 
 io.on('connection', function (socket) {
@@ -221,12 +205,18 @@ io.on('connection', function (socket) {
 		socket.userId = data.userId;
 		setUserStatus(1, socket.userId);
 
-		io.emit('front_user_status', { 'userId': socket.userId, 'status': 1 });
+		io.emit('front_user_status', {
+			'userId': socket.userId,
+			'status': 1
+		});
 	});
 	/*disconnect user */
 	socket.on('disconnect', function () {
 		setUserStatus(0, socket.userId);
-		io.emit('front_user_status', { 'userId': socket.userId, 'status': 0 });
+		io.emit('front_user_status', {
+			'userId': socket.userId,
+			'status': 0
+		});
 	});
 
 	module.exports.authUser = authUser;
@@ -239,7 +229,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('updateUserSelection', (data) => {
-        io.emit('receiverUserStatus', data);
+		io.emit('receiverUserStatus', data);
 	});
 
 	socket.on('updateChatWithId', (data) => {
@@ -252,7 +242,10 @@ io.on('connection', function (socket) {
 
 	//listen on typing
 	socket.on('typing', (data) => {
-		socket.broadcast.emit('typingRec', { username: socket.username, rcv_id: socket.rcv_id })
+		socket.broadcast.emit('typingRec', {
+			username: socket.username,
+			rcv_id: socket.rcv_id
+		})
 	});
 
 	socket.on('updatechat', (coversation) => {
@@ -263,7 +256,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('updateChatSeenStatus', (chatData) => {
-    io.emit('updateMsgSeenStatus', chatData);
+		io.emit('updateMsgSeenStatus', chatData);
 	})
 
 	socket.on('calldisconnect', function (data) {
@@ -312,7 +305,7 @@ io.on('connection', function (socket) {
 
 });
 
-app.post('/pauseChatFunc',(req,res) => {
+app.post('/pauseChatFunc', (req, res) => {
 	console.log('pauseCH sbs');
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});

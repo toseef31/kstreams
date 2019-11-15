@@ -430,13 +430,14 @@ module.exports = function (io, saveUser) {
         var phone = req.body.phone;
         var userTitle = req.body.userskill;
         var userImage = req.body.userImage;
+        var userProfile = req.body.userProfileUrl;
 
         if (email != '') {   //console.log('if');
             helper.getData(userModel, { 'email': email, 'phone': '', 'password': password }, function (user) {
                 if (user._id) {
                     
-                    if (user.user_image == "" || user.userTitle == "")
-                        userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+                    if (user.user_image == "" || user.userTitle == "" || user.userProfileUrl == "")
+                        userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle, 'userProfileUrl': userProfile} }).exec();
                  
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
@@ -458,8 +459,8 @@ module.exports = function (io, saveUser) {
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
                 if (user) {
                     console.log (user);
-                    if (user.user_image == "" || user.userTitle == "")
-                    userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle } }).exec();
+                    if (user.user_image == "" || user.userTitle == "" || user.userProfileUrl == "")
+                    userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle, 'userProfileUrl': userProfile} }).exec();
 
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {

@@ -392,8 +392,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
-            console.log(obj);
-      
+
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
             
@@ -406,6 +405,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.groupSelected = false;
                 $scope.selGrpMembers = [];
                 $scope.selUserName = obj.user.name;
+                $scope.userProfileUrl = obj.user.userProfileUrl;
                 $scope.chatWithImage = obj.user.user_image;
                 $scope.chatWithId = obj.user._id;
                 

@@ -221,7 +221,7 @@
             <a ng-if="userProfileUrl != ''" href="{{userProfileUrl}}" target="_blank">
               <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
             </a>
-            <span ng-if="userProfileUrl = '' && !groupSelected" class="status-bar whiteTextColor"> 
+            <span ng-if="userProfileUrl == '' && !groupSelected" class="status-bar whiteTextColor"> 
               {{selUserName}} 
             </span>
          

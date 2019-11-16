@@ -147,12 +147,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.showVideo = true;
     $scope.toggelVideo = function () {
         $rootScope.showVideo=!$rootScope.showVideo;
+        
+        if (!$rootScope.showVideo) $scope.ringbell.pause();
+        else $scope.ringbell.play();
+
         $rootScope.webRtcO2OPeer.getLocalStream().getVideoTracks()[0].enabled = $rootScope.showVideo;
     };
 
     $rootScope.openVoice = true;
     $scope.toggelMute = function () {
         $rootScope.openVoice=!$rootScope.openVoice;
+       
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 
@@ -392,8 +397,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
-            console.log(obj);
-      
+
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
             
@@ -406,6 +410,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.groupSelected = false;
                 $scope.selGrpMembers = [];
                 $scope.selUserName = obj.user.name;
+                $scope.userProfileUrl = obj.user.userProfileUrl;
                 $scope.chatWithImage = obj.user.user_image;
                 $scope.chatWithId = obj.user._id;
                 
@@ -885,7 +890,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.joinCall = function () {
             if ($scope.callType == 1) document.querySelector('.audioTab').style.display = 'block';
             else document.querySelector('.videoTabNew').style.display = 'block';
-
+            $scope.ringbell.pause();
             $scope.chatWithId = $rootScope.callerId;
             socket.emit('callStart', { callerId: $scope.callerId, friendId: $scope.friendId });
             One2OneCall.startCall();

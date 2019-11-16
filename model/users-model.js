@@ -19,6 +19,7 @@ const userSchema = new Schema({
 	"password": String,
 	"updatedByMsg": {type: Date, default: Date.now}, // updated time according to which user has been messaged
 	"userTitle": {type: String, default: ''}, // Title of the User coming from any connected project(e.g. Teacher)
+	"userProfileUrl": {type:String, default: ''},
 	"onlineStatus": { type: Number, default: 1 },
 	"seenStatus": { type: Number , default: 1},
 	"isAdmin": { type: Number, default: 0 },

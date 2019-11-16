@@ -214,8 +214,17 @@
           </svg>
 
           <span id="user-name" class="">
+            <!-- https://peekhelpers.com/job-detail/office-staff-required-1 -->
+            <!-- http://peekhelpers.com/profile/4489 -->
             <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
-            <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
+             
+            <a ng-if="userProfileUrl != ''" href="{{userProfileUrl}}" target="_blank">
+              <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
+            </a>
+            <span ng-if="userProfileUrl == '' && !groupSelected" class="status-bar whiteTextColor"> 
+              {{selUserName}} 
+            </span>
+         
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">

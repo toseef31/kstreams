@@ -125,7 +125,9 @@ factory('One2ManyCall', ['$rootScope',
       //  if (!arguments[0]) return; // included temporary to bypass error
 
         for (var i = 0; i < arguments.length; i++) {
-            arguments[i].poster = './images/transparent-1px.png';
+            console.log('arguments[i] = ',arguments[i]);
+            if(typeof arguments[i].poster!=='undefined')
+                arguments[i].poster = './images/transparent-1px.png';
             arguments[i].style.background = 'center transparent url("./images/loading.gif") no-repeat';
         }
     }

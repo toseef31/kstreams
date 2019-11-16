@@ -31,7 +31,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.callCancelTimmer = new timmer('#checker');
     $rootScope.webRtcO2OPeer=null;
     $rootScope.webRtcO2MPeer=null;
-    $rootScope.broadCastHtml=document.getElementById('broadCastVideo');
+    $rootScope.broadCastHtml=document.getElementById('broadCastVideo'); 
     $scope.webRtcPeer = null;
     const NO_CALL = 0; 
     $rootScope.timmerObj = new timmer('#timmer');
@@ -397,7 +397,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
-
+            if(!obj) return;
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
             
@@ -657,7 +657,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*logout the user and destroy the session*/
         $scope.logout = function () {
-            console.log("logg outtt");
+            //console.log("logg outtt");
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
 
@@ -947,7 +947,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
 
         socket.on('updateUserChatWithId', function (data) {
-            console.log('socket for mobile scene');
+            //console.log('socket for mobile scene');
             for(var i =0; i < $scope.allUsers.length; i++){
                 if (data.userId == $scope.allUsers[i]._id){
                     $scope.allUsers[i].chatWithRefId = ''; break;

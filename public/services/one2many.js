@@ -1,8 +1,7 @@
 app.
 factory('One2ManyCall', ['$rootScope',
     function ($rootScope) {
-
-        console.log('broadCastVideo: ', $rootScope.broadCastHtml);
+ 
 
         function presenterResponse(message) {
             if (message.response != 'accepted') {
@@ -31,11 +30,9 @@ factory('One2ManyCall', ['$rootScope',
                 var options = {
                     localVideo: $rootScope.broadCastHtml,
                     onicecandidate: onIceCandidate
-                }
-                console.log('In presenter ', $rootScope.broadCastHtml)
+                } 
                 $rootScope.webRtcO2MPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
-                    if (error) return onError(error);
-                    console.log('generating Offer ...');
+                    if (error) return onError(error); 
                     this.generateOffer(onOfferPresenter);
                 });
             }
@@ -121,9 +118,9 @@ factory('One2ManyCall', ['$rootScope',
 
         function showSpinner() {
             //  if (!arguments[0]) return; // included temporary to bypass error
-
-            for (var i = 0; i < arguments.length; i++) {
-                console.log('arguments[i] = ', arguments[i]);
+            var i = 0;
+            var lengthIs=arguments.length;
+            for (i; i < lengthIs; i++) { 
                 if (arguments[i] && typeof arguments[i].poster !== 'undefined') {
                     arguments[i].poster = './images/transparent-1px.png';
                     arguments[i].style.background = 'center transparent url("./images/webrtc.png") no-repeat';
@@ -133,8 +130,9 @@ factory('One2ManyCall', ['$rootScope',
 
         function hideSpinner() {
             //if (!arguments[0]) return; // included temporary to bypass error
-
-            for (var i = 0; i < arguments.length; i++) {
+            var i = 0;
+            var lengthIs=arguments.length;
+            for (i; i < lengthIs; i++) { 
                 if (arguments[i] && typeof arguments[i].poster !== 'undefined') {
                     arguments[i].src = '';
                     arguments[i].poster = './images/webrtc.png';

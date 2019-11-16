@@ -3,7 +3,7 @@ factory('One2ManyCall', ['$rootScope',
     function($rootScope) {
         
     var video = document.getElementById('broadCastVideo');    
-    console.log(video);
+    console.log('broadCastVideo: ',video);
     function presenterResponse(message) {
         if (message.response != 'accepted') {
             var errorMsg = message.message ? message.message : 'Unknow error';
@@ -26,10 +26,8 @@ factory('One2ManyCall', ['$rootScope',
     }
 
     function presenter() {
-        if (!$rootScope.webRtcO2MPeer) {
-          
-            showSpinner(video);
-             
+        if (!$rootScope.webRtcO2MPeer) { 
+            showSpinner(video); 
             var options = {
                 localVideo: video,
                 onicecandidate : onIceCandidate
@@ -37,7 +35,7 @@ factory('One2ManyCall', ['$rootScope',
           
             $rootScope.webRtcO2MPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                 if(error) return onError(error);
-      
+                console.log('generating Offer ...');
                 this.generateOffer(onOfferPresenter);
             });
         }

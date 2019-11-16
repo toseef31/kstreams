@@ -137,9 +137,11 @@ factory('One2ManyCall', ['$rootScope',
         //if (!arguments[0]) return; // included temporary to bypass error
 
         for (var i = 0; i < arguments.length; i++) {
-            arguments[i].src = '';
-            arguments[i].poster = './images/webrtc.png';
-            arguments[i].style.background = '';
+            if(arguments[i] && typeof arguments[i].poster!=='undefined'){
+                arguments[i].src = '';
+                arguments[i].poster = './images/webrtc.png';
+                arguments[i].style.background = '';
+            }
         }
     }
 

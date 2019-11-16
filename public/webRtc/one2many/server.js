@@ -309,7 +309,7 @@ function startViewer(sessionId, ws, sdpOffer,preId, callback) {
 		stop(sessionId);
 		return callback(noPresenterMessage);
 	}
-	console.log('Presenter length',presenter.length);
+	console.log('startViewer .. Presenter length',presenter.length);
 
 	var currPreIndex=0;
 	for (let i in presenter)

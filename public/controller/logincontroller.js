@@ -31,7 +31,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
             var parsedMessage = JSON.parse(message);  
-
+            console.log(' O2MSoc parsedMessage : ',parsedMessage);
             switch (parsedMessage.id) {
                 case 'presenterResponse':
                     One2ManyCall.presenterResponse(parsedMessage);

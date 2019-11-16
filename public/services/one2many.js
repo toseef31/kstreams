@@ -126,9 +126,10 @@ factory('One2ManyCall', ['$rootScope',
 
         for (var i = 0; i < arguments.length; i++) {
             console.log('arguments[i] = ',arguments[i]);
-            if(typeof arguments[i].poster!=='undefined')
+            if(arguments[i] && typeof arguments[i].poster!=='undefined'){
                 arguments[i].poster = './images/transparent-1px.png';
-            arguments[i].style.background = 'center transparent url("./images/loading.gif") no-repeat';
+                arguments[i].style.background = 'center transparent url("./images/webrtc.png") no-repeat';
+            }
         }
     }
     

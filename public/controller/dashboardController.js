@@ -31,7 +31,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.callCancelTimmer = new timmer('#checker');
     $rootScope.webRtcO2OPeer=null;
     $rootScope.webRtcO2MPeer=null;
-
+    $rootScope.broadCastHtml=document.getElementById('broadCastVideo');
     $scope.webRtcPeer = null;
     const NO_CALL = 0; 
     $rootScope.timmerObj = new timmer('#timmer');

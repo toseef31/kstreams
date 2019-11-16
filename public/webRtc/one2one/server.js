@@ -470,7 +470,7 @@ function register(id, name, ws, callback) {
     }
 
     if (typeof name === 'undefined' || name=='') 
-        return onError("empty user name");
+        return onError("empty user name ",name);
     
 
     let checkVal = userRegistry.getByName(name);

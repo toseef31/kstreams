@@ -32,7 +32,7 @@ factory('One2ManyCall', ['$rootScope',
                 localVideo: video,
                 onicecandidate : onIceCandidate
             }
-          
+            console.log('In presenter ',video)
             $rootScope.webRtcO2MPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                 if(error) return onError(error);
                 console.log('generating Offer ...');

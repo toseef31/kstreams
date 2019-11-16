@@ -565,13 +565,13 @@ img{ max-width:90%;}
   left: 40%;
   top: 28%;
   height: 30%;
-  width: 80px;
+  /* width: 80px; */
 }
 
 .contatctLoadingImage{
     position: absolute;
-    width: 80px;
-    left: 50px;
+    /* width: 80px; */
+    left: 50%;
     top: 28%;
 }
 

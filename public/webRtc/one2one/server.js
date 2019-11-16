@@ -469,7 +469,7 @@ function register(id, name, ws, callback) {
         }));
     }
 
-    if (typeof name !== 'undefined' && name!='') 
+    if (typeof name === 'undefined' || name=='') 
         return onError("empty user name");
     
 

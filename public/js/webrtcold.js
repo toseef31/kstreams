@@ -139,9 +139,9 @@
 
     }
     
-    webrtc.joinRoom(roomName,function(err,roominfo){
-      //socket.emit('callStart');
-    });
+    // webrtc.joinRoom(roomName,function(err,roominfo){
+    //   //socket.emit('callStart');
+    // });
 
   };
   const joinLiveStream = (type,roomName) => {

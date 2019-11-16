@@ -570,8 +570,8 @@ img{ max-width:90%;}
 
 .contatctLoadingImage{
     position: absolute;
-    /* width: 80px; */
-    left: 50%;
+    width: 50px;
+    left: 40%;
     top: 28%;
 }
 

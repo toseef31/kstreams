@@ -564,7 +564,7 @@ img{ max-width:90%;}
   position: absolute;
   left: 40%;
   top: 28%;
-  height: 30%;
+  /* height: 30%; */
   /* width: 80px; */
 }
 

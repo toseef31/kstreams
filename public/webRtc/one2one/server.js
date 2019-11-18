@@ -424,7 +424,7 @@ function call(callerId, to, from, sdpOffer, userData) {
     var caller = userRegistry.getById(callerId);
     var rejectCause = 'User ' + to + ' is not registered';
     console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
-    if (userRegistry.getByName(to) && typeof caller.sdpOffer!=="undefined") {
+    if (userRegistry.getByName(to) && typeof caller === 'object' && typeof caller.sdpOffer!=="undefined") {
         var callee = userRegistry.getByName(to);
         caller.sdpOffer = sdpOffer
         callee.peer = from;
@@ -453,7 +453,7 @@ function call(callerId, to, from, sdpOffer, userData) {
     } 
     else console.log('Call else case =========');
     
-    if(typeof caller.sdpOffer==="undefined") console.log('caller.sdpOffer undefined');
+    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined") console.log('caller.sdpOffer undefined');
     var message = {
         id: 'callResponse',
         response: 'rejected: ',

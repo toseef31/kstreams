@@ -347,6 +347,8 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
     clearCandidatesQueue(calleeId);
 
     function onError(callerReason, calleeReason) {
+        console.log('callerReason: ',callerReason);
+        console.log('calleeReason: ',calleeReason);
         if (pipeline) pipeline.release();
         if (caller) {
             var callerMessage = {
@@ -365,10 +367,10 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
     }
 
     var callee = userRegistry.getById(calleeId);
-    if (!from || !userRegistry.getByName(from)) {
-        return onError(null, 'unknown from = ' + from);
-    }
+    if (typeof from === "undefined" || from == null) return onError(null, 'unknown from = ' + from);   
+
     var caller = userRegistry.getByName(from);
+    if (typeof caller === "undefined" || caller==null) return onError(null, 'unknown caller = ' + caller); 
 
     if (callResponse === 'accept') {
         var pipeline = new CallMediaPipeline();
@@ -422,7 +424,7 @@ function call(callerId, to, from, sdpOffer, userData) {
     var caller = userRegistry.getById(callerId);
     var rejectCause = 'User ' + to + ' is not registered';
     console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
-    if (userRegistry.getByName(to)) {
+    if (userRegistry.getByName(to) && typeof caller.sdpOffer!=="undefined") {
         var callee = userRegistry.getByName(to);
         caller.sdpOffer = sdpOffer
         callee.peer = from;
@@ -451,6 +453,7 @@ function call(callerId, to, from, sdpOffer, userData) {
     } 
     else console.log('Call else case =========');
     
+    if(typeof caller.sdpOffer==="undefined") console.log('caller.sdpOffer undefined');
     var message = {
         id: 'callResponse',
         response: 'rejected: ',

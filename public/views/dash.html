@@ -1,5 +1,5 @@
 
-<div class="container-fluid" id="MainWrap" ng-controller="dashController" onunload="con();">
+<div class="container-fluid" id="MainWrap" ng-controller="dashController">
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
@@ -596,7 +596,7 @@
 
         <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
 
-        <div id="applyPic" class="input-group type_msg">
+        <div id="applyPic" class="input-group type_msg"  ng-class="{type_msgMarginTopOvrr: isReplying == true }">
      
             <div id="commentsReply" class="showCommentsReply panel panel-default">
               <span ng-if="selectedMsg.messageType == 0">

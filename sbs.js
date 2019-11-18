@@ -102,8 +102,7 @@ app.use(session({
 	saveUninitialized: true
 })); //resave changed to 'true'
 app.use(express.static('public'));
-app.use(express.static('images'));
-
+app.use(express.static('images'));	
 
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));

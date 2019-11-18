@@ -83,6 +83,7 @@ function presenter() {
 			onicecandidate : onIceCandidate
 	    }
 
+		console.log('presenter ',video);
 		webRtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
 			if(error) return onError(error);
 

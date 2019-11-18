@@ -31,7 +31,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.callCancelTimmer = new timmer('#checker');
     $rootScope.webRtcO2OPeer=null;
     $rootScope.webRtcO2MPeer=null;
-
+    $rootScope.broadCastHtml=document.getElementById('broadCastVideo'); 
     $scope.webRtcPeer = null;
     const NO_CALL = 0; 
     $rootScope.timmerObj = new timmer('#timmer');
@@ -403,7 +403,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
-
+            if(!obj) return;
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
             
@@ -419,7 +419,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.userProfileUrl = obj.user.userProfileUrl;
                 $scope.chatWithImage = obj.user.user_image;
                 $scope.chatWithId = obj.user._id;
-                
+                console.log('startChat chatWithId: ',$scope.chatWithId);
                 socket.emit('change_username', { username: $rootScope.user.name, rcv_id: $scope.chatWithId });
                 socket.emit('updateUserSelection', {selectedUser: $scope.chatWithId, userId: $scope.user._id});
                 $scope.status = obj.user.status;
@@ -662,7 +662,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*logout the user and destroy the session*/
         $scope.logout = function () {
-            console.log("logg outtt");
+            //console.log("logg outtt");
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
                 if (res.data.msg == "session destroy") {
 
@@ -700,8 +700,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $rootScope.showVideo=true;
                 $rootScope.openVoice=true;
                // console.log('from ',$scope.user._id,' to ',$scope.chatWithId);
-                let userData={friendId:$scope.chatWithId,callerName:$scope.user.name,callerId:$scope.user.userId,callType:type};
+                let userData={friendId:$scope.chatWithId,callerName:$scope.user.name,callerId:$scope.user._id,callType:type};
                 $("#timmer").addClass('hidden');
+                console.log('vkcall: ',$scope.user._id,' and ',$scope.chatWithId);
                 One2OneCall.videoKCall($scope.user._id,$scope.chatWithId,userData,type);
             }
         }
@@ -897,6 +898,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else document.querySelector('.videoTabNew').style.display = 'block';
             $scope.ringbell.pause();
             $scope.chatWithId = $rootScope.callerId;
+            console.log('On join call chatWithId: ',$scope.chatWithId);
             socket.emit('callStart', { callerId: $scope.callerId, friendId: $scope.friendId });
             One2OneCall.startCall();
             document.getElementById('incommingCall').style.display = 'none';
@@ -952,7 +954,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
 
         socket.on('updateUserChatWithId', function (data) {
-            console.log('socket for mobile scene');
+            //console.log('socket for mobile scene');
             for(var i =0; i < $scope.allUsers.length; i++){
                 if (data.userId == $scope.allUsers[i]._id){
                     $scope.allUsers[i].chatWithRefId = ''; break;
@@ -1062,10 +1064,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on('startTimmer', function (data) { 
            // console.log(data.callerId,' and ',$scope.user.userId,' and ',data.friendId);
-            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id) {
-            
+            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id) { 
                 $scope.receiveCall = true; 
             }
+            console.log('User ids: callerid: ',data.callerId,' and ',$scope.user._id);
             if (data.callerId == $scope.user._id) {
                 $scope.ringbell.pause();
                 $scope.callCancelTimmer.stopCallTimmer();

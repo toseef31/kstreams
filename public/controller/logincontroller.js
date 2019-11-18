@@ -10,10 +10,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     var socket = io.connect();
 
     $http.post("/getProject").then(function (response) {
-        $rootScope.projectData = response.data;  
-      //  console.log($rootScope.projectData.ssl);
-        //socket.emit('setSSL', {'sslKey': $rootScope.projectData.sslKey, 'sslCert':$rootScope.projectData.sslCert});
-       // console.log('$rootScope.projectData', $rootScope.projectData);
+        $rootScope.projectData = response.data;   
 
         let hostIs = location.host.split(':');
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 
@@ -31,7 +28,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
             var parsedMessage = JSON.parse(message);  
-
+            console.log(' O2MSoc parsedMessage : ',parsedMessage);
             switch (parsedMessage.id) {
                 case 'presenterResponse':
                     One2ManyCall.presenterResponse(parsedMessage);
@@ -68,8 +65,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         url: '/checkSession',
     }).then(function successCallback(response) { 
         console.log('check session response');
-        $rootScope.user = response.data;
-        console.log($rootScope.user);
+        $rootScope.user = response.data; 
         socket.emit('logoutUpdate', $scope.loggedUserId);
         $location.path("/dash");
     });

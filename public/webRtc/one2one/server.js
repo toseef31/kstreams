@@ -440,8 +440,7 @@ function call(callerId, to, from, sdpOffer, userData) {
                 siteCallee.peer = from;
                 siteCallee.sendMessage(message);
             }
-        }
-
+        } 
 
         console.log('Sending incomingCall ===========================================');
         try {
@@ -449,9 +448,9 @@ function call(callerId, to, from, sdpOffer, userData) {
         } catch (exception) {
             rejectCause = "Error " + exception;
         }
-    } else {
-        console.log('Call else case =========');
-    }
+    } 
+    else console.log('Call else case =========');
+    
     var message = {
         id: 'callResponse',
         response: 'rejected: ',
@@ -470,9 +469,9 @@ function register(id, name, ws, callback) {
         }));
     }
 
-    if (!name) {
-        return onError("empty user name");
-    }
+    if (typeof name === 'undefined' || name=='') 
+        return onError("empty user name ",name);
+    
 
     let checkVal = userRegistry.getByName(name);
     if (checkVal && typeof checkVal !== "undefined") {

@@ -114,7 +114,8 @@ wss.on('connection', function(ws) {
     });
 
     ws.on('message', function(_message) {
-        var message = JSON.parse(_message); 
+		var message = JSON.parse(_message);
+		console.log('rcv server msg ',message); 
         if(typeof message.event!=="undefined") message=JSON.parse(message.event);
         switch (message.id) {
 			case 'presenter':
@@ -249,6 +250,7 @@ function startPresenter(sessionId, ws, message, callback) {
 			}
 
 			presenter[sessionId].pipeline = pipeline;
+			console.log('Creating WebRtcEndpoint...');
 			pipeline.create('WebRtcEndpoint', function(error, webRtcEndpoint) {
 				if (error) {
 					stop(sessionId);
@@ -276,7 +278,7 @@ function startPresenter(sessionId, ws, message, callback) {
                         candidate : candidate
                     }));
                 });
-
+				console.log('Creating processOffer...');
 				webRtcEndpoint.processOffer(sdpOffer, function(error, sdpAnswer) {
 					if (error) {
 						stop(sessionId);
@@ -309,7 +311,7 @@ function startViewer(sessionId, ws, sdpOffer,preId, callback) {
 		stop(sessionId);
 		return callback(noPresenterMessage);
 	}
-	console.log('Presenter length',presenter.length);
+	console.log('startViewer .. Presenter length',presenter.length);
 
 	var currPreIndex=0;
 	for (let i in presenter)

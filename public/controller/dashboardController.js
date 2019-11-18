@@ -47,6 +47,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.userOrderList = 0;
     var ctrl = this;
 
+
     // Broadcast function start===============
     window.onbeforeunload = function() {
         $rootScope.O2OSoc.close();
@@ -171,9 +172,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }).then(function successCallback(response) {
         console.log(response);
 
+       
+
         $scope.loggedUserId = response.data._id;
         /* login user */
-        /* store video of calling sound*/
+        /* store video of calling sound */
         $scope.usersInGroup = 1;
         $scope.countGroupMembers = 1;
         $scope.groupOrUser = ''; 
@@ -232,8 +235,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.allUsers[i].tempDate = new Date($scope.allUsers[i].updatedByMsg).getTime(); 
                 if (response.data.usersList[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
             
+                // this is for mobile, to open the chatBox of selected user directly
                 if (response.data.usersList[i]._id == $scope.user.chatWithRefId && $scope.user.chatWithRefId){
                     userChatToOpen = {'user': response.data.usersList[i], 'userIndex': 0, 'type': 1};
+                    console.log(userChatToOpen);
+
                     $scope.allUsers[i].tempDate =  new Date().getTime();
                 
                     $scope.selectedUserNo = 0;
@@ -542,12 +548,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     }
 
                     for(var i =0; i<$scope.allUsers.length; i++){
-
                        // Check, to which user message has been sent, to move senderUser up in the userList
                        if ($scope.selectedUserData._id == $scope.allUsers[i]._id){
                         $scope.allUsers[i].tempDate =  new Date().getTime();
                         $scope.selectedUserNo = 0;
-                     //   console.log($scope.allUsers[i]);    
+                        scrolltopUserList(); 
                         }
 
                        if ($scope.allUsers[i]._id == $scope.chatWithId && $scope.allUsers[i].onlineStatus == 1){
@@ -557,7 +562,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                            }
                        }
                     }
-                 //   console.log($scope.allUsers);  
+                
                     var tempSelectedUserData = {'_id': $scope.selectedUserData._id};
               
                     $scope.message = ''; 
@@ -1150,6 +1155,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $("#isTyping").addClass('hidden');
         }, 5000);
     }
+
+  
 
 });
 

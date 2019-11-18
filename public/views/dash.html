@@ -1,4 +1,5 @@
-<div class="container-fluid" id="MainWrap" ng-controller="dashController">
+
+<div class="container-fluid" id="MainWrap" ng-controller="dashController" onunload="con();">
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
@@ -89,10 +90,10 @@
         </ul>
 
         <!--  ----------------- ---------------------------------------------------------- -->
-        <!--  ------------------ USERS lIST ------------------------------------------------ -->
+        <!--  ------------------ USERS LIST ------------------------------------------------ -->
         <!--  ----------------- ---------------------------------------------------------- -->
 
-        <div class="tab-content messages-users-list">
+        <div id="usersList" class="tab-content messages-users-list">
 
           <div ng-if="!groupSelected">
             <div id="users-message" class="messages-chat-list">
@@ -100,7 +101,7 @@
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
                   ng-repeat="userA in allUsers | search: keyword | orderBy: '-tempDate'" ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
-              
+             
                   <div ng-click="startChat({type:1,user:userA, userIndex:$index })">
                     <span class="user-name-section">
                       <div class="pull-right">
@@ -933,8 +934,6 @@
     });
   });
 
-
-
   function triggerfile() {
     $('input[name="avatar"]').trigger('click');
   }
@@ -967,6 +966,7 @@
       }
     });
 
+
     $('.chat_list').click(function () {
       $('.chat_list').css("border-left", "1px solid red");
       $('.chat_list').addClass("active");
@@ -986,11 +986,18 @@
     });
 
     /* make dragable video audio call panels*/
-    $(".videoTabNew").draggable({ containment: ".container" });
-    $(".audioTab").draggable({ containment: ".container" });
-    $("#incommingCall").draggable({ containment: ".container" });
-    $("#videoBroadCast").draggable({ containment: ".container" });
+    // $(".videoTabNew").draggable({ containment: ".container" });
+    // $(".audioTab").draggable({ containment: ".container" });
+    // $("#incommingCall").draggable({ containment: ".container" });
+    // $("#videoBroadCast").draggable({ containment: ".container" });
+
+   $(".videoTabNew").draggable();
+    $(".audioTab").draggable();
+    $("#incommingCall").draggable();
+    $("#videoBroadCast").draggable();
   });
+
+
 
 
   function removeVideoTab() {
@@ -1039,6 +1046,13 @@
       });
     });
   });
+
+  function scrolltopUserList() {
+    var con = document.getElementById('usersList');
+    console.log(con);
+    con.scrollTop = 0;
+  }
+  
 
   function scrollbottom() {
     var con = document.getElementsByClassName('msg_history')[0];

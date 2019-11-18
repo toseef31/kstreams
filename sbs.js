@@ -91,7 +91,7 @@ var authUser;
 
 const corsOptions = {
 	origin: ["https://peekhelpers.com", "https://www.peekhelpers.com", "http://127.0.0.1:8000",
-	"https://www.jobcallme.com", "https://jobcallme.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
+             "https://www.jobcallme.com", "https://jobcallme.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
 	credentials: true,
 };
 
@@ -102,8 +102,7 @@ app.use(session({
 	saveUninitialized: true
 })); //resave changed to 'true'
 app.use(express.static('public'));
-app.use(express.static('images'));
-
+app.use(express.static('images'));	
 
 // Provide access to node_modules folder
 // app.use('/scripts', express.static(`${__dirname}/node_modules/`));

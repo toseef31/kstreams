@@ -564,7 +564,7 @@ img{ max-width:90%;}
   position: absolute;
   left: 40%;
   top: 28%;
-  height: 30%;
+  /* height: 30%; */
   /* width: 80px; */
 }
 
@@ -634,7 +634,7 @@ img{ max-width:90%;}
   background: #dadada;
   /* height: 450px; */
   width: 100%;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 90px);
   overflow-y: auto;
 }
 
@@ -689,6 +689,11 @@ img{ max-width:90%;}
   /* border: 1px solid green; */
   /* border-radius: 3px; */
 }
+
+.type_msgMarginTopOvrr{
+  margin-top: calc(-1.5vh - 33px) !important;
+}
+
 .type_msg .col-md-11{
   padding-right: 0;
 }

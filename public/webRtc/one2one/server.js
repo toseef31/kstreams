@@ -453,14 +453,19 @@ function call(callerId, to, from, sdpOffer, userData) {
     } 
     else console.log('Call else case =========');
     
-    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined") console.log('caller.sdpOffer undefined');
-    var message = {
-        id: 'callResponse',
-        response: 'rejected: ',
-        message: rejectCause
-    };
-    //console.log('Outside ',message,' caller ',caller);
-    caller.sendMessage(message);
+    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
+        console.log('caller.sdpOffer ',caller);
+    }   
+    else{
+        var message = {
+            id: 'callResponse',
+            response: 'rejected: ',
+            message: rejectCause
+        };
+        //console.log('Outside ',message,' caller ',caller);
+        caller.sendMessage(message);
+    }
+    
 }
 
 function register(id, name, ws, callback) {

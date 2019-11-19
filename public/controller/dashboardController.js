@@ -51,10 +51,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     // Broadcast function start===============
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {
+        
+        $http.get('/emptyChatWithId/' + $rootScope.user._id);
+
         $rootScope.O2OSoc.close();
         $rootScope.O2MSoc.close();
-        $http.get('/emptyChatWithId/' + $rootScope.user._id);
-        // event.preventDefault(); // it will prevent reload or navigating away.
+     //   event.preventDefault(); // it will prevent reload or navigating away.
     });
 
     // initial websocket connection is in loginController   

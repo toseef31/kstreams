@@ -17,18 +17,18 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         let broadCastUrl='wss://'+webSocketIp+':8444/one2many';
-        console.log('WebSocket: ',reqUrl);
+     //   console.log('WebSocket: ',reqUrl);
         
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
         $rootScope.O2MSoc.$on('$open', function () {
-            console.log('O2M socket open'); 
+         //  console.log('O2M socket open'); 
             $interval(One2ManyCall.getPresenterData, 6000);
             One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
             var parsedMessage = JSON.parse(message);  
-            console.log(' O2MSoc parsedMessage : ',parsedMessage);
+           // console.log(' O2MSoc parsedMessage : ',parsedMessage);
             switch (parsedMessage.id) {
                 case 'presenterResponse':
                     One2ManyCall.presenterResponse(parsedMessage);
@@ -64,10 +64,11 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         method: 'GET',
         url: '/checkSession',
     }).then(function successCallback(response) { 
-        console.log('check session response');
         $rootScope.user = response.data; 
         socket.emit('logoutUpdate', $scope.loggedUserId);
         $location.path("/dash");
+    }, function errorCallback(response) {
+     // console.log(response);
     });
 
     /*login function*/

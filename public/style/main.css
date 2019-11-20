@@ -572,7 +572,7 @@ img{ max-width:90%;}
     position: absolute;
     width: 50px;
     left: 40%;
-    top: 28%;
+    top: 35%;
 }
 
 .loadingText{
@@ -682,8 +682,10 @@ img{ max-width:90%;}
   border-radius: 35px;
 }
 .type_msg{
+  /* position: absolute; */
+    /* top: 92vh; */
   margin-right: 2px;
-  margin-top: -3px;
+  margin-top: -1vh;
   margin-left: 3px;
   z-index: 9999;
   /* border: 1px solid green; */
@@ -1179,10 +1181,10 @@ height: 70% !important;
     background-color: #232121;
     border:none;
 } */
-@media screen and (max-width: 436px) {
-  /* .msg_history {
-    height: 368px;
-  } */
+@media screen and (max-width: 500px) {
+  .msg_history {
+    height: calc(100vh - 142px);
+  }
   .time_date {
     font-size: 11px;
   }

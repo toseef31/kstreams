@@ -242,7 +242,7 @@
     position: fixed;
     z-index: 9999999999;
     top: 150px;
-    left: 50%;
+    left: 45%;
     background-color: #fff;
     border: 1px solid #ccc;
 }
@@ -250,7 +250,7 @@
 @media screen and (max-width: 770px) {
   .broadCastContainer{
     width: 53% !important;
-    left: 30% !important;
+    left: 20% !important;
   }
 
   .callServerNoti{

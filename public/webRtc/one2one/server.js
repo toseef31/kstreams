@@ -274,7 +274,7 @@ wss.on('connection', function (ws) {
                 break;
 
             case 'call':
-                call(sessionId, message.to, message.from, message.sdpOffer, message.userData);
+                call(sessionId, message.to, message.from, message.sdpOffer, message.userData, ws);
                 break;
 
             case 'incomingCallResponse':
@@ -417,11 +417,21 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
     }
 }
 
-function call(callerId, to, from, sdpOffer, userData) {
-    console.log('In call ==================== ');
+function call(callerId, to, from, sdpOffer, userData,ws) {
+    
     clearCandidatesQueue(callerId);
 
     var caller = userRegistry.getById(callerId);
+    console.log('Checking caller1 ==================== ',caller);
+    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
+        caller = userRegistry.getByName(from);
+        console.log('Checking caller2 ==================== ',caller);
+        if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
+            userRegistry.register(new UserSession(callerId, from, ws));
+            console.log('Registered in call');
+        }
+    }
+
     var rejectCause = 'User ' + to + ' is not registered';
     console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
     if (userRegistry.getByName(to) && typeof caller === 'object' && typeof caller.sdpOffer!=="undefined") {

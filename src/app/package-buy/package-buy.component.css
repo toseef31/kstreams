@@ -1,0 +1,173 @@
+.pointer{
+    cursor: pointer;
+}
+
+/* ***************** CLASSES RELATED TO AMOUNT FIELD ********************* */
+.amountTextField{
+    width: 40%;
+}
+.amountMinus{
+    margin-right: 10px;
+    margin-top: 6px;
+}
+.amountPlus{
+    margin-left: 10px;
+    margin-top: 6px;
+}
+
+#packageCount {
+    text-align: center;
+}
+
+.flexReverse{
+    flex-direction: row-reverse;
+}
+
+/* ***************** CLASSES RELATED TO PACKAGE ********************* */
+.packagePrice{
+    float: right;
+}
+.packageTrashIcon{
+    float: right;
+    margin-top: 3px;
+    margin-left: 10px;
+}
+.packageNameProps{
+    margin-left: 12px;
+}
+.selectedPackageProps{
+    width: 25%;
+    vertical-align: top;
+}
+
+/* ***************** CLASSES RELATED TO LICENSE ********************* */
+.licenseDropdown{
+    margin-left: 15px;
+    width: 14%;
+}
+
+.licenseSupportText{
+    margin-top: 5px;
+}
+
+.licenseAmountText{
+    margin-top: 6px;
+    margin-left: 8px;
+}
+
+/* ************* CLASSES RELATED TO PAYMENT TYPE SELECT ************* */
+.paymentButtons{
+    background-color: #3097d1 !important;
+    border-color: #3097d1 !important;
+}
+
+.paymentSelectText{
+    /* margin-top: 7px; */
+    vertical-align: sub;
+}
+
+.paymentButtonsGroup{
+    text-align: right;
+}
+
+.crediCardButton{
+    margin-right: 8px;
+}
+
+/* ************* CLASSES RELATED TO CREDIT-CARD ************* */
+
+.creditCardBoxWidth{
+    width: 100%;
+}
+
+.creditCardBoxText{
+    text-align: center;
+    margin-top: 8px;
+    font-size: larger;
+}
+
+.navBarTabs{
+    border: 1px solid #dfe0e1;
+}
+
+.personalTabActive{
+    background-color: #3097d1 !important;
+    color: white !important;
+}
+
+.companyTabActive{
+    background-color: #3097d1 !important;
+    color: white !important;
+}
+
+.fieldsWidth{
+    width: 90%;
+}
+
+.creditCardsColor{
+    color: cornflowerblue;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.buttonWidth{
+    width: 90%;
+}
+
+.payColor{
+   color: #11559d;
+}
+
+.palColor{
+    color: #2997d8;
+}
+
+.paypalText{
+    margin-top: 7px;
+    text-align: center;
+}
+
+.msgInvalidText{
+    font-size: small;
+    color: red;
+    margin: 0 0 0 0;
+}
+
+.invalidatedField{
+    border: 1px solid red;
+}
+
+/* *********************************** MEDIA QUERIES ************************************ */
+
+@media screen and (max-width: 490px){
+     .paymentButtonsGroup{
+        margin-top: 7px;
+        text-align: left;
+     }
+
+     .licenseDropdown{
+         width: 30% !important;
+     }
+
+}
+
+@media screen and (max-width: 575px){
+    /* .overrideMargins{
+        margin-left: -10% !important;
+     } */
+
+     .packagePrice{
+         margin-top: 13px;
+         float: left !important;
+         margin-left: -65%;
+     }
+
+     .flexReverse{
+         margin-top: 7px;
+         flex-direction: initial;
+     }
+}

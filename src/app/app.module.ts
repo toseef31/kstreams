@@ -1,41 +1,58 @@
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedVariablesService } from './services/sharedVariables';
+import { ScrollService } from './services/scrollService';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrModule } from 'ngx-toastr';
-import { AngularWebStorageModule } from 'angular-web-storage';
-
-import { AppRoutingModule } from './app.routing';
-import { ComponentsModule } from './components/components.module';
 
 import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 
-import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { LoginComponent } from './login/login.component';
-import { BackendApiService } from './services/backend-api.service';
-import { UserGroupsComponent } from './user-groups/user-groups.component';
+import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
+import { CarouselModule } from 'ngx-owl-carousel-o';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { TermsOfServiceComponent } from './terms-of-service/terms-of-service.component';
+import { PackageBuyComponent } from './package-buy/package-buy.component';
+import { ScrollDirectiveDirective } from './directives/ScrollDirective/scroll-directive.directive';
+import { NgxSpinnerModule } from "ngx-spinner";
+
+const appRoutes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'privacyPolicy', component: PrivacyPolicyComponent },
+  { path: 'termsOfUse', component: TermsOfServiceComponent },
+  { path: 'packageForm', component: PackageBuyComponent}
+]
 
 @NgModule({
+  declarations: [
+    // Components
+    AppComponent,
+    HomeComponent,
+    HeaderComponent,
+    FooterComponent,
+    PrivacyPolicyComponent,
+    TermsOfServiceComponent,
+    PackageBuyComponent,
+
+    // Directives
+    ScrollDirectiveDirective,
+  ],
   imports: [
-    BrowserAnimationsModule,
+    BrowserModule,
+    CarouselModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
-    ComponentsModule,
-    RouterModule,
-    AppRoutingModule,
-    NgbModule,
-    AngularWebStorageModule,
-    ToastrModule.forRoot()
+    BrowserAnimationsModule,
+    RouterModule.forRoot(appRoutes),
+    ScrollToModule.forRoot()
   ],
-  declarations: [
-    AppComponent,
-    AdminLayoutComponent,
-    LoginComponent
-  ],
-  providers: [BackendApiService],
-  bootstrap: [AppComponent]
+
+  providers: [ScrollService, SharedVariablesService],
+  bootstrap: [AppComponent],
+  exports: [RouterModule],
+
 })
 export class AppModule { }

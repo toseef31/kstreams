@@ -1,0 +1,74 @@
+<!--==========================
+  Header
+  ============================-->
+
+<header id="header">
+  <!-- <div id="topbar">
+    <div class="container">
+      <div class="social-links">
+        <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+        <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+        <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+        <a href="#" class="instagram"><i class="fa fa-instagram"></i></a>
+      </div>
+    </div>
+  </div> -->
+
+  <div [ngClass]="{openMobileNav: mobileMenuStatus==true}" (click)="mobileMenuActivate()" id="mySidenav"
+    class="sidenav">
+    <a href="javascript:void(0)" class="closebtn">&times;</a>
+    <a (click)="changeRoute(0)" class="pointer">Home</a>
+    <a (click)="changeRoute(1)" class="pointer">About Us</a>
+    <a (click)="changeRoute(2)" class="pointer">Services</a>
+    <a (click)="changeRoute(3)" class="pointer">Packages</a>
+    <!-- <a (click)="scrollToPortfolio()" class="pointer">Portfolio</a> -->
+    <!-- <a (click)="scrollToTeam()" class="pointer">Team</a> -->
+    <a (click)="changeRoute(4)" class="pointer">Contact Us</a>
+  </div>
+
+  <div class="container">
+    <div class="logo float-left">
+      <!-- <img src="../../assets/logos/peekLogo.PNG" style="height: 500px">  -->
+      <!-- Uncomment below if you prefer to use an image logo -->
+    <span class="chatNameHeading1">p</span> <span class="chatNameHeading2">Chat </span>
+      <!-- <a href="#header" class="scrollto"><img src="img/logo.png" alt="" class="img-fluid"></a> -->
+    </div>
+
+    <nav class="main-nav float-right d-none d-lg-block">
+      <ul>
+        <li class="active"><a (click)="changeRoute(0)" class="pointer">Home</a></li>
+        <li><a (click)="changeRoute(1)" class="pointer">About Us</a></li>
+        <li><a (click)="changeRoute(2)" class="pointer">Services</a></li>
+        <li><a (click)="changeRoute(3)" class="pointer">Packages</a></li>
+        <!-- <li><a (click)="scrollToPortfolio()" class="pointer">Portfolio</a></li> -->
+        <!-- <li><a (click)="scrollToTeam()" class="pointer">Team</a></li> -->
+
+        <!-- ===================== LEFT FOR FUTURE USE ================================ -->
+        <!-- <li class="drop-down"><a href="">Drop Down</a>
+          <ul>
+            <li><a href="#">Drop Down 1</a></li>
+            <li class="drop-down"><a href="#">Drop Down 2</a>
+              <ul>
+                <li><a href="#">Deep Drop Down 1</a></li>
+                <li><a href="#">Deep Drop Down 2</a></li>
+                <li><a href="#">Deep Drop Down 3</a></li>
+                <li><a href="#">Deep Drop Down 4</a></li>
+                <li><a href="#">Deep Drop Down 5</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Drop Down 3</a></li>
+            <li><a href="#">Drop Down 4</a></li>
+            <li><a href="#">Drop Down 5</a></li>
+          </ul>
+        </li> -->
+        
+        <li><a (click)="changeRoute(4)" class="pointer">Contact Us</a></li>
+      </ul>
+    </nav><!-- .main-nav -->
+
+  </div>
+
+  <button type="button" (click)="mobileMenuActivate()" class="mobile-nav-toggle d-lg-none"><i
+      class="fa fa-bars"></i></button>
+
+</header><!-- #header -->

@@ -431,7 +431,7 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
             console.log('Registered in call');
         }
     }
-
+    
     var rejectCause = 'User ' + to + ' is not registered';
     console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
     if (userRegistry.getByName(to) && typeof caller === 'object' && typeof caller.sdpOffer!=="undefined") {

@@ -237,12 +237,24 @@
 .bcModel{
     text-align: center;
     background-color: #231e1e;
-  }
+}
+.callServerNoti{
+    position: fixed;
+    z-index: 9999999999;
+    top: 150px;
+    left: 50%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
 
-  @media screen and (max-width: 770px) {
+@media screen and (max-width: 770px) {
   .broadCastContainer{
     width: 53% !important;
     left: 30% !important;
+  }
+
+  .callServerNoti{
+    left: 21%;
   }
 }
 

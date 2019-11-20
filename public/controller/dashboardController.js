@@ -46,7 +46,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     var ctrl = this;
-
+    
 
     // Broadcast function start===============
     var windowElement = angular.element($window);
@@ -183,38 +183,46 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
 
         socket.emit('user_connected', { userId: $rootScope.user._id });
+        $rootScope.o2oSocWait=true;
+        $scope.o2oSocConEst=false;
+        setTimeout(() => {
+            console.log('in=================');
+            $rootScope.o2oSocWait=false;
+        }, 10000); //10 seconds
 
         $rootScope.O2OSoc.$on('$open', function () {
             console.log('O2O socket open');
             One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
             One2OneCall.setCallState(NO_CALL);
         })
-            .$on('$message', function (message) { // it listents for 'incoming event'
-                console.log('something incoming from the server: ' + message);
-                var parsedMessage = JSON.parse(message);
-                switch (parsedMessage.id) {
-                    case 'registerResponse':
-                        break;
-                    case 'callResponse':
-                        One2OneCall.callResponse(parsedMessage);
-                        break;
-                    case 'incomingCall':
-                        One2OneCall.incomingCall(parsedMessage);
-                        break;
-                    case 'startCommunication':
-                        One2OneCall.startCommunication(parsedMessage);
-                        $rootScope.callConnected();
-                        break;
-                    case 'stopCommunication':
-                        One2OneCall.stopK(true);
-                        break;
-                    case 'iceCandidate':
-                        $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
-                        break;
-                    default:
-                        console.error('Unrecognized message', parsedMessage);
-                }
-            });
+        .$on('$message', function (message) { // it listents for 'incoming event'
+            console.log('something incoming from the server: ' + message);
+            $scope.o2oSocConEst=true;
+            var parsedMessage = JSON.parse(message);
+            $scope.o2oSocEst=true;
+            switch (parsedMessage.id) {
+                case 'registerResponse':
+                    break;
+                case 'callResponse':
+                    One2OneCall.callResponse(parsedMessage);
+                    break;
+                case 'incomingCall':
+                    One2OneCall.incomingCall(parsedMessage);
+                    break;
+                case 'startCommunication':
+                    One2OneCall.startCommunication(parsedMessage);
+                    $rootScope.callConnected();
+                    break;
+                case 'stopCommunication':
+                    One2OneCall.stopK(true);
+                    break;
+                case 'iceCandidate':
+                    $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
+                    break;
+                default:
+                    console.error('Unrecognized message', parsedMessage);
+            }
+        });
         $scope.receiveCall = false;
         $scope.welcomePage = true;
         $scope.caller = false;
@@ -1104,6 +1112,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         setTimeout(function () {
             $("#isTyping").addClass('hidden');
         }, 5000);
+    }
+
+    $scope.reloadCurrent=function(){
+        location.reload();
     }
 });
 

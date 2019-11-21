@@ -47,6 +47,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.userOrderList = 0;
     var ctrl = this;
     
+    let hostIs = location.host.split(':');
     let webSocketIp="www.jobcallme.com";
     if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
     let reqUrl='wss://'+webSocketIp+':8443/one2one';

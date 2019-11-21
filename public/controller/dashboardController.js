@@ -47,7 +47,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.userOrderList = 0;
     var ctrl = this;
     
-
+    let webSocketIp="www.jobcallme.com";
+    if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
+    let reqUrl='wss://'+webSocketIp+':8443/one2one';
+    $rootScope.O2OSoc= $websocket.$new(reqUrl); 
     // Broadcast function start===============
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {
@@ -183,12 +186,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.user = response.data;
 
         socket.emit('user_connected', { userId: $rootScope.user._id });
-        $rootScope.o2oSocWait=true;
+        // $rootScope.o2oSocWait=true;
         $scope.o2oSocConEst=false;
-        setTimeout(() => {
-            console.log('in=================');
-            $rootScope.o2oSocWait=false;
-        }, 10000); //10 seconds
+        // setTimeout(() => {
+        //     console.log('in=================');
+        //     $rootScope.o2oSocWait=false;
+        // }, 10000); //10 seconds
 
         $rootScope.O2OSoc.$on('$open', function () {
             console.log('O2O socket open');
@@ -196,7 +199,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
-            console.log('something incoming from the server: ' + message);
+            console.log('something incoming from the server: ==== ' + message);
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
             $scope.o2oSocEst=true;

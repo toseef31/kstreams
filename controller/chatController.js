@@ -435,10 +435,16 @@ module.exports = function (io, saveUser) {
         if (email != '') {   //console.log('if');
             helper.getData(userModel, { 'email': email, 'phone': '', 'password': password }, function (user) {
                 if (user._id) {
-                    
+                    //--------------------------------------------------------------------------------------------
+                    // *** for those users who are registered but these values are not updated ***
+                    if (user.user_image == null) user.user_image ="";
+                    if (user.userTitle == null) user.userTitle ="";
+                    if (user.userProfileUrl == null) user.userProfileUrl ="";
+
                     if (user.user_image == "" || user.userTitle == "" || user.userProfileUrl == "")
                         userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle, 'userProfileUrl': userProfile} }).exec();
-                 
+                    //--------------------------------------------------------------------------------------------
+
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */
@@ -458,15 +464,20 @@ module.exports = function (io, saveUser) {
     
             helper.getPData(userModel, { 'phone': phone, 'email': '', 'password': password }, function (user) {
                 if (user) {
-                    console.log (user);
+                    //--------------------------------------------------------------------------------------------
+                    // *** for those users who are registered but these values are not updated ***
+                    if (user.user_image == null) user.user_image ="";
+                    if (user.userTitle == null) user.userTitle ="";
+                    if (user.userProfileUrl == null) user.userProfileUrl ="";
+
                     if (user.user_image == "" || user.userTitle == "" || user.userProfileUrl == "")
                     userModel.update({ '_id': user._id }, { $set: {'user_image': userImage, 'userTitle': userTitle, 'userProfileUrl': userProfile} }).exec();
+                    //--------------------------------------------------------------------------------------------
 
                     /*change status from offline to online*/
                     helper.changeStatus(user._id, {}, function (data) {
                         /*set session */
                         req.session.user = user;
-                        //console.log(req.session.user);
                         /*this function use to move user info to another view*/
                         saveUser(user);
                         /*get users to show order by newly messages*/

@@ -88,7 +88,6 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
             userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
             .lean().exec(function (err, friendResult) { 
                 if (!friendResult) {
-                  //  res.send({ 'message': 'FriendId doesnt exist', 'status': false });
                   var friendData = req.body.friendData;
                   let newUserModel = new userModel(friendData);
                   newUserModel.save().exec();
@@ -100,7 +99,7 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
                             result.status=1;
                             result.save();
                             userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
-                            res.send({ 'message': 'Already Exist - Success', 'status': true });
+                            res.send({ 'message': 'Already Friends - Success', 'status': true });
                         } 
                         else {
                             // get reference ids of both iserId and friendId 

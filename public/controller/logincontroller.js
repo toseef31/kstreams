@@ -22,7 +22,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         //$rootScope.O2OSoc= $websocket.$new(reqUrl); 
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
         $rootScope.O2MSoc.$on('$open', function () {
-         //  console.log('O2M socket open'); 
+           console.log('O2M socket open'); 
             $interval(One2ManyCall.getPresenterData, 6000);
             One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
         })
@@ -51,6 +51,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                         }); 
                       
                         $rootScope.presenterArr=presenterData;
+                        console.log('$rootScope.presenterArr ',$rootScope.presenterArr);
                 break;
                 default:
                     console.error('Unrecognized message', parsedMessage);

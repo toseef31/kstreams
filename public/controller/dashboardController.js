@@ -569,11 +569,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     var tempSelectedUserData = { '_id': $scope.selectedUserData._id };
 
                     $scope.message = '';
-                    scrollbottom();
+                    
                     $http.post('/chat', { 'msgData': msgObj, 'selectedUserData': tempSelectedUserData })
                         .then(function (res) {
                             $scope.chats.push(res.data);
                             socket.emit('checkmsg', res.data);
+                            scrollbottom();
                             if (res.data.length < 1) return;
                         })
                 }

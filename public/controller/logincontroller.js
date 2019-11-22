@@ -82,22 +82,14 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             url: '/login',
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
-<<<<<<< HEAD
-            $rootScope.user = response.data;
-            //$rootScope.activeUserPanel = '';
-            //$location.path("/dash");
-            //$location.url($location.path("/dash"));
-            $window.location.href="/#!/dash";
-=======
             if (response.data == null) {
                 $scope.notAuthorize = true;
                 $scope.showLoginButton = true;
             }
             else{
                 $rootScope.user = response.data;
-                $location.path("/dash");
+                $window.location.href="/#!/dash";
             }
->>>>>>> 43ff9176dc6d57beaeccb44dbf0eced08bc3e38a
         }, function errorCallback(response) {
             $scope.showLoginButton = true;
             $scope.notAuthorize = true;

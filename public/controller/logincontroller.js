@@ -16,14 +16,14 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         let hostIs = location.host.split(':');
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
-        let reqUrl='wss://'+webSocketIp+':8443/one2one';
+        //let reqUrl='wss://'+webSocketIp+':8443/one2one';
         let broadCastUrl='wss://'+webSocketIp+':8444/one2many';
      //   console.log('WebSocket: ',reqUrl);
         
-        $rootScope.O2OSoc= $websocket.$new(reqUrl); 
+        //$rootScope.O2OSoc= $websocket.$new(reqUrl); 
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);
         $rootScope.O2MSoc.$on('$open', function () {
-         //  console.log('O2M socket open'); 
+           console.log('O2M socket open'); 
             $interval(One2ManyCall.getPresenterData, 6000);
             One2ManyCall.getPresenterData(); //call on start and then it will repeat by interval
         })
@@ -52,6 +52,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                         }); 
                       
                         $rootScope.presenterArr=presenterData;
+                        console.log('$rootScope.presenterArr ',$rootScope.presenterArr);
                 break;
                 default:
                     console.error('Unrecognized message', parsedMessage);

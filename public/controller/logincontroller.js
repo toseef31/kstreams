@@ -4,6 +4,7 @@
 */
 app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall) {
     $scope.notAuthorize = false; // show invalid username password message
+    $scope.showLoginButton = true;
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];
     user={};
@@ -74,16 +75,23 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     /*login function*/
     $scope.login = function () {
-      //  console.log($scope.email);
+        $scope.showLoginButton = false;
+      
         $http({
             method: 'POST',
             url: '/login',
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
-            $rootScope.user = response.data;
-            //$rootScope.activeUserPanel = '';
-            $location.path("/dash");
+            if (response.data == null) {
+                $scope.notAuthorize = true;
+                $scope.showLoginButton = true;
+            }
+            else{
+                $rootScope.user = response.data;
+                $location.path("/dash");
+            }
         }, function errorCallback(response) {
+            $scope.showLoginButton = true;
             $scope.notAuthorize = true;
         });
     }

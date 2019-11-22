@@ -58,6 +58,7 @@
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
             </button>
           </div>
+          
           <div class="col-md-6 col-sm-7 col-xs-6 text-right broadCastAv">
             <a class="forceWhiteColor" href='javascript:void(0)' ng-click="openAvModal()">
               Available ({{presenterArr.length}})
@@ -257,12 +258,24 @@
               <div ng-repeat="chat in chats track by $index">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
-                <div ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
+                <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
+                   <div ng-if="selectedUserData.user_image != ''" class="message-user-image pull-left">
+                      <img src="{{projectData.profileImgLocation}}{{selectedUserData.user_image}}" alt="User image">
+                   </div>
+
+                   <div ng-if="selectedUserData.user_image == ''" class="message-user-image pull-left">
+                      <img src="images/noProfile.png" alt="User image">
+                   </div>
+
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
+                        
+                        <div class="time ajax-time text-right" title="1 year ago">
+                            {{selectedUserData.name}}, {{chat.createdAt | timeago}}
+                          </div>
 
                         <div class="message" ng-if="chat.messageType == 0  && chat.chatType == 0">
                           <p class="message-text" dir="auto"> {{chat.message}} </p>
@@ -292,9 +305,6 @@
                           <span>{{chat.message}}</span>
                         </a>
 
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | timeago}}
-                        </div>
                       </div>
 
                       <span class="replyMenu" ng-if="replyIconId == chat._id" id="replyIcon-{{chat._id}}">
@@ -307,11 +317,10 @@
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
-                        <div class="deleted_received_msg">this message has been deleted
-                        </div>
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{chat.createdAt | timeago}}
-                        </div>
+                          <div class="time ajax-time text-right" title="1 year ago">
+                              {{chat.createdAt | timeago}}
+                            </div>
+                        <div class="deleted_received_msg">this message has been deleted</div>
                       </div>
                     </div>
                   </div>
@@ -319,7 +328,7 @@
                 </div>
 
                 <!-- ---------------------  SENDING MESSAGES -------------------------------------->
-                <div ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
+                <div class="gap-btw-msg" ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
                   ng-if="chat.senderId._id == user._id">
                   <div ng-if="!chat.isDeleted">
 
@@ -329,7 +338,9 @@
 
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
-
+                        <div class="time ajax-time text-right" title="1 year ago">
+                            {{ chat.createdAt | timeago}}
+                          </div>
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.chatType == 0">
                           <p class="message-text" dir="auto">
@@ -379,9 +390,7 @@
                             style="float: right" width="20px" height="20px">
                         </a>
 
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | timeago}}
-                        </div>
+                        
                       </div>
 
                       <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
@@ -408,6 +417,9 @@
                   <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
                     <div class="messages-wrapper messages-text message-model pull-right">
                       <div class="clear"></div>
+                      <div class="time ajax-time text-right" title="1 year ago">
+                          {{ chat.createdAt | timeago }}
+                      </div>
                       <div class="message">
                         <p class="message-text" dir="auto">
                           this message has been deleted
@@ -415,11 +427,6 @@
                         <div class="message-media">
                           <div class="clear"></div>
                         </div>
-                      </div>
-
-                      <div class="time ajax-time text-right" title="1 year ago">
-                        {{ chat.createdAt | timeago }}
-
                       </div>
                     </div>
                   </div>
@@ -437,7 +444,7 @@
               <div ng-repeat="chat in groupchats track by $index">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
-                <div ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
+                <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">

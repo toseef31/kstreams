@@ -24,7 +24,9 @@
                             placeholder="Password">
                     </div>
 
-                    <button type="button" class="btn btn-primary" ng-click="login()">Login</button>
+                    <button ng-if="showLoginButton" type="button" class="btn btn-primary" ng-click="login()">Login</button>
+                    <h6 ng-if="!showLoginButton" style="padding: 11px 0 0 0"><i>LOADING ...</i></h6>
+
                 </form>
             </div>
         </div>

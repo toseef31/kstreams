@@ -318,14 +318,16 @@ function getKurentoClient(callback) {
 }
 
 function stop(sessionId) {
-    if (!pipelines[sessionId]) {
-        return;
-    }
+
+    console.log("Stop from server called ",sessionId);
+    if (!pipelines[sessionId]) return; 
 
     var pipeline = pipelines[sessionId];
     delete pipelines[sessionId];
     pipeline.release();
-    var stopperUser = userRegistry.getById(sessionId);
+    var stopperUser = userRegistry.getById(sessionId); 
+    if (typeof stopperUser === "undefined" || stopperUser == null) console.log("stopperUser undefined ",sessionId);
+
     var stoppedUser = userRegistry.getByName(stopperUser.peer);
     stopperUser.peer = null;
 

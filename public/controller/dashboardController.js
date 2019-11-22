@@ -56,8 +56,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
         $rootScope.O2OSoc.$on('$open', function () {
-            console.log('O2O socket open');
-            One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+            
+            if(typeof $rootScope.user._id !=="undefined"){
+                console.log('O2O socket open');
+                One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+            }
+                
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
@@ -1039,9 +1043,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on('startTimmer', function (data) {
 
-            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id) {
-                $scope.receiveCall = true;
-            }
+            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id)
+                $scope.receiveCall = true; 
             if (data.callerId == $scope.user._id) {
                 $scope.ringbell.pause();
                 $scope.callCancelTimmer.stopCallTimmer();

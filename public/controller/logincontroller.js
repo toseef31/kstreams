@@ -2,7 +2,7 @@
 * author  => Peek International
 * designBy => Peek International
 */
-app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall) {
+app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall,$window) {
     $scope.notAuthorize = false; // show invalid username password message
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];
@@ -67,7 +67,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     }).then(function successCallback(response) { 
         $rootScope.user = response.data; 
         socket.emit('logoutUpdate', $scope.loggedUserId);
-        $location.path("/dash");
+        $window.location.href="/#!/dash";
     }, function errorCallback(response) {
      // console.log(response);
     });
@@ -82,7 +82,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         }).then(function successCallback(response) {
             $rootScope.user = response.data;
             //$rootScope.activeUserPanel = '';
-            $location.path("/dash");
+            //$location.path("/dash");
+            //$location.url($location.path("/dash"));
+            $window.location.href="/#!/dash";
         }, function errorCallback(response) {
             $scope.notAuthorize = true;
         });

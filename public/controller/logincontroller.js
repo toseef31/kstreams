@@ -2,7 +2,7 @@
 * author  => Peek International
 * designBy => Peek International
 */
-app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall) {
+app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall,$window) {
     $scope.notAuthorize = false; // show invalid username password message
     $scope.showLoginButton = true;
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
@@ -68,7 +68,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     }).then(function successCallback(response) { 
         $rootScope.user = response.data; 
         socket.emit('logoutUpdate', $scope.loggedUserId);
-        $location.path("/dash");
+        $window.location.href="/#!/dash";
     }, function errorCallback(response) {
      // console.log(response);
     });
@@ -82,6 +82,13 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             url: '/login',
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
+<<<<<<< HEAD
+            $rootScope.user = response.data;
+            //$rootScope.activeUserPanel = '';
+            //$location.path("/dash");
+            //$location.url($location.path("/dash"));
+            $window.location.href="/#!/dash";
+=======
             if (response.data == null) {
                 $scope.notAuthorize = true;
                 $scope.showLoginButton = true;
@@ -90,6 +97,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                 $rootScope.user = response.data;
                 $location.path("/dash");
             }
+>>>>>>> 43ff9176dc6d57beaeccb44dbf0eced08bc3e38a
         }, function errorCallback(response) {
             $scope.showLoginButton = true;
             $scope.notAuthorize = true;

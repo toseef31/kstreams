@@ -412,8 +412,8 @@ module.exports = function(io, saveUser) {
   };
 
   router.out = (req, res) => {
-    console.log("GOOING OUTTT");
-    console.log(req.session.user);
+    //console.log("GOOING OUTTT");
+    //console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
     userModel
       .update(

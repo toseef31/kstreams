@@ -46,17 +46,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     var ctrl = this;
-    
-    $http.post("/getProject").then(function (response) {
-        $rootScope.projectData = response.data;   
+    $scope.o2oSocConnec=function(){
         let hostIs = location.host.split(':');
         let webSocketIp=$rootScope.projectData.domainUrl;
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
-        $rootScope.O2OSoc.$on('$open', function () {
-            
+        $rootScope.O2OSoc.$on('$open', function () { 
+            setInterval(ping, 30000);
             if(typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
@@ -65,11 +63,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
-            console.log('something incoming from the server: ==== ' + message);
+            console.log('something incoming from the server: ==== ' + message); 
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
             $scope.o2oSocEst=true;
             switch (parsedMessage.id) {
+                case '__pong__':
+                    pong();
+                    break;
                 case 'registerResponse':
                     break;
                 case 'callResponse':
@@ -91,7 +92,29 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 default:
                     console.error('Unrecognized message', parsedMessage);
             }
-        });
+        })
+        .$on('$close', function () {
+            console.log('Socket connection closed1 ======');
+            $scope.o2oSocConnec();  
+        })
+    }
+
+    //checking if user is registered
+    function ping() { 
+        console.log('Ping called====');
+        One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
+        $scope.tm = setTimeout(function () {
+            console.log('in ping timeout ... trying to reconnect');
+            $scope.o2oSocConnec();
+        }, 5000);
+    }
+    function pong() {
+        console.log('Pong called====');
+        clearTimeout($scope.tm);
+    }
+    $http.post("/getProject").then(function (response) {
+        $rootScope.projectData = response.data;   
+        $scope.o2oSocConnec(); 
     });
     // Broadcast function start===============
     var windowElement = angular.element($window);

@@ -37,7 +37,7 @@ Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0; 
   ifaces[ifname].forEach(function (iface) { 
     if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
-	console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+	//console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
     if (alias < 1) serverIpAdd.push(iface.address);  
     ++alias;
   });
@@ -278,15 +278,15 @@ wss.on('connection', function (ws) {
                 break;
 
             case 'incomingCallResponse':
-                incomingCallResponse(sessionId, message.from, message.callResponse, message.sdpOffer, ws);
+                incomingCallResponse(sessionId, message.from,message.to, message.callResponse, message.sdpOffer, ws);
                 break;
 
             case 'stop':
-                stop(sessionId);
+                stop(sessionId,message.to,message.from);
                 break;
 
             case 'onIceCandidate':
-                onIceCandidate(sessionId, message.candidate);
+                onIceCandidate(sessionId, message.candidate,message.to,message.from);
                 break;
 
             default:
@@ -317,18 +317,20 @@ function getKurentoClient(callback) {
     });
 }
 
-function stop(sessionId) {
-
-    console.log("Stop from server called ",sessionId);
+function stop(sessionId,to_id,from_id) {
+    sessionId=from_id;
+    console.log("Stop from server called ",sessionId,' to ',to_id);
     if (!pipelines[sessionId]) return; 
 
     var pipeline = pipelines[sessionId];
     delete pipelines[sessionId];
     pipeline.release();
     var stopperUser = userRegistry.getById(sessionId); 
-    if (typeof stopperUser === "undefined" || stopperUser == null) console.log("stopperUser undefined ",sessionId);
+    if (typeof stopperUser === "undefined" || stopperUser == null) console.log("stopperUser undefined ");
 
-    var stoppedUser = userRegistry.getByName(stopperUser.peer);
+    var stoppedUser = userRegistry.getByName(stopperUser.peer); // We can put to_id here
+    if (typeof stoppedUser === "undefined" || stoppedUser == null) console.log("stoppedUser undefined ",stoppedUser);
+
     stopperUser.peer = null;
 
     if (stoppedUser) {
@@ -344,8 +346,8 @@ function stop(sessionId) {
     clearCandidatesQueue(sessionId);
 }
 
-function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
-
+function incomingCallResponse(calleeId, from,to_id, callResponse, calleeSdp, ws) {
+    calleeId=to_id;
     clearCandidatesQueue(calleeId);
 
     function onError(callerReason, calleeReason) {
@@ -420,7 +422,7 @@ function incomingCallResponse(calleeId, from, callResponse, calleeSdp, ws) {
 }
 
 function call(callerId, to, from, sdpOffer, userData,ws) {
-    
+    callerId=from;
     clearCandidatesQueue(callerId);
 
     var caller = userRegistry.getById(callerId);
@@ -447,14 +449,14 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
             userData: userData
         };
 
-        if (userData && typeof userData.friendId !== "undefined") {
-            let sendToSbs = 'sbsSite-' + userData.friendId;
-            if (userRegistry.getByName(sendToSbs)) {
-                let siteCallee = userRegistry.getByName(sendToSbs);
-                siteCallee.peer = from;
-                siteCallee.sendMessage(message);
-            }
-        } 
+        // if (userData && typeof userData.friendId !== "undefined") {
+        //     let sendToSbs = 'sbsSite-' + userData.friendId;
+        //     if (userRegistry.getByName(sendToSbs)) {
+        //         let siteCallee = userRegistry.getByName(sendToSbs);
+        //         siteCallee.peer = from;
+        //         siteCallee.sendMessage(message);
+        //     }
+        // } 
 
         console.log('Sending incomingCall ===========================================');
         try {
@@ -481,6 +483,8 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
 }
 
 function register(id, name, ws, callback) {
+    id=name;
+    console.log('register id: ',id,' and ',name);
     function onError(error) {
         ws.send(JSON.stringify({
             id: 'registerResponse',
@@ -489,8 +493,7 @@ function register(id, name, ws, callback) {
         }));
     }
 
-    if (typeof name === 'undefined' || name=='') 
-        return onError("empty user name ",name);
+    if (typeof name === 'undefined' || name=='') return onError("empty user name ",name);
     
 
     let checkVal = userRegistry.getByName(name);
@@ -516,7 +519,9 @@ function clearCandidatesQueue(sessionId) {
     }
 }
 
-function onIceCandidate(sessionId, _candidate) {
+function onIceCandidate(sessionId, _candidate,to_id,from_id) {
+    sessionId=from_id;
+    console.log('onIceCandidate to:',to_id,' and ',sessionId);
     var candidate = kurento.getComplexType('IceCandidate')(_candidate);
     var user = userRegistry.getById(sessionId);
 

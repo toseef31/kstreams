@@ -191,7 +191,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.stopCall = function (message = '', friendId = 0) {
-        One2OneCall.stopK(message, friendId);
+        One2OneCall.stopK(message, friendId);  //Initiated when 1 user hang out
     }
 
     $rootScope.showVideo = true;

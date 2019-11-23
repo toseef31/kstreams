@@ -288,7 +288,9 @@ wss.on('connection', function (ws) {
             case 'onIceCandidate':
                 onIceCandidate(sessionId, message.candidate,message.to,message.from);
                 break;
-
+            case '__ping__':
+                checkRegistration(sessionId ,message.from,ws);
+                break;
             default:
                 ws.send(JSON.stringify({
                     id: 'error',
@@ -480,6 +482,15 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
         caller.sendMessage(message);
     }
     
+}
+
+function checkRegistration(sessionId ,from,ws){
+    let tester = userRegistry.getByName(from);
+    if (typeof tester === 'object' && typeof tester.sdpOffer!=="undefined")
+        ws.send(JSON.stringify({
+            id: '__pong__',
+            response: from
+        }));
 }
 
 function register(id, name, ws, callback) {

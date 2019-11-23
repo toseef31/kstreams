@@ -31,7 +31,9 @@ factory('One2OneCall', ['$rootScope',
         function onIceCandidate(candidate) { 
             var message = {
                 id : 'onIceCandidate',
-                candidate : candidate
+                candidate : candidate,
+                to:($rootScope.user._id==$rootScope.friendId)?$rootScope.callerId:$rootScope.friendId,
+                from:$rootScope.user._id 
             }
             sendKMessage(message);
         }
@@ -57,7 +59,12 @@ factory('One2OneCall', ['$rootScope',
             if ($rootScope.webRtcO2OPeer) {
                 $rootScope.webRtcO2OPeer.dispose();
                 $rootScope.webRtcO2OPeer = null; 
-                if (!message)  sendKMessage({ id : 'stop' });
+                //if (!message)  
+                sendKMessage({ 
+                    id : 'stop',
+                    to:($rootScope.user._id==$rootScope.friendId)?$rootScope.callerId:$rootScope.friendId,
+                    from:$rootScope.user._id 
+                }); // if message is not 1 then send 
             } 
             $rootScope.disconnect(friendId);
         };
@@ -66,7 +73,8 @@ factory('One2OneCall', ['$rootScope',
             if (callState != NO_CALL) {
                 var response = {
                     id : 'incomingCallResponse',
-                    from : message.from,
+                    from : message.from,   //callerId
+                    to:$rootScope.user._id, //calleeId
                     callResponse : 'reject',
                     message : 'bussy'
         
@@ -119,7 +127,8 @@ factory('One2OneCall', ['$rootScope',
                      
                     let response = {
                         id : 'incomingCallResponse',
-                        from : $rootScope.inComCallData.from,
+                        from : $rootScope.inComCallData.from, //caller Id
+                        to:$rootScope.user._id, //calleeId
                         callResponse : 'accept',
                         sdpOffer:offerSdp
                     }; 
@@ -132,6 +141,7 @@ factory('One2OneCall', ['$rootScope',
             let response = {
                 id : 'incomingCallResponse',
                 from : $rootScope.inComCallData.from,
+                to:$rootScope.user._id, //calleeId
                 callResponse : 'reject',
                 message : 'user declined'
             };

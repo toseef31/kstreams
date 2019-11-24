@@ -52,7 +52,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                         }); 
                       
                         $rootScope.presenterArr=presenterData;
-                        console.log('$rootScope.presenterArr ',$rootScope.presenterArr);
+                        //console.log('$rootScope.presenterArr ',$rootScope.presenterArr);
                 break;
                 default:
                     console.error('Unrecognized message', parsedMessage);

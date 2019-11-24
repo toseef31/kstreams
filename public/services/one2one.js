@@ -1,3 +1,8 @@
+/*
+    One 2 one server ,imp updates 11/23/2019
+    1- No sessionId on server end only mongo unique id
+    2- Ping/Pong to check if the user is still registered, if not then it will register again
+*/
 app.
 factory('One2OneCall', ['$rootScope',
     function($rootScope) {

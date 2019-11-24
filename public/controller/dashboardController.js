@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, $interval, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -54,7 +54,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
         $rootScope.O2OSoc.$on('$open', function () { 
-            setInterval(ping, 40000);
+            $interval(ping, 40000);
             if(typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
@@ -103,14 +103,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     function ping() { 
         console.log('Ping called====');
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
-        $scope.tm = setTimeout(function () {
+        $scope.tm = $interval(function () {
             console.log('in ping timeout ... trying to reconnect');
             $scope.o2oSocConnec();
         }, 5000);
     }
     function pong() {
         console.log('Pong called====');
-        clearTimeout($scope.tm);
+        $interval.cancel($scope.tm); 
     }
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;   
@@ -230,7 +230,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.openVoice = true;
     $scope.toggelMute = function () {
         $rootScope.openVoice = !$rootScope.openVoice;
-
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 

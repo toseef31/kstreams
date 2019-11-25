@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, $interval, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -46,26 +46,31 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     var ctrl = this;
-    
-    $http.post("/getProject").then(function (response) {
-        $rootScope.projectData = response.data;   
+    $scope.o2oSocConnec=function(){
         let hostIs = location.host.split(':');
         let webSocketIp=$rootScope.projectData.domainUrl;
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
-        $rootScope.O2OSoc.$on('$open', function () {
-            console.log('O2O socket open');
-            One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+        $rootScope.O2OSoc.$on('$open', function () { 
+            $interval(ping, 40000);
+            if(typeof $rootScope.user._id !=="undefined"){
+                console.log('O2O socket open');
+                One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+            }
+                
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
-            console.log('something incoming from the server: ==== ' + message);
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
+            console.log('something incoming from the server: ==== ' + parsedMessage); 
             $scope.o2oSocEst=true;
             switch (parsedMessage.id) {
+                case '__pong__':
+                    pong();
+                    break;
                 case 'registerResponse':
                     break;
                 case 'callResponse':
@@ -87,7 +92,29 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 default:
                     console.error('Unrecognized message', parsedMessage);
             }
-        });
+        })
+        .$on('$close', function () {
+            console.log('Socket connection closed1 ======');
+            $scope.o2oSocConnec();  
+        })
+    }
+
+    //checking if user is registered
+    function ping() { 
+        console.log('Ping called====');
+        One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
+        $scope.tm = $interval(function () {
+            console.log('in ping timeout ... trying to reconnect');
+            $scope.o2oSocConnec();
+        }, 5000);
+    }
+    function pong() {
+        console.log('Pong called====');
+        $interval.cancel($scope.tm); 
+    }
+    $http.post("/getProject").then(function (response) {
+        $rootScope.projectData = response.data;   
+        $scope.o2oSocConnec(); 
     });
     // Broadcast function start===============
     var windowElement = angular.element($window);
@@ -187,7 +214,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.stopCall = function (message = '', friendId = 0) {
-        One2OneCall.stopK(message, friendId);
+        One2OneCall.stopK(message, friendId);  //Initiated when 1 user hang out
     }
 
     $rootScope.showVideo = true;
@@ -203,7 +230,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.openVoice = true;
     $scope.toggelMute = function () {
         $rootScope.openVoice = !$rootScope.openVoice;
-
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 
@@ -1039,9 +1065,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on('startTimmer', function (data) {
 
-            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id) {
-                $scope.receiveCall = true;
-            }
+            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id)
+                $scope.receiveCall = true; 
             if (data.callerId == $scope.user._id) {
                 $scope.ringbell.pause();
                 $scope.callCancelTimmer.stopCallTimmer();

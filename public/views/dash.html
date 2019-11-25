@@ -273,9 +273,9 @@
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
                         
-                        <div class="time ajax-time text-right" title="1 year ago">
-                            {{selectedUserData.name}}, {{chat.createdAt | timeago}}
-                          </div>
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{selectedUserData.name}}, {{chat.createdAt | timeago}}
+                        </div>
 
                         <div class="message" ng-if="chat.messageType == 0  && chat.chatType == 0">
                           <p class="message-text" dir="auto"> {{chat.message}} </p>
@@ -317,7 +317,7 @@
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
-                          <div class="time ajax-time text-right" title="1 year ago">
+                          <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                               {{chat.createdAt | timeago}}
                             </div>
                         <div class="deleted_received_msg">this message has been deleted</div>
@@ -335,16 +335,15 @@
                     <div class="clear"></div>
 
                     <div class="message-contnaier outgoing pull-right">
-
                       <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                         <div class="clear"></div>
-                        <div class="time ajax-time text-right" title="1 year ago">
-                            {{ chat.createdAt | timeago}}
-                          </div>
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{ chat.createdAt | timeago }}
+                        </div>
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.chatType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}}
+                            {{chat.message}} 
                             <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
                               width="20px" height="20px">
                             <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
@@ -417,7 +416,7 @@
                   <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
                     <div class="messages-wrapper messages-text message-model pull-right">
                       <div class="clear"></div>
-                      <div class="time ajax-time text-right" title="1 year ago">
+                      <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                           {{ chat.createdAt | timeago }}
                       </div>
                       <div class="message">
@@ -480,8 +479,8 @@
                           <span>{{chat.message}}</span>
                         </a>
 
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{ chat.createdAt | timeago}}
                         </div>
                       </div>
 
@@ -498,8 +497,8 @@
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="deleted_received_msg">this message has been deleted
                         </div>
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{chat.createdAt | timeago}}
                         </div>
                       </div>
                     </div>
@@ -523,7 +522,7 @@
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}}
+                            {{chat.message}}   
                           </p>
                           <div class="message-media">
                             <div class="clear"></div>
@@ -557,8 +556,8 @@
                         </a>
 
 
-                        <div class="time ajax-time text-right" title="1 year ago">
-                          {{ chat.createdAt | date:"MMM dd,yyyy 'at' h:mma"}}
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{ chat.createdAt | timeago}}
                         </div>
                       </div>
 
@@ -595,8 +594,8 @@
                         </div>
                       </div>
 
-                      <div class="time ajax-time text-right" title="1 year ago">
-                        {{ chat.createdAt |date:"MMM dd,yyyy 'at' h:mma" }}
+                      <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                        {{ chat.createdAt | timeago }}
 
                       </div>
                     </div>

@@ -210,7 +210,9 @@ app.filter("timeago", function() {
       // if msg time is not one day old then show only HOURS and MINUTES
       let min = new Date(time).getMinutes();
       let hours = new Date(time).getHours();
-      let combineTime = hours + ":" + min;
+      var ampm = hours >= 12 ? 'pm' : 'am';
+
+      let combineTime = hours + ":" + min + " "+ ampm;
       return combineTime;
     }
   };

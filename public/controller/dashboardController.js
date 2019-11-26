@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, $interval, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -46,27 +46,31 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     var ctrl = this;
-    $scope.o2oSocConnec=function(){
+    var inProgress = false;
+    
+    $http.post("/getProject").then(function (response) {
+        $rootScope.projectData = response.data;   
+        $scope.o2oSocConnec(); 
+    });
+
+    $scope.o2oSocConnec = function(){
         let hostIs = location.host.split(':');
         let webSocketIp=$rootScope.projectData.domainUrl;
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
-        $rootScope.O2OSoc.$on('$open', function () { 
-            $interval(ping, 40000);
+        $rootScope.O2OSoc.$on('$open', function () {  
             if(typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
-            }
-                
+            } 
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
-            console.log('something incoming from the server: ==== ' + parsedMessage); 
-            $scope.o2oSocEst=true;
+            console.log('something incoming from the server: ==== ' + parsedMessage);  
             switch (parsedMessage.id) {
                 case '__pong__':
                     pong();
@@ -94,12 +98,35 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
         .$on('$close', function () {
-            console.log('Socket connection closed1 ======');
-            $scope.o2oSocConnec();  
+             // console.log('Socket connection closed1 ====== '+ inProgress);
+             // $scope.o2oSocConnec();
+             if (!inProgress) reCheckConnection();
         })
     }
 
+    //? ********** TEMPORARY CODE TO HANDLE CONNECTION CLOSE SITUATION ****************
+    //! Otherwise it will stop responding and brwoser has to be forcefully close /or buttons will not work
+    function reCheckConnection() {
+        if (!$scope.o2oSocConnec) return;
+        inProgress = true;
+        $scope.o2oSocConnec();
+        setTimeout(() => {
+            reCheckConnection();
+        }, 2000);
+    }
+    //? *******************************************************************************
+
+    // Broadcast function start===============
+    var windowElement = angular.element($window);
+    windowElement.on('beforeunload', function (event) {
+        $http.get('/emptyChatWithId/' + $rootScope.user._id);
+        $rootScope.O2OSoc.close();
+        $rootScope.O2MSoc.close();
+     //   event.preventDefault(); // it will prevent reload or navigating away.
+    });
+
     //checking if user is registered
+    $interval(ping, 50000);
     function ping() { 
         console.log('Ping called====');
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
@@ -112,20 +139,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log('Pong called====');
         $interval.cancel($scope.tm); 
     }
-    $http.post("/getProject").then(function (response) {
-        $rootScope.projectData = response.data;   
-        $scope.o2oSocConnec(); 
-    });
-    // Broadcast function start===============
-    var windowElement = angular.element($window);
-    windowElement.on('beforeunload', function (event) {
-        
-        $http.get('/emptyChatWithId/' + $rootScope.user._id);
-
-        $rootScope.O2OSoc.close();
-        $rootScope.O2MSoc.close();
-     //   event.preventDefault(); // it will prevent reload or navigating away.
-    });
 
     // initial websocket connection is in loginController   
     $scope.stopBroadCast = function () {
@@ -214,7 +227,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.stopCall = function (message = '', friendId = 0) {
-        One2OneCall.stopK(message, friendId);  //Initiated when 1 user hang out
+        One2OneCall.stopK(message, friendId);
     }
 
     $rootScope.showVideo = true;
@@ -230,6 +243,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.openVoice = true;
     $scope.toggelMute = function () {
         $rootScope.openVoice = !$rootScope.openVoice;
+
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 
@@ -560,14 +574,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if (!$scope.groupSelected) {
                 if (message != 0) $scope.message = 'call duration ' + $rootScope.timmerObj.showTime();
 
-                if ($scope.edit === true)
+                if ($scope.edit === true){
                     $http.post('/updateChat/' + $scope.editMsgId, { "message": $scope.message })
                         .then(function (res) {
                             $scope.message = '';
                             $scope.editMsgId = '';
                             $scope.edit = false;
                             updatechat();
-                        })
+                    })
+                }
+                    
                 else {
                     var msgObj;
 
@@ -599,45 +615,44 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     }
 
                     var tempSelectedUserData = { '_id': $scope.selectedUserData._id };
-
                     $scope.message = '';
-                    
+                    socket.emit('checkmsg', msgObj);
+
                     $http.post('/chat', { 'msgData': msgObj, 'selectedUserData': tempSelectedUserData })
                         .then(function (res) {
                             $scope.chats.push(res.data);
-                            socket.emit('checkmsg', res.data);
+                          //  socket.emit('checkmsg', res.data);
                             scrollbottom();
                             if (res.data.length < 1) return;
                         })
                 }
 
             }
-            else {
+            else { // if message is send in group
                 if ($scope.edit === true)
                     $http.post('/updateGroupChat/' + $scope.editMsgId, { "message": $scope.message, groupId: $scope.connectionId })
                         .then(function (res) {
                             $scope.message = '';
                             $scope.editMsgId = '';
                             $scope.edit = false;
-                            socket.emit('updateGroupChat', { data: res.data, case: 'del' });
+                            socket.emit('updateGroupChat', { data: res.data, case: 'edit' });
                         })
-                else {
+                else { // If message is new
                     var groupmMsgObj;
 
                     if (!$scope.isReplying)
                         groupmMsgObj = { "chatType": 0, "isGroup": 1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId };
                     else {
                         groupmMsgObj = { "commentId": $scope.commentReplyId, "chatType": 1, "isGroup": 1, "senderId": $scope.user._id, name: $scope.user.name, "message": $scope.message, id: $scope.connectionId };
-
                         $scope.deActivate();
                     }
 
                     $http.post('/groupChat', groupmMsgObj)
                         .then(function (res) {
-                            var last = res.data.message.length - 1;
-                            var data = res.data.message[last];
+                            //var last = res.data.message.length - 1;
+                           // var data = res.data.message[last];
                             $scope.message = '';
-                            socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'nodel' });
+                            socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'new' });
                             scrollbottom();
                         })
                 }
@@ -844,12 +859,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* update chat after performing any action on reall time*/
         function updatechat(deletedItem) {
+            // $http.get("path", "user.id", "chatWithRefId", "how many chats to get from server")
             $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                 .then(function (res) {
-
                     $scope.groupMembers = '';
                     $scope.chats = res.data;
-
                     socket.emit('updatechat', res.data);
                 });
         }
@@ -905,7 +919,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $http.get('/deleteGroupMsg/' + id + '/' + $scope.modalObject['type2'] + '/' + $scope.modalObject['connId']).then(function (res) {
                         $scope.editMsgId = '';
                         $rootScope.editMsgMenu1 = false;
-                        socket.emit('updateGroupChat', { 'data': res.data, case: 'del' });
+                        socket.emit('updateGroupChat', { 'data': res.data, case: 'edit' });
                     })
             });
 
@@ -1058,15 +1072,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on('updateAllGroupChat', function (chats) {
             $scope.$apply(function () {
-                if (chats.case == 'nodel') $scope.groupchats.push(chats.data);
-                else if (chats.case == 'del') $scope.groupchats = chats.data;
+                if (chats.case == 'new') $scope.groupchats.push(chats.data);
+                else if (chats.case == 'edit') $scope.groupchats = chats.data;
             });
         })
 
         socket.on('startTimmer', function (data) {
 
-            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id)
-                $scope.receiveCall = true; 
+            if (data.callerId == $scope.user._id || data.friendId == $scope.user._id) {
+                $scope.receiveCall = true;
+            }
             if (data.callerId == $scope.user._id) {
                 $scope.ringbell.pause();
                 $scope.callCancelTimmer.stopCallTimmer();
@@ -1136,7 +1151,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     //Listen on typing
     socket.on('typingRec', (data) => {
         if ($rootScope.user._id == data.rcv_id) {
-
             $("#isTyping").removeClass('hidden');
             $("#isTyping").html(data.username + " is typing...");
             startHideTimer();

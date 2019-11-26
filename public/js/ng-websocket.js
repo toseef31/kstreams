@@ -122,14 +122,17 @@
 
         me.$$init = function (cfg) {
 
-            if (cfg.mock) {
+            if (cfg.mock) { 
                 me.$$ws = new $$mockWebsocket(cfg.mock, $http);
+              //  console.log("A: " + me.$$ws );
             }
-            else if (cfg.protocols) {
+            else if (cfg.protocols) { 
                 me.$$ws = new WebSocket(cfg.url, cfg.protocols);
+               // console.log("B: " + me.$$ws );
             }
-            else {
+            else { 
                 me.$$ws = new WebSocket(cfg.url);
+              //  console.log(me.$$ws );
             }
 
             me.$$ws.onmessage = function (message) {
@@ -167,13 +170,14 @@
 
             me.$$ws.onclose = function () {
                 // Activate the reconnect task
+              //  console.log("close webSocket");
                 if (me.$$config.reconnect) {
                     me.$$reconnectTask = setInterval(function () {
-                        if (me.$status() === me.$CLOSED) me.$open();
+                       if (me.$status() === me.$CLOSED) me.$open();
                     }, me.$$config.reconnectInterval);
                 }
-
-                me.$$fireEvent('$close');
+               
+               me.$$fireEvent('$close');
             };
 
             return me;
@@ -255,6 +259,9 @@
         };
 
         me.$status = function () {
+         //   console.log('2222222222222222');
+         //   console.log(typeof me.$$ws === 'undefined');
+         
             if (typeof me.$$ws === 'undefined') return me.$CLOSED;
             else return me.$$ws.readyState;
         };

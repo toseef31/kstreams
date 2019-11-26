@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket,$interval, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;

@@ -54,7 +54,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
         $rootScope.O2OSoc.$on('$open', function () { 
-            $interval(ping, 40000);
+            
             if(typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
@@ -65,8 +65,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         .$on('$message', function (message) { // it listents for 'incoming event'
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
-            console.log('something incoming from the server: ==== ' + parsedMessage); 
-            $scope.o2oSocEst=true;
+            console.log('something incoming from the server: ==== ' + parsedMessage);  
             switch (parsedMessage.id) {
                 case '__pong__':
                     pong();
@@ -100,6 +99,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     //checking if user is registered
+    $interval(ping, 50000);
     function ping() { 
         console.log('Ping called====');
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 

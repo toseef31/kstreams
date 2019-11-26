@@ -128,6 +128,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     //checking if user is registered
     $interval(ping, 50000);
     function ping() { 
+        if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
         $scope.tm = $interval(function () {

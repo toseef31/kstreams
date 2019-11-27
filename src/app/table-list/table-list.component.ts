@@ -29,6 +29,7 @@ export class TableListComponent implements OnInit, OnDestroy {
   genericMessage: string = '';
   activatedForm: number = 0;
   selectedUserStatus: number = 1;
+  selectedSeenStatus: number = 1;
 
   userImage: File = null;
   imageSrc: string = "/assets/img/noProfile.png";
@@ -82,6 +83,7 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.userImage = null;
     this.isSubmitted = false;
     this.selectedUserStatus = 1;
+    this.selectedSeenStatus = 1;
 
     if (this.activatedForm == 0) {
       this.sessionService.set('activatedForm', 1);
@@ -115,6 +117,7 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.selectedUser = [];
     this.activatedForm = 0;
     this.selectedUserStatus = 1;
+    this.selectedSeenStatus = 1;
     this.backendService.getUsersRequest(this.loggedUserId);
   }
 
@@ -143,7 +146,10 @@ export class TableListComponent implements OnInit, OnDestroy {
       'phone': phone,
       'user_image': tempUserImage,
       'status': this.selectedUserStatus,
-      'projectId': 0
+      'seenStatus': this.selectedSeenStatus,
+      'projectId': 0,
+      'chatWithRefId': '',
+      'userId': ''
     };
 
     this.backendService.userAddRequest(userData, this.userImage, this.loggedUserId).then(
@@ -154,6 +160,7 @@ export class TableListComponent implements OnInit, OnDestroy {
           this.userImage = null;
           this.imageSrc = "";
           this.selectedUserStatus = 1;
+          this.selectedSeenStatus = 1;
           setTimeout(() => { this.genericMessage = "" }, 2500);
         }
         else {
@@ -201,7 +208,8 @@ export class TableListComponent implements OnInit, OnDestroy {
         'phone': phone,
         'password': password,
         'user_image': tempUserImage,
-        'status': this.selectedUserStatus
+        'status': this.selectedUserStatus,
+        'seenStatus': this.selectedSeenStatus
       };
     }
     else {
@@ -212,7 +220,8 @@ export class TableListComponent implements OnInit, OnDestroy {
         'country': country,
         'phone': phone,
         'user_image': tempUserImage,
-        'status': this.selectedUserStatus
+        'status': this.selectedUserStatus,
+        'seenStatus': this.selectedSeenStatus
       };
     }
 
@@ -241,6 +250,10 @@ export class TableListComponent implements OnInit, OnDestroy {
     this.selectedUserStatus = selectedStatus;
   }
 
+  SeenSelectStatus(selectedStatus: number){
+    this.selectedSeenStatus = selectedStatus;
+  }
+
   initializeAddForm() {
     this.userAddFormGroup = this.formBuilder.group({
       username: ['', Validators.required],
@@ -249,6 +262,7 @@ export class TableListComponent implements OnInit, OnDestroy {
       cpassword: ['', Validators.required],
       country: [''],
       status: [],
+      seenStatus: [],
       phone: ['']
     })
   }
@@ -261,7 +275,8 @@ export class TableListComponent implements OnInit, OnDestroy {
       cpassword: ['', Validators.required],
       country: [this.selectedUser.country],
       phone: [this.selectedUser.phone],
-      status: [this.selectedUser.status]
+      status: [this.selectedUser.status],
+      seenStatus: [this.selectedUser.seenStatus],
     });
   }
 

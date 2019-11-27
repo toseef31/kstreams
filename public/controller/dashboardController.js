@@ -68,7 +68,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             One2OneCall.setCallState(NO_CALL);
         })
         .$on('$message', function (message) { // it listents for 'incoming event'
-            $scope.o2oSocConEst=true;
+            $rootScope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
             console.log('something incoming from the server: ==== ' + parsedMessage);  
             switch (parsedMessage.id) {
@@ -266,7 +266,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.emit('user_connected', { userId: $rootScope.user._id });
         // $rootScope.o2oSocWait=true;
-        $scope.o2oSocConEst=false;
+        $rootScope.o2oSocConEst=false;
         // setTimeout(() => {
         //     console.log('in=================');
         //     $rootScope.o2oSocWait=false;

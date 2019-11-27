@@ -59,9 +59,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
-
-        $rootScope.O2OSoc.$on('$open', function () {  
-            if(typeof $rootScope.user._id !=="undefined"){
+        console.log('$scope.o2oSocConnec called= ',$scope.o2oSocConnec);
+        $rootScope.O2OSoc.$on('$open', function () {    
+            if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
             } 
@@ -126,7 +126,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     });
 
     //checking if user is registered
-    $interval(ping, 50000);
+    $interval(ping, 40000);
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');

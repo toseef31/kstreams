@@ -62,7 +62,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc); 
         $timeout(function () {
             $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
-        }, 1000);
+        }, 3000);
         
         // so as the script should not load again and again
         if(!$scope.o2oSocLoaded){
@@ -128,10 +128,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     });
 
     //checking if user is registered
-    $interval(ping, 20000);
+    $interval(ping, 10000);
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
+        if(!$rootScope.o2oSocConEst) $rootScope.O2OSoc.$open();
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
         // $scope.tm = $interval(function () {
         //     console.log('in ping timeout ... trying to reconnect');

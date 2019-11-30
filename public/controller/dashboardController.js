@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket,$interval, One2OneCall, One2ManyCall, $timeout) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket,$interval, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -59,29 +59,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new({url:reqUrl}); 
-        console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc); 
-        // $timeout(function () {
-        //     $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
-        // }, 3000);
-        
+        console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc);  
         // so as the script should not load again and again
         if(!$scope.o2oSocLoaded){
             $rootScope.O2OSoc.$on('$open', function () { 
-                console.log("in $open ",$rootScope.user);   
-                if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
-                    console.log('O2O socket open');
-                    One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
-                } 
+                console.log('O2O socket open'); 
+                if($rootScope.user && typeof $rootScope.user._id !=="undefined") 
+                    One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id }); 
+                    
                 One2OneCall.setCallState(NO_CALL);
             })
             .$on('$message', function (message) { // it listents for 'incoming event'
                 $rootScope.o2oSocConEst=true;
                 var parsedMessage = JSON.parse(message);
                 console.log('something incoming from the server: ==== ' + message);  
-                switch (parsedMessage.id) {
-                    // case '__pong__':
-                    //     pong();
-                    //     break;
+                switch (parsedMessage.id) { 
                     case 'registerResponse':
                         break;
                     case 'callResponse':
@@ -116,34 +108,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
         
     }
-    
-    
-    // Broadcast function start===============
-    var windowElement = angular.element($window);
-    windowElement.on('beforeunload', function (event) {
-        $http.get('/emptyChatWithId/' + $rootScope.user._id);
-        // $rootScope.O2OSoc.close();
-        // $rootScope.O2MSoc.close();
-     //   event.preventDefault(); // it will prevent reload or navigating away.
-    });
-
     //checking if user is registered
     $interval(ping, 10000);
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
-        if(!$rootScope.o2oSocConEst) $window.location.reload();//$rootScope.O2OSoc.$open();
-        One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
-        // $scope.tm = $interval(function () {
-        //     console.log('in ping timeout ... trying to reconnect');
-        //     $scope.o2oSocConnec();
-        // }, 5000);
+        if(!$rootScope.o2oSocConEst) $window.location.reload(); 
+        One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id });  
     }
-    // function pong() {
-    //     console.log('Already registered====');
-    //     //$interval.cancel($scope.tm); 
-    // }
 
+    // Broadcast function start===============
+    var windowElement = angular.element($window);
+    windowElement.on('beforeunload', function (event) {
+        $http.get('/emptyChatWithId/' + $rootScope.user._id); 
+    });
+ 
     // initial websocket connection is in loginController   
     $scope.stopBroadCast = function () {
         One2ManyCall.stop();
@@ -167,8 +146,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.broadCastNow = function () {
-        $rootScope.prePassword = $scope.liveStreamCode;
-        //console.log($scope.liveStreamCode,' hmmm ',$rootScope.prePassword);
+        $rootScope.prePassword = $scope.liveStreamCode; 
         if ($scope.setPassword == 0) $rootScope.prePassword = '';
         else if ($scope.setPassword == 1 && !$rootScope.prePassword) {
             $scope.brErrorMsg = 1;
@@ -177,8 +155,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#broadcastingModal").hide();
         $("#videoBroadCast").removeClass('hidden');
         $rootScope.connWdPreId = 0;
-        One2ManyCall.presenter();
-        //$("#broadcastingModal").modal('hide');
+        One2ManyCall.presenter(); 
         $http.post('/startPresenter', {
             password: $rootScope.prePassword
         }).then();

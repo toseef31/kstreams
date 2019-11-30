@@ -484,8 +484,7 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
     
 }
 
-function checkRegistration(sessionId ,from,ws){
-    //register(from, from, ws); // Agressive mode
+function checkRegistration(sessionId ,from,ws){ 
     let tester = userRegistry.getByName(from);  //It check from same ws
     if (typeof tester !== 'object' || typeof tester.sdpOffer==="undefined")
         register(from, from, ws);

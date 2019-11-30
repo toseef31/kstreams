@@ -79,9 +79,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 var parsedMessage = JSON.parse(message);
                 console.log('something incoming from the server: ==== ' + message);  
                 switch (parsedMessage.id) {
-                    case '__pong__':
-                        pong();
-                        break;
+                    // case '__pong__':
+                    //     pong();
+                    //     break;
                     case 'registerResponse':
                         break;
                     case 'callResponse':
@@ -138,10 +138,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     $scope.o2oSocConnec();
         // }, 5000);
     }
-    function pong() {
-        console.log('Already registered====');
-        //$interval.cancel($scope.tm); 
-    }
+    // function pong() {
+    //     console.log('Already registered====');
+    //     //$interval.cancel($scope.tm); 
+    // }
 
     // initial websocket connection is in loginController   
     $scope.stopBroadCast = function () {

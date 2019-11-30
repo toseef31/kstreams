@@ -59,7 +59,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
-        console.log('$scope.o2oSocConnec called= ',$scope.o2oSocConnec);
+        console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc);
         $rootScope.O2OSoc.$on('$open', function () {    
             if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
@@ -98,24 +98,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
         .$on('$close', function () {
-             // console.log('Socket connection closed1 ====== '+ inProgress);
-             // $scope.o2oSocConnec();
-             if (!inProgress) reCheckConnection();
+            console.log('Socket closed trying to reconnect...');
+            $scope.o2oSocConnec();;
+        })
+        .$on('$error', function () {
+            console.log('Socket Error trying to reconnect...');
+            $scope.o2oSocConnec();;
         })
     }
-
-    //? ********** TEMPORARY CODE TO HANDLE CONNECTION CLOSE SITUATION ****************
-    //! Otherwise it will stop responding and brwoser has to be forcefully close /or buttons will not work
-    function reCheckConnection() {
-        if (!$scope.o2oSocConnec) return;
-        inProgress = true;
-        $scope.o2oSocConnec();
-        setTimeout(() => {
-            reCheckConnection();
-        }, 2000);
-    }
-    //? *******************************************************************************
-
+ 
     // Broadcast function start===============
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {

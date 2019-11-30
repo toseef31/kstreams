@@ -62,7 +62,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc); 
         $timeout(function () {
             $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
-        }, 5000);
+        }, 1000);
         
         // so as the script should not load again and again
         if(!$scope.o2oSocLoaded){

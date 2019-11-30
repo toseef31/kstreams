@@ -45,14 +45,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserNo = -1;
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
-    var ctrl = this;
-    var inProgress = false;
+    
     
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;   
         $scope.o2oSocConnec(); 
     });
 
+    $scope.o2oSocLoaded=false;
     $scope.o2oSocConnec = function(){
         let hostIs = location.host.split(':');
         let webSocketIp=$rootScope.projectData.domainUrl;
@@ -63,53 +63,58 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $timeout(function () {
             $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
         }, 5000);
+        
+        // so as the script should not load again and again
+        if(!$scope.o2oSocLoaded)
+            $rootScope.O2OSoc.$on('$open', function () {    
+                if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
+                    console.log('O2O socket open');
+                    One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+                } 
+                One2OneCall.setCallState(NO_CALL);
+            })
+            .$on('$message', function (message) { // it listents for 'incoming event'
+                $rootScope.o2oSocConEst=true;
+                var parsedMessage = JSON.parse(message);
+                console.log('something incoming from the server: ==== ' + parsedMessage);  
+                switch (parsedMessage.id) {
+                    case '__pong__':
+                        pong();
+                        break;
+                    case 'registerResponse':
+                        break;
+                    case 'callResponse':
+                        One2OneCall.callResponse(parsedMessage);
+                        break;
+                    case 'incomingCall':
+                        One2OneCall.incomingCall(parsedMessage);
+                        break;
+                    case 'startCommunication':
+                        One2OneCall.startCommunication(parsedMessage);
+                        $rootScope.callConnected();
+                        break;
+                    case 'stopCommunication':
+                        One2OneCall.stopK(true);
+                        break;
+                    case 'iceCandidate':
+                        $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
+                        break;
+                    default:
+                        console.error('Unrecognized message', parsedMessage);
+                }
+            })
+            .$on('$close', function () {
+                console.log('Socket closed trying to reconnect...');
+                $scope.o2oSocConnec();
+            })
+            .$on('$error', function () {
+                console.log('Socket Error trying to reconnect...');
+                $scope.o2oSocConnec();
+            })
+        $scope.o2oSocLoaded=true;
     }
     
-    $rootScope.O2OSoc.$on('$open', function () {    
-        if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
-            console.log('O2O socket open');
-            One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
-        } 
-        One2OneCall.setCallState(NO_CALL);
-    })
-    .$on('$message', function (message) { // it listents for 'incoming event'
-        $rootScope.o2oSocConEst=true;
-        var parsedMessage = JSON.parse(message);
-        console.log('something incoming from the server: ==== ' + parsedMessage);  
-        switch (parsedMessage.id) {
-            case '__pong__':
-                pong();
-                break;
-            case 'registerResponse':
-                break;
-            case 'callResponse':
-                One2OneCall.callResponse(parsedMessage);
-                break;
-            case 'incomingCall':
-                One2OneCall.incomingCall(parsedMessage);
-                break;
-            case 'startCommunication':
-                One2OneCall.startCommunication(parsedMessage);
-                $rootScope.callConnected();
-                break;
-            case 'stopCommunication':
-                One2OneCall.stopK(true);
-                break;
-            case 'iceCandidate':
-                $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
-                break;
-            default:
-                console.error('Unrecognized message', parsedMessage);
-        }
-    })
-    .$on('$close', function () {
-        console.log('Socket closed trying to reconnect...');
-        $scope.o2oSocConnec();
-    })
-    .$on('$error', function () {
-        console.log('Socket Error trying to reconnect...');
-        $scope.o2oSocConnec();
-    })
+    
     // Broadcast function start===============
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {

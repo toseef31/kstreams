@@ -132,7 +132,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
-        if(!$rootScope.o2oSocConEst) $scope.o2oSocConnec();//$rootScope.O2OSoc.$open();
+        if(!$rootScope.o2oSocConEst) $window.location.reload();//$rootScope.O2OSoc.$open();
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
         // $scope.tm = $interval(function () {
         //     console.log('in ping timeout ... trying to reconnect');

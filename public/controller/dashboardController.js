@@ -58,11 +58,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         let webSocketIp=$rootScope.projectData.domainUrl;
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         let reqUrl='wss://'+webSocketIp+':8443/one2one';
-        $rootScope.O2OSoc= $websocket.$new({url:reqUrl,lazy:true}); 
+        $rootScope.O2OSoc= $websocket.$new({url:reqUrl}); 
         console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc); 
-        $timeout(function () {
-            $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
-        }, 3000);
+        // $timeout(function () {
+        //     $rootScope.O2OSoc.$open(); // Open the connction only at this point. It will fire the '$open' event
+        // }, 3000);
         
         // so as the script should not load again and again
         if(!$scope.o2oSocLoaded){
@@ -132,7 +132,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
-        if(!$rootScope.o2oSocConEst) $rootScope.O2OSoc.$open();
+        if(!$rootScope.o2oSocConEst) $scope.o2oSocConnec();//$rootScope.O2OSoc.$open();
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
         // $scope.tm = $interval(function () {
         //     console.log('in ping timeout ... trying to reconnect');

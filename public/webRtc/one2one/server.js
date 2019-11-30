@@ -485,13 +485,14 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
 }
 
 function checkRegistration(sessionId ,from,ws){
-    let tester = userRegistry.getByName(from);
-    if (typeof tester === 'object' && typeof tester.sdpOffer!=="undefined")
-        ws.send(JSON.stringify({
-            id: '__pong__',
-            response: from
-        }));
-    else register(from, from, ws);
+    register(from, from, ws); // Agressive mode
+    // let tester = userRegistry.getByName(from);
+    // if (typeof tester === 'object' && typeof tester.sdpOffer!=="undefined")
+    //     ws.send(JSON.stringify({
+    //         id: '__pong__',
+    //         response: from
+    //     }));
+    // else register(from, from, ws);
 }
 
 function register(id, name, ws, callback) {

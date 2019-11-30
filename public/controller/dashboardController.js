@@ -65,8 +65,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }, 5000);
         
         // so as the script should not load again and again
-        if(!$scope.o2oSocLoaded)
-            $rootScope.O2OSoc.$on('$open', function () {    
+        if(!$scope.o2oSocLoaded){
+            $rootScope.O2OSoc.$on('$open', function () { 
+                console.log("in $open ",$rootScope.user);   
                 if($rootScope.user && typeof $rootScope.user._id !=="undefined"){
                     console.log('O2O socket open');
                     One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
@@ -76,7 +77,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             .$on('$message', function (message) { // it listents for 'incoming event'
                 $rootScope.o2oSocConEst=true;
                 var parsedMessage = JSON.parse(message);
-                console.log('something incoming from the server: ==== ' + parsedMessage);  
+                console.log('something incoming from the server: ==== ' + message);  
                 switch (parsedMessage.id) {
                     case '__pong__':
                         pong();
@@ -111,7 +112,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 console.log('Socket Error trying to reconnect...');
                 $scope.o2oSocConnec();
             })
-        $scope.o2oSocLoaded=true;
+            $scope.o2oSocLoaded=true;
+        }
+        
     }
     
     
@@ -119,8 +122,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {
         $http.get('/emptyChatWithId/' + $rootScope.user._id);
-        $rootScope.O2OSoc.close();
-        $rootScope.O2MSoc.close();
+        // $rootScope.O2OSoc.close();
+        // $rootScope.O2MSoc.close();
      //   event.preventDefault(); // it will prevent reload or navigating away.
     });
 

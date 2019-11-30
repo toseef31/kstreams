@@ -491,6 +491,7 @@ function checkRegistration(sessionId ,from,ws){
             id: '__pong__',
             response: from
         }));
+    else register(from, from, ws);
 }
 
 function register(id, name, ws, callback) {
@@ -505,14 +506,10 @@ function register(id, name, ws, callback) {
     }
 
     if (typeof name === 'undefined' || name=='') return onError("empty user name ",name);
-    
 
     let checkVal = userRegistry.getByName(name);
-    if (checkVal && typeof checkVal !== "undefined") {
-        console.log("User " + name + " is already registered");
-        //return onError("User " + name + " is already registered");
-    }
-
+    if (checkVal && typeof checkVal !== "undefined") console.log("User " + name + " is already registered"); 
+     
     userRegistry.register(new UserSession(id, name, ws));
     try {
         ws.send(JSON.stringify({

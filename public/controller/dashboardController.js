@@ -128,19 +128,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     });
 
     //checking if user is registered
-    $interval(ping, 40000);
+    $interval(ping, 20000);
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id }); 
-        $scope.tm = $interval(function () {
-            console.log('in ping timeout ... trying to reconnect');
-            $scope.o2oSocConnec();
-        }, 5000);
+        // $scope.tm = $interval(function () {
+        //     console.log('in ping timeout ... trying to reconnect');
+        //     $scope.o2oSocConnec();
+        // }, 5000);
     }
     function pong() {
-        console.log('Pong called====');
-        $interval.cancel($scope.tm); 
+        console.log('Already registered====');
+        //$interval.cancel($scope.tm); 
     }
 
     // initial websocket connection is in loginController   

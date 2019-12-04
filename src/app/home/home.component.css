@@ -1,0 +1,101 @@
+a.outline-button.feature-buttons2 {
+    margin: 0 5px 15px;
+    border: 1px solid #71be80;
+    color: #71be80;
+}
+a.outline-button, .outline-button {
+    font-size: 18px;
+    height: 38px;
+    line-height: 36px;
+    padding: 0 15px;
+    border: 1px solid #1bb1dc;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: 400;
+    margin: 0;
+    text-decoration: none;
+    text-align: center;
+    color: #1bb1dc;
+}
+a.outline-button.feature-buttons {
+    margin: 0 5px 15px;
+}
+#about .about-img::before{
+	background-color: transparent;
+}
+#about .about-img::after{
+	background-color: transparent;
+}
+/*Service Section*/
+.service-img img{
+	width: 100%;
+}
+/*Choose us section*/
+#why-us {
+    background: -webkit-gradient(linear,left top,left bottom,from(#1bb1dc),to(#2e3a48));
+    background: -webkit-linear-gradient(top,#1bb1dc,#2e3a48);
+    background: linear-gradient(top,#1bb1dc,#2e3a48);
+    background-color: #1bb1dc;
+    color: #fff;
+    padding: 40px 0;
+}
+.scalable {
+    background: url('/assets/img/img-scalable.png') no-repeat top center;
+    background-size: 100% 100%;
+}
+.col3-image.full-integration {
+    background: url('/assets/img/integration_full.png') no-repeat top center;
+    background-size: 100% 100%;
+}
+.col3-image.compatible {
+    background: url('/assets/img/devices.png') no-repeat top center;
+    background-size: 100% 100%;
+}
+.block-inner .col3-image {
+    height: 135px;
+    width: 200px;
+    margin: 0 auto 20px;
+}
+.titleStartText{
+	color: white;
+}
+
+/*Media Quoery*/
+@media(max-width: 767px){
+	#about .about-img {
+    margin: 30px 0px 30px 0px;
+	}
+	#intro {
+    height: auto;
+    padding: 0px 0 0px 0;
+    margin-top: 4rem;
+	}
+	#intro .img-container{
+		padding: 0px 0 0px 0;
+		width: 92%;
+	}
+	#intro .title-info .titleStartText{
+		font-size: 22px;
+		margin-bottom: 0;
+	}
+	#about {
+    padding: 20px 0;
+	}
+	.title-row{
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.main-row{
+		margin-left: 0;
+		margin-right: 0;
+	}
+	#intro .intro-img {
+    width: 100%;
+	}
+	#intro .title-info {
+    padding-top: 20px;
+	}
+}

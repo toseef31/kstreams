@@ -238,13 +238,19 @@ body {
     background: #f5f8fd url("./assets/img/intro-bg.jpg") center top no-repeat;
     background-size: cover;
   }
-
-  #intro {
-    width: 81%;
-    height: 84vh;
+  #intro{
+    background: #1bb1dc;
+  }
+  #intro .title-info{
+    padding-top: 30px;
+  }
+  #intro .img-container{
+    /*width: 81%;*/
+    height: 58vh !important;
     position: relative;
-    background: #f5f8fd url("./assets/home-page.png") center top no-repeat;
-    background-size: cover;
+    /*background: #f5f8fd url("./assets/home-page.png") center top no-repeat;*/
+    background-size: 100% 100%;
+    margin-top: 7%;
   }
   
   #intro .intro-info h2 {
@@ -1518,8 +1524,8 @@ body {
   }
 
   .homeTitleImage{
-    margin-left: 10%;
-    margin-top: 9%;
+    /*margin-left: 10%;*/
+    margin-top: 6%;
   }
   /* ============================================================================ */
 

@@ -298,6 +298,18 @@ io.on('connection', function (socket) {
 		io.emit('updateOtherMembersFiles', data);
 	});
 
+	socket.on('message', function (data) {
+		//console.log('sbs socket');
+		//console.log(data);
+		io.emit('receiveScreenMessage', data);
+	//	socket.broadcast.emit('receiveScreenMessage', data);
+	});
+
+	// socket.on('screenVideo', function (video){
+	// 	console.log(video);
+	// 	io.emit('viewSharedScreen', video);
+	// })
+
 	//listen on typing
 	socket.on('typing', (data) => {
 		io.emit('typing', data)

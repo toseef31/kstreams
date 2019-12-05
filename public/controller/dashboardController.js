@@ -33,7 +33,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.webRtcO2MPeer = null;
     $rootScope.broadCastHtml = document.getElementById('broadCastVideo');
     $scope.webRtcPeer = null;
-    const NO_CALL = 0;
+    
     $rootScope.timmerObj = new timmer('#timmer');
     $scope.inComCallData = 0;
     $rootScope.presenterArr = [];
@@ -47,7 +47,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.userOrderList = 0;
     var ctrl = this;
     var inProgress = false;
-    
+    const NO_CALL = 0;
+
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;   
         $scope.o2oSocConnec(); 
@@ -56,19 +57,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.o2oSocConnec = function(){
         let hostIs = location.host.split(':');
         let webSocketIp=$rootScope.projectData.domainUrl;
-        if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
-        let reqUrl='wss://'+webSocketIp+':8443/one2one';
+        if (hostIs[0] == 'localhost') webSocketIp= '127.0.0.1';
+        let reqUrl='wss://'+ webSocketIp +':8443/one2one';
         $rootScope.O2OSoc= $websocket.$new(reqUrl); 
 
         $rootScope.O2OSoc.$on('$open', function () { 
-            //$interval(ping, 40000);
+            // $interval(ping, 40000);
             if(typeof $rootScope.user._id !=="undefined"){
                 console.log('O2O socket open');
                 One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
             }
-                
             One2OneCall.setCallState(NO_CALL);
         })
+
         .$on('$message', function (message) { // it listents for 'incoming event'
             $scope.o2oSocConEst=true;
             var parsedMessage = JSON.parse(message);
@@ -162,6 +163,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.openAvModal = function () {
         $("#avPresenterModal").modal();
+    }
+
+    $scope.launchScreenshare = function (userid, to, media) {
+        console.log("screenShare launching");
+        //One2OneCall.screenshare(userid, 0, media);
+        One2OneCall.videoKCall(userid, 0, media, 0);
+    }
+
+    $scope.ScreenshareModal = function () {
+        $("#screenshare-modal").modal();
+        $("#screenshare-modal").show();
     }
 
     $scope.broadCastNow = function () {
@@ -272,7 +284,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     console.log('in=================');
         //     $rootScope.o2oSocWait=false;
         // }, 10000); //10 seconds
-
         
         $scope.receiveCall = false;
         $scope.welcomePage = true;
@@ -1143,7 +1154,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.showDrpDwnSt = false;
     }
 
-
     var everywhere = angular.element(window.document);
     everywhere.bind('click', function (event) {
         var isButtonClick = $(event.target).is('.stAngleDd');
@@ -1168,5 +1178,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.reloadCurrent=function(){
         location.reload();
     }
+
+    
 });
 

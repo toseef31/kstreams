@@ -484,13 +484,11 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
     
 }
 
-function checkRegistration(sessionId ,from,ws){
-    let tester = userRegistry.getByName(from);
-    if (typeof tester === 'object' && typeof tester.sdpOffer!=="undefined")
-        ws.send(JSON.stringify({
-            id: '__pong__',
-            response: from
-        }));
+function checkRegistration(sessionId ,from,ws){ 
+    let tester = userRegistry.getByName(from);  //It check from same ws
+    if (typeof tester !== 'object' || typeof tester.sdpOffer==="undefined")
+        register(from, from, ws);
+    else console.log('checkRegistration user '+from+' is registered with this socket');
 }
 
 function register(id, name, ws, callback) {
@@ -505,14 +503,10 @@ function register(id, name, ws, callback) {
     }
 
     if (typeof name === 'undefined' || name=='') return onError("empty user name ",name);
-    
 
     let checkVal = userRegistry.getByName(name);
-    if (checkVal && typeof checkVal !== "undefined") {
-        console.log("User " + name + " is already registered");
-        //return onError("User " + name + " is already registered");
-    }
-
+    if (checkVal && typeof checkVal !== "undefined") console.log("User " + name + " is already registered"); 
+     
     userRegistry.register(new UserSession(id, name, ws));
     try {
         ws.send(JSON.stringify({

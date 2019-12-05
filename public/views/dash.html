@@ -877,53 +877,13 @@
   </div>
   <!-- end -->
 
-  <!-- Broadcasting modal end  -->
-
+  <!-- Broadcasting modals end  -->
   <div class="alert alert-info alert-dismissible show callServerNoti"  ng-class="{hidden: o2oSocConEst}" role="alert">
-    <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>
-    <p>If it take too long then try refreshing it.</p>
-    <!-- <span class='errorMsg'  ng-class="{hidden: o2oSocWait}">Could not connect <a href="javascript:void(0)" ng-click="reloadCurrent()">Click here</a> to reload </span> -->
+    <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>  
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-  </div>
- 
-  <!-- ------------- Screenshare Modal ------------------------- -->
-  <div id="screenshare-modal" class="modal fade">
-      <div class="modal-dialog">
-          <div class="modal-content">
-      <header style="text-align: center;">
-          <h1>
-            WebRTC Screen Sharing
-          </h1>
-        </header>
-  
-        <!-- just copy this <section> and next script -->
-        <section class="experiment">
-          <section class="hide-after-join">
-            <span>
-              Private ??
-              <a
-                href="/screen-sharing/"
-                target="_blank"
-                title="Open this link for private screen sharing!"
-                ><code><strong id="unique-token">#123456789</strong></code></a>
-            </span>
-            <input type="text" id="user-name" placeholder="Your Name" />
-            <button id="share-screen" class="setup">Share Your Screen</button>
-          </section>
-  
-          <!-- list of all available broadcasting rooms -->
-          <table
-            style="width: 100%;"
-            id="rooms-list"
-            class="hide-after-join"
-          ></table>
-  
-          <!-- local/remote videos container -->
-          <div id="videos-container">
-              <!-- <video id="videoOutput" style="height: 54%" poster="images/webrtc.png"></video> -->
-          </div>
+  </div> 
 
           <!-- <div id="remotes" class="ui large">
               <video id="videoOutput" autoplay poster="images/webrtc.png"></video>

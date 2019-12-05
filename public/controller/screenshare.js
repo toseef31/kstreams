@@ -1,5 +1,4 @@
 
-app.controller("ScreenshareController", function ($scope, $http, $window, $location, $rootScope, $uibModal,One2OneCall,One2ManyCall,$websocket,$interval) {
-   
-    
+app.controller("ScreenshareController", function ($scope, $http, $window, $location, $rootScope, $One2OneCall, $websocket) {
+
 })

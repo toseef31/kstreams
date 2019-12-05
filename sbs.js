@@ -38,6 +38,7 @@ if (serverIpAdd.includes('58.229.208.176')) { //Job callme
 		key: sslConfig.keyPl,
 		cert: sslConfig.certPl,
 	};
+	console.log('In peek let ',keysOpt);
 }
 
 const server = require('https').Server(keysOpt, app);
@@ -297,6 +298,18 @@ io.on('connection', function (socket) {
 	socket.on('updateGroupFiles', function (data) {
 		io.emit('updateOtherMembersFiles', data);
 	});
+
+	socket.on('message', function (data) {
+		//console.log('sbs socket');
+		//console.log(data);
+		io.emit('receiveScreenMessage', data);
+	//	socket.broadcast.emit('receiveScreenMessage', data);
+	});
+
+	// socket.on('screenVideo', function (video){
+	// 	console.log(video);
+	// 	io.emit('viewSharedScreen', video);
+	// })
 
 	//listen on typing
 	socket.on('typing', (data) => {

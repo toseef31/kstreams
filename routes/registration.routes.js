@@ -102,7 +102,8 @@ registrationRoutes.post('/getusers', function (req, res) {
     var activeProjectUsers = [];
 
     User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
-
+        if (err) res.send("error");
+        if (!users) res.send(null);
         for (var i = 0; i < users.length; i++) {
             if (users[i].user_image != "")
                 users[i]['userImageLink'] = (fullUrl + users[i].user_image);

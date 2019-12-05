@@ -1297,3 +1297,20 @@ height: 70% !important;
   left: auto!important;
   right: -18px;
 } */
+
+/* video#captured-media {
+  width: 100%;
+  height: calc(width * 16 / 9);
+} */
+
+.showJoinButton{
+  display: block;
+}
+
+.hideJoinButton{
+  display: none;
+}
+
+.screenshareHeight{
+  height: 54%;
+}

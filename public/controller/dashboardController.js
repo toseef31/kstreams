@@ -50,6 +50,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;   
         $scope.o2oSocConnec(); 
+
+        if($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
     $scope.o2oSocLoaded=false;
@@ -109,7 +111,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         
     }
     //checking if user is registered
-    $interval(ping, 10000);
+    
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');

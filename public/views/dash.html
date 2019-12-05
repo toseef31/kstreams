@@ -878,7 +878,7 @@
   <!-- end -->
 
   <!-- Broadcasting modals end  -->
-  <div class="alert alert-info alert-dismissible show callServerNoti"  ng-class="{hidden: o2oSocConEst}" role="alert">
+  <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1" ng-class="{hidden: o2oSocConEst}" role="alert">
     <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>  
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>

@@ -191,7 +191,47 @@ factory('One2OneCall', ['$rootScope',
                 });
             });
         }
+
+        //?-- for testing purpose only -------------------------------------------------------------
+        function screenshare(from,to,media){
+           console.log('one1one');
+            //  setCallState(PROCESSING_CALL); 
+            let localAsset=document.getElementById('local-video');
+            let remoteAsset= document.getElementById('videoOutput'); 
+            let medConst={};
         
+                // localAsset=document.getElementById('audioInput');
+                // remoteAsset= document.getElementById('audioOutput'); 
+                // medConst={mediaConstraints: {
+                //     audio: true,
+                //     video: false
+                // }}; 
+       
+            let options = {
+                localVideo : localAsset,
+                remoteVideo : remoteAsset,
+                onicecandidate : onIceCandidate,medConst
+            } 
+               
+            $rootScope.webRtcO2OPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function(error) {
+                if (error) setCallState(NO_CALL);
+                 
+                this.generateOffer(function(error, offerSdp) {
+                    if (error) setCallState(NO_CALL);
+                     
+                    let message = {
+                        id : 'screenshare',
+                        from : from,
+                        to : to, 
+                        userData:media,
+                        sdpOffer:offerSdp
+                    };  
+                    sendKMessage(message);
+                });
+            });
+        }
+        //?-----------------------------------------------------------------------------------------
+
         function startCommunication(message) {
             setCallState(IN_CALL);
             $rootScope.webRtcO2OPeer.processAnswer(message.sdpAnswer);

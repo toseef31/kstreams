@@ -33,7 +33,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.webRtcO2MPeer = null;
     $rootScope.broadCastHtml = document.getElementById('broadCastVideo');
     $scope.webRtcPeer = null;
-    const NO_CALL = 0;
+    
     $rootScope.timmerObj = new timmer('#timmer');
     $scope.inComCallData = 0;
     $rootScope.presenterArr = [];
@@ -145,6 +145,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#avPresenterModal").modal();
     }
 
+    $scope.launchScreenshare = function (userid, to, media) {
+        console.log("screenShare launching");
+        //One2OneCall.screenshare(userid, 0, media);
+        One2OneCall.videoKCall(userid, 0, media, 0);
+    }
+
+    $scope.ScreenshareModal = function () {
+        $("#screenshare-modal").modal();
+        $("#screenshare-modal").show();
+    }
+
     $scope.broadCastNow = function () {
         $rootScope.prePassword = $scope.liveStreamCode; 
         if ($scope.setPassword == 0) $rootScope.prePassword = '';
@@ -251,7 +262,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //     console.log('in=================');
         //     $rootScope.o2oSocWait=false;
         // }, 10000); //10 seconds
-
         
         $scope.receiveCall = false;
         $scope.welcomePage = true;
@@ -1122,7 +1132,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.showDrpDwnSt = false;
     }
 
-
     var everywhere = angular.element(window.document);
     everywhere.bind('click', function (event) {
         var isButtonClick = $(event.target).is('.stAngleDd');
@@ -1147,5 +1156,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.reloadCurrent=function(){
         location.reload();
     }
+
+    
 });
 

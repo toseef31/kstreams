@@ -1,28 +1,36 @@
-<html ng-app="chatApp" ng-controller="loginController" style="overflow-y: hidden;">
+<html
+  ng-app="chatApp"
+  ng-controller="loginController"
+  style="overflow-y: hidden;"
+>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="chatApp">
-    <meta name="author" content="Peek International">
-    
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="chatApp" />
+    <meta name="author" content="Peek International" />
+
     <!-- <title ng-bind="projectData.metaTitle"> Site title </title> -->
     <!-- ------------ Unstaged Changes ------------------------------------ -->
-    <title ng-bind="projectData.metaTitle"> Site title </title>
+    <title ng-bind="projectData.metaTitle">Site title</title>
     <!-- ----------------------------- ------------------------------------ -->
 
-    <link rel="icon" ng-if="projectData && projectData.favicon" href="{{projectData.favicon}}" sizes="192x192" />
+    <link
+      rel="icon"
+      ng-if="projectData && projectData.favicon"
+      href="{{projectData.favicon}}"
+      sizes="192x192"
+    />
 
-    <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
     <!-- <link rel="stylesheet" href="./nodeModFiles/semantic.min.css"> -->
 
-    <link href="style/font-awesome.css" type="text/css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="./style/main.css">
-    <link href="style/emojionearea.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="./style/custom.css">
-    <link rel="stylesheet" href="style/newDesign/stylesheet/style.css">
+    <link href="style/font-awesome.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="./style/main.css" />
+    <link href="style/emojionearea.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="./style/custom.css" />
+    <link rel="stylesheet" href="style/newDesign/stylesheet/style.css" />
 
-    
     <script src="style/newDesign/javascript/jquery-3.1.1.min.js"></script>
 
     <script src="js/jquery.min.js"></script>
@@ -41,21 +49,37 @@
     <script src="./js/helper.js"></script>
     <!-- <script src="./js/multiselect-template.js"></script> -->
     <script src="./js/touch-punch.js"></script>
-    <link rel="stylesheet" href="style/newDesign/stylesheet/jquery.ui.css">
+    <link rel="stylesheet" href="style/newDesign/stylesheet/jquery.ui.css" />
     <script src="style/newDesign/javascript/autocomplete.jquery.js"></script>
 
     <!-- <script src="style/newDesign/javascript/autocomplete.jquery.js"></script> -->
     <!------ Include the above in your HEAD tag ---------->
   </head>
-  <body id="LoginForm" >
+  <body id="LoginForm">
+    <!-- scripts used for screen-sharing -->
+    <script src="https://www.webrtc-experiment.com/socket.io.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://www.webrtc-experiment.com/IceServersHandler.js"></script>
+    <script src="https://www.webrtc-experiment.com/getScreenId.js"></script>
+    <script src="https://www.webrtc-experiment.com/CodecsHandler.js"></script>
+    <script src="https://www.webrtc-experiment.com/BandwidthHandler.js"></script>
+    <script src="../js/main.js"></script>
+
     <div ng-view></div>
+
     <script type="text/javascript" src="./config/app.js"></script>
     <script type="text/javascript" src="./services/one2one.js"></script>
     <script type="text/javascript" src="./services/one2many.js"></script>
 
     <script type="text/javascript" src="./routes/routes.js"></script>
-    <script type="text/javascript" src="./controller/logincontroller.js"></script>
-    <script type="text/javascript" src="./controller/dashboardController.js"></script>
+    <script
+      type="text/javascript"
+      src="./controller/logincontroller.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="./controller/dashboardController.js"
+    ></script>
     <!-- <script src="./nodeModFiles/semantic.min.js"></script>
     <script src="./nodeModFiles/handlebars.min.js "></script>
     <script src="./nodeModFiles/simplewebrtc-with-adapter.bundle.js"></script> -->

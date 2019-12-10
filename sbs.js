@@ -37,8 +37,7 @@ if (serverIpAdd.includes('58.229.208.176')) { //Job callme
 	keysOpt = {
 		key: sslConfig.keyPl,
 		cert: sslConfig.certPl,
-	};
-	console.log('In peek let ',keysOpt);
+	}; 
 }
 
 const server = require('https').Server(keysOpt, app);

@@ -115,7 +115,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     function ping() { 
         if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
         console.log('Ping called====');
-        if(!$rootScope.o2oSocConEst) $window.location.reload(); 
+        //if(!$rootScope.o2oSocConEst) $window.location.reload(); 
         One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id });  
     }
 

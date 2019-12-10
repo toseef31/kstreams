@@ -56,15 +56,7 @@
     <!------ Include the above in your HEAD tag ---------->
   </head>
   <body id="LoginForm">
-    <!-- scripts used for screen-sharing -->
-    <script src="https://www.webrtc-experiment.com/socket.io.js"></script>
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script src="https://www.webrtc-experiment.com/IceServersHandler.js"></script>
-    <script src="https://www.webrtc-experiment.com/getScreenId.js"></script>
-    <script src="https://www.webrtc-experiment.com/CodecsHandler.js"></script>
-    <script src="https://www.webrtc-experiment.com/BandwidthHandler.js"></script>
-    <script src="../js/main.js"></script>
-
+    
     <div ng-view></div>
 
     <script type="text/javascript" src="./config/app.js"></script>
@@ -95,5 +87,16 @@
         });
       });
     </script> -->
+
+    <!-- scripts used for screen-sharing -->
+    <script src="js/muaz/socket.io.js"> </script>
+    <script src="js/muaz/adapter-latest.js"></script>
+    <script src="js/muaz/IceServersHandler.js"></script>
+    <script src="js/muaz/getScreenId.js"> </script>
+    <script src="js/muaz/CodecsHandler.js"></script>
+    <script src="js/muaz/BandwidthHandler.js"></script>
+    <script src="js/muaz/screen.js"> </script>
+    <script type="text/javascript" src="./controller/muazController.js"></script>
+    <!-- screen-sharing scripts end -->
   </body>
 </html>

@@ -11,6 +11,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.gchatIndex = 1;
     $scope.loggedUserId = 0;
     $scope.tempUsers = null;
+    const NO_CALL = 0;
     /*save with whom user are chatting*/
     $scope.chatWithId = '';
     /*save all chats */
@@ -54,6 +55,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         if($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
+
 
     $scope.o2oSocLoaded=false;
     $scope.o2oSocConnec = function(){

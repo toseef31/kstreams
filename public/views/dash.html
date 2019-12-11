@@ -251,7 +251,7 @@
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
-            <span ng-if="projectData.videoCall == 0" class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
+            <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
               <i id="screenShare" class="fa fa fa-slideshare"  ></i>
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
@@ -945,15 +945,13 @@
       
         <input type="text" id="userNameSS" placeholder="Your Name">
         <button id="share-screen" class="setup">Share Your Screen</button>
-      </section> -->
+      </section>
+ 
+      <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table> 
+ 
+       <div id="videos-container"></div>
 
-      <!-- list of all available broadcasting rooms --> 
-      <!-- <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table> -->
-
-      <!-- local/remote videos container -->
-      <!-- <div id="videos-container"></div> -->
-
-    </div>
+    </div> -->
   </div>
 </div>
 </div>

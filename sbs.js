@@ -41,8 +41,8 @@ if (serverIpAdd.includes('58.229.208.176')) { //Job callme
 }
 
 const server = require('https').Server(keysOpt, app);
-//const io = require('socket.io')(server);
-const io = require('./public/js/muaz/socket.io')(server);
+const io = require('socket.io')(server);
+// const io = require('./public/js/muaz/socket.io')(server);
 const config = require('./config/DB');
 
 //*****

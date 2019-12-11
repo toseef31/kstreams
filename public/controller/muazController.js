@@ -9,10 +9,10 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     var sender = Math.round(Math.random() * 999999999) + 999999999;
 
  
-
-
-    console.log(channel, ' ==and== ', sender);
-    var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+    var SIGNALING_SERVER ="https://"+window.location.hostname+':22000';
+    console.log( SIGNALING_SERVER);
+    //var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+    //var SIGNALING_SERVER = 'https://localhost:22000/';
     io.connect(SIGNALING_SERVER).emit('new-channel', {
         channel: channel,
         sender: sender
@@ -26,7 +26,10 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     socket.send = function (message) {
         if (!$rootScope.incomingScreenshare) {
             console.log("000");
-            socket.emit('emitScreenshareStatus', {'fromId': $rootScope.user._id, 'toId': $scope.chatWithId});
+            socket.emit('emitScreenshareStatus', {
+                'fromId': $rootScope.user._id,
+                'toId': $scope.chatWithId
+            });
 
             //$rootScope.changeScreenshareStatus({'fromId': $rootScope.user._id,'toid': $scope.chatWithId});
         }
@@ -44,40 +47,39 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     };
 
     screensharing.onscreen = function (_screen) {
-          if (_screen.toId == $rootScope.user._id){
+        if (_screen.toId == $rootScope.user._id) {
             console.log("some one is sharing screen with you");
 
-            console.log($scope.chatWithId +' == '+ _screen.fromId);
-            if ($scope.chatWithId == _screen.fromId){
-            
+            console.log($scope.chatWithId + ' == ' + _screen.fromId);
+            if ($scope.chatWithId == _screen.fromId) {
+
                 var alreadyExist = document.getElementById(_screen.userid);
                 if (alreadyExist) return;
-        
+
                 if (typeof roomsList === 'undefined') roomsList = document.body;
-        
+
                 var tr = document.createElement('tr');
-        
+
                 tr.id = _screen.userid;
                 tr.innerHTML = '<td>' + _screen.userid + ' shared his screen.</td>' +
                     '<td><button class="join">View</button></td>';
                 roomsList.insertBefore(tr, roomsList.firstChild);
-        
+
                 var button = tr.querySelector('.join');
                 button.setAttribute('data-userid', _screen.userid);
                 button.setAttribute('data-roomid', _screen.roomid);
                 button.onclick = function () {
                     var button = this;
                     button.disabled = true;
-        
+
                     var _screen = {
                         userid: button.getAttribute('data-userid'),
                         roomid: button.getAttribute('data-roomid')
                     };
                     screensharing.view(_screen);
                 };
-            }
-            else{
-                
+            } else {
+
             }
         }
     };
@@ -125,7 +127,7 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
         screensharing.userid = username.value;
         // screensharing.fromId = $rootScope.user._id;
         // screensharing.toId = $scope.chatWithId;
-        screensharing.share( null , $rootScope.user._id, $scope.chatWithId);
+        screensharing.share(null, $rootScope.user._id, $scope.chatWithId);
     };
 
     function rotateVideo(video) {

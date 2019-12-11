@@ -13,12 +13,13 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     console.log( SIGNALING_SERVER);
     //var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
     //var SIGNALING_SERVER = 'https://localhost:22000/';
-    io.connect(SIGNALING_SERVER).emit('new-channel', {
-        channel: channel,
-        sender: sender
-    });
+    // io.connect(SIGNALING_SERVER).emit('new-channel', {
+    //     channel: channel,
+    //     sender: sender
+    // });
 
-    var socket = io.connect(SIGNALING_SERVER + channel);
+    // var socket = io.connect(SIGNALING_SERVER + channel);
+    var socket = io.connect();
     socket.on('connect', function () {
         console.log('MUAZ Socket CONN EST');
         // setup peer connection & pass socket object over the constructor!

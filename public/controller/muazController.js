@@ -7,6 +7,10 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
     var channel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
     var sender = Math.round(Math.random() * 999999999) + 999999999;
+
+ 
+
+
     console.log(channel, ' ==and== ', sender);
     var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
     io.connect(SIGNALING_SERVER).emit('new-channel', {
@@ -20,8 +24,17 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     });
 
     socket.send = function (message) {
+        if (!$rootScope.incomingScreenshare) {
+            console.log("000");
+            socket.emit('emitScreenshareStatus', {'fromId': $rootScope.user._id, 'toId': $scope.chatWithId});
+
+            //$rootScope.changeScreenshareStatus({'fromId': $rootScope.user._id,'toid': $scope.chatWithId});
+        }
+
         socket.emit('message', {
             sender: sender,
+            fromId: $rootScope.user._id,
+            toid: $scope.chatWithId,
             data: message
         });
     };
@@ -31,31 +44,42 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     };
 
     screensharing.onscreen = function (_screen) {
-        var alreadyExist = document.getElementById(_screen.userid);
-        if (alreadyExist) return;
+          if (_screen.toId == $rootScope.user._id){
+            console.log("some one is sharing screen with you");
 
-        if (typeof roomsList === 'undefined') roomsList = document.body;
-
-        var tr = document.createElement('tr');
-
-        tr.id = _screen.userid;
-        tr.innerHTML = '<td>' + _screen.userid + ' shared his screen.</td>' +
-            '<td><button class="join">View</button></td>';
-        roomsList.insertBefore(tr, roomsList.firstChild);
-
-        var button = tr.querySelector('.join');
-        button.setAttribute('data-userid', _screen.userid);
-        button.setAttribute('data-roomid', _screen.roomid);
-        button.onclick = function () {
-            var button = this;
-            button.disabled = true;
-
-            var _screen = {
-                userid: button.getAttribute('data-userid'),
-                roomid: button.getAttribute('data-roomid')
-            };
-            screensharing.view(_screen);
-        };
+            console.log($scope.chatWithId +' == '+ _screen.fromId);
+            if ($scope.chatWithId == _screen.fromId){
+            
+                var alreadyExist = document.getElementById(_screen.userid);
+                if (alreadyExist) return;
+        
+                if (typeof roomsList === 'undefined') roomsList = document.body;
+        
+                var tr = document.createElement('tr');
+        
+                tr.id = _screen.userid;
+                tr.innerHTML = '<td>' + _screen.userid + ' shared his screen.</td>' +
+                    '<td><button class="join">View</button></td>';
+                roomsList.insertBefore(tr, roomsList.firstChild);
+        
+                var button = tr.querySelector('.join');
+                button.setAttribute('data-userid', _screen.userid);
+                button.setAttribute('data-roomid', _screen.roomid);
+                button.onclick = function () {
+                    var button = this;
+                    button.disabled = true;
+        
+                    var _screen = {
+                        userid: button.getAttribute('data-userid'),
+                        roomid: button.getAttribute('data-roomid')
+                    };
+                    screensharing.view(_screen);
+                };
+            }
+            else{
+                
+            }
+        }
     };
 
     // on getting each new screen
@@ -83,6 +107,7 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
     // if someone leaves; just remove his screen
     screensharing.onuserleft = function (userid) {
+        $rootScope.incomingScreenshare = false;
         var video = document.getElementById(userid);
         if (video && video.parentNode) video.parentNode.removeChild(video);
 
@@ -98,8 +123,9 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
         screensharing.isModerator = true;
         screensharing.userid = username.value;
-
-        screensharing.share();
+        // screensharing.fromId = $rootScope.user._id;
+        // screensharing.toId = $scope.chatWithId;
+        screensharing.share( null , $rootScope.user._id, $scope.chatWithId);
     };
 
     function rotateVideo(video) {

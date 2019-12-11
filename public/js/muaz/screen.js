@@ -118,7 +118,7 @@
                     error = null;
                 }
 
-                console.log('screen_constraints', JSON.stringify(screen_constraints, null, '\t'));
+             //   console.log('screen_constraints', JSON.stringify(screen_constraints, null, '\t'));
                 navigator.mediaDevices.getUserMedia(screen_constraints).then(function(stream) {
                     addStreamStopListener(stream, function() {
                         if (self.onuserleft) self.onuserleft('self');
@@ -168,12 +168,18 @@
         var Firefox_Screen_Capturing_Warning = 'Make sure that you are using Firefox Nightly and you enabled: media.getusermedia.screensharing.enabled flag from about:config page. You also need to add your domain in "media.getusermedia.screensharing.allowed_domains" flag.';
 
         // share new screen
-        this.share = function(roomid) {
+        this.share = function(roomid = roomid, fromId, toId) {
+            // console.log(roomid);  
+            // console.log('fromId: '+ fromId);  
+            // console.log('toId: '+ toId);  
+
             captureUserMedia(function() {
                 !signaler && initSignaler(roomid);
                 signaler.broadcast({
                     roomid: (roomid && roomid.length) || self.channel,
-                    userid: self.userid
+                    userid: self.userid,
+                    fromId: fromId,
+                    toId: toId
                 });
             });
         };
@@ -212,6 +218,7 @@
 
         // it is called when your signaling implementation fires "onmessage"
         this.onmessage = function(message) {
+            console.log(message);
             // if new room detected
             if (message.roomid == roomid && message.broadcasting && !signaler.sentParticipationRequest)
                 root.onscreen(message);
@@ -220,7 +227,7 @@
                 // for pretty logging
                 console.debug(JSON.stringify(message, function(key, value) {
                     if (value.sdp) {
-                        console.log(value.sdp.type, '————', value.sdp.sdp);
+                       // console.log(value.sdp.type, '————', value.sdp.sdp);
                         return '';
                     } else return value;
                 }, '————'));
@@ -287,7 +294,7 @@
         // it is passed over Offer/Answer objects for reusability
         var options = {
             onsdp: function(sdp, to) {
-                console.log('local-sdp', JSON.stringify(sdp.sdp, null, '\t'));
+            //    console.log('local-sdp', JSON.stringify(sdp.sdp, null, '\t'));
 
                 signaler.signal({
                     sdp: JSON.stringify(sdp),
@@ -306,7 +313,7 @@
                 if (root.onNumberOfParticipantsChnaged) root.onNumberOfParticipantsChnaged(Object.keys(peers).length);
             },
             onaddstream: function(stream, _userid) {
-                console.debug('onaddstream', '>>>>>>', stream);
+               // console.debug('onaddstream', '>>>>>>', stream);
 
                 addStreamStopListener(stream, function() {
                     if (root.onuserleft) root.onuserleft(_userid);
@@ -348,11 +355,13 @@
             if (_config.userid) {
                 userid = _config.userid;
             }
-
+            //console.log(_config);
             signaler.isbroadcaster = true;
             (function transmit() {
                 signaler.signal({
                     roomid: signaler.roomid,
+                    fromId: _config.fromId,
+                    toId: _config.toId,
                     broadcasting: true
                 });
 
@@ -531,7 +540,7 @@
     }
 
     function onSdpError(e) {
-        console.error('sdp error:', e);
+      //  console.error('sdp error:', e);
     }
 
     // var offer = Offer.createOffer(config);
@@ -593,13 +602,13 @@
         setRemoteDescription: function(sdp, callback) {
             callback = callback || function() {};
 
-            console.log('setting remote descriptions', sdp.sdp);
+        //    console.log('setting remote descriptions', sdp.sdp);
             this.peer.setRemoteDescription(new RTCSessionDescription(sdp)).then(function() {
                 callback();
             }).catch(onSdpError);
         },
         addIceCandidate: function(candidate) {
-            console.log('adding ice', candidate.candidate);
+         //   console.log('adding ice', candidate.candidate);
             this.peer.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.sdpMLineIndex,
                 candidate: candidate.candidate
@@ -652,7 +661,7 @@
                 }
             };
 
-            console.log('setting remote descriptions', config.sdp.sdp);
+           // console.log('setting remote descriptions', config.sdp.sdp);
             peer.setRemoteDescription(new RTCSessionDescription(config.sdp)).then(function() {
                 peer.createAnswer(answerConstraints).then(function(sdp) {
                     sdp.sdp = setBandwidth(sdp.sdp);
@@ -669,7 +678,7 @@
             return this;
         },
         addIceCandidate: function(candidate) {
-            console.log('adding ice', candidate.candidate);
+      //      console.log('adding ice', candidate.candidate);
 
             this.peer.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.sdpMLineIndex,
@@ -741,7 +750,7 @@
         script.src = src;
         script.async = true;
         document.documentElement.appendChild(script);
-        console.log('loaded', src);
+     //   console.log('loaded', src);
     }
 
     typeof getScreenId === 'undefined' && loadScript('https://cdn.webrtc-experiment.com/getScreenId.js');

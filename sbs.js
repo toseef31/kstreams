@@ -41,7 +41,8 @@ if (serverIpAdd.includes('58.229.208.176')) { //Job callme
 }
 
 const server = require('https').Server(keysOpt, app);
-const io = require('socket.io')(server);
+//const io = require('socket.io')(server);
+const io = require('./public/js/muaz/socket.io')(server);
 const config = require('./config/DB');
 
 //*****
@@ -233,6 +234,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('updateChatWithId', (data) => {
+		console.log('sbs: updateChatWithId');
 		io.emit('updateUserChatWithId', data);
 	})
 
@@ -252,6 +254,7 @@ io.on('connection', function (socket) {
 		io.emit('updateChatAll', coversation);
 	});
 	socket.on('checkmsg', function (chat) {
+		console.log('sbs: checkmsg');
 		io.emit('remsg', chat);
 	});
 
@@ -297,12 +300,11 @@ io.on('connection', function (socket) {
 	socket.on('updateGroupFiles', function (data) {
 		io.emit('updateOtherMembersFiles', data);
 	});
-
-	socket.on('message', function (data) {
-		//console.log('sbs socket');
-		//console.log(data);
-		io.emit('receiveScreenMessage', data);
-	//	socket.broadcast.emit('receiveScreenMessage', data);
+	
+	socket.on('emitScreenshareStatus', function (data) {
+		console.log("333");
+		io.emit('updateScreenshareStatus', data);
+		// socket.broadcast.emit('receiveScreenMessage', data);
 	});
 
 	// socket.on('screenVideo', function (video){

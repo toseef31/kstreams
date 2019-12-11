@@ -145,6 +145,16 @@
                           </span>
                         </span>
                       </div>
+
+                      <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
+                      <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
+                        <span ng-if="incomingScreenshare">
+                          <span class="unreadMsgAlign">
+                            <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
+                          </span>
+                        </span>
+                      </div>
+
                       <div>
                         <span class="userTitleText">{{userA.userTitle}}</span>
                       </div>
@@ -218,7 +228,7 @@
       <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
 
-        <!-- -------------------- HEADER -------------------------------------------------- -->
+        <!-- ----------------------------- HEADER ------------------------------------------------------ -->
         <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -241,8 +251,8 @@
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
-            <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20" title="Share Screen">
-              <i id="videoCall" class="fa fa fa-slideshare"  ></i>
+            <span ng-if="projectData.videoCall == 0" class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
+              <i id="screenShare" class="fa fa fa-slideshare"  ></i>
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
@@ -395,7 +405,6 @@
                           <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
                             style="float: right" width="20px" height="20px">
                         </a>
-
                         
                       </div>
 
@@ -740,9 +749,45 @@
     </div>
   </div>
 
-  <!-- incomming call modal -->
-  <!-- incomming call modal -->
+  <!-- screenShare modal -->
+  <!-- screenShare modal -->
+  <div id="screenShareModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Share your screen now</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group col-md-12 clearfix">
+            <div class="experiment"  ng-controller="muazController" style="position: fixed;top:10%; left:45%">
+              <section class="hide-after-join">        
+                <input type="text" id="userNameSS" placeholder="Your Name">
+                <button id="share-screen" class="setup">Share Your Screen</button>
+              </section>
+        
+              <!-- list of all available broadcasting rooms --> 
+              <table style="width: 100%;" id="rooms-list" class="hide-after-join">
+                <!-- <td> <button class="join">View</button> </td> -->
+              </table>
 
+        
+              <!-- local/remote videos container -->
+              <div id="videos-container"></div>
+        
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- incomming call modal -->
+  <!-- incomming call modal -->
   <div id="incommingCall">
     <div class="incomming-card">
       <h4>incomming call</h4>
@@ -891,7 +936,7 @@
               <video id="videoOutput" autoplay poster="images/webrtc.png"></video>
           </div> -->
     <!-- Screen Sharing experiment -->
-    <div class="experiment"  ng-controller="muazController" style="  
+    <!-- <div class="experiment"  ng-controller="muazController" style="  
     position: fixed;
     top:10%;
     left:45%">
@@ -900,13 +945,13 @@
       
         <input type="text" id="userNameSS" placeholder="Your Name">
         <button id="share-screen" class="setup">Share Your Screen</button>
-      </section>
+      </section> -->
 
       <!-- list of all available broadcasting rooms --> 
-      <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table>
+      <!-- <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table> -->
 
       <!-- local/remote videos container -->
-      <div id="videos-container"></div>
+      <!-- <div id="videos-container"></div> -->
 
     </div>
   </div>

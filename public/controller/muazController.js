@@ -9,7 +9,7 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     var sender = Math.round(Math.random() * 999999999) + 999999999;
 
  
-    var SIGNALING_SERVER ="https://"+window.location.hostname+':22000';
+    var SIGNALING_SERVER ="https://"+window.location.hostname+':22000/';
     console.log( SIGNALING_SERVER);
     //var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
     //var SIGNALING_SERVER = 'https://localhost:22000/';
@@ -20,6 +20,7 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
     var socket = io.connect(SIGNALING_SERVER + channel);
     socket.on('connect', function () {
+        console.log('MUAZ Socket CONN EST');
         // setup peer connection & pass socket object over the constructor!
     });
 

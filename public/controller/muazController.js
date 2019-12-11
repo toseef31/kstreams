@@ -49,11 +49,11 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     };
 
     screensharing.onscreen = function (_screen) {
-        if (_screen.toId == $rootScope.user._id) {
+        //if (_screen.toId == $rootScope.user._id) {
             console.log("some one is sharing screen with you");
 
             console.log($scope.chatWithId + ' == ' + _screen.fromId);
-            if ($scope.chatWithId == _screen.fromId) {
+        //    if ($scope.chatWithId == _screen.fromId) {
 
                 var alreadyExist = document.getElementById(_screen.userid);
                 if (alreadyExist) return;
@@ -80,10 +80,10 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
                     };
                     screensharing.view(_screen);
                 };
-            } else {
+            //} else {
 
-            }
-        }
+            //}
+        //}
     };
 
     // on getting each new screen

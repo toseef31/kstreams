@@ -286,3 +286,10 @@
         padding-left: 9px;
     }
 }
+
+#videos-container video{
+    width: 250px;
+}
+.marginRight20{
+    margin-right: 20px;
+}

@@ -58,9 +58,9 @@
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
             </button>
 
-            <button style="background-color: tomato; margin-top: 5px;  padding: 5px 22px 5px 8px;" id="live" type="button" ng-click="ScreenshareModal()" class="btn btn-info btn-sm">
+            <!-- <button style="background-color: tomato; margin-top: 5px;  padding: 5px 22px 5px 8px;" id="live" type="button" ng-click="ScreenshareModal()" class="btn btn-info btn-sm">
                 <img src="../images/screenshare1.png" style="color: white; height: 20px;"> Screenshare
-            </button>
+            </button> -->
           </div>
           
           <div class="col-md-6 col-sm-7 col-xs-6 text-right broadCastAv">
@@ -145,6 +145,16 @@
                           </span>
                         </span>
                       </div>
+
+                      <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
+                      <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
+                        <span ng-if="incomingScreenshare">
+                          <span class="unreadMsgAlign">
+                            <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
+                          </span>
+                        </span>
+                      </div>
+
                       <div>
                         <span class="userTitleText">{{userA.userTitle}}</span>
                       </div>
@@ -218,7 +228,7 @@
       <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
 
-        <!-- -------------------- HEADER -------------------------------------------------- -->
+        <!-- ----------------------------- HEADER ------------------------------------------------------ -->
         <li class="list-group-item red-list active-list text-muted chatHeaderColor" contenteditable="false">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -241,7 +251,10 @@
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
-            <span ng-if="projectData.videoCall == 1" class="whiteTextColor" style="margin-right: 20px">
+            <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
+              <i id="screenShare" class="fa fa fa-slideshare"  ></i>
+            </span>
+            <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
             <span ng-if="projectData.audioCall == 1" class="whiteTextColor">
@@ -392,7 +405,6 @@
                           <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
                             style="float: right" width="20px" height="20px">
                         </a>
-
                         
                       </div>
 
@@ -737,9 +749,45 @@
     </div>
   </div>
 
-  <!-- incomming call modal -->
-  <!-- incomming call modal -->
+  <!-- screenShare modal -->
+  <!-- screenShare modal -->
+  <div id="screenShareModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Share your screen now</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group col-md-12 clearfix">
+            <div class="experiment"  ng-controller="muazController" style="position: fixed;top:10%; left:45%">
+              <section class="hide-after-join">        
+                <input type="text" id="userNameSS" placeholder="Your Name">
+                <button id="share-screen" class="setup">Share Your Screen</button>
+              </section>
+        
+              <!-- list of all available broadcasting rooms --> 
+              <table style="width: 100%;" id="rooms-list" class="hide-after-join">
+                <!-- <td> <button class="join">View</button> </td> -->
+              </table>
 
+        
+              <!-- local/remote videos container -->
+              <div id="videos-container"></div>
+        
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- incomming call modal -->
+  <!-- incomming call modal -->
   <div id="incommingCall">
     <div class="incomming-card">
       <h4>incomming call</h4>
@@ -795,8 +843,7 @@
             </div>
             <div class="col-md-12" ng-if='brErrorMsg'>
               <div class="alert alert-danger"> Enter correct password</div>
-            </div>
-
+            </div> 
           </div>
           <div class="modal-footer">
             <button type="button" id="broadClose" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -888,7 +935,23 @@
           <!-- <div id="remotes" class="ui large">
               <video id="videoOutput" autoplay poster="images/webrtc.png"></video>
           </div> -->
-         
+    <!-- Screen Sharing experiment -->
+    <!-- <div class="experiment"  ng-controller="muazController" style="  
+    position: fixed;
+    top:10%;
+    left:45%">
+       
+      <section class="hide-after-join">
+      
+        <input type="text" id="userNameSS" placeholder="Your Name">
+        <button id="share-screen" class="setup">Share Your Screen</button>
+      </section>
+ 
+      <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table> 
+ 
+       <div id="videos-container"></div>
+
+    </div> -->
   </div>
 </div>
 </div>
@@ -1121,146 +1184,5 @@
   }
 
 </script>
-
-<script>
-    var userMessage = null;
-    var isScreensharing = false;
-    // Muaz Khan     - https://github.com/muaz-khan
-    // MIT License   - https://www.webrtc-experiment.com/licence/
-    // Documentation - https://github.com/muaz-khan/WebRTC-Experiment/tree/master/screen-sharing
-    var videosContainer =
-      document.getElementById("videos-container") || document.body;
-
-    var roomsList = document.getElementById("rooms-list");
-    var screensharing = new Screen();
-    var channel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, "");
-    var sender = Math.round(Math.random() * 999999999) + 999999999;
-    // https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socketio-over-nodejs
-    var SIGNALING_SERVER =
-      "https://socketio-over-nodejs2.herokuapp.com:443/";
-    //new-channel
-    io.connect(SIGNALING_SERVER).emit("new-channel", {
-      channel: channel,
-      sender: sender
-    });
-    // var socket = io.connect(SIGNALING_SERVER + channel);
-    var socket = io.connect();
-
-    socket.on("connect", function() {
-      // setup peer connection & pass socket object over the constructor!
-      console.log("socket connect");
-    });
-
-    socket.send = function(message) {
-      isScreensharing = true;
-      userMessage = message;
-      socket.emit("message", {
-        sender: sender,
-        data: message
-      });
-    };
-
-    screensharing.openSignalingChannel = function(callback) {
-      return socket.on("message", callback);
-    };
-
-    // *********** TESTING ******************************************************
-    // function joinScreen() {
-    //     screensharing.onscreen(userMessage);
-    // }
-
-    socket.on("receiveScreenMessage", function(screenData) {
-      if (
-        screenData.data.broadcasting &&
-        screenData.data.userid != userMessage.userid
-      ) {
-        $("#sharedScreenId").removeClass("hideJoinButton");
-        $("#sharedScreenId").addClass("showJoinButton");
-        screensharing.onscreen(screenData.data);
-      }
-    });
-    // *************************************************************************
-    screensharing.onscreen = function(_screen) {
-      console.log("on screen");
-      console.log(_screen);
-      var alreadyExist = document.getElementById(_screen.userid);
-      if (alreadyExist) return;
-      if (typeof roomsList === "undefined") roomsList = document.body;
-      var tr = document.createElement("tr");
-      tr.id = _screen.userid;
-      tr.innerHTML =
-        "<td>" +
-        _screen.userid +
-        " shared his screen.</td>" +
-        '<td><button class="join">View</button></td>';
-      roomsList.insertBefore(tr, roomsList.firstChild);
-      var button = tr.querySelector(".join");
-      button.setAttribute("data-userid", _screen.userid);
-      button.setAttribute("data-roomid", _screen.roomid);
-      button.onclick = function() {
-        var button = this;
-        button.disabled = true;
-        var _screen = {
-          userid: button.getAttribute("data-userid"),
-          roomid: button.getAttribute("data-roomid")
-        };
-        console.log("-------------------------------");
-        console.log(_screen);
-        screensharing.view(_screen);
-      };
-    };
-    // on getting each new screen
-    screensharing.onaddstream = function(media) {
-      // console.log("onaddstream");
-      media.video.id = media.userid;
-      var video = media.video;
-      console.log("1");
-     
-      videosContainer.insertBefore(video, videosContainer.firstChild);
-      var hideAfterJoin = document.querySelectorAll(".hide-after-join");
-      for (var i = 0; i < hideAfterJoin.length; i++) {
-        hideAfterJoin[i].style.display = "none";
-      }
-      console.log("2");
-      if (media.type === "local") {
-        addStreamStopListener(media.stream, function() {
-          location.reload();
-        });
-      }
-      console.log("3");
-      //? --- for testing only --------------------------------------------------
-      angular.element(document.getElementById('MainWrap')).scope().launchScreenshare(media.userid, 0, media);
-      //? -----------------------------------------------------------------------
-      console.log("4");
-    };
-
-    // using firebase for signaling
-    // screen.firebase = 'signaling';
-    // if someone leaves; just remove his screen
-    screensharing.onuserleft = function(userid) {
-      var video = document.getElementById(userid);
-      if (video && video.parentNode) video.parentNode.removeChild(video);
-      // location.reload();
-    };
-    // check pre-shared screens
-    screensharing.check();
-    document.getElementById("share-screen").onclick = function() {
-      var username = document.getElementById("user-name");
-      username.disabled = this.disabled = true;
-      screensharing.isModerator = true;
-      screensharing.userid = username.value;
-      screensharing.share();
-    };
-
-    screensharing.onNumberOfParticipantsChnaged = function( numberOfParticipants) {
-      if (!screensharing.isModerator) return;
-      document.title =
-        numberOfParticipants + " users are viewing your screen!";
-      var element = document.getElementById("number-of-participants");
-      if (element) {
-        element.innerHTML =
-          numberOfParticipants + " users are viewing your screen!";
-      }
-    };
-  </script>
-<!-- </body> -->
+  
+ 

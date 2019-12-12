@@ -1,5 +1,5 @@
 
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal,$websocket,$interval, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall) {
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -34,7 +34,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.webRtcO2MPeer = null;
     $rootScope.broadCastHtml = document.getElementById('broadCastVideo');
     $scope.webRtcPeer = null;
-    
+
     $rootScope.timmerObj = new timmer('#timmer');
     $scope.inComCallData = 0;
     $rootScope.presenterArr = [];
@@ -46,93 +46,89 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserNo = -1;
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
-    
-    $rootScope.incomingScreenshare = false;
-    
-    $http.post("/getProject").then(function (response) {
-        $rootScope.projectData = response.data;   
-        $scope.o2oSocConnec(); 
+    // 0: nothing, 1: screenShare button pressed, 2: screen is sharing
+    $rootScope.incomingScreenshare = 0;
+    $scope.isReceivingSS = false;
 
-        if($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
+    $http.post("/getProject").then(function (response) {
+        $rootScope.projectData = response.data;
+        $scope.o2oSocConnec();
+
+        if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
 
-    $scope.o2oSocLoaded=false;
-    $scope.o2oSocConnec = function(){
+    $scope.o2oSocLoaded = false;
+    $scope.o2oSocConnec = function () {
         let hostIs = location.host.split(':');
-        let webSocketIp=$rootScope.projectData.domainUrl;
-        if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
-        let reqUrl='wss://'+webSocketIp+':8443/one2one';
-        $rootScope.O2OSoc= $websocket.$new({url:reqUrl}); 
-     //   console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc);  
+        let webSocketIp = $rootScope.projectData.domainUrl;
+        if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
+        let reqUrl = 'wss://' + webSocketIp + ':8443/one2one';
+        $rootScope.O2OSoc = $websocket.$new({ url: reqUrl });
+        //   console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc);  
         // so as the script should not load again and again
-        if(!$scope.o2oSocLoaded){
-            $rootScope.O2OSoc.$on('$open', function () { 
-               // console.log('O2O socket open'); 
-                if($rootScope.user && typeof $rootScope.user._id !=="undefined") 
-                    One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id }); 
-                    
+        if (!$scope.o2oSocLoaded) {
+            $rootScope.O2OSoc.$on('$open', function () {
+                // console.log('O2O socket open'); 
+                if ($rootScope.user && typeof $rootScope.user._id !== "undefined")
+                    One2OneCall.sendKMessage({ id: 'register', name: $rootScope.user._id });
+
                 One2OneCall.setCallState(NO_CALL);
             })
-            .$on('$message', function (message) { // it listents for 'incoming event'
-                $rootScope.o2oSocConEst=true;
-                var parsedMessage = JSON.parse(message);
-               // console.log('something incoming from the server: ==== ' + message);  
-                switch (parsedMessage.id) { 
-                    case 'registerResponse':
-                        break;
-                    case 'callResponse':
-                        One2OneCall.callResponse(parsedMessage);
-                        break;
-                    case 'incomingCall':
-                        One2OneCall.incomingCall(parsedMessage);
-                        break;
-                    case 'startCommunication':
-                        One2OneCall.startCommunication(parsedMessage);
-                        $rootScope.callConnected();
-                        break;
-                    case 'stopCommunication':
-                        One2OneCall.stopK(true);
-                        break;
-                    case 'iceCandidate':
-                        $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
-                        break;
-                    default:
-                        console.error('Unrecognized message', parsedMessage);
-                }
-            })
-            .$on('$close', function () {
-               // console.log('Socket closed trying to reconnect...');
-                $scope.o2oSocConnec();
-            })
-            .$on('$error', function () {
-               // console.log('Socket Error trying to reconnect...');
-                $scope.o2oSocConnec();
-            })
-            $scope.o2oSocLoaded=true;
+                .$on('$message', function (message) { // it listents for 'incoming event'
+                    $rootScope.o2oSocConEst = true;
+                    var parsedMessage = JSON.parse(message);
+                    // console.log('something incoming from the server: ==== ' + message);  
+                    switch (parsedMessage.id) {
+                        case 'registerResponse':
+                            break;
+                        case 'callResponse':
+                            One2OneCall.callResponse(parsedMessage);
+                            break;
+                        case 'incomingCall':
+                            One2OneCall.incomingCall(parsedMessage);
+                            break;
+                        case 'startCommunication':
+                            One2OneCall.startCommunication(parsedMessage);
+                            $rootScope.callConnected();
+                            break;
+                        case 'stopCommunication':
+                            One2OneCall.stopK(true);
+                            break;
+                        case 'iceCandidate':
+                            $rootScope.webRtcO2OPeer.addIceCandidate(parsedMessage.candidate)
+                            break;
+                        default:
+                            console.error('Unrecognized message', parsedMessage);
+                    }
+                })
+                .$on('$close', function () {
+                    // console.log('Socket closed trying to reconnect...');
+                    $scope.o2oSocConnec();
+                })
+                .$on('$error', function () {
+                    // console.log('Socket Error trying to reconnect...');
+                    $scope.o2oSocConnec();
+                })
+            $scope.o2oSocLoaded = true;
         }
-        
+
     }
     //checking if user is registered
-    
-    function ping() { 
-        if(!$rootScope.user || typeof $rootScope.user._id==="undefined") return;
-    //    console.log('Ping called====');
+
+    function ping() {
+        if (!$rootScope.user || typeof $rootScope.user._id === "undefined") return;
+        //    console.log('Ping called====');
         //if(!$rootScope.o2oSocConEst) $window.location.reload(); 
-        One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id });  
+          One2OneCall.sendKMessage({ id: '__ping__', from: $rootScope.user._id });
     }
 
     // Broadcast function start===============
     var windowElement = angular.element($window);
     windowElement.on('beforeunload', function (event) {
-        $http.get('/emptyChatWithId/' + $rootScope.user._id); 
+        $http.get('/emptyChatWithId/' + $rootScope.user._id);
     });
 
-    // $rootScope.changeScreenshareStatus = function(data){
-    //     console.log("111");
-    //     socket.emit('emitScreenshareStatus', data);
-    // }
- 
     // initial websocket connection is in loginController   
     $scope.stopBroadCast = function () {
         One2ManyCall.stop();
@@ -144,14 +140,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }).then();
     }
 
-    $scope.openScreenshareModal = function (){
-        $("#screenShareModal").modal();
-        $("#screenShareModal").show();
+    $scope.openScreenshareModal = function () {
+         startScreenshare();
+    }
+    $scope.screenshareModal = function () {
+         $("#screenShareModal").modal();
+         $("#screenShareModal").show();
     }
 
     $scope.openBrModal = function () {
         $scope.brErrorMsg = 0;
-
         $("#broadcastingModal").modal();
         $("#broadcastingModal").show();
     }
@@ -160,20 +158,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#avPresenterModal").modal();
     }
 
-    $scope.launchScreenshare = function (userid, to, media) {
-        // console.log("screenShare launching");
-        // One2OneCall.screenshare(userid, 0, media);
-        One2OneCall.videoKCall(userid, 0, media, 0);
-    }
-
-    $scope.ScreenshareModal = function () {
-        socket.emit('emitScreenshareStatus', null);
-        $("#screenshare-modal").modal();
-        $("#screenshare-modal").show();
-    }
-
     $scope.broadCastNow = function () {
-        $rootScope.prePassword = $scope.liveStreamCode; 
+        $rootScope.prePassword = $scope.liveStreamCode;
         if ($scope.setPassword == 0) $rootScope.prePassword = '';
         else if ($scope.setPassword == 1 && !$rootScope.prePassword) {
             $scope.brErrorMsg = 1;
@@ -182,7 +168,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#broadcastingModal").hide();
         $("#videoBroadCast").removeClass('hidden');
         $rootScope.connWdPreId = 0;
-        One2ManyCall.presenter(); 
+        One2ManyCall.presenter();
         $http.post('/startPresenter', {
             password: $rootScope.prePassword
         }).then();
@@ -192,7 +178,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.brErrorMsg = 0;
 
     $scope.becomeViewer = function (preId, password) {
-     //   console.log('In becomeViewer ', preId, ' and ', password);
+        // console.log('In becomeViewer ', preId, ' and ', password);
         $("#avPresenterModal").hide();
         $rootScope.connWdPreId = preId;
         if (password) {
@@ -273,12 +259,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.emit('user_connected', { userId: $rootScope.user._id });
         // $rootScope.o2oSocWait=true;
-        $rootScope.o2oSocConEst=false;
+        $rootScope.o2oSocConEst = false;
         // setTimeout(() => {
         //     console.log('in=================');
         //     $rootScope.o2oSocWait=false;
         // }, 10000); //10 seconds
-        
+
         $scope.receiveCall = false;
         $scope.welcomePage = true;
         $scope.caller = false;
@@ -296,6 +282,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 let userChatToOpen;
                 for (i; i < response.data.usersList.length; i++) { // ******** RECHECK NEEDED ***********
                     $scope.allUsers[i].tempDate = new Date($scope.allUsers[i].updatedByMsg).getTime();
+                    $scope.allUsers[i].screenShareStatus = false;
                     if (response.data.usersList[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
 
                     // this is for mobile, to open the chatBox of selected user directly
@@ -309,6 +296,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.isSidePanel = false;
                     }
                 }
+
                 $scope.usersLoaded = true;
                 if ($scope.user.chatWithRefId) {
                     $scope.startChat(userChatToOpen);
@@ -579,16 +567,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if (!$scope.groupSelected) {
                 if (message != 0) $scope.message = 'call duration ' + $rootScope.timmerObj.showTime();
 
-                if ($scope.edit === true){
+                if ($scope.edit === true) {
                     $http.post('/updateChat/' + $scope.editMsgId, { "message": $scope.message })
                         .then(function (res) {
                             $scope.message = '';
                             $scope.editMsgId = '';
                             $scope.edit = false;
                             updatechat();
-                    })
+                        })
                 }
-                    
+
                 else {
                     var msgObj;
 
@@ -621,7 +609,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                     var tempSelectedUserData = { '_id': $scope.selectedUserData._id };
                     $scope.message = '';
-             
+
                     socket.emit('checkmsg', msgObj);
 
                     $http.post('/chat', { 'msgData': msgObj, 'selectedUserData': tempSelectedUserData })
@@ -629,7 +617,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             $scope.chats.push(res.data);
                             scrollbottom();
                             if (res.data.length < 1) return;
-                    })
+                        })
                 }
 
             }
@@ -655,7 +643,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $http.post('/groupChat', groupmMsgObj)
                         .then(function (res) {
                             //var last = res.data.message.length - 1;
-                           // var data = res.data.message[last];
+                            // var data = res.data.message[last];
                             $scope.message = '';
                             socket.emit('updateGroupChat', { id: res.data._id, data: res.data, case: 'new' });
                             scrollbottom();
@@ -726,6 +714,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             })
         }
+
         /* this function enable or disable the btns when the call receive or drop*/
         $rootScope.toggleBtn = function (bolean) {
             $('#call').prop('disabled', bolean);
@@ -1013,11 +1002,33 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
 
-        socket.on('updateScreenshareStatus', function (data){
+        socket.on('updateScreenshareStatus', function (data) {
             console.log('444');
-            if (data.toId == $rootscope.user._id)
-             $rootScope.incomingScreenshare = true;
-            
+            if (!$scope.allUsers) return;
+
+            if (data.toId == $rootScope.user._id) {
+                $scope.$apply(function () {
+
+                    for (var i = 0; i < $scope.allUsers.length; i++) {
+                        if (data.fromId == $scope.allUsers[i]._id && data.incomingScreenshare != 0) {
+                            // document.getElementById('incomingScreenshare').style.display = 'block';
+                            // document.getElementById('screenerName').appendChild(document.createTextNode(data.fromName + ''));
+                            document.getElementById('screenerTitle').appendChild(document.createTextNode(data.fromName + ''));
+                            $("#screenShareModal").modal('show');
+                            $scope.isReceivingSS = true;
+                            $scope.allUsers[i].screenShareStatus = true;
+                            break;
+                        }
+                        else if (data.fromId == $scope.allUsers[i]._id && data.incomingScreenshare == 0) {
+                            // document.getElementById('incomingScreenshare').style.display = 'none';
+                            $("#screenShareModal").modal('hide');
+                            $scope.isReceivingSS = false;
+                            $scope.allUsers[i].screenShareStatus = false;
+                            break;
+                        }
+                    }
+                });
+            }
         })
 
         socket.on('pauseChatFunctionality', function (userRefId) {
@@ -1037,7 +1048,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.$apply(function () {
                 if ($scope.user._id == msg.receiverId) {
                     if ('serviceWorker' in navigator) {
-                     //   console.log("Push Notification 1");
+                        //   console.log("Push Notification 1");
                         send(msg.senderName + ': ' + msg.message).catch(err => console.log('New message ', err));
                     }
 
@@ -1173,10 +1184,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }, 5000);
     }
 
-    $scope.reloadCurrent=function(){
+    $scope.reloadCurrent = function () {
         location.reload();
     }
 
-    
+
 });
 

@@ -7,35 +7,37 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
     var channel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
     var sender = Math.round(Math.random() * 999999999) + 999999999;
-
  
-    var SIGNALING_SERVER ="https://"+window.location.hostname+':22000/';
+    var SIGNALING_SERVER ="https://" + window.location.hostname+':22000/';
     console.log( SIGNALING_SERVER);
-    //var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
-    //var SIGNALING_SERVER = 'https://localhost:22000/';
-    // io.connect(SIGNALING_SERVER).emit('new-channel', {
+
+//    var _SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+    // var SIGNALING_SERVER = 'https://localhost:22000/';
+    // io.connect(_SIGNALING_SERVER).emit('new-channel', {
     //     channel: channel,
     //     sender: sender
     // });
 
-    // var socket = io.connect(SIGNALING_SERVER + channel);
-    var socket = io.connect();
-    socket.on('connect', function () {
+   //  var socket = io.connect(_SIGNALING_SERVER + channel);
+     var socket = io.connect();
+
+     socket.on('connect', function () {
         console.log('MUAZ Socket CONN EST');
         // setup peer connection & pass socket object over the constructor!
     });
 
     socket.send = function (message) {
-        if (!$rootScope.incomingScreenshare) {
+        if ($rootScope.incomingScreenshare == 1) {
+            $rootScope.incomingScreenshare = 2;
             console.log("000");
             socket.emit('emitScreenshareStatus', {
+                'fromName': $rootScope.user.name,
                 'fromId': $rootScope.user._id,
-                'toId': $scope.chatWithId
+                'toId': $scope.chatWithId,
+                'incomingScreenshare': $rootScope.incomingScreenshare
             });
-
-            //$rootScope.changeScreenshareStatus({'fromId': $rootScope.user._id,'toid': $scope.chatWithId});
         }
-
+        console.log("send");
         socket.emit('message', {
             sender: sender,
             fromId: $rootScope.user._id,
@@ -49,12 +51,14 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     };
 
     screensharing.onscreen = function (_screen) {
-        //if (_screen.toId == $rootScope.user._id) {
+        console.log("onScreen");
+        console.log(_screen);
+        if (_screen.toId == $rootScope.user._id) {
             console.log("some one is sharing screen with you");
 
             console.log($scope.chatWithId + ' == ' + _screen.fromId);
         //    if ($scope.chatWithId == _screen.fromId) {
-
+                  console.log("inside");
                 var alreadyExist = document.getElementById(_screen.userid);
                 if (alreadyExist) return;
 
@@ -80,14 +84,13 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
                     };
                     screensharing.view(_screen);
                 };
-            //} else {
-
-            //}
-        //}
+            // } 
+        }
     };
 
     // on getting each new screen
     screensharing.onaddstream = function (media) {
+        console.log("onaddstream");
         media.video.id = media.userid;
 
         var video = media.video;
@@ -111,26 +114,44 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
 
     // if someone leaves; just remove his screen
     screensharing.onuserleft = function (userid) {
-        $rootScope.incomingScreenshare = false;
+        console.log("userLeft");
+        $rootScope.incomingScreenshare = 0;
+        socket.emit('emitScreenshareStatus', {
+            'fromName': $rootScope.user.name,
+            'fromId': $rootScope.user._id,
+            'toId': $scope.chatWithId,
+            'incomingScreenshare': $rootScope.incomingScreenshare
+        });
+
         var video = document.getElementById(userid);
         if (video && video.parentNode) video.parentNode.removeChild(video);
 
         // location.reload();
     };
 
+
+
     // check pre-shared screens
     screensharing.check();
 
-    document.getElementById('share-screen').onclick = function () {
-        var username = document.getElementById('userNameSS');
-        username.disabled = this.disabled = true;
+    startScreenshare = function(){
+      $rootScope.incomingScreenshare = 1;
+      screensharing.isModerator = true;
+      screensharing.userid = $rootScope.user._id;
+      screensharing.share(null, $rootScope.user._id, $scope.chatWithId);
+    }
 
-        screensharing.isModerator = true;
-        screensharing.userid = username.value;
-        // screensharing.fromId = $rootScope.user._id;
-        // screensharing.toId = $scope.chatWithId;
-        screensharing.share(null, $rootScope.user._id, $scope.chatWithId);
-    };
+    //window.onload = function(){
+    // document.getElementById('share-screen').onclick = function () {
+    //     //var username = document.getElementById('userNameSS');
+    //     username.disabled = this.disabled = true;
+
+    //     screensharing.isModerator = true;
+    //     screensharing.userid = $rootScope.user._id;
+
+    //     screensharing.share(null, $rootScope.user._id, $scope.chatWithId);
+    // };
+    //}
 
     function rotateVideo(video) {
         video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';

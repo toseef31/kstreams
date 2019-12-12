@@ -57,10 +57,6 @@
             <button id="live" type="button" ng-click="openBrModal()" class="btn btn-info btn-sm">
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
             </button>
-
-            <!-- <button style="background-color: tomato; margin-top: 5px;  padding: 5px 22px 5px 8px;" id="live" type="button" ng-click="ScreenshareModal()" class="btn btn-info btn-sm">
-                <img src="../images/screenshare1.png" style="color: white; height: 20px;"> Screenshare
-            </button> -->
           </div>
           
           <div class="col-md-6 col-sm-7 col-xs-6 text-right broadCastAv">
@@ -69,6 +65,9 @@
             </a>
           </div>
         </div>
+        <button id="live" type="button" ng-click="screenshareModal()" class="btn btn-info btn-sm">
+            <span class="glyphicon glyphicon-signal"></span> Test Screensharing
+          </button>
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -148,7 +147,7 @@
 
                       <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
                       <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
-                        <span ng-if="incomingScreenshare">
+                        <span ng-if="userA.screenShareStatus">
                           <span class="unreadMsgAlign">
                             <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
                           </span>
@@ -251,7 +250,7 @@
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
-            <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
+            <span ng-if="!isReceivingSS" class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
               <i id="screenShare" class="fa fa fa-slideshare"  ></i>
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
@@ -755,21 +754,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Share your screen now</h4>
+          <p style="color: white;">Testing Screenshare ...</p>
+          <h4 id="screenerTitle" class="modal-title"></h4>
         </div>
         <div class="modal-body">
           <div class="form-group col-md-12 clearfix">
             <div class="experiment"  ng-controller="muazController" style="position: fixed;top:10%; left:45%">
-              <section class="hide-after-join">        
-                <input type="text" id="userNameSS" placeholder="Your Name">
-                <button id="share-screen" class="setup">Share Your Screen</button>
-              </section>
+              <!-- <section class="hide-after-join">         -->
+                <!-- <input type="text" id="userNameSS" placeholder="Your Name"> -->
+                <!-- <button id="share-screen" class="setup">Do you want to share your screen?</button> -->
+              <!-- </section> -->
         
               <!-- list of all available broadcasting rooms --> 
               <table style="width: 100%;" id="rooms-list" class="hide-after-join">
-                <!-- <td> <button class="join">View</button> </td> -->
               </table>
-
         
               <!-- local/remote videos container -->
               <div id="videos-container"></div>
@@ -785,6 +783,22 @@
     </div>
   </div>
 
+    <!-- incoming screenShare modal -->
+    <!-- incoming screenShare modal -->
+  <div id="incomingScreenshare">
+    <div class="incomming-card">
+      <h3 id="screenerName"></h1>  <h4>incomming screenshare</h4>
+    </div>
+    <div class="incomming-btn-container">
+      <button title="Accept" class="join"
+        ng-click="">
+        <i class="fa fa-phone color-green" aria-hidden="true"></i>
+      </button>
+      <button title="Decline" ng-click="" class="incomming-card-btn danger pull-right">
+        <i class="fa fa-ban color-red" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- incomming call modal -->
   <!-- incomming call modal -->
@@ -931,27 +945,6 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div> 
-
-          <!-- <div id="remotes" class="ui large">
-              <video id="videoOutput" autoplay poster="images/webrtc.png"></video>
-          </div> -->
-    <!-- Screen Sharing experiment -->
-    <!-- <div class="experiment"  ng-controller="muazController" style="  
-    position: fixed;
-    top:10%;
-    left:45%">
-       
-      <section class="hide-after-join">
-      
-        <input type="text" id="userNameSS" placeholder="Your Name">
-        <button id="share-screen" class="setup">Share Your Screen</button>
-      </section>
- 
-      <table style="width: 100%;" id="rooms-list" class="hide-after-join"></table> 
- 
-       <div id="videos-container"></div>
-
-    </div> -->
   </div>
 </div>
 </div>

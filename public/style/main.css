@@ -207,6 +207,17 @@
   box-shadow: 0px 1px 5px rgba(0,0,0,0.5);
   z-index: 9999;
 }
+#incomingScreenshare{
+  position: absolute;
+  top: 40%;
+  left:50%;
+  width: 230px;
+  display: none;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(0,0,0,0.5);
+  z-index: 9999;
+}
 .incomming-card-btn{
   width: 80px;
   border-radius: 30px;

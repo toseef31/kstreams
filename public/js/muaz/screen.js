@@ -169,10 +169,6 @@
 
         // share new screen
         this.share = function(roomid = roomid, fromId, toId) {
-            // console.log(roomid);  
-            // console.log('fromId: '+ fromId);  
-            // console.log('toId: '+ toId);  
-
             captureUserMedia(function() {
                 !signaler && initSignaler(roomid);
                 signaler.broadcast({
@@ -201,6 +197,7 @@
     var peers = {};
 
     function Signaler(root, roomid) {
+       
         var socket;
 
         // unique identifier for the current user
@@ -218,7 +215,7 @@
 
         // it is called when your signaling implementation fires "onmessage"
         this.onmessage = function(message) {
-            console.log(message);
+            console.log('oNmessage');
             // if new room detected
             if (message.roomid == roomid && message.broadcasting && !signaler.sentParticipationRequest)
                 root.onscreen(message);
@@ -351,7 +348,7 @@
         // call only for session initiator
         this.broadcast = function(_config) {
             signaler.roomid = _config.roomid || getToken();
-
+           
             if (_config.userid) {
                 userid = _config.userid;
             }
@@ -393,7 +390,7 @@
             }
         }, false);
 
-        function leaveRoom() {
+        function leaveRoom() { console.log("leave");
             signaler.signal({
                 leaving: true
             });
@@ -421,7 +418,9 @@
 
         // signaling implementation
         // if no custom signaling channel is provided; use Firebase
+       
         if (!root.openSignalingChannel) {
+      
             if (!window.Firebase) throw 'You must link <https://cdn.firebase.com/v0/firebase.js> file.';
 
             // Firebase is capable to store data in JSON format
@@ -467,11 +466,14 @@
                 socket.push(data);
             };
         } else {
+            // console.log("eeelllsssee");
+            console.log(root);
+           
             // custom signaling implementations
             // e.g. WebSocket, Socket.io, SignalR, WebSycn, XMLHttpRequest, Long-Polling etc.
             socket = root.openSignalingChannel(function(message) {
                 message = JSON.parse(message);
-
+                console.log(message);
                 var isRemoteMessage = false;
                 if (typeof userid === 'number' && parseInt(message.userid) != userid) {
                     isRemoteMessage = true;
@@ -493,7 +495,7 @@
                     }
                 }
             });
-
+           
             // method to signal the data
             this.signal = function(data) {
                 data.userid = userid;

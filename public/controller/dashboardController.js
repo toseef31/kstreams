@@ -123,7 +123,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     function ping() {
         if (!$rootScope.user || typeof $rootScope.user._id === "undefined") return;
         //    console.log('Ping called====');
-        //if(!$rootScope.o2oSocConEst) $window.location.reload(); 
+        if (!$rootScope.o2oSocConEst) $window.location.reload();
         One2OneCall.sendKMessage({
             id: '__ping__',
             from: $rootScope.user._id
@@ -785,7 +785,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*logout the user and destroy the session*/
         $scope.logout = function () {
             $http.get('/logout/' + $scope.loggedUserId).then(function (res) {
-                if (res.data.msg == "session destroy") { 
+                if (res.data.msg == "session destroy") {
                     socket.emit('logoutUpdate', $scope.loggedUserId);
                     $scope.user = undefined;
                     localStorage.removeItem('ss');

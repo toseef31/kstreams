@@ -302,15 +302,8 @@ io.on('connection', function (socket) {
 	});
 	
 	socket.on('emitScreenshareStatus', function (data) {
-		console.log("333");
 		io.emit('updateScreenshareStatus', data);
-		// socket.broadcast.emit('receiveScreenMessage', data);
 	});
-
-	// socket.on('screenVideo', function (video){
-	// 	console.log(video);
-	// 	io.emit('viewSharedScreen', video);
-	// })
 
 	//listen on typing
 	socket.on('typing', (data) => {

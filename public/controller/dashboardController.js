@@ -386,7 +386,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             .then(function (response) {
                 $scope.notifications = response.data.noti;
                 $scope.notiCount = response.data.count;
-            });
+        });
 
 
         $scope.groupSelected = false;

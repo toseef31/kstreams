@@ -1,4 +1,5 @@
 <div class="container-fluid" id="MainWrap" ng-controller="dashController">
+
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
@@ -68,6 +69,7 @@
         <button id="live" type="button" ng-click="screenshareModal()" class="btn btn-info btn-sm">
             <span class="glyphicon glyphicon-signal"></span> Test Screensharing
           </button>
+       
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -760,11 +762,11 @@
         <div class="modal-body">
           <div class="form-group col-md-12 clearfix">
             <div class="experiment"  ng-controller="muazController" style="position: fixed;top:10%; left:45%">
-              <!-- <section class="hide-after-join">         -->
+              <!-- <section class="hide-after-join"> -->
                 <!-- <input type="text" id="userNameSS" placeholder="Your Name"> -->
                 <!-- <button id="share-screen" class="setup">Do you want to share your screen?</button> -->
               <!-- </section> -->
-        
+    
               <!-- list of all available broadcasting rooms --> 
               <table style="width: 100%;" id="rooms-list" class="hide-after-join">
               </table>
@@ -1177,5 +1179,3 @@
   }
 
 </script>
-  
- 

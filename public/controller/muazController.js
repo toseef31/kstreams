@@ -9,19 +9,19 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     var sender = Math.round(Math.random() * 999999999) + 999999999;
  
     var SIGNALING_SERVER ="https://" + window.location.hostname+':22000/';
-    console.log( SIGNALING_SERVER);
+     // console.log( SIGNALING_SERVER);
 
-//    var _SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+    var _SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
     // var SIGNALING_SERVER = 'https://localhost:22000/';
-    // io.connect(_SIGNALING_SERVER).emit('new-channel', {
-    //     channel: channel,
-    //     sender: sender
-    // });
+     io.connect(_SIGNALING_SERVER).emit('new-channel', {
+         channel: channel,
+         sender: sender
+     });
 
-   //  var socket = io.connect(_SIGNALING_SERVER + channel);
-     var socket = io.connect();
+   // var signalSocket = io.connect(SIGNALING_SERVER + channel);
+    var socket = io.connect(_SIGNALING_SERVER);
 
-     socket.on('connect', function () {
+    socket.on('connect', function () {
         console.log('MUAZ Socket CONN EST');
         // setup peer connection & pass socket object over the constructor!
     });
@@ -30,6 +30,8 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
         if ($rootScope.incomingScreenshare == 1) {
             $rootScope.incomingScreenshare = 2;
             console.log("000");
+            console.log('fromId: '+ $rootScope.user._id);
+            console.log('toId: '+ $scope.chatWithId );
             socket.emit('emitScreenshareStatus', {
                 'fromName': $rootScope.user.name,
                 'fromId': $rootScope.user._id,

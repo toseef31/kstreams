@@ -27,18 +27,18 @@ app.controller("muazController", function ($scope, $http, $window, $location, $r
     });
 
     socket.send = function (message) {
-        if ($rootScope.incomingScreenshare == 1) {
-            $rootScope.incomingScreenshare = 2;
-            console.log("000");
-            console.log('fromId: '+ $rootScope.user._id);
-            console.log('toId: '+ $scope.chatWithId );
-            socket.emit('emitScreenshareStatus', {
-                'fromName': $rootScope.user.name,
-                'fromId': $rootScope.user._id,
-                'toId': $scope.chatWithId,
-                'incomingScreenshare': $rootScope.incomingScreenshare
-            });
-        }
+        // if ($rootScope.incomingScreenshare == 1) {
+        //     $rootScope.incomingScreenshare = 2;
+        //     console.log("000");
+        //     console.log('fromId: '+ $rootScope.user._id);
+        //     console.log('toId: '+ $scope.chatWithId );
+        //     socket.emit('emitScreenshareStatus', {
+        //         'fromName': $rootScope.user.name,
+        //         'fromId': $rootScope.user._id,
+        //         'toId': $scope.chatWithId,
+        //         'incomingScreenshare': $rootScope.incomingScreenshare
+        //     });
+        // }
         console.log("send");
         socket.emit('message', {
             sender: sender,

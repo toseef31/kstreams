@@ -66,10 +66,9 @@
             </a>
           </div>
         </div>
-        <button id="live" type="button" ng-click="screenshareModal()" class="btn btn-info btn-sm">
+        <!-- <button id="live" type="button" ng-click="screenshareModal()" class="btn btn-info btn-sm">
             <span class="glyphicon glyphicon-signal"></span> Test Screensharing
-          </button>
-       
+          </button> -->
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -148,13 +147,13 @@
                       </div>
 
                       <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
-                      <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
+                      <!-- <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
                         <span ng-if="userA.screenShareStatus">
                           <span class="unreadMsgAlign">
                             <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
                           </span>
                         </span>
-                      </div>
+                      </div> -->
 
                       <div>
                         <span class="userTitleText">{{userA.userTitle}}</span>
@@ -252,7 +251,7 @@
           </span>
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
-            <span ng-if="!isReceivingSS" class="whiteTextColor marginRight20" title="Share Screen" ng-click="openScreenshareModal()">
+            <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openssShareModal()">
               <i id="screenShare" class="fa fa fa-slideshare"  ></i>
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
@@ -626,45 +625,45 @@
 
         <div id='isTyping' class='hidden'> </div>
 
-        <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
+      <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
         <div>
-        <div id="applyPic" class="input-group type_msg" ng-class="{type_msgMarginTopOvrr: isReplying == true }">
+          <div id="applyPic" class="input-group type_msg" ng-class="{type_msgMarginTopOvrr: isReplying == true }">
 
-          <div id="commentsReply" class="showCommentsReply panel panel-default">
-            <span ng-if="selectedMsg.messageType == 0">
-              {{selectedMsg.message}}
+            <div id="commentsReply" class="showCommentsReply panel panel-default">
+              <span ng-if="selectedMsg.messageType == 0">
+                {{selectedMsg.message}}
+              </span>
+
+              <span ng-if="selectedMsg.messageType == 1">
+                <img class="inputBoxImage" src="/images/chatImages/{{selectedMsg.message}}" />
+              </span>
+
+              <i class="fa fa-close exitReplyIcon" ng-click="deActivate()"></i>
+            </div>
+
+            <div style="position:relative" ng-click="unreadMsg({userId:selectedUserId})">
+              <input type="text" id="sendMsg" class="form-control border0"
+                ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
+
+              <span class="input-group-btn message-option-btns">
+                <div class="col-md-1 col-xs-2 chatIcons">
+                  <span class='hoverIt' ng-click="sendMessage(0,message)">
+                    <i class="fa fa-send" style="line-height: 2"></i>
+                  </span>
+                  <span class='hoverIt' onclick="triggerfile()">
+                    <i class="fa fa-paperclip"></i>
+                  </span>
+                </div>
+              </span>
+            </div>
+
+            <span class="input-group-btn" ng-click="sendMessage(0,message)">
+              <button id="sendMsgButton" class="btn-main btn btn-file MS-File send-button marginSendButton" type="button">
+                <i class="fa fa-arrow-right"></i></button>
+
             </span>
-
-            <span ng-if="selectedMsg.messageType == 1">
-              <img class="inputBoxImage" src="/images/chatImages/{{selectedMsg.message}}" />
-            </span>
-
-            <i class="fa fa-close exitReplyIcon" ng-click="deActivate()"></i>
           </div>
-
-          <div style="position:relative" ng-click="unreadMsg({userId:selectedUserId})">
-            <input type="text" id="sendMsg" class="form-control border0"
-              ng-keydown="$event.keyCode === 13 && sendMessage()" ng-model="message" placeholder="Type a message">
-
-            <span class="input-group-btn message-option-btns">
-              <div class="col-md-1 col-xs-2 chatIcons">
-                <span class='hoverIt' ng-click="sendMessage(0,message)">
-                  <i class="fa fa-send" style="line-height: 2"></i>
-                </span>
-                <span class='hoverIt' onclick="triggerfile()">
-                  <i class="fa fa-paperclip"></i>
-                </span>
-              </div>
-            </span>
-          </div>
-
-          <span class="input-group-btn" ng-click="sendMessage(0,message)">
-            <button id="sendMsgButton" class="btn-main btn btn-file MS-File send-button marginSendButton" type="button">
-              <i class="fa fa-arrow-right"></i></button>
-
-          </span>
         </div>
-      </div>
       </ul>
     </div>
 
@@ -689,7 +688,6 @@
         </div>
       </ul>
     </div>
-
 
     <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
@@ -749,45 +747,10 @@
       </button>
     </div>
   </div>
-
-  <!-- screenShare modal -->
-  <!-- screenShare modal -->
-  <div id="screenShareModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <p style="color: white;">Testing Screenshare ...</p>
-          <h4 id="screenerTitle" class="modal-title"></h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group col-md-12 clearfix">
-            <div class="experiment"  ng-controller="muazController" style="position: fixed;top:10%; left:45%">
-              <!-- <section class="hide-after-join"> -->
-                <!-- <input type="text" id="userNameSS" placeholder="Your Name"> -->
-                <!-- <button id="share-screen" class="setup">Do you want to share your screen?</button> -->
-              <!-- </section> -->
-    
-              <!-- list of all available broadcasting rooms --> 
-              <table style="width: 100%;" id="rooms-list" class="hide-after-join">
-              </table>
-        
-              <!-- local/remote videos container -->
-              <div id="videos-container"></div>
-        
-            </div>
-
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <!-- incoming screenShare modal -->
-    <!-- incoming screenShare modal -->
-  <div id="incomingScreenshare">
+ 
+  <!-- incoming screenShare modal -->
+  <!-- incoming screenShare modal -->
+  <!-- <div id="incomingScreenshare">
     <div class="incomming-card">
       <h3 id="screenerName"></h1>  <h4>incomming screenshare</h4>
     </div>
@@ -800,7 +763,7 @@
         <i class="fa fa-ban color-red" aria-hidden="true"></i>
       </button>
     </div>
-  </div>
+  </div> -->
 
   <!-- incomming call modal -->
   <!-- incomming call modal -->
@@ -940,6 +903,46 @@
   </div>
   <!-- end -->
 
+  <!-- Modal for Screen Share-->
+  <div id="ssShareModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Screen Share</h4>
+        </div>
+        <div class="modal-body clearfix">
+          <div class='col-md-12 text-right'>
+            <a href='javascript:void(0)'  ng-click="openssViewerModal()">
+              <span class='glyphicon glyphicon-th-list'></span>  Shared Screens
+            </a>
+          </div>
+          <iframe src="/sShare.html" ></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end -->
+  <!-- screenShare Viewer modal -->
+  <div id="ssViewerModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p style="color: white;">Screen Shared By</p>
+          <h4 id="screenerTitle" class="modal-title"></h4>
+        </div>
+        <div class="modal-body">
+          <iframe src="/sViewer.html" ></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end -->
   <!-- Broadcasting modals end  -->
   <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1" ng-class="{hidden: o2oSocConEst}" role="alert">
     <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>  

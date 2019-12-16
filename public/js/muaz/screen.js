@@ -44,7 +44,7 @@
     // a middle-agent between public API and the Signaler object
     window.Screen = function(channel) {
         var signaler, self = this;
-        this.channel = channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+        this.channel = "peekChatSystemPakistan";//channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
 
         // get alerted for each new meeting
         this.onscreen = function(screen) {
@@ -55,7 +55,7 @@
         };
 
         function initSignaler(roomid) {
-            signaler = new Signaler(self, (roomid && roomid.length ? roomid : null) || self.channel);
+            signaler = new Signaler(self, "peekChatSystemPakistan");//(roomid && roomid.length ? roomid : null) || self.channel);
         }
 
         function captureUserMedia(callback, extensionAvailable) {
@@ -118,7 +118,7 @@
                     error = null;
                 }
 
-             //   console.log('screen_constraints', JSON.stringify(screen_constraints, null, '\t'));
+                console.log('screen_constraints', JSON.stringify(screen_constraints, null, '\t'));
                 navigator.mediaDevices.getUserMedia(screen_constraints).then(function(stream) {
                     addStreamStopListener(stream, function() {
                         if (self.onuserleft) self.onuserleft('self');
@@ -168,14 +168,12 @@
         var Firefox_Screen_Capturing_Warning = 'Make sure that you are using Firefox Nightly and you enabled: media.getusermedia.screensharing.enabled flag from about:config page. You also need to add your domain in "media.getusermedia.screensharing.allowed_domains" flag.';
 
         // share new screen
-        this.share = function(roomid = roomid, fromId, toId) {
+        this.share = function(roomid) {
             captureUserMedia(function() {
                 !signaler && initSignaler(roomid);
                 signaler.broadcast({
-                    roomid: (roomid && roomid.length) || self.channel,
-                    userid: self.userid,
-                    fromId: fromId,
-                    toId: toId
+                    roomid: "peekChatSystemPakistan",//(roomid && roomid.length) || self.channel,
+                    userid: self.userid
                 });
             });
         };
@@ -197,7 +195,6 @@
     var peers = {};
 
     function Signaler(root, roomid) {
-       
         var socket;
 
         // unique identifier for the current user
@@ -215,7 +212,6 @@
 
         // it is called when your signaling implementation fires "onmessage"
         this.onmessage = function(message) {
-            console.log('oNmessage');
             // if new room detected
             if (message.roomid == roomid && message.broadcasting && !signaler.sentParticipationRequest)
                 root.onscreen(message);
@@ -224,7 +220,7 @@
                 // for pretty logging
                 console.debug(JSON.stringify(message, function(key, value) {
                     if (value.sdp) {
-                       // console.log(value.sdp.type, '————', value.sdp.sdp);
+                        console.log(value.sdp.type, '————', value.sdp.sdp);
                         return '';
                     } else return value;
                 }, '————'));
@@ -291,7 +287,7 @@
         // it is passed over Offer/Answer objects for reusability
         var options = {
             onsdp: function(sdp, to) {
-            //    console.log('local-sdp', JSON.stringify(sdp.sdp, null, '\t'));
+                console.log('local-sdp', JSON.stringify(sdp.sdp, null, '\t'));
 
                 signaler.signal({
                     sdp: JSON.stringify(sdp),
@@ -310,7 +306,7 @@
                 if (root.onNumberOfParticipantsChnaged) root.onNumberOfParticipantsChnaged(Object.keys(peers).length);
             },
             onaddstream: function(stream, _userid) {
-               // console.debug('onaddstream', '>>>>>>', stream);
+                console.debug('onaddstream', '>>>>>>', stream);
 
                 addStreamStopListener(stream, function() {
                     if (root.onuserleft) root.onuserleft(_userid);
@@ -347,18 +343,16 @@
 
         // call only for session initiator
         this.broadcast = function(_config) {
-            signaler.roomid = _config.roomid || getToken();
-           
+            signaler.roomid = "peekChatSystemPakistan";//_config.roomid || getToken();
+
             if (_config.userid) {
                 userid = _config.userid;
             }
-            //console.log(_config);
+
             signaler.isbroadcaster = true;
             (function transmit() {
                 signaler.signal({
                     roomid: signaler.roomid,
-                    fromId: _config.fromId,
-                    toId: _config.toId,
                     broadcasting: true
                 });
 
@@ -372,7 +366,7 @@
 
         // called for each new participant
         this.join = function(_config) {
-            signaler.roomid = _config.roomid;
+            signaler.roomid = "peekChatSystemPakistan";//_config.roomid;
             this.signal({
                 participationRequest: true,
                 to: _config.to
@@ -390,7 +384,7 @@
             }
         }, false);
 
-        function leaveRoom() { console.log("leave");
+        function leaveRoom() {
             signaler.signal({
                 leaving: true
             });
@@ -418,9 +412,7 @@
 
         // signaling implementation
         // if no custom signaling channel is provided; use Firebase
-       
         if (!root.openSignalingChannel) {
-      
             if (!window.Firebase) throw 'You must link <https://cdn.firebase.com/v0/firebase.js> file.';
 
             // Firebase is capable to store data in JSON format
@@ -466,14 +458,11 @@
                 socket.push(data);
             };
         } else {
-            // console.log("eeelllsssee");
-            // console.log(root);
-           
             // custom signaling implementations
             // e.g. WebSocket, Socket.io, SignalR, WebSycn, XMLHttpRequest, Long-Polling etc.
             socket = root.openSignalingChannel(function(message) {
                 message = JSON.parse(message);
-                console.log(message);
+
                 var isRemoteMessage = false;
                 if (typeof userid === 'number' && parseInt(message.userid) != userid) {
                     isRemoteMessage = true;
@@ -495,7 +484,7 @@
                     }
                 }
             });
-           
+
             // method to signal the data
             this.signal = function(data) {
                 data.userid = userid;
@@ -542,7 +531,7 @@
     }
 
     function onSdpError(e) {
-      //  console.error('sdp error:', e);
+        console.error('sdp error:', e);
     }
 
     // var offer = Offer.createOffer(config);
@@ -604,13 +593,13 @@
         setRemoteDescription: function(sdp, callback) {
             callback = callback || function() {};
 
-        //    console.log('setting remote descriptions', sdp.sdp);
+            console.log('setting remote descriptions', sdp.sdp);
             this.peer.setRemoteDescription(new RTCSessionDescription(sdp)).then(function() {
                 callback();
             }).catch(onSdpError);
         },
         addIceCandidate: function(candidate) {
-         //   console.log('adding ice', candidate.candidate);
+            console.log('adding ice', candidate.candidate);
             this.peer.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.sdpMLineIndex,
                 candidate: candidate.candidate
@@ -663,7 +652,7 @@
                 }
             };
 
-           // console.log('setting remote descriptions', config.sdp.sdp);
+            console.log('setting remote descriptions', config.sdp.sdp);
             peer.setRemoteDescription(new RTCSessionDescription(config.sdp)).then(function() {
                 peer.createAnswer(answerConstraints).then(function(sdp) {
                     sdp.sdp = setBandwidth(sdp.sdp);
@@ -680,7 +669,7 @@
             return this;
         },
         addIceCandidate: function(candidate) {
-      //      console.log('adding ice', candidate.candidate);
+            console.log('adding ice', candidate.candidate);
 
             this.peer.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.sdpMLineIndex,
@@ -752,7 +741,7 @@
         script.src = src;
         script.async = true;
         document.documentElement.appendChild(script);
-     //   console.log('loaded', src);
+        console.log('loaded', src);
     }
 
     typeof getScreenId === 'undefined' && loadScript('https://cdn.webrtc-experiment.com/getScreenId.js');

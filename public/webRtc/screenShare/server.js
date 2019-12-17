@@ -15,19 +15,19 @@ Object.keys(ifaces).forEach(function (ifname) {
         ++alias;
     });
 });
-var siteLink = 'https://localhost:8445/';
+var siteLink = 'https://localhost:9559/';
 if (serverIpAdd.includes('58.229.208.176')) { //Job callme
     options = {
         key: sslConfig.keyJcm,
         cert: sslConfig.certJcm,
     };
-    siteLink = 'https://www.jobcallme.com:8445/';
+    siteLink = 'https://www.jobcallme.com:9559/';
 } else if (serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')) { // Peek let 
     options = {
         key: sslConfig.keyPl,
         cert: sslConfig.certPl,
     };
-    siteLink = 'https://www.peeklet.com:8445/';
+    siteLink = 'https://www.peeklet.com:9559/';
 }
 
 
@@ -57,12 +57,14 @@ io.set('transports', [
 var channels = {};
 
 io.sockets.on('connection', function (socket) {
+    console.log('connection ===');
     var initiatorChannel = '';
     if (!io.isConnected) {
         io.isConnected = true;
     }
 
     socket.on('new-channel', function (data) {
+        console.log('new-channel ===');
         if (!channels[data.channel]) {
             initiatorChannel = data.channel;
         }
@@ -72,11 +74,13 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('presence', function (channel) {
+        console.log('presence ===');
         var isChannelPresent = !!channels[channel];
         socket.emit('presence', isChannelPresent);
     });
 
     socket.on('disconnect', function (channel) {
+        console.log('disconnect ===');
         if (initiatorChannel) {
             delete channels[initiatorChannel];
         }
@@ -85,6 +89,7 @@ io.sockets.on('connection', function (socket) {
 
 function onNewNamespace(channel, sender) {
     io.of('/' + channel).on('connection', function (socket) {
+        console.log('onNewNamespace ===');
         var username;
         if (io.isConnected) {
             io.isConnected = false;
@@ -92,14 +97,16 @@ function onNewNamespace(channel, sender) {
         }
 
         socket.on('message', function (data) {
-            if (data.sender == sender) {
-                if (!username) username = data.data.sender;
+            console.log('onNewNamespace === message ===');
 
+            if (data.sender == sender) {
+                if (!username) username = data.data.sender; 
                 socket.broadcast.emit('message', data.data);
             }
         });
 
         socket.on('disconnect', function () {
+            console.log('onNewNamespace- disconnect ===');
             if (username) {
                 socket.broadcast.emit('user-left', username);
                 username = null;
@@ -110,7 +117,7 @@ function onNewNamespace(channel, sender) {
 
 // run app
 
-app.listen(process.env.PORT || 8445);
+app.listen(process.env.PORT || 9559);
 
 process.on('unhandledRejection', (reason, promise) => {
     process.exit(1);

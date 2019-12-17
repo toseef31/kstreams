@@ -47,7 +47,7 @@
         var sender = Math.round(Math.random() * 999999999) + 999999999;
 
         // https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socketio-over-nodejs
-        var SIGNALING_SERVER ='https://www.jobcallme.com:9559/'; //'https://socketio-over-nodejs2.herokuapp.com:443/';
+        var SIGNALING_SERVER ='https://socketio-over-nodejs2.herokuapp.com:443/';//'https://www.jobcallme.com:9559/'; //'https://socketio-over-nodejs2.herokuapp.com:443/';
         io.connect(SIGNALING_SERVER).emit('new-channel', {
             channel: channel,
             sender: sender

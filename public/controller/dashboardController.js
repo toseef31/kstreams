@@ -81,7 +81,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 })
                 .$on('$message', function (message) { // it listents for 'incoming event'
                     $rootScope.o2oSocConEst = true;
+                   console.log(message);
                     var parsedMessage = JSON.parse(message);
+                    
                     // console.log('something incoming from the server: ==== ' + message);  
                     switch (parsedMessage.id) {
                         case 'registerResponse':

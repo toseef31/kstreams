@@ -47,7 +47,9 @@
         var sender = Math.round(Math.random() * 999999999) + 999999999;
 
         // https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socketio-over-nodejs
-        var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+         var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
+        // var SIGNALING_SERVER ="https://" + window.location.hostname+':22000/';
+        // var SIGNALING_SERVER = 'https://jobcallme.com:22000';
         io.connect(SIGNALING_SERVER).emit('new-channel', {
             channel: channel,
             sender: sender
@@ -70,6 +72,7 @@
         };
 
         screensharing.onscreen = function(_screen) { 
+            console.log (_screen);
             let userData=_screen.userid.split('-'); 
             if(localStorage.getItem('tokenData')!=userData[1]) return; 
             var alreadyExist = document.getElementById(_screen.userid);

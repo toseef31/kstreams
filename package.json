@@ -29,5 +29,14 @@
     "socket.io": "^2.2.0",
     "web-push": "^3.3.5",
     "ws": "^7.1.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peekinternational/kstreams.git"
+  },
+  "bugs": {
+    "url": "https://github.com/peekinternational/kstreams/issues"
+  },
+  "homepage": "https://github.com/peekinternational/kstreams#readme"
 }

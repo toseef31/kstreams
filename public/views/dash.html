@@ -1,5 +1,4 @@
 <div class="container-fluid" id="MainWrap" ng-controller="dashController">
-
   <!-- file upload throught button -->
   <form style="display: none">
     <input type="file" name="avatar" file-input="files" multiple />
@@ -54,21 +53,24 @@
 
         <div ng-if="projectData.broadcasting == 1"
           class='broadCastSec clearfix broadCaster col-sm-12 col-md-12 col-lg-12'>
-          <div class="col-md-6  col-xs-6">
+          <div class="col-md-6 col-xs-6">
             <button id="live" type="button" ng-click="openBrModal()" class="btn btn-info btn-sm">
               <span class="glyphicon glyphicon-signal"></span> Live Broadcasting
             </button>
           </div>
-          
+
           <div class="col-md-6 col-sm-7 col-xs-6 text-right broadCastAv">
             <a class="forceWhiteColor" href='javascript:void(0)' ng-click="openAvModal()">
               Available ({{presenterArr.length}})
             </a>
           </div>
         </div>
-        <!-- <button id="live" type="button" ng-click="screenshareModal()" class="btn btn-info btn-sm">
-            <span class="glyphicon glyphicon-signal"></span> Test Screensharing
-          </button> -->
+
+        <div id="live" class="backgroundOfficialGreen sharedScreen cursorPointer col-sm-12 col-md-12 col-lg-12" ng-click="openssViewerModal()" >
+            <span class='glyphicon glyphicon-th-list whiteColor'></span> 
+            <span class="whiteColor">Shared-Screens</span>
+        </div>
+      
         <!-- -------------------- --------------------------------------------------------- -->
         <!-- -------------------- TABS --------------------------------------------------------- -->
         <!-- -------------------- --------------------------------------------------------- -->
@@ -252,7 +254,7 @@
 
           <span class="pull-right video-icon" style="margin-top: 3px;" ng-if="!groupSelected">
             <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openssShareModal()">
-              <i id="screenShare" class="fa fa fa-slideshare"  ></i>
+              <i id="screenShare" class="fa fa fa-slideshare"></i>
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
@@ -262,6 +264,7 @@
             </span>
           </span>
         </li>
+ 
 
         <div onscroll="scrolled(this)" class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}"
           id="{{connectionId}}" file-dropzone files-to-upload='files'>
@@ -277,19 +280,19 @@
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
-                   <div ng-if="selectedUserData.user_image != ''" class="message-user-image pull-left">
-                      <img src="{{projectData.profileImgLocation}}{{selectedUserData.user_image}}" alt="User image">
-                   </div>
+                  <div ng-if="selectedUserData.user_image != ''" class="message-user-image pull-left">
+                    <img src="{{projectData.profileImgLocation}}{{selectedUserData.user_image}}" alt="User image">
+                  </div>
 
-                   <div ng-if="selectedUserData.user_image == ''" class="message-user-image pull-left">
-                      <img src="images/noProfile.png" alt="User image">
-                   </div>
+                  <div ng-if="selectedUserData.user_image == ''" class="message-user-image pull-left">
+                    <img src="images/noProfile.png" alt="User image">
+                  </div>
 
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
                         <div class="clear"></div>
-                        
+
                         <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                           {{selectedUserData.name}}, {{chat.createdAt | timeago}}
                         </div>
@@ -334,9 +337,9 @@
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
-                          <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
-                              {{chat.createdAt | timeago}}
-                            </div>
+                        <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                          {{chat.createdAt | timeago}}
+                        </div>
                         <div class="deleted_received_msg">this message has been deleted</div>
                       </div>
                     </div>
@@ -357,10 +360,11 @@
                         <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                           {{ chat.createdAt | timeago }}
                         </div>
+                        
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.chatType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}} 
+                            {{chat.message}}
                             <img ng-if="chat.isSeen == 0 && user.seenStatus == 1" src="../images/unseenMsg.png"
                               width="20px" height="20px">
                             <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
@@ -405,7 +409,7 @@
                           <img ng-if="chat.isSeen == 1 && user.seenStatus == 1" src="../images/seenMsg.png"
                             style="float: right" width="20px" height="20px">
                         </a>
-                        
+
                       </div>
 
                       <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
@@ -433,7 +437,7 @@
                     <div class="messages-wrapper messages-text message-model pull-right">
                       <div class="clear"></div>
                       <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
-                          {{ chat.createdAt | timeago }}
+                        {{ chat.createdAt | timeago }}
                       </div>
                       <div class="message">
                         <p class="message-text" dir="auto">
@@ -538,7 +542,7 @@
                         <!-- --------------- NORMAL MSG ---------------------------------------------- -->
                         <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
                           <p class="message-text" dir="auto">
-                            {{chat.message}}   
+                            {{chat.message}}
                           </p>
                           <div class="message-media">
                             <div class="clear"></div>
@@ -625,7 +629,7 @@
 
         <div id='isTyping' class='hidden'> </div>
 
-      <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
+        <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
         <div>
           <div id="applyPic" class="input-group type_msg" ng-class="{type_msgMarginTopOvrr: isReplying == true }">
 
@@ -658,7 +662,8 @@
             </div>
 
             <span class="input-group-btn" ng-click="sendMessage(0,message)">
-              <button id="sendMsgButton" class="btn-main btn btn-file MS-File send-button marginSendButton" type="button">
+              <button id="sendMsgButton" class="btn-main btn btn-file MS-File send-button marginSendButton"
+                type="button">
                 <i class="fa fa-arrow-right"></i></button>
 
             </span>
@@ -691,16 +696,16 @@
 
     <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
-        <video id="videoOutput" autoplay poster="images/webrtc.png"></video>
+        <video id="videoOutput" ng-class="{videoOutputFullscreen: isChatFullscreen == true }" autoplay poster="images/webrtc.png"></video>
       </div>
-      <video id="local-video" autoplay poster="images/webrtc.png"></video>
+      <video id="local-video" ng-class="{localVideoFullscreen: isChatFullscreen == true }" autoplay poster="images/webrtc.png"></video>
 
       <div class="text-center screenButtons">
         <h4 id="timmer" class="hidden-xs"></h4>
-        <button class="trans-btn exitTheScreen hidden" title="Exit full screen">
+        <button class="trans-btn exitTheScreen hidden" ng-click='fullscreenStatus()' title="Exit full screen">
           <img src="images/exitFullScreen.png">
         </button>
-        <button class="trans-btn makeFullScreen" title="Full screen">
+        <button class="trans-btn makeFullScreen" ng-click='fullscreenStatus()' title="Full screen">
           <img src="images/fullScreen.png">
         </button>
         <button class="trans-btn " ng-if="openVoice" ng-click='toggelMute()' title="Mute video">
@@ -747,7 +752,7 @@
       </button>
     </div>
   </div>
- 
+
   <!-- incoming screenShare modal -->
   <!-- incoming screenShare modal -->
   <!-- <div id="incomingScreenshare">
@@ -786,61 +791,164 @@
   <!-- Broadcasting modals start  -->
   <!-- Initial 1 start -->
   <div id="broadcastingModal" class="modal fade" role="dialog">
-    <form ng-submit="broadcasting('video')">
-      <div class="modal-dialog">
-        <div class="modal-content">
+        <form ng-submit="broadcasting('video')">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Live Stream</h4>
+                    </div>
+                    <div class="modal-body clearfix">
+                        <div class="form-group col-md-12">
+                            <div class="col-md-3">
+                                <label>Set password for live stream</label>
+                            </div>
+                            <div class="col-md-2 hoverIt">
+                                <input type="radio" id='setPas1' ng-model="setPassword" name="setPassword" value='1'
+                                    ng-checked='setPassword == 1' />
+                                <label for="setPas1">YES</label>
+                            </div>
+                            <div class="col-md-2 hoverIt">
+                                <input type="radio" id='setPas2' ng-model="setPassword" name="setPassword" value='0'
+                                    ng-checked='setPassword == 0' />
+                                <label for="setPas2">NO</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12" ng-class="{hidden:setPassword==0}">
+                            <div class="col-md-6 col-md-offset-3">
+                                <input type="text" placeholder="set password" ng-model="liveStreamCode"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <label>
+                                <button type="button" class="btn btn-info btn-sm"
+                                    ng-click="activateVideoBroadcastPanel()">
+                                    <span class="glyphicon glyphicon-signal"></span> Broadcast Now !
+                                </button>
+                            </label>
+                        </div>
+                        <div class="col-md-12" ng-if='brErrorMsg'>
+                            <div class="alert alert-danger">Enter correct password</div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="broadClose" class="btn btn-default"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- broadCasting Video-Panel Modal -->
+    <!-- broadCasting Video-Panel Modal -->
+
+    <div id="broadcastingVideoModal" class="modal fade" role="dialog" style="z-index: 1100">
+      <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Live Streaming</h4>
+              <h4 class="modal-title">Broadcasting...
+                  <button class="btn btn-danger btn-sm closeButton" ng-click="closeVideoBroadcastPanel()"
+                      style="float: right"> STOP </button>
+              </h4>
           </div>
-          <div class="modal-body clearfix">
-            <div class="form-group col-md-12">
-              <div class="col-md-3">
-                <label>Set password for Live stream</label>
+
+          <div class="modal-body clearfix bcSubMainPanels">
+              <div class="bcSubPanelWidth" style="float:left">
+                  <video class="videoScreenSize" id="broadCastVideo" autoplay poster="images/webrtc.png">
+                  </video>
+
+                  <div class="text-center screenButtons braodcastButtonAlign">
+                      <h4 id="timmer" class="hidden-xs"></h4>
+                      <button class="trans-btn " ng-if="openBCvoice" ng-click='toggleBCMute()' title="Mute video">
+                          <img src="images/unmute1.png">
+                      </button>
+                      <button class="trans-btn " ng-if="!openBCvoice" ng-click='toggleBCMute()' title="Unmute video">
+                          <img src="images/mute1.png">
+                      </button>
+
+                      <button class="trans-btn" ng-if='showBCVideo' ng-click='toggleBCVideo()' title="Hide video">
+                          <img src="images/pause1.png">
+                      </button>
+                      <button class="trans-btn" ng-if='!showBCVideo' ng-click='toggleBCVideo()' title="Display video">
+                          <img src="images/resume1.jpg">
+                      </button>
+                  </div>
               </div>
-              <div class="col-md-2 hoverIt">
-                <input type="radio" id='setPas1' ng-model="setPassword" name="setPassword" value='1'
-                  ng-checked='setPassword == 1' />
-                <label for="setPas1">Yes</label>
+
+              <div class="bcSubPanelWidth" style="background-color: #f8f3f3; float:right">
+                  <div class="messagejoint msg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
+                      id="{{connectionId}}">
+                      <div class="messages-container">
+                          <div ng-repeat="chat in broadcastChats track by $index">
+                              <div class="clear"></div>
+                              <div class="message-contnaier outgoing pull-right">
+                                  <div class="messages-wrapper messages-text message-model pull-right rightAlign">
+                                      <div class="clear"></div>
+                                      <div class="message messageSendColor">
+                                          <span><b> {{chat.senderName}} </b></span>
+                                          <p class="message-text" dir="auto" ng-if="chat.chatType == 2">
+                                              {{chat.message}}
+                                          </p>
+                                          <div class="message-media">
+                                              <div class="clear"></div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="clear"></div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!--- ----------------------- SEND MESSAGE BOX ----------------------------------- -->
+                  <div class="input-group broadCast_type_msg">
+                      <div style="position:relative">
+                          <input id="sendBMsg" type="text" class="form-control border0"
+                              ng-keydown="$event.keyCode === 13 && sendBCMessage(sendType)" ng-model="message">
+
+                          <div class="input-group-btn bcMessage-option-btns">
+                              <div class="col-md-1 col-xs-2 chatIcons" ng-class="{chatIconsMargin: !isSafari}">
+                                  <span class='hoverIt' ng-click="sendBCMessage(sendType, 0,message)">
+                                      <i class="fa fa-send" style="line-height: 2"></i>
+                                  </span>
+                                  <span ng-if="!isSafari" class='hoverIt' onclick="triggerfile()">
+                                      <i class="fa fa-paperclip"></i>
+                                  </span>
+
+                                  <span ng-if="isSafari" class='hoverIt  safari-message-option-btns-Spacer'>
+                                      <label for="safariUpload">
+                                          <span class="fa fa-paperclip"></span>
+                                      </label>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+
+                      <span class="input-group-btn" ng-click="sendBCMessage(sendType, 0,message)">
+                          <button
+                              class="btn-main btn btn-file MS-File send-button marginSendButton broadcastSendButtonSize"
+                              type="button">
+                              <i class="fa fa-arrow-right"></i></button>
+                      </span>
+                  </div>
+
               </div>
-              <div class="col-md-2 hoverIt">
-                <input type="radio" id='setPas2' ng-model="setPassword" name="setPassword" value='0'
-                  ng-checked='setPassword == 0' />
-                <label for="setPas2">No</label>
-              </div>
-            </div>
-            <div class="form-group col-md-12" ng-class="{hidden:setPassword==0}">
-              <div class="col-md-6 col-md-offset-3">
-                <input type="text" placeholder="Set Password" ng-model="liveStreamCode" class="form-control">
-              </div>
-            </div>
-            <div class="form-group col-md-12 text-center">
-              <label>
-                <button type="button" class="btn btn-info btn-sm" ng-click="broadCastNow()">
-                  <span class="glyphicon glyphicon-signal"></span> Broadcast Now !
-                </button>
-              </label>
-            </div>
-            <div class="col-md-12" ng-if='brErrorMsg'>
-              <div class="alert alert-danger"> Enter correct password</div>
-            </div> 
           </div>
-          <div class="modal-footer">
-            <button type="button" id="broadClose" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
       </div>
-    </form>
   </div>
-  <!-- Present/View Broadcasting video -->
-  <div id="videoBroadCast" class='hidden broadCastContainer bcModel'>
-    <video class="videoScreenSize brVideoSize" id="broadCastVideo" autoplay poster="images/webrtc.png"></video>
 
-    <button class="btn btn-danger btn-sm brStopButtonAlign" title="call drop" ng-click="stopBroadCast()">
-      <span class='fa fa-close'></span> Stop
-    </button>
-  </div>
-  <!-- end -->
-
+    <!-- minimized Broadcast modal -->
+    <!-- minimized Broadcast modal -->
+  <!-- <div id="minimizedBroadcast" class="minimizedBroadcast minimizedPanelMobile">
+      <div class="incomming-btn-container">
+          <img class="braodcastImageAlign" src="images/Broadcast.png">
+          <button class="trans-btn maximizeIconAlign" title="Broadcast minimize" ng-click="minimizeBroadcastPanel();">
+              <img src="images/callmaximize.png" style="width: 32px">
+          </button>
+      </div>
+  </div> -->
+  
   <!-- Show available presenter  -->
   <div id="avPresenterModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -868,6 +976,7 @@
     </div>
   </div>
   <!-- end -->
+  
 
   <!-- Password required for presenter  -->
   <div id="passReqPre" class="modal fade" role="dialog">
@@ -910,13 +1019,13 @@
         <div class="modal-header">
           <h4 class="modal-title">Screen Share</h4>
         </div>
-         <div class="modal-body clearfix">
-          <div class='col-md-12 text-right'>
-            <a href='javascript:void(0)'  ng-click="openssViewerModal()">
-              <span class='glyphicon glyphicon-th-list'></span>  Shared Screens
+        <div class="modal-body clearfix screenSharebody">
+          <!-- <div class='col-md-12 text-right'>
+            <a href='javascript:void(0)' ng-click="openssViewerModal()">
+              <span class='glyphicon glyphicon-th-list'></span> Shared Screens
             </a>
-          </div>
-          <iframe src="/sShare.html" ></iframe>
+          </div> -->
+          <iframe src="/sShare.html"></iframe>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -934,7 +1043,7 @@
           <h4 id="screenerTitle" class="modal-title"></h4>
         </div>
         <div class="modal-body">
-          <iframe src="/sViewer.html" ></iframe>
+          <iframe src="/sViewer.html"></iframe>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -944,13 +1053,14 @@
   </div>
   <!-- end -->
   <!-- Broadcasting modals end  -->
-  <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1" ng-class="{hidden: o2oSocConEst}" role="alert">
-    <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>  
+  <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1"
+    ng-class="{hidden: o2oSocConEst}" role="alert">
+    <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-  </div> 
   </div>
+</div>
 </div>
 </div>
 </div>
@@ -958,7 +1068,7 @@
 <script type="text/javascript">
 
   var socket = io.connect();
-  
+
   $(document).on('click', '.mobileopenlist', function () {
     $('.mobileleftpane').fadeIn(100);
   });
@@ -1180,5 +1290,22 @@
     secondScrollHeight = 0;
     fTotalHeight = 0;
   }
+
+  function reLoadEmoji() {
+        $("#sendBMsg").emojioneArea();
+  }
+
+  
+    //---- handles the panel's display status of AvailableBroadCasters----
+    function showAvailableBroadCasters() {
+        var ele = document.querySelector('.avialableBroadcasters');
+        ele.style.display = 'block';
+    }
+
+    function hideAvailableBroadCasters() {
+        var ele = document.querySelector('.avialableBroadcasters');
+        ele.style.display = 'none';
+    }
+    //-------------------------------------------------------------------
 
 </script>

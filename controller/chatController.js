@@ -910,16 +910,26 @@ module.exports = function(io, saveUser) {
   // Broadcast functions start =====
   router.startPresenter = (req, res) => {
     if (req.session.user) {
-      var broad = new broadModel({
-        presenterId: req.session.user._id,
-        password: req.body.password
-      });
-      broad.save(function(err, data) {
-        if (err) console.log(err);
-      });
-      res.json({ status: true, message: "Saved successfully" });
-    } else res.json({ status: false, message: "Need authorization" });
-  };
+        var broad = new broadModel({
+            "presenterId": req.session.user._id,
+            "password": req.body.password,
+        });
+        broad.save(function (err, data) {
+            if (err) console.log(err);
+            broadModel.findOne({ 'presenterId': req.session.user._id, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
+                res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
+            })
+        });
+    }
+    else
+        res.json({ status: false, message: 'Need authorization' });
+}
+
+  router.getBroadcastId= (req, res) => {
+    broadModel.findOne({'presenterId': req.params.presenterId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
+        res.json({status:true,message:'Saved successfully', 'broadcastRefId': result});
+    })
+}
 
   router.joinViewer = (req, res) => {
     if (req.session.user) {

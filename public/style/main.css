@@ -71,7 +71,7 @@
   left: -15%;
   border-radius: 5px;
   list-style: none;
-  z-index: 9999;
+  z-index: 999;
 }
  
 .replyMenu{
@@ -176,10 +176,7 @@
 }
 /* ********************************************************************************** */
 
-.fullScreen{
-  width: 95% !important;
-  height: 95% !important;
-}
+
 .color-red{
   color: #ff4f4f;
 }
@@ -698,7 +695,7 @@ img{ max-width:90%;}
   margin-right: 2px;
   margin-top: -1vh;
   margin-left: 3px;
-  z-index: 9999;
+  z-index: 1000; 
   /* border: 1px solid green; */
   /* border-radius: 3px; */
 }
@@ -727,19 +724,75 @@ img{ max-width:90%;}
   top: 10px !important;
   right: 15px;
 }
+
+#videoOutput{
+    padding-top: 20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.videoOutputFullscreen{
+    padding-top: 20px !important;
+    width: 48% !important;
+    margin: 0 auto !important;
+    float: left;
+    margin-right: 10px;
+}
+.localVideoFullscreen{
+  width: 48% !important;
+  margin-top: 19px !important;
+  margin-left: 15px;
+}
+
+.fullScreen{
+  width: 95% !important;
+}
+
+@media screen and (max-width: 740px) {
+  .localVideoFullscreen{
+    width: 100% !important;
+    margin-top: 19px !important;
+    margin-left: 0;
+  }
+  .videoOutputFullscreen{
+    padding-top: 20px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    float: left;
+    margin-right: 10px;
+  }
+  .fullScreen{
+    width: 60% !important;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .fullScreen{
+    width: 70% !important;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .fullScreen{
+    width: 85% !important;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .fullScreen{
+    width: 97% !important;
+  }
+}
+
+
+
 /*    video call styling    */
  #chat-content { height: 180px;  overflow-y: scroll; }
     #local-video{
       width: 100%;
       margin-top: 3px;
-      /* height: 170px; */
-      /* margin-left: 5px; */
     }
-    #local-videoNew{
-      width: 100%;
-      height: 45%;
-      margin-left:5px;
-    }
+    
     .videoContainer,.ringingBell { 
       width: 100%;
       height: 270px;
@@ -762,7 +815,7 @@ img{ max-width:90%;}
     }
     .fullScreen .screenButtons{
       position: absolute;
-      bottom: 10px;
+      /* bottom: 10px; */
       left: 50%;
     }
     /*docker style code*/
@@ -1324,4 +1377,19 @@ height: 70% !important;
 
 .screenshareHeight{
   height: 54%;
+}
+
+.backgroundOfficialGreen{
+  background-color: #639e14;
+}
+
+.whiteColor{
+  color: white;
+}
+
+.sharedScreen{
+  padding-left: 15px;
+  padding-bottom: 5px;
+  padding-top: 4px;
+  margin-top: -1px;
 }

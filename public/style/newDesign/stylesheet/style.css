@@ -51,8 +51,8 @@ textarea.postText{border:none;padding-top:12px;padding-left:50px;height:45px;box
     background: #5a9e02 !important;
 }
 .modal-header {
-	background: #1e2321;
-    border-bottom: 1px solid #1e2321;
+	background: #4e800c;
+    border-bottom: 1px solid #3d541f;
 }
 .modal-title, .modal-header .close {
     color: #ffffff;
@@ -330,9 +330,10 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .clear{clear: both;}
 
 .btn-main.MS-File{
-    padding:13px;
+    /* padding:13px; */
     /* margin-right:-1px;
     border-radius:0!important */
+    padding:9px;margin-right:-1px;border-radius:0!important
 }
 
 .message-container{width:100%;height:100%}
@@ -403,6 +404,16 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     top:2px;
     display:table
 }
+
+.bcMessage-option-btns
+{
+    padding-right: 4px;
+    position:absolute;z-index:9;
+    right:10%;
+    top:2px;
+    display:table
+}
+
 
 @media screen and (min-width: 600px) {
     .message-option-btns
@@ -544,5 +555,72 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     opacity: 0.9;
 }
 
+.screenSharebody{
+    height: 20%;
+}
 
+.groupBroadMsgHistory{
+    width: 100%;
+    height: calc(100vh - 200px);
+}
+
+.sendButtonSize{
+    width: 43px;
+    height: 43px
+}
+
+.broadcastSendButtonSize{
+    width: 43px;
+    height: 34px
+}
+
+@media screen and (max-width: 780px) {
+    .sendButtonSize{
+        width: 45px !important;
+        height: 46px !important;
+    }
+
+    .bcSubPanelWidth{
+        width: 100% !important;
+    }
+
+    .bcSubMainPanels{
+        display: block !important;
+        height: 510px;
+        overflow: auto;
+    }
+}
+
+.bcSubPanelWidth {
+    width: 50%;
+    background-color: whitesmoke;
+}
+
+.bcSubMainPanels{
+    display: flex;
+    padding-bottom: 50px;
+}
+
+.braodcastButtonAlign{
+    left: 2% !important;
+    top: 16px;
+}
  
+.rightAlign{
+    text-align: right;
+}
+
+.broadCast_type_msg{
+    margin-right: 2px;
+    margin-top: -3px;
+    margin-left: 3px;
+  }
+
+  .videoScreenSize{
+    width: 100%;
+  }
+
+  .cursorPointer{
+    cursor: pointer;
+  }
+  

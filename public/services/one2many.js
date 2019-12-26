@@ -141,6 +141,10 @@ factory('One2ManyCall', ['$rootScope',
             }
         }
 
+        function onError(error){
+            console.log(error);
+        }
+
         return {
             presenterResponse: presenterResponse,
             viewerResponse: viewerResponse,

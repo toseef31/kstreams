@@ -70,6 +70,7 @@
         };
 
         screensharing.onscreen = function(_screen) { 
+            console.log (_screen);
             let userData=_screen.userid.split('-'); 
             if(localStorage.getItem('tokenData')!=userData[1]) return; 
             var alreadyExist = document.getElementById(_screen.userid);

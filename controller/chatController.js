@@ -222,6 +222,7 @@ module.exports = function(io, saveUser) {
   };
 
   router.chat = function(req, res) {
+    
     var chatType = req.body.msgData.chatType;
     var sender = req.body.msgData.senderId;
     var name = req.body.msgData.senderName;
@@ -254,13 +255,15 @@ module.exports = function(io, saveUser) {
 
     newMessage.save(function(err, data) {
       if (err) throw err;
+
+      if (chatType != 2){
       let date_ob = new Date();
-      userModel
-        .update(
+      userModel.update(
           { _id: req.body.selectedUserData._id },
           { $set: { updatedByMsg: date_ob } }
         )
         .exec();
+      }
 
       if (chatType == 0) {
         chatModel
@@ -284,6 +287,7 @@ module.exports = function(io, saveUser) {
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
           .exec(function(err, data) {
+            console.log(data);
             helper.addNewMessage(data);
             res.json(data);
           });
@@ -910,16 +914,26 @@ module.exports = function(io, saveUser) {
   // Broadcast functions start =====
   router.startPresenter = (req, res) => {
     if (req.session.user) {
-      var broad = new broadModel({
-        presenterId: req.session.user._id,
-        password: req.body.password
-      });
-      broad.save(function(err, data) {
-        if (err) console.log(err);
-      });
-      res.json({ status: true, message: "Saved successfully" });
-    } else res.json({ status: false, message: "Need authorization" });
-  };
+        var broad = new broadModel({
+            "presenterId": req.session.user._id,
+            "password": req.body.password,
+        });
+        broad.save(function (err, data) {
+            if (err) console.log(err);
+            broadModel.findOne({ 'presenterId': req.session.user._id, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
+                res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
+            })
+        });
+    }
+    else
+        res.json({ status: false, message: 'Need authorization' });
+}
+
+  router.getBroadcastId= (req, res) => {
+    broadModel.findOne({'presenterId': req.params.presenterId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
+        res.json({status:true,message:'Saved successfully', 'broadcastRefId': result});
+    })
+}
 
   router.joinViewer = (req, res) => {
     if (req.session.user) {

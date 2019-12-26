@@ -40,9 +40,6 @@
     height: 15px;
 }
 
-.rightAlign{
-    text-align: right;
-}
 .imageMsgBoxMaxWidth{
     max-width: 60%;
 }
@@ -122,18 +119,7 @@
 #remotes{
     border-bottom:1px solid #ccc;
 }
-#videoOutput{
-    padding-top: 20px;
-    width: 100%;
-    margin: 0 auto;
-    /* max-height:340px; */
-}
 
-#videoOutputNew{
-    width: 100%;
-    height:45%
-    /* max-height:340px; */
-}
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
     background-color:#195989;
@@ -275,6 +261,10 @@
         margin-left: 13px;
     }
 
+    .chatIconsMargin span{
+        margin-left: 13px;
+    }
+    
     /* #videoBroadCast{
         top: 33%;
         left: 23%;

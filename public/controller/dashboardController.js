@@ -316,7 +316,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           
             var bJoinedChat = {"senderId":$scope.user.userId,"senderImage":'',
             "receiverImage":'',"recevierId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":'I have Joined', "chatType":1}
+            "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
 
             socket.emit('checkmsg', bJoinedChat);
 
@@ -717,24 +717,25 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* send braodcast message */
         $scope.sendBCMessage = function(sendType,message,chkmsg){
+            console.log("sending Broadcast message");
             if(!chkmsg || typeof chkmsg=="undefined") chkmsg=0;
             if(!message || typeof message=="undefined") message=0;
 
             if(!$scope.message && chkmsg) $scope.message=chkmsg;
             else if(!$scope.message && !chkmsg) return;
 
-            var msg={"senderId":$scope.user.userId,"senderImage":$scope.user.user_image,
+            var msgObj = {"senderId":$scope.user.userId,"senderImage":$scope.user.user_image,
             "receiverImage":$scope.chatWithImage,"recevierId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":$scope.message, "chatType":1
+            "senderName":$scope.user.name,"message":$scope.message, "chatType":2
             }
 
-            socket.emit('checkmsg',msg);
+            socket.emit('checkmsg',msgObj);
             $scope.message = '';
             scrollbottom();
             var ele = $('#sendBMsg').emojioneArea();
             ele[0].emojioneArea.setText('');
 
-            $http.post('/chat',msg)
+            $http.post('/chat', {'msgData': msgObj})
             .then(function(res){  
                 if(res.data.length<1) return; 
             })
@@ -1332,6 +1333,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
+
+                if (msg.chatType == 0){ // is msg not a broadcast msg
+
                 if ($scope.user._id == msg.receiverId) {
                     if ('serviceWorker' in navigator) {
                         //   console.log("Push Notification 1");
@@ -1375,6 +1379,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.chats.push(msg.data);
                     scrollbottom();
                 }
+            }
+            else{ // if it is a broadcast msg 
+                $scope.broadcastChats.push(msg);
+                scrollbottom();
+            }
+            
             });
         });
 

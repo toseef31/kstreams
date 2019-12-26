@@ -255,7 +255,6 @@ io.on('connection', function (socket) {
 		io.emit('updateChatAll', coversation);
 	});
 	socket.on('checkmsg', function (chat) {
-		console.log('sbs: checkmsg');
 		io.emit('remsg', chat);
 	});
 

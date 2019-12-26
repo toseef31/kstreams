@@ -222,6 +222,7 @@ module.exports = function(io, saveUser) {
   };
 
   router.chat = function(req, res) {
+    
     var chatType = req.body.msgData.chatType;
     var sender = req.body.msgData.senderId;
     var name = req.body.msgData.senderName;
@@ -254,13 +255,15 @@ module.exports = function(io, saveUser) {
 
     newMessage.save(function(err, data) {
       if (err) throw err;
+
+      if (chatType != 2){
       let date_ob = new Date();
-      userModel
-        .update(
+      userModel.update(
           { _id: req.body.selectedUserData._id },
           { $set: { updatedByMsg: date_ob } }
         )
         .exec();
+      }
 
       if (chatType == 0) {
         chatModel
@@ -284,6 +287,7 @@ module.exports = function(io, saveUser) {
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
           .exec(function(err, data) {
+            console.log(data);
             helper.addNewMessage(data);
             res.json(data);
           });

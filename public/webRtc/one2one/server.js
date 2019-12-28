@@ -28,42 +28,47 @@ const sslConfig = require('../../../ssl-config');
 // let webSocketIp='110.10.130.70';
 // if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';  //searchbysearch.com
 
-var os = require( 'os' );
+var os = require('os');
 var ifaces = os.networkInterfaces();
 
-var options   = {};
-var serverIpAdd=[]; 
+var options = {};
+var serverIpAdd = [];
 Object.keys(ifaces).forEach(function (ifname) {
-  var alias = 0; 
-  ifaces[ifname].forEach(function (iface) { 
-    if (('IPv4' !== iface.family || iface.internal !== false) && iface.address!='127.0.0.1') return;
-	//console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
-    if (alias < 1) serverIpAdd.push(iface.address);  
-    ++alias;
-  });
+    var alias = 0;
+    ifaces[ifname].forEach(function (iface) {
+        if (('IPv4' !== iface.family || iface.internal !== false) && iface.address != '127.0.0.1') return;
+        //console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+        if (alias < 1) serverIpAdd.push(iface.address);
+        ++alias;
+    });
 });
 
 
-var siteLink='https://localhost:8443/';
-if(serverIpAdd.includes('58.229.208.176')){ //Job callme
-	options = {
-		key: sslConfig.keyJcm,
-		cert: sslConfig.certJcm,
-    }; 
-    siteLink='https://www.jobcallme.com:8443/';
-}
-else if(serverIpAdd.includes('192.168.1.10') || serverIpAdd.includes('127.0.0.1')){ // Peek let 
-	options       = {
-		key: sslConfig.keyPl,
-		cert: sslConfig.certPl,
+var siteLink = 'https://localhost:8443/';
+if (serverIpAdd.includes('58.229.208.176')) { //Job callme
+    options = {
+        key: sslConfig.keyJcm,
+        cert: sslConfig.certJcm,
     };
-    siteLink='https://www.peeklet.com:8443/';
+    siteLink = 'https://www.jobcallme.com:8443/';
 }
- 
+else if (serverIpAdd.includes('192.168.1.10')) { // Peek let 
+    options = {
+        key: sslConfig.keyPl,
+        cert: sslConfig.certPl,
+    };
+    siteLink = 'https://www.peeklet.com:8443/';
+}
+else {
+    options = {
+        key: sslConfig.keyPl,
+        cert: sslConfig.certPl,
+    };
+}
 
 var argv = minimist(process.argv.slice(2), {
     default: {
-        as_uri: siteLink, 
+        as_uri: siteLink,
         ws_uri: "ws://localhost:8888/kurento"
     }
 });
@@ -278,18 +283,18 @@ wss.on('connection', function (ws) {
                 break;
 
             case 'incomingCallResponse':
-                incomingCallResponse(sessionId, message.from,message.to, message.callResponse, message.sdpOffer, ws);
+                incomingCallResponse(sessionId, message.from, message.to, message.callResponse, message.sdpOffer, ws);
                 break;
 
             case 'stop':
-                stop(sessionId,message.to,message.from);
+                stop(sessionId, message.to, message.from);
                 break;
 
             case 'onIceCandidate':
-                onIceCandidate(sessionId, message.candidate,message.to,message.from);
+                onIceCandidate(sessionId, message.candidate, message.to, message.from);
                 break;
             case '__ping__':
-                checkRegistration(sessionId ,message.from,ws);
+                checkRegistration(sessionId, message.from, ws);
                 break;
             default:
                 ws.send(JSON.stringify({
@@ -319,19 +324,19 @@ function getKurentoClient(callback) {
     });
 }
 
-function stop(sessionId,to_id,from_id) {
-    sessionId=from_id;
-    console.log("Stop from server called ",sessionId,' to ',to_id);
-    if (!pipelines[sessionId]) return; 
+function stop(sessionId, to_id, from_id) {
+    sessionId = from_id;
+    console.log("Stop from server called ", sessionId, ' to ', to_id);
+    if (!pipelines[sessionId]) return;
 
     var pipeline = pipelines[sessionId];
     delete pipelines[sessionId];
     pipeline.release();
-    var stopperUser = userRegistry.getById(sessionId); 
+    var stopperUser = userRegistry.getById(sessionId);
     if (typeof stopperUser === "undefined" || stopperUser == null) console.log("stopperUser undefined ");
 
     var stoppedUser = userRegistry.getByName(stopperUser.peer); // We can put to_id here
-    if (typeof stoppedUser === "undefined" || stoppedUser == null) console.log("stoppedUser undefined ",stoppedUser);
+    if (typeof stoppedUser === "undefined" || stoppedUser == null) console.log("stoppedUser undefined ", stoppedUser);
 
     stopperUser.peer = null;
 
@@ -348,13 +353,13 @@ function stop(sessionId,to_id,from_id) {
     clearCandidatesQueue(sessionId);
 }
 
-function incomingCallResponse(calleeId, from,to_id, callResponse, calleeSdp, ws) {
-    calleeId=to_id;
+function incomingCallResponse(calleeId, from, to_id, callResponse, calleeSdp, ws) {
+    calleeId = to_id;
     clearCandidatesQueue(calleeId);
 
     function onError(callerReason, calleeReason) {
-        console.log('callerReason: ',callerReason);
-        console.log('calleeReason: ',calleeReason);
+        console.log('callerReason: ', callerReason);
+        console.log('calleeReason: ', calleeReason);
         if (pipeline) pipeline.release();
         if (caller) {
             var callerMessage = {
@@ -373,10 +378,10 @@ function incomingCallResponse(calleeId, from,to_id, callResponse, calleeSdp, ws)
     }
 
     var callee = userRegistry.getById(calleeId);
-    if (typeof from === "undefined" || from == null) return onError(null, 'unknown from = ' + from);   
+    if (typeof from === "undefined" || from == null) return onError(null, 'unknown from = ' + from);
 
     var caller = userRegistry.getByName(from);
-    if (typeof caller === "undefined" || caller==null) return onError(null, 'unknown caller = ' + caller); 
+    if (typeof caller === "undefined" || caller == null) return onError(null, 'unknown caller = ' + caller);
 
     if (callResponse === 'accept') {
         var pipeline = new CallMediaPipeline();
@@ -423,24 +428,24 @@ function incomingCallResponse(calleeId, from,to_id, callResponse, calleeSdp, ws)
     }
 }
 
-function call(callerId, to, from, sdpOffer, userData,ws) {
-    callerId=from;
+function call(callerId, to, from, sdpOffer, userData, ws) {
+    callerId = from;
     clearCandidatesQueue(callerId);
 
     var caller = userRegistry.getById(callerId);
-    console.log('Checking caller1 ==================== ',caller);
-    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
+    console.log('Checking caller1 ==================== ', caller);
+    if (typeof caller !== 'object' || typeof caller.sdpOffer === "undefined") {
         caller = userRegistry.getByName(from);
-        console.log('Checking caller2 ==================== ',caller);
-        if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
+        console.log('Checking caller2 ==================== ', caller);
+        if (typeof caller !== 'object' || typeof caller.sdpOffer === "undefined") {
             userRegistry.register(new UserSession(callerId, from, ws));
             console.log('Registered in call');
         }
     }
-    
+
     var rejectCause = 'User ' + to + ' is not registered';
     console.log(callerId, '===============================================Caller ', from, ' and callee ', to);
-    if (userRegistry.getByName(to) && typeof caller === 'object' && typeof caller.sdpOffer!=="undefined") {
+    if (userRegistry.getByName(to) && typeof caller === 'object' && typeof caller.sdpOffer !== "undefined") {
         var callee = userRegistry.getByName(to);
         caller.sdpOffer = sdpOffer
         callee.peer = from;
@@ -466,13 +471,13 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
         } catch (exception) {
             rejectCause = "Error " + exception;
         }
-    } 
+    }
     else console.log('Call else case =========');
-    
-    if(typeof caller !== 'object' || typeof caller.sdpOffer==="undefined"){
-        console.log('caller.sdpOffer ',caller);
-    }   
-    else{
+
+    if (typeof caller !== 'object' || typeof caller.sdpOffer === "undefined") {
+        console.log('caller.sdpOffer ', caller);
+    }
+    else {
         var message = {
             id: 'callResponse',
             response: 'rejected: ',
@@ -481,19 +486,19 @@ function call(callerId, to, from, sdpOffer, userData,ws) {
         //console.log('Outside ',message,' caller ',caller);
         caller.sendMessage(message);
     }
-    
+
 }
 
-function checkRegistration(sessionId ,from,ws){ 
+function checkRegistration(sessionId, from, ws) {
     let tester = userRegistry.getByName(from);  //It check from same ws
-    if (typeof tester !== 'object' || typeof tester.sdpOffer==="undefined")
+    if (typeof tester !== 'object' || typeof tester.sdpOffer === "undefined")
         register(from, from, ws);
-    else console.log('checkRegistration user '+from+' is registered with this socket');
+    else console.log('checkRegistration user ' + from + ' is registered with this socket');
 }
 
 function register(id, name, ws, callback) {
-    id=name;
-    console.log('register id: ',id,' and ',name);
+    id = name;
+    console.log('register id: ', id, ' and ', name);
     function onError(error) {
         ws.send(JSON.stringify({
             id: 'registerResponse',
@@ -502,11 +507,11 @@ function register(id, name, ws, callback) {
         }));
     }
 
-    if (typeof name === 'undefined' || name=='') return onError("empty user name ",name);
+    if (typeof name === 'undefined' || name == '') return onError("empty user name ", name);
 
     let checkVal = userRegistry.getByName(name);
-    if (checkVal && typeof checkVal !== "undefined") console.log("User " + name + " is already registered"); 
-     
+    if (checkVal && typeof checkVal !== "undefined") console.log("User " + name + " is already registered");
+
     userRegistry.register(new UserSession(id, name, ws));
     try {
         ws.send(JSON.stringify({
@@ -524,9 +529,9 @@ function clearCandidatesQueue(sessionId) {
     }
 }
 
-function onIceCandidate(sessionId, _candidate,to_id,from_id) {
-    sessionId=from_id;
-    console.log('onIceCandidate to:',to_id,' and ',sessionId);
+function onIceCandidate(sessionId, _candidate, to_id, from_id) {
+    sessionId = from_id;
+    console.log('onIceCandidate to:', to_id, ' and ', sessionId);
     var candidate = kurento.getComplexType('IceCandidate')(_candidate);
     var user = userRegistry.getById(sessionId);
 

@@ -52,6 +52,7 @@ module.exports = function(app,io,saveUser){
 
     app.get('/getChat/:senderId/:receiverId/:limit',chatCon.getChat);
     app.get('/getMoreChat/:senderId/:receiverId/:limit/:chatTime',chatCon.getMoreChat);
+    app.get('/getBroadcastId/:presenterId', chatCon.getBroadcastId)
     //app.post('/unreadMsg/:senderId/:receiverId',chatCon.unreadMsg);
     app.get('/emptyChatWithId/:_id', chatCon.chatWithId)
 

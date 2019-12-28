@@ -1,4 +1,6 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall) {
+    $scope.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+    
     $scope.selectedGroupId = 0;
     $scope.backPressed = false;
     $scope.usersLoaded = false;
@@ -15,6 +17,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.chatWithId = '';
     /*save all chats */
     $scope.chats = [];
+    $scope.broadcastChats = [];
     $scope.replychats = [];
     $scope.groupchats = [];
     $scope.recentUnseenMessages = [];
@@ -45,15 +48,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserNo = -1;
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
+    $scope.isChatFullscreen = false;
     // 0: nothing, 1: screenShare button pressed, 2: screen is sharing
-    $rootScope.incomingScreenshare = 0;
-    $scope.isReceivingSS = false;
+    // $rootScope.incomingScreenshare = 0;
+    // $scope.isReceivingSS = false;
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;
         $scope.o2oSocConnec();
 
-        if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
+        // if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
 
@@ -81,7 +85,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 })
                 .$on('$message', function (message) { // it listents for 'incoming event'
                     $rootScope.o2oSocConEst = true;
+                   console.log(message);
                     var parsedMessage = JSON.parse(message);
+                    
                     // console.log('something incoming from the server: ==== ' + message);  
                     switch (parsedMessage.id) {
                         case 'registerResponse':
@@ -167,21 +173,52 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#avPresenterModal").modal();
     }
 
-    $scope.broadCastNow = function () {
-        $rootScope.prePassword = $scope.liveStreamCode;
-        if ($scope.setPassword == 0) $rootScope.prePassword = '';
-        else if ($scope.setPassword == 1 && !$rootScope.prePassword) {
-            $scope.brErrorMsg = 1;
-            return;
-        }
-        $("#broadcastingModal").hide();
-        $("#videoBroadCast").removeClass('hidden');
-        $rootScope.connWdPreId = 0;
-        One2ManyCall.presenter();
-        $http.post('/startPresenter', {
-            password: $rootScope.prePassword
-        }).then();
+    $scope.fullscreenStatus = function (){
+        $scope.isChatFullscreen = !$scope.isChatFullscreen;
     }
+        //-----------------------------------------------------------------------------------------------
+        $rootScope.showVideo = true;
+        $scope.toggelVideo = function () {
+            $rootScope.showVideo=!$rootScope.showVideo;
+            $rootScope.webRtcO2OPeer.getLocalStream().getVideoTracks()[0].enabled = $rootScope.showVideo;
+        };
+    
+        $rootScope.showBCVideo = true;
+        $scope.toggleBCVideo = function (){
+            $rootScope.showBCVideo=!$rootScope.showBCVideo;
+            $rootScope.webRtcO2MPeer.getLocalStream().getVideoTracks()[0].enabled = $rootScope.showBCVideo;
+        }
+        // ----------------------------------------------------------------------------------------------
+        $rootScope.openVoice = true;
+        $scope.toggelMute = function () {
+            $rootScope.openVoice=!$rootScope.openVoice;
+            $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
+        };
+    
+        $rootScope.openBCvoice = true;
+        $scope.toggleBCMute = function (){
+            $rootScope.openBCvoice=!$rootScope.openBCvoice;
+            $rootScope.webRtcO2MPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openBCvoice;
+        }
+
+    
+        $scope.broadCastNow=function(){
+            $rootScope.prePassword=$scope.liveStreamCode;
+         
+            if($scope.setPassword==0) $rootScope.prePassword='';
+            else if($scope.setPassword==1 && !$rootScope.prePassword){
+                $scope.brErrorMsg=1;
+                return;
+            }
+            $("#videoBroadCast").removeClass('hidden');
+            $rootScope.connWdPreId=0;  
+            One2ManyCall.presenter();
+            $("#broadcastingModal").modal('hide');
+            $http.post('/startPresenter',{ 
+                password:$rootScope.prePassword
+            }).then();
+        }
+
     $scope.checkPassword = '';
     $scope.presenterPassword = '';
     $scope.brErrorMsg = 0;
@@ -196,12 +233,98 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         } else $scope.initiateViewer();
     }
 
+       //-------------------------------------------------------------------------------
+       $scope.activateVideoBroadcastPanel = function(){
+        $scope.isBcVideoPanel = !$scope.isBcVideoPanel;
+
+        $rootScope.prePassword=$scope.liveStreamCode;
+     
+        if($scope.setPassword==0) $rootScope.prePassword='';
+        else if($scope.setPassword==1 && !$rootScope.prePassword){
+            $scope.brErrorMsg=1;
+            return;
+        }
+        $("#broadcastingModal").modal('hide');
+        $("#broadcastingVideoModal").modal();
+        
+        reLoadEmoji();
+        // $http.get('/getBChat'+$rootScope.connWdPreId)
+        // .then(function(res){
+        //     $scope.broadcastChats = res.data;
+        //   //  console.log($scope.broadcastChats);
+        //     scrollbottom();
+        // });
+
+        $rootScope.connWdPreId=0;  
+        One2ManyCall.presenter();
+        $rootScope.broadcastRefId = '';
+
+        $http.post('/startPresenter',{ 
+            password:$rootScope.prePassword
+        }).then(function(res){  
+            console.log(res);
+            $rootScope.broadcastRefId = res.data.broadcastRefId._id;
+        });
+    }
+
+    $scope.deActivateVideoBroadcastPanel = function(){
+        $scope.isBcVideoPanel = !$scope.isBcVideoPanel;
+        $scope.broadcastChats = [];
+        One2ManyCall.stop();
+
+       // $rootScope.broadcastRefId = '';
+
+        $("#broadcastingVideoModal").modal('hide');
+        $("#broadcastingModal").modal('hide');
+        $("#avPresenterModal").hide();
+
+        if(!$rootScope.connWdPreId)
+            $http.get('/stopPresenter').then();
+        else
+            $http.post('/stopViewer',{ 
+                preId:$rootScope.connWdPreId
+            }).then();
+    }
+
+    
+    $scope.closeVideoBroadcastPanel = function(){
+        $scope.isBcVideoPanel = !$scope.isBcVideoPanel;
+        $scope.broadcastChats = [];
+        One2ManyCall.stop();
+
+        if(!$rootScope.connWdPreId)
+            $http.get('/stopPresenter').then();
+        else
+            $http.post('/stopViewer',{ 
+                preId:$rootScope.connWdPreId
+            }).then();
+
+            //$rootScope.broadcastRefId = '';
+            //console.log("stop braod");
+            $("#broadcastingVideoModal").modal('hide');
+            $("#avPresenterModal").hide();
+            $("#broadcastingModal").modal('hide');
+            
+    }
+
     $scope.initiateViewer = function () {
+        $("#broadcastingVideoModal").modal();
         $("#videoBroadCast").removeClass('hidden');
         One2ManyCall.viewer();
-        $http.post('/joinViewer', {
-            preId: $rootScope.connWdPreId
-        }).then();
+        $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
+            $rootScope.broadcastRefId = res.data.broadcastRefId._id;
+          
+            var bJoinedChat = {"senderId":$scope.user.userId,"senderImage":'',
+            "receiverImage":'',"recevierId":$rootScope.broadcastRefId,
+            "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
+
+            socket.emit('checkmsg', bJoinedChat);
+
+            $http.post('/joinViewer',{ preId:$rootScope.connWdPreId, joinMsg: bJoinedChat, broadcastId: $rootScope.broadcastRefId }).then(function (res){
+               $scope.broadcastChats = res.data;
+            
+            });
+        });
     }
 
     $scope.checkBPass = function () {
@@ -289,7 +412,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 let userChatToOpen;
                 for (i; i < response.data.usersList.length; i++) { // ******** RECHECK NEEDED ***********
                     $scope.allUsers[i].tempDate = new Date($scope.allUsers[i].updatedByMsg).getTime();
-                    $scope.allUsers[i].screenShareStatus = false;
+                    // $scope.allUsers[i].screenShareStatus = false;
                     if (response.data.usersList[i].email != $scope.user.email) $scope.getmembers.push(response.data.usersList[i]);
 
                     // this is for mobile, to open the chatBox of selected user directly
@@ -399,7 +522,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             .then(function (response) {
                 $scope.notifications = response.data.noti;
                 $scope.notiCount = response.data.count;
-            });
+        });
 
 
         $scope.groupSelected = false;
@@ -591,6 +714,33 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 One2OneCall.stopK();
             }
         })
+
+        /* send braodcast message */
+        $scope.sendBCMessage = function(sendType,message,chkmsg){
+            console.log("sending Broadcast message");
+            if(!chkmsg || typeof chkmsg=="undefined") chkmsg=0;
+            if(!message || typeof message=="undefined") message=0;
+
+            if(!$scope.message && chkmsg) $scope.message=chkmsg;
+            else if(!$scope.message && !chkmsg) return;
+
+            var msgObj = {"senderId":$scope.user.userId,"senderImage":$scope.user.user_image,
+            "receiverImage":$scope.chatWithImage,"recevierId":$rootScope.broadcastRefId,
+            "senderName":$scope.user.name,"message":$scope.message, "chatType":2
+            }
+
+            socket.emit('checkmsg',msgObj);
+            $scope.message = '';
+            scrollbottom();
+            var ele = $('#sendBMsg').emojioneArea();
+            ele[0].emojioneArea.setText('');
+
+            $http.post('/chat', {'msgData': msgObj})
+            .then(function(res){  
+                if(res.data.length<1) return; 
+            })
+        }
+
         /* send message to the user group and chat both handle in this function through sendType*/
         $scope.sendMessage = function (message = 0, chkmsg = 0) {
 
@@ -1183,6 +1333,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
+
+                if (msg.chatType == 0){ // is msg not a broadcast msg
+
                 if ($scope.user._id == msg.receiverId) {
                     if ('serviceWorker' in navigator) {
                         //   console.log("Push Notification 1");
@@ -1226,6 +1379,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.chats.push(msg.data);
                     scrollbottom();
                 }
+            }
+            else{ // if it is a broadcast msg 
+                $scope.broadcastChats.push(msg);
+                scrollbottom();
+            }
+            
             });
         });
 

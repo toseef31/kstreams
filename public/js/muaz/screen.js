@@ -206,7 +206,7 @@
 
         // self instance
         var signaler = this;
-
+            console.log(signaler);
         // object to store ICE candidates for answerer
         var candidates = {};
 
@@ -419,7 +419,7 @@
             // root.transmitOnce = true;
             socket = new window.Firebase('https://' + (root.firebase || 'signaling') + '.firebaseIO.com/' + root.channel);
             socket.on('child_added', function(snap) {
-                var data = snap.val();
+                var dexperimentata = snap.val();
 
                 var isRemoteMessage = false;
                 if (typeof userid === 'number' && parseInt(data.userid) != userid) {

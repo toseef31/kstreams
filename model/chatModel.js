@@ -27,7 +27,7 @@ const chatSchema = mongoose.Schema({
 		default: 0
 	},
 	"chatType":{
-	 type: Number,     // 0- Comment, 1- Reply
+	 type: Number,     // 0- Comment, 1- Reply, 2- Broadcast
 	 default: 0
 	},
 

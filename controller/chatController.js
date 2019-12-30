@@ -949,13 +949,14 @@ router.joinViewer = (req, res) => {
           if (ids.length > 0) {
               broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
                   if (err) throw err;
-
+                  console.log(req.body.joinMsg);
                   let newMessage = new chatModel(req.body.joinMsg);
                   newMessage.save();
 
                   broadModel.findOne({'_id': broadcastRefId,'presenterId': userBroadcastingId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
-                      if (result) {
-                          chatModel.find({ 'chatType': 1, 'recevierId': broadcastRefId }).populate('senderInfo').lean().exec(function (err, data) {
+                    console.log(result);  
+                    if (result) {
+                          chatModel.find({ 'chatType': 2, 'recevierId': broadcastRefId }).populate('senderInfo').lean().exec(function (err, data) {
                               if (err) throw err;
                               res.json(data);
                           });

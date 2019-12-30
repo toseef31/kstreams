@@ -905,7 +905,7 @@
                   <div class="input-group broadCast_type_msg">
                       <div style="position:relative">
                           <input id="sendBMsg" type="text" class="form-control border0"
-                              ng-keydown="$event.keyCode === 13 && sendBCMessage(sendType)" ng-model="message">
+                          ng-keydown="$event.keyCode == 13 && sendBCMessage(sendType, 0,message)" ng-model="message">
 
                           <div class="input-group-btn bcMessage-option-btns">
                               <div class="col-md-1 col-xs-2 chatIcons" ng-class="{chatIconsMargin: !isSafari}">
@@ -924,7 +924,7 @@
                               </div>
                           </div>
                       </div>
-
+                      
                       <span class="input-group-btn" ng-click="sendBCMessage(sendType, 0,message)">
                           <button
                               class="btn-main btn btn-file MS-File send-button marginSendButton broadcastSendButtonSize"

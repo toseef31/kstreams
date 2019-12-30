@@ -224,13 +224,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.brErrorMsg = 0;
 
     $scope.becomeViewer = function (preId, password) {
-        // console.log('In becomeViewer ', preId, ' and ', password);
+        console.log('In becomeViewer ', preId, ' and ', password);
         $("#avPresenterModal").hide();
         $rootScope.connWdPreId = preId;
         if (password) {
             $scope.presenterPassword = password;
             $("#passReqPre").modal();
-        } else $scope.initiateViewer();
+        } else {console.log('else'); scope.initiateViewer();}
     }
 
        //-------------------------------------------------------------------------------
@@ -254,7 +254,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         //   //  console.log($scope.broadcastChats);
         //     scrollbottom();
         // });
-
+        console.log('start broadcasting');
         $rootScope.connWdPreId=0;  
         One2ManyCall.presenter();
         $rootScope.broadcastRefId = '';
@@ -311,18 +311,20 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#broadcastingVideoModal").modal();
         $("#videoBroadCast").removeClass('hidden');
         One2ManyCall.viewer();
+        console.log('0');
         $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
-          
+            console.log('1');
             var bJoinedChat = {"senderId":$scope.user.userId,"senderImage":'',
             "receiverImage":'',"recevierId":$rootScope.broadcastRefId,
             "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
 
             socket.emit('checkmsg', bJoinedChat);
-      
+            console.log('2');
             $http.post('/joinViewer',{ preId:$rootScope.connWdPreId, joinMsg: bJoinedChat, broadcastId: $rootScope.broadcastRefId }).then(function (res){
                 console.log(res.data);
                 $scope.broadcastChats = res.data;
+            
             });
         });
     }

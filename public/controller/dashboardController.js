@@ -170,6 +170,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.openAvModal = function () {
+        console.log("open AV Modal");
         $("#avPresenterModal").modal();
     }
 
@@ -225,12 +226,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.becomeViewer = function (preId, password) {
         console.log('In becomeViewer ', preId, ' and ', password);
-        $("#avPresenterModal").hide();
+        $("#avPresenterModal").modal('hide');
         $rootScope.connWdPreId = preId;
         if (password) {
             $scope.presenterPassword = password;
             $("#passReqPre").modal();
-        } else {console.log('else'); scope.initiateViewer();}
+        } else {console.log('else'); $scope.initiateViewer();}
     }
 
        //-------------------------------------------------------------------------------
@@ -276,7 +277,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $("#broadcastingVideoModal").modal('hide');
         $("#broadcastingModal").modal('hide');
-        $("#avPresenterModal").hide();
+        $("#avPresenterModal").modal('hide');
 
         if(!$rootScope.connWdPreId)
             $http.get('/stopPresenter').then();
@@ -302,29 +303,29 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             //$rootScope.broadcastRefId = '';
             //console.log("stop braod");
             $("#broadcastingVideoModal").modal('hide');
-            $("#avPresenterModal").hide();
+            $("#avPresenterModal").modal('hide');
             $("#broadcastingModal").modal('hide');
             
     }
 
     $scope.initiateViewer = function () {
         $("#broadcastingVideoModal").modal();
-        $("#videoBroadCast").removeClass('hidden');
+        // $("#videoBroadCast").removeClass('hidden');
         One2ManyCall.viewer();
-        console.log('0');
+        reLoadEmoji();
         $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
+           
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
-            console.log('1');
-            var bJoinedChat = {"senderId":$scope.user.userId,"senderImage":'',
-            "receiverImage":'',"recevierId":$rootScope.broadcastRefId,
+            var bJoinedChat = {"senderId":{'_id':$scope.user._id},"senderImage":'',
+            "receiverImage":'',"receiverId":$rootScope.broadcastRefId,
             "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
-
+           
             socket.emit('checkmsg', bJoinedChat);
-            console.log('2');
+           
             $http.post('/joinViewer',{ preId:$rootScope.connWdPreId, joinMsg: bJoinedChat, broadcastId: $rootScope.broadcastRefId }).then(function (res){
                 console.log(res.data);
                 $scope.broadcastChats = res.data;
-            
+                
             });
         });
     }
@@ -726,8 +727,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if(!$scope.message && chkmsg) $scope.message=chkmsg;
             else if(!$scope.message && !chkmsg) return;
 
-            var msgObj = {"senderId":$scope.user.userId,"senderImage":$scope.user.user_image,
-            "receiverImage":$scope.chatWithImage,"recevierId":$rootScope.broadcastRefId,
+            console.log($rootScope.broadcastRefId);
+            var msgObj = {"senderId":$scope.user._id,"senderImage":$scope.user.user_image,
+            "receiverImage":$scope.chatWithImage,"receiverId":$rootScope.broadcastRefId,
             "senderName":$scope.user.name,"message":$scope.message, "chatType":2
             }
 
@@ -1335,8 +1337,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
-
-                if (msg.chatType == 0){ // is msg not a broadcast msg
+                 console.log(msg.chatType);
+                if (msg.chatType != 2){ // is msg not a broadcast msg
 
                 if ($scope.user._id == msg.receiverId) {
                     if ('serviceWorker' in navigator) {
@@ -1383,7 +1385,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
             else{ // if it is a broadcast msg 
+               
                 $scope.broadcastChats.push(msg);
+                console.log($scope.broadcastChats);
                 scrollbottom();
             }
             

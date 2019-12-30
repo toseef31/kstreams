@@ -319,10 +319,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
 
             socket.emit('checkmsg', bJoinedChat);
-
+      
             $http.post('/joinViewer',{ preId:$rootScope.connWdPreId, joinMsg: bJoinedChat, broadcastId: $rootScope.broadcastRefId }).then(function (res){
-               $scope.broadcastChats = res.data;
-            
+                console.log(res.data);
+                $scope.broadcastChats = res.data;
             });
         });
     }

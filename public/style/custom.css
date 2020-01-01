@@ -257,9 +257,9 @@
 }
 
 @media screen and (max-width: 786px) {
-    .chatIcons span{
-        margin-left: 13px;
-    }
+    /* .chatIcons span{ */
+        /* margin-left: 13px; */
+    /* } */
 
     .chatIconsMargin span{
         margin-left: 13px;

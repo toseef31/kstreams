@@ -139,7 +139,7 @@
                             src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
                         </span>
                       </div>
-                      <div class="messages-user-name" style="padding: 10px 0 0 0;">
+                      <div class="messages-user-name" style="padding: 18px 0 0 0;">
                         <span>{{userA.name}}</span>
                         <span ng-if="userA.hasOwnProperty('usCount')">
                           <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
@@ -147,15 +147,6 @@
                           </span>
                         </span>
                       </div>
-
-                      <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
-                      <!-- <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
-                        <span ng-if="userA.screenShareStatus">
-                          <span class="unreadMsgAlign">
-                            <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
-                          </span>
-                        </span>
-                      </div> -->
 
                       <div>
                         <span class="userTitleText">{{userA.userTitle}}</span>
@@ -264,18 +255,22 @@
             </span>
           </span>
         </li>
- 
+        
+        <div ng-if="isPagination" class="loader" style="position: relative; left: 40%;"></div>
 
         <div onscroll="scrolled(this)" class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}"
-          id="{{connectionId}}" file-dropzone files-to-upload='files'>
+          id="{{connectionId}}" file-dropzone files-to-upload='files' ng-mouseout="removeClasses()">
           <div class="messages-container">
 
+            <div id="dropImage" class="dropImage">
+              <img height="22%" width="22%" src="../images/fileDrop_image.png">
+            </div>
             <!-- --------------  -------------------------------------------------------- -->
             <!-- -------------- NORMAL CHAT ------------------------------------------------ -->
             <!-- --------------  -------------------------------------------------------- -->
 
             <div ng-if="!groupSelected">
-              <div ng-repeat="chat in chats track by $index">
+              <div ng-repeat="chat in chats track by $index" on-finish-render="ngRepeatFinished">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
@@ -460,7 +455,7 @@
             <!-- --------------  -------------------------------------------------------- -->
 
             <div ng-if="groupSelected">
-              <div ng-repeat="chat in groupchats track by $index">
+              <div ng-repeat="chat in groupchats track by $index" on-finish-render="ngRepeatFinished">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
@@ -916,7 +911,7 @@
                                       <i class="fa fa-paperclip"></i>
                                   </span>
 
-                                  <span ng-if="isSafari" class='hoverIt  safari-message-option-btns-Spacer'>
+                                  <span ng-if="isSafari" class='hoverIt safari-message-option-btns-Spacer'>
                                       <label for="safariUpload">
                                           <span class="fa fa-paperclip"></span>
                                       </label>
@@ -1281,6 +1276,7 @@
       // right now, no use ...
     }
     else if (o.scrollTop == 0) {
+      console.log("getting more chat");
       angular.element(document.getElementById('MainWrap')).scope().getMoreChat();
     }
   }

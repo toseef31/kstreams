@@ -50,17 +50,19 @@ app.directive("fileDropzone", function() {
           e.preventDefault();
         }
         e.originalEvent.dataTransfer.effectAllowed = "copy";
-        element.attr("class", "msg_history file-drop-zone-over");
+        $('#dropImage').show();
+      //  element.attr("class", "msg_history file-drop-zone-over");
       });
       element.bind("dragenter", function(e) {
         if (e != null) {
           e.preventDefault();
         }
         e.originalEvent.dataTransfer.effectAllowed = "copy";
-        element.attr("class", "msg_history file-drop-zone-over");
+       // element.attr("class", "msg_history file-drop-zone-over");
       });
       element.bind("drop", function(e) {
-        element.attr("class", "msg_history");
+        $('#dropImage').hide();
+      //  element.attr("class", "msg_history");
         if (e != null) {
           e.preventDefault();
         }
@@ -216,4 +218,17 @@ app.filter("timeago", function() {
       return combineTime;
     }
   };
+});
+
+app.directive("onFinishRender", function($timeout) {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attr) {
+        if (scope.$last === true) {
+            $timeout(function () {
+                scope.$emit(attr.onFinishRender);
+            });
+        }
+    }
+  }
 });

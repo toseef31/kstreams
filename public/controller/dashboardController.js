@@ -174,6 +174,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#avPresenterModal").modal();
     }
 
+    $scope.removeClasses = function (){
+        $('#dropImage').hide();
+    }
+
     $scope.fullscreenStatus = function (){
         $scope.isChatFullscreen = !$scope.isChatFullscreen;
     }
@@ -471,7 +475,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             var fd = new FormData();
             angular.forEach($scope.files, function (file) {
-                fd.append('file', file); // when previwe on then file.file
+                fd.append('file', file); // when preview on then file.file
             })
             fd.append('senderId', $scope.user._id);
             fd.append('senderName', $scope.user.name);
@@ -574,15 +578,39 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         }
 
+        $scope.isPagination = false;
+        $scope.moreChatExist = true;
+      
         $scope.getMoreChat = function () {
+            if ($scope.moreChatExist) $scope.isPagination = true;
+           
             $http.get('/getMoreChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20 + '/' + ($scope.chats[0].createdAt))
                 .then(function (res) {
+                  
                     for (let i = 0; i < res.data.length; i++) {
                         $scope.chats.unshift(res.data[i]);
                     }
-                    if (res.data.length > 0) scrollCustom();
+                    if (res.data.length > 0) { $scope.moreChatExist = true; scrollCustom();}
+                    else{
+                        $scope.moreChatExist = false;
+                    }
+                   
+                    // setTimeout(() => {
+                        $scope.isPagination = false; 
+                    // }, 100);
                 });
         }
+
+        // it is called when all chats has been rendered in ng-repeat
+        $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+         if (!$scope.isLoaded){
+            console.log('DONE NG-REPEAT');
+            scrollbottom();
+            $scope.isLoaded = true;
+         }
+        });
+
+        $scope.isLoaded = true; // used to check is loading of selected user chat at first time is done
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
@@ -622,6 +650,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                     .then(function (res) {
+                        $scope.isLoaded = false;
                         $scope.groupMembers = '';
                         $scope.chats = res.data; //.userChat;
                         socket.emit('updateChatSeenStatus', {
@@ -629,6 +658,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             '_id': $scope.user._id,
                             'chatWithId': $scope.chatWithId
                         });
+                    
                         scrollbottom();
                     });
             } else {
@@ -646,8 +676,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 })
 
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
+                    $scope.isLoaded = false;
                     $scope.groupchats = groupchat.data;
-                    scrollbottom();
+                 //   scrollbottom();
                 })
             }
         }
@@ -1292,6 +1323,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
 
+      
         /*socket.on('updateScreenshareStatus', function (data) {
             console.log('444');
             if (!$scope.allUsers) return;

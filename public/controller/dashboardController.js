@@ -316,9 +316,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
            
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
-            var bJoinedChat = {"senderId":{'_id':$scope.user._id},"senderImage":'',
-            "receiverImage":'',"receiverId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
+            var bJoinedChat = {"senderId":{'_id':$scope.user._id, 'name': $scope.user.name},
+            "receiverId":$rootScope.broadcastRefId, "message":'I have Joined', "chatType":2}
            
             socket.emit('checkmsg', bJoinedChat);
            
@@ -728,9 +727,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if(!$scope.message && !chkmsg) return;
 
             console.log($rootScope.broadcastRefId);
-            var msgObj = {"senderId":$scope.user._id,"senderImage":$scope.user.user_image,
-            "receiverImage":$scope.chatWithImage,"receiverId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":$scope.message, "chatType":2
+            var msgObj = {"senderId":{'_id': $scope.user._id, 'name': $scope.user.name},
+            "receiverId":$rootScope.broadcastRefId, "message":$scope.message, "chatType":2
             }
 
             socket.emit('checkmsg',msgObj);

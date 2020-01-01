@@ -170,7 +170,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.openAvModal = function () {
+        console.log("open AV Modal");
         $("#avPresenterModal").modal();
+    }
+
+    $scope.removeClasses = function (){
+        $('#dropImage').hide();
     }
 
     $scope.fullscreenStatus = function (){
@@ -225,12 +230,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.becomeViewer = function (preId, password) {
         console.log('In becomeViewer ', preId, ' and ', password);
-        $("#avPresenterModal").hide();
+        $("#avPresenterModal").modal('hide');
         $rootScope.connWdPreId = preId;
         if (password) {
             $scope.presenterPassword = password;
             $("#passReqPre").modal();
-        } else {console.log('else'); scope.initiateViewer();}
+        } else {console.log('else'); $scope.initiateViewer();}
     }
 
        //-------------------------------------------------------------------------------
@@ -276,7 +281,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $("#broadcastingVideoModal").modal('hide');
         $("#broadcastingModal").modal('hide');
-        $("#avPresenterModal").hide();
+        $("#avPresenterModal").modal('hide');
 
         if(!$rootScope.connWdPreId)
             $http.get('/stopPresenter').then();
@@ -302,29 +307,29 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             //$rootScope.broadcastRefId = '';
             //console.log("stop braod");
             $("#broadcastingVideoModal").modal('hide');
-            $("#avPresenterModal").hide();
+            $("#avPresenterModal").modal('hide');
             $("#broadcastingModal").modal('hide');
             
     }
 
     $scope.initiateViewer = function () {
         $("#broadcastingVideoModal").modal();
-        $("#videoBroadCast").removeClass('hidden');
+        // $("#videoBroadCast").removeClass('hidden');
         One2ManyCall.viewer();
-        console.log('0');
+        reLoadEmoji();
         $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
+           
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
-            console.log('1');
-            var bJoinedChat = {"senderId":$scope.user.userId,"senderImage":'',
-            "receiverImage":'',"recevierId":$rootScope.broadcastRefId,
+            var bJoinedChat = {"senderId":{'_id':$scope.user._id},"senderImage":'',
+            "receiverImage":'',"receiverId":$rootScope.broadcastRefId,
             "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
-
+           
             socket.emit('checkmsg', bJoinedChat);
-            console.log('2');
+           
             $http.post('/joinViewer',{ preId:$rootScope.connWdPreId, joinMsg: bJoinedChat, broadcastId: $rootScope.broadcastRefId }).then(function (res){
                 console.log(res.data);
                 $scope.broadcastChats = res.data;
-            
+                
             });
         });
     }
@@ -471,7 +476,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             var fd = new FormData();
             angular.forEach($scope.files, function (file) {
-                fd.append('file', file); // when previwe on then file.file
+                fd.append('file', file); // when preview on then file.file
             })
             fd.append('senderId', $scope.user._id);
             fd.append('senderName', $scope.user.name);
@@ -574,15 +579,39 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         }
 
+        $scope.isPagination = false;
+        $scope.moreChatExist = true;
+      
         $scope.getMoreChat = function () {
+            if ($scope.moreChatExist) $scope.isPagination = true;
+           
             $http.get('/getMoreChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20 + '/' + ($scope.chats[0].createdAt))
                 .then(function (res) {
+                  
                     for (let i = 0; i < res.data.length; i++) {
                         $scope.chats.unshift(res.data[i]);
                     }
-                    if (res.data.length > 0) scrollCustom();
+                    if (res.data.length > 0) { $scope.moreChatExist = true; scrollCustom();}
+                    else{
+                        $scope.moreChatExist = false;
+                    }
+                   
+                    // setTimeout(() => {
+                        $scope.isPagination = false; 
+                    // }, 100);
                 });
         }
+
+        // it is called when all chats has been rendered in ng-repeat
+        $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+         if (!$scope.isLoaded){
+            console.log('DONE NG-REPEAT');
+            scrollbottom();
+            $scope.isLoaded = true;
+         }
+        });
+
+        $scope.isLoaded = true; // used to check is loading of selected user chat at first time is done
 
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
@@ -622,6 +651,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                     .then(function (res) {
+                        $scope.isLoaded = false;
                         $scope.groupMembers = '';
                         $scope.chats = res.data; //.userChat;
                         socket.emit('updateChatSeenStatus', {
@@ -629,6 +659,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             '_id': $scope.user._id,
                             'chatWithId': $scope.chatWithId
                         });
+                    
                         scrollbottom();
                     });
             } else {
@@ -646,8 +677,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 })
 
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
+                    $scope.isLoaded = false;
                     $scope.groupchats = groupchat.data;
-                    scrollbottom();
+                 //   scrollbottom();
                 })
             }
         }
@@ -726,8 +758,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if(!$scope.message && chkmsg) $scope.message=chkmsg;
             else if(!$scope.message && !chkmsg) return;
 
-            var msgObj = {"senderId":$scope.user.userId,"senderImage":$scope.user.user_image,
-            "receiverImage":$scope.chatWithImage,"recevierId":$rootScope.broadcastRefId,
+            console.log($rootScope.broadcastRefId);
+            var msgObj = {"senderId":$scope.user._id,"senderImage":$scope.user.user_image,
+            "receiverImage":$scope.chatWithImage,"receiverId":$rootScope.broadcastRefId,
             "senderName":$scope.user.name,"message":$scope.message, "chatType":2
             }
 
@@ -1292,6 +1325,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
 
+      
         /*socket.on('updateScreenshareStatus', function (data) {
             console.log('444');
             if (!$scope.allUsers) return;
@@ -1335,8 +1369,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*update the new message friend side */
         socket.on('remsg', function (msg) {
             $scope.$apply(function () {
-
-                if (msg.chatType == 0){ // is msg not a broadcast msg
+                 console.log(msg.chatType);
+                if (msg.chatType != 2){ // is msg not a broadcast msg
 
                 if ($scope.user._id == msg.receiverId) {
                     if ('serviceWorker' in navigator) {
@@ -1383,7 +1417,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
             else{ // if it is a broadcast msg 
+               
                 $scope.broadcastChats.push(msg);
+                console.log($scope.broadcastChats);
                 scrollbottom();
             }
             

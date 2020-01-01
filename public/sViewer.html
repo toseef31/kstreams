@@ -17,7 +17,7 @@
             width: 100%; 
         }
     </style>
-    <section class="experiment">
+    <section id="videoModal" class="experiment">
        
         <table style="width: 50%;" id="rooms-list" class="hide-after-join"></table>
 
@@ -65,13 +65,17 @@
             });
         };
 
+        socket.on('message', function (message){
+            console.log("inside");
+        })
+
         screensharing.openSignalingChannel = function(callback) {
             return socket.on('message', callback);
         };
 
         screensharing.onscreen = function(_screen) { 
-            console.log (_screen);
-            let userData=_screen.userid.split('-'); 
+            console.log("onscreen");
+;            let userData=_screen.userid.split('-'); 
             if(localStorage.getItem('tokenData')!=userData[1]) return; 
             var alreadyExist = document.getElementById(_screen.userid);
             if (alreadyExist) return; 
@@ -124,6 +128,7 @@
 
         // if someone leaves; just remove his screen
         screensharing.onuserleft = function(userid) {
+            console.log('onuserleft');
             var video = document.getElementById(userid);
             if (video && video.parentNode) video.parentNode.removeChild(video);
 

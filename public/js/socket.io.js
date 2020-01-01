@@ -4245,14 +4245,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Socket is live - any packet counts
 	    this.emit('heartbeat');
-
+		
 	    switch (packet.type) {
+
 	      case 'open':
 	        this.onHandshake(parsejson(packet.data));
 	        break;
 
 	      case 'pong':
-	        this.setPing();
+			this.setPing();
 	        this.emit('pong');
 	        break;
 

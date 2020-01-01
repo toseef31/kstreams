@@ -309,7 +309,6 @@ io.on('connection', function (socket) {
 	socket.on('typing', (data) => {
 		io.emit('typing', data)
 	});
-
 });
 
 app.post('/pauseChatFunc', (req, res) => {

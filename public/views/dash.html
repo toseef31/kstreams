@@ -139,7 +139,7 @@
                             src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
                         </span>
                       </div>
-                      <div class="messages-user-name" style="padding: 10px 0 0 0;">
+                      <div class="messages-user-name" style="padding: 18px 0 0 0;">
                         <span>{{userA.name}}</span>
                         <span ng-if="userA.hasOwnProperty('usCount')">
                           <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
@@ -147,15 +147,6 @@
                           </span>
                         </span>
                       </div>
-
-                      <!-- -------------- Incoming Screenshare Alert Icon ------------------ -->
-                      <!-- <div class="messages-user-name" style="padding: 0 0 0 0; float: right;">
-                        <span ng-if="userA.screenShareStatus">
-                          <span class="unreadMsgAlign">
-                            <span class="fa fa fa-slideshare" style="font-size: x-large;"></span>
-                          </span>
-                        </span>
-                      </div> -->
 
                       <div>
                         <span class="userTitleText">{{userA.userTitle}}</span>
@@ -264,19 +255,23 @@
             </span>
           </span>
         </li>
- 
+        
+        <div ng-if="isPagination" class="loader" style="position: relative; left: 40%;"></div>
 
         <div onscroll="scrolled(this)" class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}"
-          id="{{connectionId}}" file-dropzone files-to-upload='files'>
+          id="{{connectionId}}" file-dropzone files-to-upload='files' ng-mouseout="removeClasses()">
           <div class="messages-container">
 
+            <div id="dropImage" class="dropImage">
+              <img height="22%" width="22%" src="../images/fileDrop_image.png">
+            </div>
             <!-- --------------  -------------------------------------------------------- -->
             <!-- -------------- NORMAL CHAT ------------------------------------------------ -->
             <!-- --------------  -------------------------------------------------------- -->
 
             <div ng-if="!groupSelected">
               <div ng-repeat="chat in chats track by $index">
-
+            
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
@@ -450,6 +445,10 @@
                     </div>
                   </div>
                 </div>
+          
+                <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
+                   {{ngRepeatFinish()}}
+                 </span>
 
                 <div class="clear"></div>
               </div>
@@ -886,7 +885,7 @@
                                   <div class="messages-wrapper messages-text message-model pull-right rightAlign">
                                       <div class="clear"></div>
                                       <div class="message messageSendColor">
-                                          <span><b> {{chat.senderName}} </b></span>
+                                          <span><b> {{chat.senderId.name}} </b></span>
                                           <p class="message-text" dir="auto" ng-if="chat.chatType == 2">
                                               {{chat.message}}
                                           </p>
@@ -905,7 +904,7 @@
                   <div class="input-group broadCast_type_msg">
                       <div style="position:relative">
                           <input id="sendBMsg" type="text" class="form-control border0"
-                              ng-keydown="$event.keyCode === 13 && sendBCMessage(sendType)" ng-model="message">
+                          ng-keydown="$event.keyCode == 13 && sendBCMessage(sendType, 0,message)" ng-model="message">
 
                           <div class="input-group-btn bcMessage-option-btns">
                               <div class="col-md-1 col-xs-2 chatIcons" ng-class="{chatIconsMargin: !isSafari}">
@@ -916,7 +915,7 @@
                                       <i class="fa fa-paperclip"></i>
                                   </span>
 
-                                  <span ng-if="isSafari" class='hoverIt  safari-message-option-btns-Spacer'>
+                                  <span ng-if="isSafari" class='hoverIt safari-message-option-btns-Spacer'>
                                       <label for="safariUpload">
                                           <span class="fa fa-paperclip"></span>
                                       </label>
@@ -924,7 +923,7 @@
                               </div>
                           </div>
                       </div>
-
+                      
                       <span class="input-group-btn" ng-click="sendBCMessage(sendType, 0,message)">
                           <button
                               class="btn-main btn btn-file MS-File send-button marginSendButton broadcastSendButtonSize"
@@ -1251,6 +1250,8 @@
 
   function scrollbottom() {
     var con = document.getElementsByClassName('msg_history')[0];
+    console.log(con.scrollTop);
+    console.log($('.msg_history').prop("scrollHeight"));
 
     setTimeout(function () {
       con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
@@ -1270,17 +1271,25 @@
     }, 200);
   }
 
+  // function getScrollHeight(){
+  //   // var con = document.getElementsByClassName('msg_history')[0];
+  //   // console.log(con.scrollHeight);
+  //   return scrollHeight;
+  // }
+
   function scrolled(o) {
+   
     if (!executeOnce) {
       executeOnce = true;
       fTotalHeight = o.scrollHeight;
     }
-
+    
     //visible height + pixel scrolled = total height
     if (o.offsetHeight + o.scrollTop == o.scrollHeight) {
       // right now, no use ...
     }
     else if (o.scrollTop == 0) {
+      console.log("getting more chat");
       angular.element(document.getElementById('MainWrap')).scope().getMoreChat();
     }
   }

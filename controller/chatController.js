@@ -242,9 +242,18 @@ module.exports = function(io, saveUser) {
         senderImage: senderImage,
         receiverImage: receiverImage
       });
-    } else {
+    } else if (chatType == 1){
       newMessage = new chatModel({
         commentId: req.body.msgData.commentId,
+        senderId: req.body.msgData.senderId,
+        receiverId: req.body.msgData.receiverId,
+        senderName: req.body.msgData.senderName,
+        chatType: chatType,
+        message: req.body.msgData.message
+      });
+    }
+    else if (chatType == 2){
+      newMessage = new chatModel({
         senderId: req.body.msgData.senderId,
         receiverId: req.body.msgData.receiverId,
         senderName: req.body.msgData.senderName,
@@ -935,56 +944,59 @@ module.exports = function(io, saveUser) {
     })
 }
 
-  router.joinViewer = (req, res) => {
-    if (req.session.user) {
-      broadModel
-        .find({ presenterId: req.body.preId })
-        .sort({ _id: -1 })
-        .limit(1)
-        .exec(updateAllFound);
-      function updateAllFound(err, preData) {
-        var ids = preData.map(function(item) {
-          return item._id;
-        });
+router.joinViewer = (req, res) => {
+  let userBroadcastingId = req.body.preId;
+  let broadcastRefId = req.body.broadcastId;
 
-        if (ids.length > 0) {
-          broadModel.findOneAndUpdate(
-            { _id: ids[0] },
-            { $push: { viewers: { viewerId: req.session.user } } },
-            function(err, data) {
-              if (err) throw err;
-              res.json({ status: true, message: "Date updated successfully" });
-            }
-          );
-        } else res.json({ status: false, message: "Update failed" });
-      }
-    }
-  };
-
-  router.stopPresenter = (req, res) => {
-    if (req.session.user) {
-      broadModel
-        .find({ presenterId: req.session.user._id })
-        .sort({ _id: -1 })
-        .limit(1)
-        .exec(updateAllFound);
+  if (req.session.user) {
+      broadModel.find({ 'presenterId': req.body.preId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
       function updateAllFound(err, preData) {
-        var ids = preData.map(function(item) {
-          return item._id;
-        });
-        if (ids.length > 0)
-          broadModel.findOneAndUpdate(
-            { _id: ids[0] },
-            { endDate: new Date() },
-            function(err, data) {
-              if (err) throw err;
-              res.json({ status: true, message: "Date updated successfully" });
-            }
-          );
-        else res.json({ status: false, message: "Update failed" });
+          var ids = preData.map(function (item) {
+              return item._id;
+          });
+          
+          if (ids.length > 0) {
+              broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
+                  if (err) throw err;
+                  let newMessage = new chatModel(req.body.joinMsg);
+                  newMessage.save();
+
+                  broadModel.findOne({'_id': broadcastRefId,'presenterId': userBroadcastingId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
+                    if (result) {
+                          chatModel.find({ 'chatType': 2, 'receiverId': broadcastRefId }).populate('senderId').lean().exec(function (err, data) {
+                              if (err) throw err;
+                              res.json(data);
+                          });
+                      }
+                  });
+                //  res.json({ status: true, message: 'user has joined the broadcasting' });
+              })
+          }
+          else
+              res.json({ status: false, message: 'Update failed' });
       }
-    } else res.json({ status: false, message: "Need authorization" });
-  };
+  }
+}
+
+router.stopPresenter = (req, res) => {
+  if (req.session.user) {
+      broadModel.find({ 'presenterId': req.session.user._id }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
+      function updateAllFound(err, preData) {
+          var ids = preData.map(function (item) {
+              return item._id;
+          });
+          if (ids.length > 0)
+              broadModel.findOneAndUpdate({ _id: ids[0] }, { endDate: new Date() }, function (err, data) {
+                  if (err) throw err;
+                  res.json({ status: true, message: 'Date updated successfully' });
+              })
+          else
+              res.json({ status: false, message: 'Update failed' });
+      }
+  }
+  else
+      res.json({ status: false, message: 'Need authorization' });
+}
 
   router.stopViewer = (req, res) => {
     if (req.session.user) {

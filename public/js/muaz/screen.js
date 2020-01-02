@@ -385,6 +385,8 @@
         }, false);
 
         function leaveRoom() {
+            console.log("leaveRoom");
+   
             signaler.signal({
                 leaving: true
             });
@@ -394,12 +396,13 @@
 
             // leave user media resources
             if (root.stream) {
+            
                 if('stop' in root.stream) {
-                    root.stream.stop();
+                    root.stream.stop(); console.log("if");
                 }
                 else {
                     root.stream.getTracks().forEach(function(track) {
-                        track.stop();
+                        track.stop();console.log("else");
                     });
                 }
             }

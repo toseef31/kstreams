@@ -266,7 +266,7 @@ wss.on('connection', function (ws) {
     ws.on('close', function () {
         console.log('Connection ' + sessionId + ' closed');
         stop(sessionId);
-        userRegistry.unregister(sessionId);
+        //userRegistry.unregister(sessionId);
     });
 
     ws.on('message', function (_message) {

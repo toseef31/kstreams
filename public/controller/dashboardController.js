@@ -49,6 +49,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     $scope.isChatFullscreen = false;
+    $scope.scrollHeight = 0;
     // 0: nothing, 1: screenShare button pressed, 2: screen is sharing
     // $rootScope.incomingScreenshare = 0;
     // $scope.isReceivingSS = false;
@@ -623,6 +624,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.isSidePanel = false;
             $scope.isChatPanel = true;
             $scope.welcomePage = false;
+            $scope.isLoaded = false;
             /*obj is an object send from view it may be a chat or a group info*/
             if (obj.type == 1) {
                 $scope.isGroupChatStarted = false;
@@ -650,7 +652,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                     .then(function (res) {
-                        $scope.isLoaded = false;
                         $scope.groupMembers = '';
                         $scope.chats = res.data; //.userChat;
                         socket.emit('updateChatSeenStatus', {
@@ -659,7 +660,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             'chatWithId': $scope.chatWithId
                         });
                     
-                        scrollbottom();
+                       // scrollbottom();
                     });
             } else {
                 $scope.isGroupChatStarted = true;

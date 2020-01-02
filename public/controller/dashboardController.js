@@ -603,19 +603,30 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
       
         $scope.isRepeatFinish = false;
-         
+        $scope.isScrollExecuted = false;
+   
         $scope.ngRepeatFinish = function (){
             $scope.isRepeatFinish = true;
+         
             var con = document.getElementsByClassName('msg_history')[0];
-            con.scrollTo(0, con.scrollHeight);
-            var previousScrollHeight = con.scrollHeight;
-            console.log('DONE NG-REPEAT: '+con.scrollHeight);
-            setTimeout(() => {
+            var previousScrollHeight;
+            if (!$scope.isScrollExecuted){
+                previousScrollHeight = con.scrollHeight - 30;
+                $scope.isScrollExecuted = true;
+            }
+            else{
+                previousScrollHeight = con.scrollHeight;
+            }
+           
+            con.scrollTo(0, previousScrollHeight);
+           // console.log('DONE NG-REPEAT: '+ previousScrollHeight);
+             setTimeout(() => {
+               // console.log(con.scrollHeight +' > '+ previousScrollHeight);
                 if (con.scrollHeight > previousScrollHeight){
-                    console.log('calling myself');
+                    //console.log('calling myself');
                     $scope.ngRepeatFinish();
                 }
-            }, 500);
+             }, 500);
         }
 
         // it is called when all chats has been rendered in ng-repeat
@@ -634,6 +645,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if (!obj) return;
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
+            $scope.isRepeatFinish = false;
 
             $scope.deActivate();
             $scope.isSidePanel = false;

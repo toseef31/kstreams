@@ -1271,13 +1271,14 @@
     }, 200);
   }
 
-  function getScrollHeight(){
-    var con = document.getElementsByClassName('msg_history')[0];
-    return con.scrollHeight;
-  }
+  // function getScrollHeight(){
+  //   // var con = document.getElementsByClassName('msg_history')[0];
+  //   // console.log(con.scrollHeight);
+  //   return scrollHeight;
+  // }
 
   function scrolled(o) {
-    console.log(o.scrollHeight);
+   
     if (!executeOnce) {
       executeOnce = true;
       fTotalHeight = o.scrollHeight;

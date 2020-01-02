@@ -601,18 +601,33 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     // }, 100);
                 });
         }
+      
+        $scope.isRepeatFinish = false;
+         
+        $scope.ngRepeatFinish = function (){
+            $scope.isRepeatFinish = true;
+            var con = document.getElementsByClassName('msg_history')[0];
+            con.scrollTo(0, con.scrollHeight);
+            var previousScrollHeight = con.scrollHeight;
+            console.log('DONE NG-REPEAT: '+con.scrollHeight);
+            setTimeout(() => {
+                if (con.scrollHeight > previousScrollHeight){
+                    console.log('calling myself');
+                    $scope.ngRepeatFinish();
+                }
+            }, 500);
+        }
 
         // it is called when all chats has been rendered in ng-repeat
-        $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
-         if (!$scope.isLoaded){
-            console.log('DONE NG-REPEAT');
-            scrollbottom();
-            $scope.isLoaded = true;
-         }
-        });
+        // $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+        //  if (!$scope.isLoaded){
+        //     scrollbottom();
+        //     $scope.isLoaded = true;
+        //  }
+        // });
 
-        $scope.isLoaded = true; // used to check is loading of selected user chat at first time is done
-
+        // $scope.isLoaded = true; // used to check is loading of selected user chat at first time is done
+        // $scope.chatLength = 0;
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
             resetScrollVar();
@@ -651,16 +666,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.get('/getChat/' + $scope.user._id + '/' + $scope.chatWithId + '/' + 20)
                     .then(function (res) {
-                        $scope.isLoaded = false;
+                        // $scope.isLoaded = false;
                         $scope.groupMembers = '';
                         $scope.chats = res.data; //.userChat;
+                        // $scope.chatLength = $scope.chats.length;
                         socket.emit('updateChatSeenStatus', {
                             'isChatSeen': 1,
                             '_id': $scope.user._id,
                             'chatWithId': $scope.chatWithId
                         });
                     
-                        scrollbottom();
+                        //scrollbottom();
                     });
             } else {
                 $scope.isGroupChatStarted = true;
@@ -677,8 +693,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 })
 
                 $http.get('/getGroup/' + obj.group._id).then(function (groupchat) {
-                    $scope.isLoaded = false;
+                    // $scope.isLoaded = false;
                     $scope.groupchats = groupchat.data;
+                    $scope.chatLength = $scope.groupchats.length;
                  //   scrollbottom();
                 })
             }

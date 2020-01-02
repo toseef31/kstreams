@@ -1250,6 +1250,8 @@
 
   function scrollbottom() {
     var con = document.getElementsByClassName('msg_history')[0];
+    console.log(con.scrollTop);
+    console.log($('.msg_history').prop("scrollHeight"));
 
     setTimeout(function () {
       con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
@@ -1269,7 +1271,14 @@
     }, 200);
   }
 
+  // function getScrollHeight(){
+  //   // var con = document.getElementsByClassName('msg_history')[0];
+  //   // console.log(con.scrollHeight);
+  //   return scrollHeight;
+  // }
+
   function scrolled(o) {
+   
     if (!executeOnce) {
       executeOnce = true;
       fTotalHeight = o.scrollHeight;

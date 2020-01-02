@@ -49,6 +49,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     $scope.isChatFullscreen = false;
+    $scope.scrollHeight = 0;
     // 0: nothing, 1: screenShare button pressed, 2: screen is sharing
     // $rootScope.incomingScreenshare = 0;
     // $scope.isReceivingSS = false;
@@ -320,9 +321,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.get('/getBroadcastId/'+ $rootScope.connWdPreId).then(function(res){
            
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
-            var bJoinedChat = {"senderId":{'_id':$scope.user._id},"senderImage":'',
-            "receiverImage":'',"receiverId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":'I have Joined', "chatType":2}
+            var bJoinedChat = {"senderId":{'_id':$scope.user._id, 'name': $scope.user.name},
+            "receiverId":$rootScope.broadcastRefId, "message":'I have Joined', "chatType":2}
            
             socket.emit('checkmsg', bJoinedChat);
            
@@ -603,22 +603,30 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
       
         $scope.isRepeatFinish = false;
-
+        $scope.isScrollExecuted = false;
+   
         $scope.ngRepeatFinish = function (){
             $scope.isRepeatFinish = true;
          
             var con = document.getElementsByClassName('msg_history')[0];
-             var previousScrollHeight = (con.scrollHeight - 20);
-            con.scrollTo(0, con.scrollHeight);
-            console.log('DONE NG-REPEAT: '+ con.scrollHeight);
-
-            setTimeout(() => {
-                console.log(con.scrollHeight +' > '+ previousScrollHeight);
+            var previousScrollHeight;
+            if (!$scope.isScrollExecuted){
+                previousScrollHeight = con.scrollHeight - 30;
+                $scope.isScrollExecuted = true;
+            }
+            else{
+                previousScrollHeight = con.scrollHeight;
+            }
+           
+            con.scrollTo(0, previousScrollHeight);
+           // console.log('DONE NG-REPEAT: '+ previousScrollHeight);
+             setTimeout(() => {
+               // console.log(con.scrollHeight +' > '+ previousScrollHeight);
                 if (con.scrollHeight > previousScrollHeight){
-                    console.log('calling myself');
+                    //console.log('calling myself');
                     $scope.ngRepeatFinish();
                 }
-            }, 500);
+             }, 500);
         }
 
         // it is called when all chats has been rendered in ng-repeat
@@ -637,11 +645,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if (!obj) return;
             $scope.selectedUserNo = obj.userIndex;
             $scope.selectedUserData = obj.user;
+            $scope.isRepeatFinish = false;
 
             $scope.deActivate();
             $scope.isSidePanel = false;
             $scope.isChatPanel = true;
             $scope.welcomePage = false;
+            $scope.isLoaded = false;
             /*obj is an object send from view it may be a chat or a group info*/
             if (obj.type == 1) {
                 $scope.isGroupChatStarted = false;
@@ -779,9 +789,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if(!$scope.message && !chkmsg) return;
 
             console.log($rootScope.broadcastRefId);
-            var msgObj = {"senderId":$scope.user._id,"senderImage":$scope.user.user_image,
-            "receiverImage":$scope.chatWithImage,"receiverId":$rootScope.broadcastRefId,
-            "senderName":$scope.user.name,"message":$scope.message, "chatType":2
+            var msgObj = {"senderId":{'_id': $scope.user._id, 'name': $scope.user.name},
+            "receiverId":$rootScope.broadcastRefId, "message":$scope.message, "chatType":2
             }
 
             socket.emit('checkmsg',msgObj);

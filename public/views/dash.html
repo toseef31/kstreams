@@ -270,8 +270,8 @@
             <!-- --------------  -------------------------------------------------------- -->
 
             <div ng-if="!groupSelected">
-              <div ng-repeat="chat in chats track by $index" on-finish-render="ngRepeatFinished">
-              
+              <div ng-repeat="chat in chats track by $index">
+            
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
@@ -445,6 +445,10 @@
                     </div>
                   </div>
                 </div>
+          
+                <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
+                   {{ngRepeatFinish()}}
+                 </span>
 
                 <div class="clear"></div>
               </div>
@@ -455,7 +459,7 @@
             <!-- --------------  -------------------------------------------------------- -->
 
             <div ng-if="groupSelected">
-              <div ng-repeat="chat in groupchats track by $index" on-finish-render="ngRepeatFinished">
+              <div ng-repeat="chat in groupchats track by $index">
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
@@ -1278,7 +1282,7 @@
       executeOnce = true;
       fTotalHeight = o.scrollHeight;
     }
-
+    
     //visible height + pixel scrolled = total height
     if (o.offsetHeight + o.scrollTop == o.scrollHeight) {
       // right now, no use ...

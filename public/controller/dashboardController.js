@@ -603,14 +603,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
       
         $scope.isRepeatFinish = false;
-         
+
         $scope.ngRepeatFinish = function (){
             $scope.isRepeatFinish = true;
+         
             var con = document.getElementsByClassName('msg_history')[0];
+             var previousScrollHeight = (con.scrollHeight - 20);
             con.scrollTo(0, con.scrollHeight);
-            var previousScrollHeight = con.scrollHeight;
-            console.log('DONE NG-REPEAT: '+con.scrollHeight);
+            console.log('DONE NG-REPEAT: '+ con.scrollHeight);
+
             setTimeout(() => {
+                console.log(con.scrollHeight +' > '+ previousScrollHeight);
                 if (con.scrollHeight > previousScrollHeight){
                     console.log('calling myself');
                     $scope.ngRepeatFinish();

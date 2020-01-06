@@ -279,7 +279,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $http.post('/startPresenter', {
             password: $rootScope.prePassword
         }).then(function (res) {
-            console.log(res);
+            //console.log(res);
             $rootScope.broadcastRefId = res.data.broadcastRefId._id;
         });
     }
@@ -314,14 +314,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         var bLeftChat = {
             "senderId": { '_id': $scope.user._id, 'name': $scope.user.name },
-            "receiverId": $rootScope.broadcastRefId, "message": ($scope.user.name+' has left'), "chatType": 2
+            "receiverId": $rootScope.broadcastRefId, "message": ($scope.user.name + ' has left'), "chatType": 2
         }
         socket.emit('checkmsg', bLeftChat);
 
         if (!$rootScope.connWdPreId)
             $http.get('/stopPresenter').then();
         else
-            $http.post('/stopViewer', { preId: $rootScope.connWdPreId }).then(function (res){
+            $http.post('/stopViewer', { preId: $rootScope.connWdPreId }).then(function (res) {
                 //$scope.broadcastChats = res.data;
                 console.log('user has left the broadcasting');
             });
@@ -804,14 +804,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* send braodcast message */
         $scope.sendBCMessage = function (sendType, message, chkmsg) {
-            console.log("sending Broadcast message");
             if (!chkmsg || typeof chkmsg == "undefined") chkmsg = 0;
             if (!message || typeof message == "undefined") message = 0;
 
             if (!$scope.message && chkmsg) $scope.message = chkmsg;
             else if (!$scope.message && !chkmsg) return;
 
-            console.log($rootScope.broadcastRefId);
             var msgObj = {
                 "senderId": { '_id': $scope.user._id, 'name': $scope.user.name },
                 "receiverId": $rootScope.broadcastRefId, "message": $scope.message, "chatType": 2
@@ -1453,7 +1451,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 else { // if it is a broadcast msg 
 
                     $scope.broadcastChats.push(msg);
-                    console.log($scope.broadcastChats);
+                    //console.log($scope.broadcastChats);
                     scrollbottom();
                 }
 

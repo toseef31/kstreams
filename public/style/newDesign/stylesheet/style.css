@@ -409,7 +409,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 {
     padding-right: 4px;
     position:absolute;z-index:9;
-    right:10%;
+    /* right:10%; */
     top:2px;
     display:table
 }

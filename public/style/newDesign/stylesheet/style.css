@@ -611,7 +611,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     text-align: right;
 }
 
-.broadCast_type_msg{
+  .broadCast_type_msg{
     margin-right: 2px;
     margin-top: -3px;
     margin-left: 3px;
@@ -619,7 +619,16 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 
   .videoScreenSize{
     width: 100%;
+    height: 100%;
   }
+
+  @media screen and (max-width: 500px){
+      .videoScreenSize{
+        width: 100%;
+        height: auto;
+      }
+  }
+
 
   .cursorPointer{
     cursor: pointer;

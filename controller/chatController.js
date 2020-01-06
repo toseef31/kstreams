@@ -998,8 +998,17 @@ router.stopPresenter = (req, res) => {
       res.json({ status: false, message: 'Need authorization' });
 }
 
+//  router.updateScreenshareStatus = (req, res) => {
+//     console.log ("new way");
+//     res.json(null);
+//  }
+
   router.stopViewer = (req, res) => {
+
     if (req.session.user) {
+      let newMessage = new chatModel(req.body.leftMsg);
+      newMessage.save();
+
       broadModel
         .find({ presenterId: req.body.preId })
         .sort({ _id: -1 })
@@ -1009,7 +1018,8 @@ router.stopPresenter = (req, res) => {
         var ids = preData.map(function(item) {
           return item._id;
         });
-        if (ids.length > 0)
+        if (ids.length > 0){
+          
           broadModel.findOneAndUpdate(
             { _id: ids[0], "viewers.viewerId": req.session.user },
             {
@@ -1025,6 +1035,7 @@ router.stopPresenter = (req, res) => {
               res.json({ status: true, message: "Date updated successfully" });
             }
           );
+        }
         else res.json({ status: false, message: "Update failed" });
       }
     } else res.json({ status: false, message: "Need authorization" });

@@ -8,7 +8,6 @@
 
   <h1 ng-if="sessionDestroy">Session destroyed please login</h1>
   <div class="row" ng-if="!sessionDestroy">
-
     <!-- ----------------------------  -------------------------------------------------------- -->
     <!-- ---------------------------- LEFT BAR -------------------------------------------------- -->
     <!-- ----------------------------  -------------------------------------------------------- -->
@@ -847,7 +846,10 @@
       <div class="modal-content">
           <div class="modal-header">
               <h4 class="modal-title">Broadcasting...
-                  <button class="btn btn-danger btn-sm closeButton" ng-click="closeVideoBroadcastPanel()"
+                  <button ng-if="broadcastingStatus == 2" class="btn btn-danger btn-sm closeButton" ng-click="closeVideoBroadcastPanel()"
+                      style="float: right"> CLOSE </button>
+
+                  <button ng-if="broadcastingStatus == 1 || broadcastingStatus == 0" class="btn btn-danger btn-sm closeButton" ng-click="activateBCcloseModal()"
                       style="float: right"> STOP </button>
               </h4>
           </div>
@@ -936,6 +938,29 @@
           </div>
       </div>
   </div>
+
+  <!-- stop confirmation Broadcast modal -->
+  <!-- stop confirmation Broadcast modal -->
+  <div id="cBroadcastModal" class="modal fade" role="dialog" style="z-index: 1200;" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modal-title">Confirmation</h3>
+        </div>
+      <div class="modal-body" id="modal-body">
+          <ul>Are you sure you want to stop broadcasting?
+          </ul>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-primary" type="button" ng-click="deActivateVideoBroadcastPanel()">yes</button>
+          <button class="btn btn-warning" type="button" ng-click="deActivateBCcloseModal()">no</button>
+      </div>
+      </div>
+    </div>
+
+  
+  </div>
+
 
     <!-- minimized Broadcast modal -->
     <!-- minimized Broadcast modal -->
@@ -1033,6 +1058,7 @@
     </div>
   </div>
   <!-- end -->
+
   <!-- screenShare Viewer modal -->
   <div id="ssViewerModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -1042,7 +1068,7 @@
           <h4 id="screenerTitle" class="modal-title"></h4>
         </div>
         <div class="modal-body">
-          <iframe src="/sViewer.html"></iframe>
+          <iframe id="viewerIframe" src="/sViewer.html"></iframe>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1064,9 +1090,11 @@
 </div>
 </div>
 
+
 <script type="text/javascript">
 
   var socket = io.connect();
+
 
   $(document).on('click', '.mobileopenlist', function () {
     $('.mobileleftpane').fadeIn(100);

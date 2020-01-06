@@ -45,6 +45,7 @@
     window.Screen = function(channel) {
         var signaler, self = this;
         this.channel = "peekChatSystemPakistan";//channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+        var senderId = 0;
 
         // get alerted for each new meeting
         this.onscreen = function(screen) {
@@ -56,6 +57,7 @@
 
         function initSignaler(roomid) {
             signaler = new Signaler(self, "peekChatSystemPakistan");//(roomid && roomid.length ? roomid : null) || self.channel);
+   
         }
 
         function captureUserMedia(callback, extensionAvailable) {
@@ -154,8 +156,10 @@
                 }).catch(function(error) {
                     if (adapter.browserDetails.browser === 'chrome' && location.protocol === 'http:') {
                         alert('HTTPs is required.');
-                    } else if (adapter.browserDetails.browser === 'chrome') {
+                    } else if (adapter.browserDetails.browser === 'chrome') { 
                         alert('Screen capturing is either denied or not supported. Please install chrome extension for screen capturing or run chrome with command-line flag: --enable-usermedia-screen-capturing');
+                        //var extInstalEle = document.getElementById('installExtenion');
+                        $('#installExtenion').show();
                     } else if (adapter.browserDetails.browser === 'firefox') {
                         alert(Firefox_Screen_Capturing_Warning);
                     }
@@ -206,12 +210,13 @@
 
         // self instance
         var signaler = this;
-            console.log(signaler);
+        
         // object to store ICE candidates for answerer
         var candidates = {};
 
         // it is called when your signaling implementation fires "onmessage"
         this.onmessage = function(message) {
+           
             // if new room detected
             if (message.roomid == roomid && message.broadcasting && !signaler.sentParticipationRequest)
                 root.onscreen(message);
@@ -385,8 +390,9 @@
         }, false);
 
         function leaveRoom() {
-            console.log("leaveRoom");
-   
+            console.log('leaveRoom');
+           // updateSSstatus();
+
             signaler.signal({
                 leaving: true
             });
@@ -396,21 +402,19 @@
 
             // leave user media resources
             if (root.stream) {
-            
                 if('stop' in root.stream) {
-                    root.stream.stop(); console.log("if");
+                    root.stream.stop(); 
                 }
                 else {
                     root.stream.getTracks().forEach(function(track) {
-                        track.stop();console.log("else");
+                        track.stop();
                     });
                 }
-            }
-
+            }  
             // if firebase; remove data from their servers
             if (window.Firebase) socket.remove();
         }
-
+     
         root.leave = leaveRoom;
 
         // signaling implementation
@@ -482,6 +486,7 @@
 
                     if (!message.leaving) signaler.onmessage(message);
                     else {
+                        console.log("userLeft");
                         root.onuserleft(message.userid);
                         if (root.onNumberOfParticipantsChnaged) root.onNumberOfParticipantsChnaged(Object.keys(peers).length);
                     }
@@ -596,13 +601,13 @@
         setRemoteDescription: function(sdp, callback) {
             callback = callback || function() {};
 
-            console.log('setting remote descriptions', sdp.sdp);
+           // console.log('setting remote descriptions', sdp.sdp);
             this.peer.setRemoteDescription(new RTCSessionDescription(sdp)).then(function() {
                 callback();
             }).catch(onSdpError);
         },
         addIceCandidate: function(candidate) {
-            console.log('adding ice', candidate.candidate);
+          //  console.log('adding ice', candidate.candidate);
             this.peer.addIceCandidate(new RTCIceCandidate({
                 sdpMLineIndex: candidate.sdpMLineIndex,
                 candidate: candidate.candidate

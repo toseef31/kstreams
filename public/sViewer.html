@@ -56,6 +56,7 @@
         var socket = io.connect(SIGNALING_SERVER + channel);
         socket.on('connect', function () {
             // setup peer connection & pass socket object over the constructor!
+
         });
 
         socket.send = function (message) {
@@ -65,17 +66,13 @@
             });
         };
 
-        socket.on('message', function (message){
-            console.log("inside");
-        })
-
         screensharing.openSignalingChannel = function(callback) {
             return socket.on('message', callback);
         };
 
+   
         screensharing.onscreen = function(_screen) { 
-            console.log("onscreen");
-;            let userData=_screen.userid.split('-'); 
+            let userData=_screen.userid.split('-'); 
             if(localStorage.getItem('tokenData')!=userData[1]) return; 
             var alreadyExist = document.getElementById(_screen.userid);
             if (alreadyExist) return; 
@@ -129,6 +126,7 @@
         // if someone leaves; just remove his screen
         screensharing.onuserleft = function(userid) {
             console.log('onuserleft');
+            
             var video = document.getElementById(userid);
             if (video && video.parentNode) video.parentNode.removeChild(video);
 

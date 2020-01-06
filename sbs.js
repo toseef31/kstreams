@@ -317,6 +317,11 @@ app.post('/pauseChatFunc', (req, res) => {
 	res.status(200).json({});
 });
 
+app.post('/updateSSstatus', (req, res) => {
+	io.emit('updateScreenshareStatus', req.body); 
+	res.status(200).json({});
+});
+
 var serveStatic = require('serve-static');
 app.use(serveStatic('./'));
 //app.use(express.static(path.join(__dirname, "client")));

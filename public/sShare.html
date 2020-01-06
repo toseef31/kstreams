@@ -1,39 +1,51 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Screen Share</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'> 
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
     <script src="js/jquery.min.js"></script>
 </head>
+
 <body>
-    
+
     <div id="screenShared" class="text-center alert-info alert hidden"></div>
+
+    <div id="install-button"></div>
+    <!-- <button
+            onclick="!!navigator.webkitGetUserMedia && !!window.chrome && !!chrome.webstore && !!chrome.webstore.install && chrome.webstore.install('https://chrome.google.com/webstore/detail/ajhifddimkapgcifgcodmmfdlknahffk', function() {location.reload();})"
+            id="install-button" style="font-size:inherit; padding-bottom:0;">Click to Install</button> -->
+
+
+
     <section class="experiment">
         <section class="hide-after-join">
             <!-- <input type="text" id="user-name"  placeholder="Your Name" style='display:none;'  > -->
             <button id="share-screen" class="btn btn-primary setup text-center">Start Sharing Screen </button>
-            
+
         </section>
 
-        <!-- list of all available broadcasting rooms --> 
+        <!-- list of all available broadcasting rooms -->
         <!-- <table style="width: 50%;" id="rooms-list" class="hide-after-join" style='display:none;'></table> -->
 
         <!-- local/remote videos container -->
         <div id="videos-container" style=" display:none;"></div>
     </section>
- 
-     <script src="js/muaz/socket.io.js"> </script>
-     <script src="js/muaz/adapter-latest.js"></script>
-     <script src="js/muaz/IceServersHandler.js"></script>
-     <script src="js/muaz/getScreenId.js"> </script>
-     <script src="js/muaz/CodecsHandler.js"></script>
-     <script src="js/muaz/BandwidthHandler.js"></script>
-     <script src="js/muaz/screen.js"> </script> 
 
-     <script>
+
+
+    <script src="js/muaz/socket.io.js"> </script>
+    <script src="js/muaz/adapter-latest.js"></script>
+    <script src="js/muaz/IceServersHandler.js"></script>
+    <script src="js/muaz/getScreenId.js"> </script>
+    <script src="js/muaz/CodecsHandler.js"></script>
+    <script src="js/muaz/BandwidthHandler.js"></script>
+    <script src="js/muaz/screen.js"> </script>
+
+    <script>
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
         // Documentation - https://github.com/muaz-khan/WebRTC-Experiment/tree/master/screen-sharing
@@ -41,20 +53,35 @@
         var videosContainer = document.getElementById("videos-container") || document.body;
         // var roomsList = document.getElementById('rooms-list');
         var screensharing = new Screen();
-        var channel ="peekChatSystemPakistan"; //location.href.substring(0, location.href.lastIndexOf("/")+1);//location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+        var channel = "peekChatSystemPakistan"; //location.href.substring(0, location.href.lastIndexOf("/")+1);//location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
         var sender = Math.round(Math.random() * 999999999) + 999999999;
 
         // https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socketio-over-nodejs
-        var SIGNALING_SERVER ='https://socketio-over-nodejs2.herokuapp.com:443/'; //'https://www.jobcallme.com:9559/';//'https://socketio-over-nodejs2.herokuapp.com:443/';
+        var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/'; //'https://www.jobcallme.com:9559/';//'https://socketio-over-nodejs2.herokuapp.com:443/';
         io.connect(SIGNALING_SERVER).emit('new-channel', {
             channel: channel,
             sender: sender
         });
 
         var socket = io.connect(SIGNALING_SERVER + channel);
+
         socket.on('connect', function () {
             console.log('Signaling channel connection established!!');
             // setup peer connection & pass socket object over the constructor!
+           
+            if (localStorage.getItem('isMozilla') &&  localStorage.getItem('ssStatus') == 1) {
+                var tokenIs = localStorage.getItem('tokenIs');
+                let userData = tokenIs.split('-');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/updateSSstatus",
+                    data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 0},
+                }).done(function () {
+                    console.log("MODAL CLOSED");
+                    localStorage.setItem('ssStatus', 0);
+                });
+            }
         });
 
         socket.send = function (message) {
@@ -64,56 +91,42 @@
             });
         };
 
-        screensharing.openSignalingChannel = function(callback) {
+        screensharing.openSignalingChannel = function (callback) {
             return socket.on('message', callback);
         };
 
-        screensharing.onscreen = function(_screen) {
+        screensharing.onscreen = function (_screen) {
             return;
-            var alreadyExist = document.getElementById(_screen.userid);
-            if (alreadyExist) return;
-
-            if (typeof roomsList === 'undefined') roomsList = document.body;
-
-            var tr = document.createElement('tr');
-
-            tr.id = _screen.userid;
-            tr.innerHTML = '<td>' + _screen.userid + ' shared his screen.</td>' +
-                    '<td><button class="join">View</button></td>';
-            roomsList.insertBefore(tr, roomsList.firstChild);
-
-            var button = tr.querySelector('.join');
-            button.setAttribute('data-userid', _screen.userid);
-            button.setAttribute('data-roomid', _screen.roomid);
-            button.onclick = function() {
-                var button = this;
-                button.disabled = true;
-
-                var _screen = {
-                    userid: button.getAttribute('data-userid'),
-                    roomid: button.getAttribute('data-roomid')
-                };
-                screensharing.view(_screen);
-            };
         };
 
         // on getting each new screen
-        screensharing.onaddstream = function(media) {
+        screensharing.onaddstream = function (media) {
             media.video.id = media.userid;
-
             var video = media.video;
-            //videosContainer.insertBefore(video, videosContainer.firstChild);
+            // videosContainer.insertBefore(video, videosContainer.firstChild);
             $("#screenShared").removeClass('hidden');
             $("#screenShared").html('Screen Shared');
-            rotateVideo(video);
+            // rotateVideo(video);
 
             var hideAfterJoin = document.querySelectorAll('.hide-after-join');
-            for(var i = 0; i < hideAfterJoin.length; i++) {
+            for (var i = 0; i < hideAfterJoin.length; i++) {
                 hideAfterJoin[i].style.display = 'none';
+             
+                var tokenIs = localStorage.getItem('tokenIs');
+                let userData = tokenIs.split('-');
+             
+                    $.ajax({
+                        type: "POST",
+                        url: "/updateSSstatus",
+                        data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 1},
+                    }).done(function () {
+                        localStorage.setItem('ssStatus', 1);
+                        console.log("MODAL OPEN");
+                    });
             }
 
-            if(media.type === 'local') {
-                addStreamStopListener(media.stream, function() {
+            if (media.type === 'local') {
+                addStreamStopListener(media.stream, function () {
                     location.reload();
                 });
             }
@@ -123,7 +136,20 @@
         // screen.firebase = 'signaling';
 
         // if someone leaves; just remove his screen
-        screensharing.onuserleft = function(userid) {
+        screensharing.onuserleft = function (userid) {
+            var tokenIs = localStorage.getItem('tokenIs');
+            let userData = tokenIs.split('-');
+            
+            // ajax call to update screenSharing status for viewers
+            $.ajax({
+                type: "POST",
+                url: "/updateSSstatus",
+                data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 0},
+            }).done(function () {
+                localStorage.setItem('ssStatus', 0);
+                console.log("AJAX CALL SUCCESS");
+            });
+
             var video = document.getElementById(userid);
             if (video && video.parentNode) video.parentNode.removeChild(video);
 
@@ -133,28 +159,28 @@
         // check pre-shared screens
         screensharing.check();
 
-        document.getElementById('share-screen').onclick = function() { 
+        document.getElementById('share-screen').onclick = function () {
             screensharing.isModerator = true;
-            screensharing.userid = localStorage.getItem('tokenIs'); 
+            screensharing.userid = localStorage.getItem('tokenIs');
             screensharing.share();
         };
 
         function rotateVideo(video) {
             video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
-            setTimeout(function() {
+            setTimeout(function () {
                 video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
             }, 1000);
         }
 
-        (function() {
+        (function () {
             var uniqueToken = document.getElementById('unique-token');
             if (uniqueToken)
                 if (location.hash.length > 2) uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center; display: block"><a href="' + location.href + '" target="_blank">Right click to copy & share this private link</a></h2>';
-                else uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace( /\./g , '-');
+                else uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace(/\./g, '-');
         })();
 
-        screensharing.onNumberOfParticipantsChnaged = function(numberOfParticipants) {
-            if(!screensharing.isModerator) return;
+        screensharing.onNumberOfParticipantsChnaged = function (numberOfParticipants) {
+            if (!screensharing.isModerator) return;
 
             document.title = numberOfParticipants + ' users are viewing your screen!';
             var element = document.getElementById('number-of-participants');
@@ -163,5 +189,198 @@
             }
         };
     </script>
+
+    <script>
+        // todo: need to check exact chrome browser because opera also uses chromium framework
+        var isChrome = !!navigator.webkitGetUserMedia;
+        var DetectRTC = {};
+        (function () {
+            var screenCallback;
+            DetectRTC.screen = {
+                chromeMediaSource: 'screen',
+                getSourceId: function (callback) {
+                    if (!callback) throw '"callback" parameter is mandatory.';
+                    screenCallback = callback;
+                    window.postMessage('get-sourceId', '*');
+                },
+                isChromeExtensionAvailable: function (callback) {
+                    if (!callback) return;
+                    if (DetectRTC.screen.chromeMediaSource == 'desktop') return callback(true);
+                    // ask extension if it is available
+                    window.postMessage('are-you-there', '*');
+                    setTimeout(function () {
+                        if (DetectRTC.screen.chromeMediaSource == 'screen') {
+                            callback(false);
+                        }
+                        else callback(true);
+                    }, 2000);
+                },
+                onMessageCallback: function (data) {
+                    if (!(typeof data == 'string' || !!data.sourceId)) return;
+                    console.log('chrome message', data);
+                    // "cancel" button is clicked
+                    if (data == 'PermissionDeniedError') {
+                        DetectRTC.screen.chromeMediaSource = 'PermissionDeniedError';
+                        if (screenCallback) return screenCallback('PermissionDeniedError');
+                        else throw new Error('PermissionDeniedError');
+                    }
+
+                    if (data.sourceId) {
+                        DetectRTC.screen.sourceId = data.sourceId;
+                        if (screenCallback) screenCallback(DetectRTC.screen.sourceId);
+                    }
+                },
+                getChromeExtensionStatus: function (callback) {
+                    if (!!navigator.mozGetUserMedia) return callback('not-chrome');
+                    var extensionid = 'ajhifddimkapgcifgcodmmfdlknahffk';
+                    var image = document.createElement('img');
+                    image.src = 'chrome-extension://' + extensionid + '/icon.png';
+                    image.onload = function () {
+                        DetectRTC.screen.chromeMediaSource = 'screen';
+                        window.postMessage('are-you-there', '*');
+                        setTimeout(function () {
+                            if (!DetectRTC.screen.notInstalled) {
+                                callback('installed-enabled');
+                            }
+                        }, 2000);
+                    };
+                    image.onerror = function () {
+                        DetectRTC.screen.notInstalled = true;
+                        callback('not-installed');
+                    };
+                }
+            };
+            // check if desktop-capture extension installed.
+            if (window.postMessage && isChrome) {
+                DetectRTC.screen.isChromeExtensionAvailable();
+            }
+        })();
+        window.addEventListener('message', function (event) {
+            if (event.origin != window.location.origin) {
+                return;
+            }
+            DetectRTC.screen.onMessageCallback(event.data);
+        });
+        console.log('current chromeMediaSource', DetectRTC.screen.chromeMediaSource);
+    </script>
+
+
+    <script>
+        // *************** BELOW CODE WILL BE OPTIMIZED LATER ***********************************8
+        // todo: need to check exact chrome browser because opera also uses chromium framework
+        var isChrome = !!navigator.webkitGetUserMedia;
+        var DetectRTC = {};
+
+        (function () {
+
+            var screenCallback;
+
+            DetectRTC.screen = {
+                chromeMediaSource: 'screen',
+                getSourceId: function (callback) {
+                    if (!callback) throw '"callback" parameter is mandatory.';
+                    screenCallback = callback;
+                    window.postMessage('get-sourceId', '*');
+                },
+                isChromeExtensionAvailable: function (callback) {
+                    if (!callback) return;
+
+                    if (DetectRTC.screen.chromeMediaSource == 'desktop') return callback(true);
+
+                    // ask extension if it is available
+                    window.postMessage('are-you-there', '*');
+
+                    setTimeout(function () {
+                        if (DetectRTC.screen.chromeMediaSource == 'screen') {
+                            callback(false);
+                        }
+                        else callback(true);
+                    }, 2000);
+                },
+                onMessageCallback: function (data) {
+                    if (!(typeof data == 'string' || !!data.sourceId)) return;
+
+                    console.log('chrome message', data);
+
+                    // "cancel" button is clicked
+                    if (data == 'PermissionDeniedError') {
+                        DetectRTC.screen.chromeMediaSource = 'PermissionDeniedError';
+                        if (screenCallback) return screenCallback('PermissionDeniedError');
+                        else throw new Error('PermissionDeniedError');
+                    }
+
+                    // extension notified his presence
+                    if (data == 'rtcmulticonnection-extension-loaded') {
+                        // if (document.getElementById('install-button')) {
+                        //     document.getElementById('install-button').parentNode.innerHTML = '<strong>Great!</strong> <a href="https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk" target="_blank">Google chrome extension</a> is installed.';
+                        // }
+                        DetectRTC.screen.chromeMediaSource = 'desktop';
+                    }
+
+                    // extension shared temp sourceId
+                    if (data.sourceId) {
+                        DetectRTC.screen.sourceId = data.sourceId;
+                        if (screenCallback) screenCallback(DetectRTC.screen.sourceId);
+                    }
+                },
+                getChromeExtensionStatus: function (callback) {
+                    if (!!navigator.mozGetUserMedia) return callback('not-chrome');
+
+                    var extensionid = 'ajhifddimkapgcifgcodmmfdlknahffk';
+
+                    var image = document.createElement('img');
+                    image.src = 'chrome-extension://' + extensionid + '/icon.png';
+                    image.onload = function () {
+                        DetectRTC.screen.chromeMediaSource = 'screen';
+                        window.postMessage('are-you-there', '*');
+                        setTimeout(function () {
+                            if (!DetectRTC.screen.notInstalled) {
+                                callback('installed-enabled');
+                            }
+                        }, 2000);
+                    };
+                    image.onerror = function () {
+                        DetectRTC.screen.notInstalled = true;
+                        callback('not-installed');
+                    };
+                }
+            };
+
+            // check if desktop-capture extension installed.
+            if (window.postMessage && isChrome) {
+                DetectRTC.screen.isChromeExtensionAvailable();
+            }
+        })();
+
+        DetectRTC.screen.getChromeExtensionStatus(function (status) {
+            console.log("status:" + status);
+            localStorage.setItem('isMozilla', true);
+            // if (status == 'installed-enabled') {
+            //     if (document.getElementById('install-button')) {
+            //         document.getElementById('install-button').innerHTML = '<strong>Great!</strong> <a href="https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk" target="_blank">Google chrome extension</a> is installed.';
+            //     }
+            //     DetectRTC.screen.chromeMediaSource = 'desktop';
+            // }
+            if (status == 'not-installed') {
+                if (document.getElementById('install-button')) {
+                    document.getElementById('install-button').innerHTML = '<strong> Install Chrome Extension to share the screen:</strong> <a href="https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk" target="_blank">Google chrome extension</a>';
+                }
+            }
+        });
+
+        window.addEventListener('message', function (event) {
+            if (event.origin != window.location.origin) {
+                return;
+            }
+
+            DetectRTC.screen.onMessageCallback(event.data);
+        });
+
+        console.log('current chromeMediaSource', DetectRTC.screen.chromeMediaSource);
+    </script>
+
 </body>
+
 </html>
+
+<!-- ************************************************************************************* -->

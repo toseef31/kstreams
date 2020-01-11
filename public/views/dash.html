@@ -695,10 +695,10 @@
 
     <div class="videoTabNew 2wayChat">
       <div id="remotes" class="ui large">
-        <video id="videoOutput" ng-class="{videoOutputFullscreen: isChatFullscreen == true }" autoplay
+        <video id="videoOutput" controls ng-class="{videoOutputFullscreen: isChatFullscreen == true }" autoplay
           poster="images/webrtc.png"></video>
       </div>
-      <video id="local-video" ng-class="{localVideoFullscreen: isChatFullscreen == true }" autoplay
+      <video id="local-video" controls ng-class="{localVideoFullscreen: isChatFullscreen == true }" autoplay
         poster="images/webrtc.png"></video>
 
       <div class="text-center screenButtons">

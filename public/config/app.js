@@ -220,16 +220,19 @@ app.filter("timeago", function() {
   };
 });
 
-// app.directive("onFinishRender", function($timeout) {
-//   return {
-//     restrict: 'A',
-//     link: function (scope, element, attr) {
-//       // console.log(scope.$last);
-//         if (scope.$last === true) {
-//             $timeout(function () {
-//                 scope.$emit(attr.onFinishRender);
-//             });
-//         }
-//     }
-//   }
-// });
+app.directive('focusMe', function($timeout) {
+  return {
+    link: function(scope, element, attrs) {
+      scope.$watch(attrs.focusMe, function(value) {
+        if(value === true) { 
+          console.log('value=',value);
+          //$timeout(function() {
+            element[0].focus();
+            scope[attrs.focusMe] = false;
+          //});
+        }
+      });
+    }
+  };
+});
+

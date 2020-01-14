@@ -349,8 +349,14 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
 .mobilerightpane .inner-addon svg.feather{position:absolute;margin:7px;pointer-events:none}
 .mobilerightpane .inner-addon input{background-color:#f6f7f9;border-radius:16px}
 .wo_msg_tabs{border-color:#ddd;background-color:#fff}
-.wo_msg_tabs li{width:50%;box-shadow:0 2px 0 rgba(0,0,0,.09)}
 
+.wo_msg_tabs li{
+    width:45%;box-shadow:0 2px 0 rgba(0,0,0,.09)
+}
+
+.wo_msg_tabs_custom{
+    width:10% !important;
+}
 
 .nomessage-container{
     height: calc(100vh - 96px);
@@ -674,4 +680,66 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .createGroupIcon{
+    /* float: right; */
+    margin-top: 6px;
+  }
+
+  .userAddButton{
+      cursor: pointer;
+      float: right;
+      margin-top: -20px;
+  }
+
+  .createGroupModal{
+    width: 75%;
+    margin: 0 auto;
+  }
+
+  .userCount{
+    color: #5a5b5d;
+    margin-right: 20px;
+    float: right;
+    font-weight: bolder;
+  }
+
+  .selectUserErrMsg{
+    color: red;
+    float: left;
+  }
+
+  .participants{
+    cursor: pointer;
+    color: white;
+  }
+
+  .groupNameHeading{
+    text-align: center;
+    color: white;
+    font-size: x-large;
+  }
+
+  .totalPartic{
+    color: black;
+  }
+
+  .editGroupName{
+    float: right;
+    color: white;
+    font-size: x-large;
+  }
+
+  .editGroupNameText{
+    font-size: x-large;
+    background: transparent;
+    border: 0;
+    color:white;
+  }
+
+  .addMember{
+    cursor: pointer;
+    float: right;
+    margin-top: 4px;
   }

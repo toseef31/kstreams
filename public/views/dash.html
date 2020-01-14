@@ -12,7 +12,7 @@
     <!-- ---------------------------- LEFT BAR -------------------------------------------------- -->
     <!-- ----------------------------  -------------------------------------------------------- -->
 
-    <div class="col-sm-3 col-md-3 col-lg-3 mobilerightpane"
+    <div class="col-sm-4 col-md-3 col-lg-3 mobilerightpane"
       ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
       <form method="post" class="messages-search-users-form">
 
@@ -86,7 +86,7 @@
               Users
             </a>
           </li>
-          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive()">
+          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive()" style="border-left: 2px solid #a3c3a3;">
             <a data-toggle="tab" data-target="#groups-message" id="groups-message-tab">
 
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -98,6 +98,12 @@
                 <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
               Groups
+
+            </a>
+          </li>
+          <li id="tabs3" class="tab mbutton wo_msg_tabs_custom" ng-click="openCreateGroupModal()">
+            <a data-toggle="tab" data-target="#groups-message" id="groups-message-tab">
+              <i class="fa fa-plus createGroupIcon" aria-hidden="true"></i>
             </a>
           </li>
         </ul>
@@ -177,9 +183,9 @@
             <div ng-if="groupSelected">
               <div ng-if="allGroups.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
-                  ng-repeat="groupA in allGroups" ng-class="{grpChecked: $parent.selection==$index}"
+                  ng-repeat="groupA in allGroups| search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
                   ng-click="$parent.selection=$index">
-                  <div ng-click="startChat({type:2,group:groupA})">
+                  <div ng-click="startChat({type:2,group:groupA, groupIndex:$index})">
                     <span class="user-name-section">
 
                       <div class="avatar pull-left">
@@ -217,7 +223,7 @@
     <!-- --------------------- CHAT PANEL ---------------------------------------------------- -->
     <!-- --------------------- ----- ------------------------------------------------------ -->
 
-    <div class="col-sm-9 col-md-9 col-lg-9 mobileleftpane" ng-class="{hidden: !isChatPanel && isSidePanel}">
+    <div class="col-sm-8 col-md-9 col-lg-9 mobileleftpane" ng-class="{hidden: !isChatPanel && isSidePanel}">
       <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
 
@@ -232,7 +238,9 @@
           <span id="user-name" class="">
             <!-- https://peekhelpers.com/job-detail/office-staff-required-1 -->
             <!-- http://peekhelpers.com/profile/4489 -->
-            <span class="status-bar whiteTextColor" ng-if="groupSelected"> {{selGroupName}} </span>
+            <span class="status-bar participants" ng-if="groupSelected" ng-click="openEditGroup()"> {{selGroupName}} </span>
+            
+            <span class="participants" ng-if="groupSelected" ng-click="openEditGroup()">({{selGrpMembers.length}} Participants)</span>
 
             <a ng-if="userProfileUrl != ''" href="{{userProfileUrl}}" target="_blank">
               <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
@@ -672,7 +680,7 @@
     </div>
 
     <!-- ------------------ IF NO MSG CHATPANEL IS ACTIVATED ---------------------------------------- -->
-    <div class="col-sm-9 col-md-9 col-lg-9 hideNoMsgChatPanel" style="padding-left: 0; padding-right: 0"
+    <div class="col-sm-8 col-md-9 col-lg-9 hideNoMsgChatPanel" style="padding-left: 0; padding-right: 0"
       ng-if="!isChatPanel">
       <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
@@ -1077,6 +1085,8 @@
     </div>
   </div>
   <!-- end -->
+
+
   <!-- Broadcasting modals end  -->
   <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1"
     ng-class="{hidden: o2oSocConEst}" role="alert">
@@ -1085,6 +1095,195 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
+
+  <!-- Create-Group modal  -->
+  <div id="createGroupModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content createGroupModal">
+        <div class="modal-header">
+          <p style="color: white;">Create Group</p>
+        </div>
+        <div class="modal-body">
+          <label for="gName">Group name:</label>
+          <input id="gName" type="text" value="" placeholder="enter group name" ng-model="groupName" />
+          <br>
+          <span style="color: red" ng-if="!groupName || groupName== ''"> {{groupErrMsg}} </span>
+          <br>
+          <div style="margin-top: 8px; border-bottom: 1px solid rgb(39, 39, 39);"></div>
+
+          <span class="selectUserErrMsg" ng-if="groupUsers.length <= 0"> {{noneSelectedErrMsg}} </span>
+
+          <span class="userCount">Users added: {{groupUsers.length}}</span>
+          <br>
+
+          <div class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in allUsers"
+            ng-if="userA._id != user._id">
+
+            <span class="user-name-section">
+              <div class="avatar pull-left">
+                <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
+                  <img ng-if="userA.receiverId != user._id" src="images/noProfile.png" alt="{{user.name}}" />
+                </span>
+                <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
+                  <img ng-if="userA.receiverId != user._id"
+                    src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
+                </span>
+              </div>
+              <div class="messages-user-name" style="padding: 18px 0 0 0;">
+                <span>{{userA.name}}</span>
+                <i ng-if="userA.isAdded" class="fa fa-check" style="color: #a0d459;" aria-hidden="true"></i>
+              </div>
+              <div class="messages-user-name userAddButton">
+                <a ng-if="!userA.isAdded" ng-click="addGroupUser(userA)" style="text-decoration: none;">Add</a>
+                <a ng-if="userA.isAdded" ng-click="removeGroupUser(userA)" style="text-decoration: none;">Remove</a>
+              </div>
+              <div>
+                <span class="userTitleText">{{userA.userTitle}}</span>
+              </div>
+            </span>
+            <div class="clear"></div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="gcSubmitButton" ng-click="createGroup()">
+            Submit
+          </button>
+
+          <button id="gcCloseButton" ng-click="closeCreateGroupModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Create-Group modal ends -->
+
+
+  <!-- Create-Group EDIT Modal -->
+  <div id="editGroupModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content createGroupModal">
+
+        <div class="modal-header">
+          <span ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+            <input id="gnEdit" type="text" class="editGroupNameText" ng-model="selGroupName" focus-me="focusInput" disabled>
+            <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName" aria-hidden="true"></i> 
+            <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
+          </span>
+        </div>
+
+        <div class="modal-body">
+
+          <span ng-if="!addMemberStatus">
+            <span class="totalPartic">Total Participants: {{selGrpMembers.length}}</span>
+            <span><i ng-click="addMemberModalStatus()" class="fa fa-plus addMember" aria-hidden="true">Add Member</i></span>
+          </span>
+
+          <span ng-if="addMemberStatus">
+            <span class="totalPartic">Users Selected: {{groupUsers.length}}</span>
+          </span>
+          
+          <br><br>
+
+          <div ng-if="!addMemberStatus" class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in selGrpMembers">
+            <span class="user-name-section">
+              <div class="avatar pull-left">
+                <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
+                  <img ng-if="userA.receiverId != user._id" src="images/noProfile.png" alt="{{user.name}}" />
+                </span>
+                <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
+                  <img ng-if="userA.receiverId != user._id"
+                    src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
+                </span>
+              </div>
+              <div class="messages-user-name" style="padding: 18px 0 0 0;">
+                <span>{{userA.name}}</span>
+                <i ng-if="userA.isAdded" class="fa fa-check" style="color: #a0d459;" aria-hidden="true"></i>
+              </div>
+
+              <div class="messages-user-name userAddButton">
+                <a ng-if="userA._id != user._id" ng-click="removeCreatedGroupUser(userA)" style="text-decoration: none;">Remove</a>
+              </div>
+
+              <div>
+                <span class="userTitleText">{{userA.userTitle}}</span>
+              </div>
+            </span>
+            <div class="clear"></div>
+          </div>
+
+          <div ng-if="addMemberStatus">
+            <div style="border-bottom: 1px solid black;"></div>
+            <h5 style="font-weight: 700;">Add to Group:</h5>
+      
+              <div class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in nonGroupUsers"
+              ng-if="userA._id != user._id">
+  
+              <span class="user-name-section">
+                <div class="avatar pull-left">
+                  <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
+                    <img ng-if="userA.receiverId != user._id" src="images/noProfile.png" alt="{{user.name}}" />
+                  </span>
+                  <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
+                    <img ng-if="userA.receiverId != user._id"
+                      src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
+                  </span>
+                </div>
+                <div class="messages-user-name" style="padding: 18px 0 0 0;">
+                  <span>{{userA.name}}</span>
+                  <i ng-if="userA.isAdded" class="fa fa-check" style="color: #a0d459;" aria-hidden="true"></i>
+                </div>
+                <div class="messages-user-name userAddButton">
+                  <a ng-if="!userA.isAdded" ng-click="addGroupUser(userA)" style="text-decoration: none;">Add</a>
+                  <a ng-if="userA.isAdded" ng-click="removeGroupUser(userA)" style="text-decoration: none;">Remove</a>
+                </div>
+                <div>
+                  <span class="userTitleText">{{userA.userTitle}}</span>
+                </div>
+              </span>
+              <div class="clear"></div>
+            </div>
+
+            <div ng-if="nonGroupUsers.length == 0">
+                <h5> No Available Members to Add </h5>
+            </div>
+      
+          </div>
+     
+
+        </div>
+
+        <div class="modal-footer">
+          <span ng-if="!addMemberStatus">
+            <button id="gcCloseButton" ng-click="closeEditGroup()">
+              Close
+            </button>
+            <!-- ******* Below Loop will be removed in future for better ************************* -->
+            <span ng-repeat="userA in selGrpMembers">
+              <button ng-if="userA._id == user._id" id="gcCloseButton" ng-click="removeCreatedGroupUser()">
+                Leave Group
+              </button>
+            </span>
+          </span>
+         
+          <span ng-if="addMemberStatus">
+            <button id="gcSubmitButton" ng-if="nonGroupUsers.length != 0" ng-click="submitNewMember()">
+              Submit
+            </button>
+  
+            <button id="gcCloseButton" ng-click="addMemberModalStatus()">
+              Back
+            </button>
+          </span>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- Create-Group EDIT Modal -->
+
 </div>
 </div>
 </div>
@@ -1095,6 +1294,7 @@
 
   var socket = io.connect();
 
+  $('#groupCreateButton').modal({ backdrop: 'static', keyboard: false })
 
   $(document).on('click', '.mobileopenlist', function () {
     $('.mobileleftpane').fadeIn(100);
@@ -1306,7 +1506,6 @@
   // }
 
   function scrolled(o) {
-
     if (!executeOnce) {
       executeOnce = true;
       fTotalHeight = o.scrollHeight;

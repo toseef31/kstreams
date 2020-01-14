@@ -301,9 +301,9 @@ io.on('connection', function (socket) {
 		io.emit('updateOtherMembersFiles', data);
 	});
 	
-	// socket.on('emitScreenshareStatus', function (data) {
-	// 	io.emit('updateScreenshareStatus', data);
-	// });
+	socket.on('updateGroups', function (data) {
+		io.emit('updateFriendsGroups', data);
+	});
 
 	//listen on typing
 	socket.on('typing', (data) => {

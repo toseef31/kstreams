@@ -14,23 +14,23 @@ const broadModel = require("../model/broadcast");
 
 var path = require("path");
 
-module.exports = function(io, saveUser) {
+module.exports = function (io, saveUser) {
   var User;
   /*custom helper functions */
   var helper = new helpers(io);
   /*main router object which contain all function*/
   var router = {};
 
-  router.getProjectData = function(req, res) {
+  router.getProjectData = function (req, res) {
     projectModel
       .findOne({ status: 1 })
       .lean()
-      .exec(function(err, projData) {
+      .exec(function (err, projData) {
         res.send(projData);
       });
   };
 
-  router.groupChat = function(req, res) {
+  router.groupChat = function (req, res) {
     var chatType = req.body.chatType;
 
     if (chatType == 0) {
@@ -51,7 +51,7 @@ module.exports = function(io, saveUser) {
       });
     }
 
-    newMessage.save(function(err, data) {
+    newMessage.save(function (err, data) {
       if (err) throw err;
 
       if (chatType == 0) {
@@ -59,7 +59,7 @@ module.exports = function(io, saveUser) {
           .findOne({ groupId: req.body.id, senderId: req.body.senderId })
           .populate("senderId")
           .sort({ updatedAt: -1 })
-          .exec(function(err, data) {
+          .exec(function (err, data) {
             helper.addNewMessage(data);
             if (err) throw err;
             res.json(data);
@@ -74,7 +74,7 @@ module.exports = function(io, saveUser) {
           .populate("commentId")
           .populate("senderId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
-          .exec(function(err, data) {
+          .exec(function (err, data) {
             helper.addNewMessage(data);
             res.json(data);
           });
@@ -82,7 +82,7 @@ module.exports = function(io, saveUser) {
     });
   };
 
-  router.getUsers = function(req, res) {
+  router.getUsers = function (req, res) {
     function chatModelFunc(data) {
       for (let i = 0; i < data.length; i++) {
         chatModel
@@ -92,7 +92,7 @@ module.exports = function(io, saveUser) {
             isSeen: 0
           })
           .count()
-          .exec(function(err, count) {
+          .exec(function (err, count) {
             data[i]["usCount"] = count;
             if (i == data.length - 1) res.json({ usersList: data });
           });
@@ -115,7 +115,7 @@ module.exports = function(io, saveUser) {
           }
         })
         .lean()
-        .exec(function(err, UserIdData) {
+        .exec(function (err, UserIdData) {
           // now check the userId in friendId column and populate user data
           friendModel
             .find({ friendId: req.params.userId, status: 1 }, { userId: true })
@@ -130,7 +130,7 @@ module.exports = function(io, saveUser) {
               }
             })
             .lean()
-            .exec(function(err, friendsIdData) {
+            .exec(function (err, friendsIdData) {
               friendsIdData.forEach(val => {
                 if (val.userId && val.userId.projectId)
                   friendIds.push(val.userId);
@@ -148,7 +148,7 @@ module.exports = function(io, saveUser) {
                 )
                 .sort({ updatedByMsg: -1 })
                 .lean()
-                .exec(function(err, data) {
+                .exec(function (err, data) {
                   friendIds.push(data);
                   chatModelFunc(friendIds);
                 });
@@ -167,18 +167,17 @@ module.exports = function(io, saveUser) {
           { sort: "-updatedAt" }
         )
         .lean()
-        .exec(function(err, data) {
+        .exec(function (err, data) {
           chatModelFunc(data);
         });
   };
 
-  router.getCreatedGroups = function(req, res) {
+  router.getCreatedGroups = function (req, res) {
     // get all groups
-
     groupsModel
       .find({ status: 1, projectId: req.params.projectId })
-      .populate("members", { name: true })
-      .exec(function(err, groups) {
+      .populate("members")
+      .exec(function (err, groups) {
         var tempGroups = [];
         if (err) {
           return console.log(err);
@@ -196,33 +195,33 @@ module.exports = function(io, saveUser) {
       });
   };
 
-  router.addGroup = function(req, res) {
+  router.addGroup = function (req, res) {
     var members = req.body.members;
     var obj = [];
-    members.forEach(function(mem) {
+    members.forEach(function (mem) {
       obj.push({ id: mem._id, name: mem.name, isseen: false });
     });
     var group = new groupsModel({
       members: obj,
       name: req.body.groupName
     });
-    group.save(function(err, data) {
+    group.save(function (err, data) {
       res.json(data);
       helper.RTGU();
     });
   };
 
-  router.getGroups = function(req, res) {
+  router.getGroups = function (req, res) {
     groupsModel
       .find({ members: { $elemMatch: { id: req.params.userId } }, status: 1 })
       .lean()
-      .then(function(data) {
+      .then(function (data) {
         res.json(data);
       });
   };
 
-  router.chat = function(req, res) {
-    
+  router.chat = function (req, res) {
+
     var chatType = req.body.msgData.chatType;
     var sender = req.body.msgData.senderId;
     var name = req.body.msgData.senderName;
@@ -242,7 +241,7 @@ module.exports = function(io, saveUser) {
         senderImage: senderImage,
         receiverImage: receiverImage
       });
-    } else if (chatType == 1){
+    } else if (chatType == 1) {
       newMessage = new chatModel({
         commentId: req.body.msgData.commentId,
         senderId: req.body.msgData.senderId,
@@ -252,7 +251,7 @@ module.exports = function(io, saveUser) {
         message: req.body.msgData.message
       });
     }
-    else if (chatType == 2){
+    else if (chatType == 2) {
       newMessage = new chatModel({
         senderId: req.body.msgData.senderId,
         receiverId: req.body.msgData.receiverId,
@@ -262,16 +261,16 @@ module.exports = function(io, saveUser) {
       });
     }
 
-    newMessage.save(function(err, data) {
+    newMessage.save(function (err, data) {
       if (err) throw err;
 
-      if (chatType != 2){
-      let date_ob = new Date();
-      userModel.update(
+      if (chatType != 2) {
+        let date_ob = new Date();
+        userModel.update(
           { _id: req.body.selectedUserData._id },
           { $set: { updatedByMsg: date_ob } }
         )
-        .exec();
+          .exec();
       }
 
       if (chatType == 0) {
@@ -280,7 +279,7 @@ module.exports = function(io, saveUser) {
           .populate("senderId", { _id: true, name: true })
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
-          .exec(function(err, data) {
+          .exec(function (err, data) {
             helper.addNewMessage(data);
             res.json(data);
           });
@@ -295,7 +294,7 @@ module.exports = function(io, saveUser) {
           .populate("senderId", { _id: true, name: true })
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
-          .exec(function(err, data) {
+          .exec(function (err, data) {
             console.log(data);
             helper.addNewMessage(data);
             res.json(data);
@@ -310,16 +309,16 @@ module.exports = function(io, saveUser) {
       receiverId: recevier,
       message: message
     });
-    newNotification.save(function(err, data) {
+    newNotification.save(function (err, data) {
       if (err) throw err;
     });
   };
 
   router.getNotification = (req, res) => {
     var userId = req.params.userId;
-    notifiModel.find({ receiverId: userId }, function(err, data) {
+    notifiModel.find({ receiverId: userId }, function (err, data) {
       if (err) throw err;
-      notifiModel.count({ receiverId: userId, isseen: false }, function(
+      notifiModel.count({ receiverId: userId, isseen: false }, function (
         err,
         count
       ) {
@@ -328,12 +327,12 @@ module.exports = function(io, saveUser) {
     });
   };
 
-  router.chatWithId = function(req, res) {
+  router.chatWithId = function (req, res) {
     var sender = req.params._id;
     userModel.update({ _id: sender }, { $set: { chatWithRefId: "" } }).exec();
   };
 
-  router.getChat = function(req, res) {
+  router.getChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
     var msgCountLimit = parseInt(req.params.limit);
@@ -343,7 +342,7 @@ module.exports = function(io, saveUser) {
         { senderId: receiver, receiverId: sender, isSeen: 0 },
         { $set: { isSeen: 1 } }
       )
-      .exec(function(err, data) {
+      .exec(function (err, data) {
         chatModel
           .find({
             $or: [
@@ -357,7 +356,7 @@ module.exports = function(io, saveUser) {
           .limit(msgCountLimit)
           .populate("commentId")
           .lean()
-          .exec(function(err, data) {
+          .exec(function (err, data) {
             if (err) throw err;
             data.reverse();
             userModel
@@ -369,7 +368,7 @@ module.exports = function(io, saveUser) {
       });
   };
 
-  router.getMoreChat = function(req, res) {
+  router.getMoreChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
     var msgCountLimit = parseInt(req.params.limit);
@@ -390,13 +389,13 @@ module.exports = function(io, saveUser) {
       .limit(msgCountLimit)
       .populate("commentId")
       .lean()
-      .exec(function(err, data) {
+      .exec(function (err, data) {
         if (err) throw err;
         res.json(data);
       });
   };
 
-  router.getGroup = function(req, res) {
+  router.getGroup = function (req, res) {
     var id = req.params.groupId;
     // chatModel.find({ groupId: id }).populate('senderId').lean().then(function (data) {
     //     res.json(data);
@@ -406,12 +405,12 @@ module.exports = function(io, saveUser) {
       .find({ groupId: id })
       .populate("commentId")
       .populate("senderId", { _id: true, name: true })
-      .exec(function(err, data) {
+      .exec(function (err, data) {
         res.json(data);
       });
   };
 
-  router.getLastGroupMsg = function(req, res) {
+  router.getLastGroupMsg = function (req, res) {
     var id = req.body.id;
     var sid = req.body.senderId;
 
@@ -419,7 +418,7 @@ module.exports = function(io, saveUser) {
       .find({ groupId: id, senderId: sid })
       .populate("senderId")
       .lean()
-      .then(function(data) {
+      .then(function (data) {
         res.json(data);
       });
   };
@@ -433,7 +432,7 @@ module.exports = function(io, saveUser) {
         { _id: req.session.user._id },
         { onlineStatus: 0, chatWithRefId: "" }
       )
-      .exec(function(err, result) {
+      .exec(function (err, result) {
         req.session.destroy();
         res.json({ message: "session destroy" });
       });
@@ -445,12 +444,12 @@ module.exports = function(io, saveUser) {
       userModel
         .findOne({ email: req.body.email })
         .lean()
-        .then(function(data) {
+        .then(function (data) {
           req.session.user = data;
           chatModel
             .find({ receiverId: data._id, isSeen: 0 })
             .count()
-            .exec(function(err, unreadMsgs) {
+            .exec(function (err, unreadMsgs) {
               // console.log(unreadMsgs);
               res.json({
                 sessionData: req.session.user,
@@ -464,12 +463,12 @@ module.exports = function(io, saveUser) {
       userModel
         .findOne({ phone: req.body.phone })
         .lean()
-        .then(function(data) {
+        .then(function (data) {
           req.session.user = data;
           chatModel
             .find({ receiverId: data._id, isSeen: 0 })
             .count()
-            .exec(function(err, unreadMsgs) {
+            .exec(function (err, unreadMsgs) {
               if (data.length == 0) res.json({ usersList: data });
               res.json({
                 sessionData: req.session.user,
@@ -482,16 +481,16 @@ module.exports = function(io, saveUser) {
 
   router.get = (req, res) => {
     if (req.session.user && typeof req.session.user._id !== "undefiend") {
-      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function(data) {
+      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);
       });
     } else res.status(401).send();
   };
 
-  router.checkSession = function(req, res) {
+  router.checkSession = function (req, res) {
     // console.log(req.session.user);
     if (req.session.user) {
-      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function(data) {
+      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);
       });
     } else {
@@ -499,7 +498,7 @@ module.exports = function(io, saveUser) {
     }
   };
 
-  router.downloadFile = function(req, res) {
+  router.downloadFile = function (req, res) {
     var filename = req.params.filename;
     // res.download('../kstreams/images/chatImages/' + filename);
     filepath = path.join(__dirname, "../images/chatImages") + "/" + filename;
@@ -514,7 +513,7 @@ module.exports = function(io, saveUser) {
   //     res.sendFile(filepath);
   // }
 
-  router.updateUser = function(req, res) {
+  router.updateUser = function (req, res) {
     var userId = req.body.id;
     var name = req.body.name;
     var image = req.body.imageName;
@@ -525,7 +524,7 @@ module.exports = function(io, saveUser) {
         { userId: userId },
         { $set: { name: name, user_image: image, userTitle: skill } }
       )
-      .exec(function(err, result) {
+      .exec(function (err, result) {
         console.log(result);
         if (err) res.json(false);
         else {
@@ -534,7 +533,7 @@ module.exports = function(io, saveUser) {
       });
   };
 
-  router.login = function(req, res) {
+  router.login = function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
     var phone = req.body.phone;
@@ -547,7 +546,7 @@ module.exports = function(io, saveUser) {
       helper.getData(
         userModel,
         { email: email, phone: "", password: password },
-        function(user) {
+        function (user) {
           if (user._id) {
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
@@ -569,7 +568,7 @@ module.exports = function(io, saveUser) {
             //--------------------------------------------------------------------------------------------
 
             /*change status from offline to online*/
-            helper.changeStatus(user._id, {}, function(data) {
+            helper.changeStatus(user._id, {}, function (data) {
               /*set session */
               req.session.user = user;
               /*this function use to move user info to another view*/
@@ -585,7 +584,7 @@ module.exports = function(io, saveUser) {
       helper.getPData(
         userModel,
         { phone: phone, email: "", password: password },
-        function(user) {
+        function (user) {
           if (user) {
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
@@ -607,7 +606,7 @@ module.exports = function(io, saveUser) {
             //--------------------------------------------------------------------------------------------
 
             /*change status from offline to online*/
-            helper.changeStatus(user._id, {}, function(data) {
+            helper.changeStatus(user._id, {}, function (data) {
               /*set session */
               req.session.user = user;
               /*this function use to move user info to another view*/
@@ -621,7 +620,7 @@ module.exports = function(io, saveUser) {
       );
     }
   };
-  router.createUser = function(req, res) {
+  router.createUser = function (req, res) {
     var name = req.params.name;
     var newUser = new userModel({
       name: name,
@@ -630,21 +629,21 @@ module.exports = function(io, saveUser) {
       phone: "03339876859",
       country: "pakistan"
     });
-    newUser.save(function(err, data) {
+    newUser.save(function (err, data) {
       if (err) throw err;
       res.json(data);
     });
   };
 
-  router.logout = function(req, res) {
+  router.logout = function (req, res) {
     if (req.session.user) {
-      req.session.destroy(function(err) {
+      req.session.destroy(function (err) {
         userModel
           .update(
             { _id: req.params.userId },
             { onlineStatus: 0, chatWithRefId: "" }
           )
-          .exec(function(err, result) {
+          .exec(function (err, result) {
             res.status(404).send();
           });
       });
@@ -652,10 +651,10 @@ module.exports = function(io, saveUser) {
     }
   };
 
-  router.deleteMsg = function(req, res) {
+  router.deleteMsg = function (req, res) {
     var msgId = req.params.msgId;
     var type = req.params.type;
-    chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function(err, data) {
+    chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function (err, data) {
       if (err) throw err;
       res.json(data);
     });
@@ -665,14 +664,14 @@ module.exports = function(io, saveUser) {
     //     res.json(data);
     // })
   };
-  router.updateChat = function(req, res) {
+  router.updateChat = function (req, res) {
     var chatId = req.params.id;
     var message = req.body.message;
     chatModel.findByIdAndUpdate(
       chatId,
       { message: message },
       { new: true },
-      function(err, data) {
+      function (err, data) {
         if (err) throw err;
         helper.addNewMessage(data);
         res.json(data);
@@ -680,17 +679,17 @@ module.exports = function(io, saveUser) {
     );
   };
 
-  router.updateGroupChat = function(req, res) {
+  router.updateGroupChat = function (req, res) {
     var id = req.params.id;
     var message = req.body.message;
     var groupId = req.body.groupId;
 
-    chatModel.findByIdAndUpdate(id, { message: message }, function(err, data) {
+    chatModel.findByIdAndUpdate(id, { message: message }, function (err, data) {
       if (err) throw err;
       chatModel
         .find({ groupId: groupId, isGroup: 1 })
         .populate("senderId")
-        .exec(function(err, groupMsgs) {
+        .exec(function (err, groupMsgs) {
           if (err) throw err;
           res.json(groupMsgs);
         });
@@ -710,24 +709,24 @@ module.exports = function(io, saveUser) {
       { receiverId: userId },
       { isseen: true },
       { multi: true },
-      function(err, data) {
+      function (err, data) {
         if (err) throw err;
         res.json(data);
       }
     );
   };
 
-  router.deleteGroupMsg = function(req, res) {
+  router.deleteGroupMsg = function (req, res) {
     var msgId = req.params.msgId;
     var type = req.params.type;
     var groupId = req.params.groupId;
 
-    chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function(err, data) {
+    chatModel.findByIdAndUpdate(msgId, { isDeleted: 1 }, function (err, data) {
       if (err) throw err;
       chatModel
         .find({ groupId: groupId, isGroup: 1 })
         .populate("senderId")
-        .exec(function(err, groupMsgs) {
+        .exec(function (err, groupMsgs) {
           res.json(groupMsgs);
         });
     });
@@ -740,7 +739,7 @@ module.exports = function(io, saveUser) {
     // });
   };
 
-  router.addfiles = function(req, res, next) {
+  router.addfiles = function (req, res, next) {
     // var newchat = new chatModel({
     //     "senderId": req.body.senderId,
     //     "receiverId": req.body.friendId,
@@ -764,14 +763,14 @@ module.exports = function(io, saveUser) {
         message: req.files[i].originalname,
         messageType: isFileImage
       });
-      newchat.save(function(err, data) {
+      newchat.save(function (err, data) {
         if (err) throw err;
       });
     }
     res.send(req.files);
   };
 
-  router.groupFilesShare = function(req, res, next) {
+  router.groupFilesShare = function (req, res, next) {
     let isFileImage = 1;
 
     for (var i = 0; i < req.files.length; i++) {
@@ -790,7 +789,7 @@ module.exports = function(io, saveUser) {
         messageType: isFileImage
       });
 
-      newchat.save(function(err, data) {
+      newchat.save(function (err, data) {
         if (err) throw err;
 
         chatModel
@@ -801,7 +800,7 @@ module.exports = function(io, saveUser) {
           })
           .populate("senderId")
           .lean()
-          .then(function(data) {
+          .then(function (data) {
             res.json(data);
           });
 
@@ -818,17 +817,17 @@ module.exports = function(io, saveUser) {
     // res.json({ message: 'done' });
   };
 
-  router.getgroupchat = function(req, res) {
+  router.getgroupchat = function (req, res) {
     var id = req.body.id;
     groupsModel
       .find({ _id: id, status: 1, isGroup: 1 })
       .lean()
-      .then(function(data) {
+      .then(function (data) {
         res.json(data);
       });
   };
 
-  router.getcurrentgroupchat = function(req, res) {
+  router.getcurrentgroupchat = function (req, res) {
     var id = req.body.id;
     var _senderId = req.body.senderId;
     // groupsModel.find({ _id: id, senderId: _senderId, 'status': 1 }).lean().exec(function (err, data) {
@@ -836,7 +835,7 @@ module.exports = function(io, saveUser) {
     //     res.json(data);
     // })
 
-    groupsModel.find({ groupId: id, senderId: _senderId }, function(err, data) {
+    groupsModel.find({ groupId: id, senderId: _senderId }, function (err, data) {
       res.json(data);
     });
   };
@@ -856,7 +855,7 @@ module.exports = function(io, saveUser) {
           address: req.body.address,
           status: 1
         });
-        user.save(function(err, data) {
+        user.save(function (err, data) {
           if (err) console.log(err);
         });
       }
@@ -879,7 +878,7 @@ module.exports = function(io, saveUser) {
     userModel.findOneAndUpdate(
       { userId: req.body.id },
       { user_image: req.body.image },
-      function(err, data) {
+      function (err, data) {
         if (err) throw err;
         res.json(req.body.id);
       }
@@ -897,7 +896,7 @@ module.exports = function(io, saveUser) {
       userModel.findOneAndUpdate(
         { _id: req.session.user._id },
         { pStatus: req.body.pStatus },
-        function(err, data) {
+        function (err, data) {
           if (err) throw err;
           res.json({ status: true, id: req.body.id });
         }
@@ -910,7 +909,7 @@ module.exports = function(io, saveUser) {
       userModel
         .find({ _id: req.session.user._id })
         .lean()
-        .then(function(result) {
+        .then(function (result) {
           res.json({
             status: true,
             pStatus: result[0].pStatus,
@@ -919,89 +918,89 @@ module.exports = function(io, saveUser) {
         });
     else res.json({ status: false, message: "Need authorization" });
   };
-  
+
   // Broadcast functions start =====
   router.startPresenter = (req, res) => {
     if (req.session.user) {
-        var broad = new broadModel({
-            "presenterId": req.session.user._id,
-            "password": req.body.password,
-        });
-        broad.save(function (err, data) {
-            if (err) console.log(err);
-            broadModel.findOne({ 'presenterId': req.session.user._id, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
-                res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
-            })
-        });
+      var broad = new broadModel({
+        "presenterId": req.session.user._id,
+        "password": req.body.password,
+      });
+      broad.save(function (err, data) {
+        if (err) console.log(err);
+        broadModel.findOne({ 'presenterId': req.session.user._id, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
+          res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
+        })
+      });
     }
     else
-        res.json({ status: false, message: 'Need authorization' });
-}
+      res.json({ status: false, message: 'Need authorization' });
+  }
 
-  router.getBroadcastId= (req, res) => {
-    broadModel.findOne({'presenterId': req.params.presenterId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
-        res.json({status:true,message:'Saved successfully', 'broadcastRefId': result});
+  router.getBroadcastId = (req, res) => {
+    broadModel.findOne({ 'presenterId': req.params.presenterId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
+      res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
     })
-}
+  }
 
-router.joinViewer = (req, res) => {
-  let userBroadcastingId = req.body.preId;
-  let broadcastRefId = req.body.broadcastId;
+  router.joinViewer = (req, res) => {
+    let userBroadcastingId = req.body.preId;
+    let broadcastRefId = req.body.broadcastId;
 
-  if (req.session.user) {
+    if (req.session.user) {
       broadModel.find({ 'presenterId': req.body.preId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
       function updateAllFound(err, preData) {
-          var ids = preData.map(function (item) {
-              return item._id;
-          });
-          
-          if (ids.length > 0) {
-              broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
+        var ids = preData.map(function (item) {
+          return item._id;
+        });
+
+        if (ids.length > 0) {
+          broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
+            if (err) throw err;
+            let newMessage = new chatModel(req.body.joinMsg);
+            newMessage.save();
+
+            broadModel.findOne({ '_id': broadcastRefId, 'presenterId': userBroadcastingId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
+              if (result) {
+                chatModel.find({ 'chatType': 2, 'receiverId': broadcastRefId }).populate('senderId').lean().exec(function (err, data) {
                   if (err) throw err;
-                  let newMessage = new chatModel(req.body.joinMsg);
-                  newMessage.save();
-
-                  broadModel.findOne({'_id': broadcastRefId,'presenterId': userBroadcastingId, 'endData': null }).sort({ _id: -1 }).limit(1).exec(function (err, result) {
-                    if (result) {
-                          chatModel.find({ 'chatType': 2, 'receiverId': broadcastRefId }).populate('senderId').lean().exec(function (err, data) {
-                              if (err) throw err;
-                              res.json(data);
-                          });
-                      }
-                  });
-                //  res.json({ status: true, message: 'user has joined the broadcasting' });
-              })
-          }
-          else
-              res.json({ status: false, message: 'Update failed' });
+                  res.json(data);
+                });
+              }
+            });
+            //  res.json({ status: true, message: 'user has joined the broadcasting' });
+          })
+        }
+        else
+          res.json({ status: false, message: 'Update failed' });
       }
+    }
   }
-}
 
-router.stopPresenter = (req, res) => {
-  if (req.session.user) {
+  router.stopPresenter = (req, res) => {
+    if (req.session.user) {
       broadModel.find({ 'presenterId': req.session.user._id }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
       function updateAllFound(err, preData) {
-          var ids = preData.map(function (item) {
-              return item._id;
-          });
-          if (ids.length > 0)
-              broadModel.findOneAndUpdate({ _id: ids[0] }, { endDate: new Date() }, function (err, data) {
-                  if (err) throw err;
-                  res.json({ status: true, message: 'Date updated successfully' });
-              })
-          else
-              res.json({ status: false, message: 'Update failed' });
+        var ids = preData.map(function (item) {
+          return item._id;
+        });
+        if (ids.length > 0)
+          broadModel.findOneAndUpdate({ _id: ids[0] }, { endDate: new Date() }, function (err, data) {
+            if (err) throw err;
+            res.json({ status: true, message: 'Date updated successfully' });
+          })
+        else
+          res.json({ status: false, message: 'Update failed' });
       }
-  }
-  else
+    }
+    else
       res.json({ status: false, message: 'Need authorization' });
-}
+  }
 
-//  router.updateScreenshareStatus = (req, res) => {
-//     console.log ("new way");
-//     res.json(null);
-//  }
+  //  router.updateScreenshareStatus = (req, res) => {
+  //     console.log ("new way");
+  //     res.json(null);
+  //  }
 
   router.stopViewer = (req, res) => {
 
@@ -1015,11 +1014,11 @@ router.stopPresenter = (req, res) => {
         .limit(1)
         .exec(updateAllFound);
       function updateAllFound(err, preData) {
-        var ids = preData.map(function(item) {
+        var ids = preData.map(function (item) {
           return item._id;
         });
-        if (ids.length > 0){
-          
+        if (ids.length > 0) {
+
           broadModel.findOneAndUpdate(
             { _id: ids[0], "viewers.viewerId": req.session.user },
             {
@@ -1030,7 +1029,7 @@ router.stopPresenter = (req, res) => {
             {
               sort: { "viewers.$._id": -1 } // Imp Needed: Need to update his last id
             },
-            function(err, data) {
+            function (err, data) {
               if (err) throw err;
               res.json({ status: true, message: "Date updated successfully" });
             }
@@ -1040,6 +1039,57 @@ router.stopPresenter = (req, res) => {
       }
     } else res.json({ status: false, message: "Need authorization" });
   };
+
+  router.createUserGroup = (req, res) => {
+    let newGroup = new groupsModel(req.body.groupData);
+    newGroup.save(function (err, result) {
+      groupsModel
+        .find({ status: 1, projectId: req.body.groupData.projectId + "" })
+        .populate("members", { name: true })
+        .exec(function (err, groups) {
+          var tempGroups = [];
+          if (err) {
+            return console.log(err);
+          }
+
+          for (var i = 0; i < groups.length; i++) {
+            for (var j = 0; j < groups[i].members.length; j++) {
+              if (req.body.userId == groups[i].members[j]._id) {
+                tempGroups.push(groups[i]);
+              }
+            }
+          }
+          res.send(tempGroups); // send groups list
+        });
+    });
+  }
+
+  router.removeGroupUser = (req, res) => {
+    groupsModel.update(
+      { "_id": req.body.groupId },
+      { $pull: { members: req.body.memberId } }
+    ).exec(function (err, result) {
+      res.json(200);
+    })
+  }
+
+  router.editGroupName = (req, res) => {
+    groupsModel.update(
+      { "_id": req.body.groupId },
+      { "name": req.body.groupName }
+    ).exec(function (err, result) {
+      res.json(200);
+    })
+  }
+
+  router.addNewMembers = (req, res) => {
+    groupsModel.update(
+      { '_id': req.body.groupId },
+      { $push: { members: req.body.members } },
+    ).exec(function (err, result) {
+      res.json(200);
+    })
+  }
 
   // Broadcast function end ======
   return router;

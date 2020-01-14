@@ -325,12 +325,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         var index = $scope.selGrpMembers.indexOf(user);
         $scope.selGrpMembers.splice(index, 1);
 
+        //!**** Below socket code will be updated ****
         //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
-        socket.emit('updateGroups', {
-            'groupId': $scope.connectionId,
-            'memberId': user._id,
-            'funType': 3
-        });
+        // socket.emit('updateGroups', {
+        //     'groupId': $scope.connectionId,
+        //     'memberId': user._id,
+        //     'funType': 3
+        // });
 
         $http.post("/removeGroupUser", { 'groupId': $scope.connectionId, 'memberId': user._id }).then(function (response) {
             // $scope.closeEditGroup();

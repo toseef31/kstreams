@@ -1261,7 +1261,7 @@
             </button>
             <!-- ******* Below Loop will be removed in future for better ************************* -->
             <span ng-repeat="userA in selGrpMembers">
-              <button ng-if="userA._id == user._id" id="gcCloseButton" ng-click="removeCreatedGroupUser()">
+              <button ng-if="userA._id == user._id" id="gcCloseButton" ng-click="removeCreatedGroupUser(userA)">
                 Leave Group
               </button>
             </span>

@@ -28,6 +28,7 @@ app.factory('GroupCall', ['$rootScope',
                 setup_local_media(function() {
                     /* once the user has given us access to their
                         * microphone/camcorder, join the channel and start peering up */
+                        //GROUP ID would be the channel name
                     join_chat_channel(userData.groupId, {'userData': userData});
                 });
             });

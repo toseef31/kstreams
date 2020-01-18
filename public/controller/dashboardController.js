@@ -1,4 +1,4 @@
-app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall) {
+app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall, GroupCall) {
     $scope.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
 
     $scope.selectedGroupId = 0;
@@ -1227,30 +1227,45 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* video calling functionality*/
         $scope.videoCall = function (type, callerId) {
-            if (type == 1)
-                document.querySelector('.audioTab').style.display = 'block';
-            else
-                document.querySelector('.videoTabNew').style.display = 'block';
+            
 
+            if ($scope.groupSelected) { 
+                let userData = {
+                    groupId: $scope.selectedGroupId,
+                    callerName: $scope.user.name,
+                    callerId: $scope.user._id, 
+                }; 
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
+                GroupCall.init(userData); 
+                return;
+            }
+            if (type == 1) document.querySelector('.audioTab').style.display = 'block';
+            else document.querySelector('.videoTabNew').style.display = 'block';
 
             $rootScope.toggleBtn(true);
             $scope.caller = true;
             $scope.ringbell.loop = true;
             $scope.ringbell.play();
-            if (!$scope.groupSelected) {
-                $scope.callCancelTimmer.startCallTimmer();
-                $rootScope.showVideo = true;
-                $rootScope.openVoice = true;
-                let userData = {
-                    friendId: $scope.chatWithId,
-                    callerName: $scope.user.name,
-                    callerId: $scope.user._id,
-                    callType: type
-                };
-                $("#timmer").addClass('hidden');
-                One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
-            }
+            $scope.callCancelTimmer.startCallTimmer();
+            $rootScope.showVideo = true;
+            $rootScope.openVoice = true;
+            let userData = {
+                friendId: $scope.chatWithId,
+                callerName: $scope.user.name,
+                callerId: $scope.user._id,
+                callType: type
+            };
+            $("#timmer").addClass('hidden');
+            One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
         }
+
+        $scope.stopGroupCall=function(){
+            GroupCall.stop();
+        };
         /* this is the main function call after time up and no one receive the call*/
         $scope.dropCall = function () {
             $scope.callDropAfterTime($scope.chatWithId, $scope.user._id);
@@ -1543,7 +1558,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     }
                 }
                 else if (gData.funType == 3 && gData.groupData.members[i]._id == $scope.user._id) {
-                     //reCheck Needed about this below ForLoop
+                    //reCheck Needed about this below ForLoop
                     for (var l = 0; l < $scope.allGroups.length; l++) {
                         if (gData.groupId == $scope.allGroups[l]._id) {
                             var index = $scope.allGroups.indexOf($scope.allGroups[l]);

@@ -289,3 +289,12 @@
 #ssViewerModal .modal-body{
     height: 400px;
 }
+.userInteraction{
+    margin-top: 3px;
+}
+.groupCallModalContent video{
+    max-width: 250px;
+}
+.text-white{
+    color: #fff;
+}

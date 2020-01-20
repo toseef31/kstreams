@@ -319,12 +319,12 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     cursor: inherit;
     display: none;
 }
-.video-icon, .delete-icon{
+.userInteraction, .delete-icon{
 	font-size: 20px;
 	cursor: pointer;
     /* margin-right: 4px; */
 }
-.video-icon .fa, .delete-icon .fa{
+.userInteraction .fa, .delete-icon .fa{
 	vertical-align: super;
 }
 .clear{clear: both;}

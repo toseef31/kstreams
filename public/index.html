@@ -1,87 +1,79 @@
-<html
-  ng-app="chatApp"
-  ng-controller="loginController"
-  style="overflow-y: hidden;"
->
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="chatApp" />
-    <meta name="author" content="Peek International" />
+<html ng-app="chatApp" ng-controller="loginController" style="overflow-y: hidden;">
 
-    <!-- <title ng-bind="projectData.metaTitle"> Site title </title> -->
-    <!-- ------------ Unstaged Changes ------------------------------------ -->
-    <title ng-bind="projectData.metaTitle">Site title</title>
-    <!-- ----------------------------- ------------------------------------ -->
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="chatApp" />
+  <meta name="author" content="Peek International" />
 
-    <link
-      rel="icon"
-      ng-if="projectData && projectData.favicon"
-      href="{{projectData.favicon}}"
-      sizes="192x192"
-    />
+  <!-- <title ng-bind="projectData.metaTitle"> Site title </title> -->
+  <!-- ------------ Unstaged Changes ------------------------------------ -->
+  <title ng-bind="projectData.metaTitle">Site title</title>
+  <!-- ----------------------------- ------------------------------------ -->
 
-    <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
-    <!-- <link rel="stylesheet" href="./nodeModFiles/semantic.min.css"> -->
+  <link rel="icon" ng-if="projectData && projectData.favicon" href="{{projectData.favicon}}" sizes="192x192" />
 
-    <link href="style/font-awesome.css" type="text/css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="./style/main.css" />
-    <link href="style/emojionearea.min.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="./style/custom.css" />
-    <link rel="stylesheet" href="style/newDesign/stylesheet/style.css" />
+  <link href="style/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+  <!-- <link rel="stylesheet" href="./nodeModFiles/semantic.min.css"> -->
 
-    <!-- <script src="style/newDesign/javascript/jquery-3.1.1.min.js"></script> -->
+  <link href="style/font-awesome.css" type="text/css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="./style/main.css" />
+  <link href="style/emojionearea.min.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="./style/custom.css" />
+  <link rel="stylesheet" href="style/newDesign/stylesheet/style.css" />
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/emojionearea.min.js"></script>
-    <script src="js/jquery.toaster.js"></script>
-    <script src="js/jquery-ui.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/angular.min.js"></script>
-    <script src="js/translate/angular-route.js"></script>
+  <!-- <script src="style/newDesign/javascript/jquery-3.1.1.min.js"></script> -->
 
-    <script src="js/socket.io.js"></script>
-    <!-- <script src="js/angular-animate.js"></script> -->
-    <script src="js/translate/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="js/ng-websocket.js"></script>
-    <script src="js/ui-bootstrap-tpls-2.5.0.js"></script>
-    <!-- <script src="./js/multiselect.js"></script> -->
-    <script src="./js/helper.js"></script>
-    <!-- <script src="./js/multiselect-template.js"></script> -->
-    <script src="./js/touch-punch.js"></script>
-    <link rel="stylesheet" href="style/newDesign/stylesheet/jquery.ui.css" />
-    <script src="style/newDesign/javascript/autocomplete.jquery.js"></script>
- 
-    <!-- <script src="style/newDesign/javascript/autocomplete.jquery.js"></script> -->
-    <!------ Include the above in your HEAD tag ---------->
-  </head>
-  <body id="LoginForm">
-    
-    <div ng-view></div>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/emojionearea.min.js"></script>
+  <script src="js/jquery.toaster.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.min.js"></script>
+  <script src="js/translate/angular-route.js"></script>
 
-    <script type="text/javascript" src="./config/app.js"></script>
-    <script type="text/javascript" src="./services/one2one.js"></script>
-    <script type="text/javascript" src="./services/one2many.js"></script>
-    <script type="text/javascript" src="./services/groupCall.js"></script>
+  <script src="js/socket.io.js"></script>
+  <!-- <script src="js/angular-animate.js"></script> -->
+  <script src="js/translate/angular-sanitize.min.js"></script>
+  <script type="text/javascript" src="js/ng-websocket.js"></script>
+  <script src="js/ui-bootstrap-tpls-2.5.0.js"></script>
+  <!-- <script src="./js/multiselect.js"></script> -->
+  <script src="./js/helper.js"></script>
+  <!-- <script src="./js/multiselect-template.js"></script> -->
+  <script src="./js/touch-punch.js"></script>
+  <link rel="stylesheet" href="style/newDesign/stylesheet/jquery.ui.css" />
+  <script src="style/newDesign/javascript/autocomplete.jquery.js"></script>
 
-    <script type="text/javascript" src="./routes/routes.js"></script>
-    <script
-      type="text/javascript"
-      src="./controller/logincontroller.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./controller/dashboardController.js"
-    ></script>
-    <!-- <script src="./nodeModFiles/semantic.min.js"></script>
+  <!-- <script src="style/newDesign/javascript/autocomplete.jquery.js"></script> -->
+  <!------ Include the above in your HEAD tag ---------->
+</head>
+
+<body id="LoginForm">
+
+  <div ng-view></div>
+
+  <!-- Somewhere on your page -->
+  <script src="/path/to/angular-recorder/dist/angular-audio-recorder.min.js"></script>
+  <!--- use if you want wave display !-->
+  <script src="/path/to/wavesurfer/wavesurfer.min.js"></script>
+
+  <script type="text/javascript" src="./config/app.js"></script>
+  <script type="text/javascript" src="./services/one2one.js"></script>
+  <script type="text/javascript" src="./services/one2many.js"></script>
+  <script type="text/javascript" src="./services/groupCall.js"></script>
+
+  <script type="text/javascript" src="./routes/routes.js"></script>
+  <script type="text/javascript" src="./controller/logincontroller.js"></script>
+  <script type="text/javascript" src="./controller/dashboardController.js"></script>
+  <!-- <script src="./nodeModFiles/semantic.min.js"></script>
     <script src="./nodeModFiles/handlebars.min.js "></script>
     <script src="./nodeModFiles/simplewebrtc-with-adapter.bundle.js"></script> -->
-    <script src="./webRtc/one2one/static/bower_components/webrtc-adapter/release/adapter.js"></script>
-    <script src="./webRtc/one2one/static/bower_components/kurento-utils/js/kurento-utils.js"></script>
-    <script src="client.js"></script>
+  <script src="./webRtc/one2one/static/bower_components/webrtc-adapter/release/adapter.js"></script>
+  <script src="./webRtc/one2one/static/bower_components/kurento-utils/js/kurento-utils.js"></script>
+  <script src="client.js"></script>
 
-    <!-- <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+  <!-- <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
     <script>
       var OneSignal = window.OneSignal || [];
       OneSignal.push(function() {
@@ -90,6 +82,7 @@
         });
       });
     </script> -->
- 
-  </body>
+
+</body>
+
 </html>

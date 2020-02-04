@@ -598,7 +598,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.countGroupMembers = 1;
         $scope.groupOrUser = '';
         $rootScope.user = response.data;
+  
+       // localStorage.setItem("isViewing", 0);
         localStorage.setItem('tokenData', $rootScope.user._id);
+        localStorage.setItem('userData', $rootScope.user);
         socket.emit('user_connected', {
             userId: $rootScope.user._id
         });
@@ -1213,6 +1216,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     localStorage.removeItem('ss');
                     localStorage.removeItem('tokenIs');
                     localStorage.removeItem('tokenData');
+                   // localStorage.removeItem("isViewing");
                     $location.path('/');
                 }
             })
@@ -1616,6 +1620,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         //Update Viewers and hide their modal + reload their iframe
         socket.on('updateScreenshareStatus', function (data) {
+            console.log(data);
             if (data.modalStatus == 0 && $scope.user._id == data.chatWithId) {
                 $("#ssViewerModal").modal('hide');
                 document.getElementById('viewerIframe').contentWindow.location.reload();
@@ -1624,6 +1629,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if (data.modalStatus == 1 && $scope.user._id == data.chatWithId) {
                 $("#ssViewerModal").modal('show');
             }
+
+            // else if (data.modalStatus == 2 && $scope.user._id == data.chatWithId){
+            //     localStorage.setItem("isViewing", 1);
+            // }
         })
 
         socket.on('pauseChatFunctionality', function (userRefId) {
@@ -1796,12 +1805,4 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         location.reload();
     }
 
-    // Check screenshared
-    // function checkssStatus() {
-    //     if (localStorage.getItem('ss')) {
-    //         $("#ssViewerModal").modal('show');
-    //         localStorage.removeItem('ss');
-    //     }
-    // }
-    // $interval(checkssStatus, 10000);
 });

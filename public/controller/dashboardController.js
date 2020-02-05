@@ -58,20 +58,43 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;
+        let hostIs = location.host.split(':');
+        let webSocketIp = $rootScope.projectData.domainUrl;
+        if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
+        $scope.o2oReqUrl = 'wss://' + webSocketIp + ':8443/one2one';
+        $scope.o2oGC = 'wss://' + webSocketIp + ':8080/groupCall';
+
         $scope.o2oSocConnec();
+        $scope.connGroupCall();
 
         // if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
+    $scope.connGroupCall = function () {
+        console.log('$scope.o2oGC ',$scope.o2oGC);
+        //new WebSocket($scope.o2oGC);
+        $rootScope.signaling_socket = $websocket.$new({
+            url: $scope.o2oGC
+        });
+
+        $rootScope.signaling_socket.$on('$open', function () {
+            console.log('Group call connectected');
+        })
+        .$on('$close', function () {
+            console.log('connGroupCall Socket closed trying to reconnect...');
+            //$scope.connGroupCall();
+        })
+        .$on('$error', function (err) {
+            console.log('connGroupCall Socket Error trying to reconnect... ',err);
+            //$scope.connGroupCall();
+        })
+    };
 
     $scope.o2oSocLoaded = false;
     $scope.o2oSocConnec = function () {
-        let hostIs = location.host.split(':');
-        let webSocketIp = $rootScope.projectData.domainUrl;
-        if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
-        let reqUrl = 'wss://' + webSocketIp + ':8443/one2one';
+
         $rootScope.O2OSoc = $websocket.$new({
-            url: reqUrl
+            url: $scope.o2oReqUrl
         });
         //   console.log('$scope.o2oSocConnec called= ',$scope.O2OSoc);  
         // so as the script should not load again and again
@@ -1227,20 +1250,20 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* video calling functionality*/
         $scope.videoCall = function (type, callerId) {
-            
 
-            if ($scope.groupSelected) { 
+
+            if ($scope.groupSelected) {
                 let userData = {
                     groupId: $scope.selectedGroupId,
                     callerName: $scope.user.name,
-                    callerId: $scope.user._id, 
-                }; 
+                    callerId: $scope.user._id,
+                };
                 $("#groupCallModal").modal({
                     backdrop: 'static',
                     keyboard: false
                 });
                 $('#groupCallModal').show();
-                GroupCall.init(userData); 
+                GroupCall.init(userData);
                 return;
             }
             if (type == 1) document.querySelector('.audioTab').style.display = 'block';
@@ -1263,7 +1286,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
         }
 
-        $scope.stopGroupCall=function(){
+        $scope.stopGroupCall = function () {
             GroupCall.stop();
         };
         /* this is the main function call after time up and no one receive the call*/

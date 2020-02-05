@@ -7,20 +7,68 @@ var PORT = 8080;
 /*************/
 /*** SETUP ***/
 /*************/
+var ws = require('ws');
+var url = require('url');
 var express = require('express');
-var http = require('http');
-var bodyParser = require('body-parser')
-var main = express()
-var server = http.createServer(main)
-var io  = require('socket.io').listen(server);
-//io.set('log level', 2);
+var https = require('https');
+const sslConfig = require('../../../ssl-config');
+var os = require('os');
+var ifaces = os.networkInterfaces();
 
-server.listen(PORT, null, function() {
-    console.log("Listening on port " + PORT);
+var options = {};
+var serverIpAdd = [];
+Object.keys(ifaces).forEach(function (ifname) {
+    var alias = 0;
+    ifaces[ifname].forEach(function (iface) {
+        if (('IPv4' !== iface.family || iface.internal !== false) && iface.address != '127.0.0.1') return;
+        //console.log(alias,' and ',iface.address,' and ',iface.family,' and ',iface.internal);
+        if (alias < 1) serverIpAdd.push(iface.address);
+        ++alias;
+    });
 });
+
+var siteLink = 'https://localhost:8080/';
+if (serverIpAdd.includes('58.229.208.176')) { //Job callme
+    options = {
+        key: sslConfig.keyJcm,
+        cert: sslConfig.certJcm,
+    };
+    siteLink = 'https://www.jobcallme.com:8080/';
+}
+else if (serverIpAdd.includes('192.168.1.10')) { // Peek let 
+    options = {
+        key: sslConfig.keyPl,
+        cert: sslConfig.certPl,
+    };
+    siteLink = 'https://www.peeklet.com:8080/';
+}
+else {
+    options = {
+        key: sslConfig.keyPl,
+        cert: sslConfig.certPl,
+    };
+}
+//var bodyParser = require('body-parser')
+var main = express()
+// var server = http.createServer(main)
+// var io  = require('socket.io').listen(server);
+ 
+var asUrl = url.parse(siteLink);
+var port = asUrl.port;
+var server = https.createServer(options, main).listen(port, function () {
+    console.log('Group Call server started');
+    console.log('Open ' + url.format(asUrl) + ' with a WebRTC capable browser');
+});
+var wss = new ws.Server({
+    server: server,
+    path: '/groupCall'
+});
+// server.listen(PORT, null, function() {
+//     console.log("Listening on port " + PORT);
+// });
 //main.use(express.bodyParser());
 
-main.get('/', function(req, res){ res.sendFile(__dirname + '/client.html'); });
+//main.get('/', function(req, res){ res.sendFile(__dirname + '/client.html'); });
 // main.get('/index.html', function(req, res){ res.sendfile('newclient.html'); });
 // main.get('/client.html', function(req, res){ res.sendfile('newclient.html'); });
 
@@ -42,7 +90,7 @@ var sockets = {};
  * information. After all of that happens, they'll finally be able to complete
  * the peer connection and will be streaming audio/video between eachother.
  */
-io.sockets.on('connection', function (socket) {
+wss.on('connection', function (socket) {
     socket.channels = {};
     sockets[socket.id] = socket;
 

@@ -599,7 +599,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.groupOrUser = '';
         $rootScope.user = response.data;
   
-       // localStorage.setItem("isViewing", 0);
         localStorage.setItem('tokenData', $rootScope.user._id);
         localStorage.setItem('userData', $rootScope.user);
         socket.emit('user_connected', {

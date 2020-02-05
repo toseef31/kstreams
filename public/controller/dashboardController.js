@@ -1249,9 +1249,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         /* video calling functionality*/
-        $scope.videoCall = function (type, callerId) {
-
-
+        $scope.videoCall = function (type, callerId) { 
             if ($scope.groupSelected) {
                 let userData = {
                     groupId: $scope.selectedGroupId,

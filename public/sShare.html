@@ -58,7 +58,7 @@
                 
                 socket.on('connect', function () {
                     if (config.callback) config.callback(socket);
-                    console.log("connect");
+                    console.log("Screen share connect");
                 });
 
                 socket.send = function (message) {

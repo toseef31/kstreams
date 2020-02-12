@@ -1,6 +1,8 @@
 app.factory('GroupCall', ['$rootScope',
     function ($rootScope) {
-        /** CONFIG **/
+        /** CONFIG 
+            $rootScope.signaling_socket for emit purpose
+        **/
         var SIGNALING_SERVER = "http://localhost:8080";
         var USE_AUDIO = true;
         var USE_VIDEO = true;
@@ -19,12 +21,13 @@ app.factory('GroupCall', ['$rootScope',
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
 
         function init(userData) {
-            console.log("Connecting to signaling server: ",SIGNALING_SERVER);
+            console.log("Connecting to signaling server: ", SIGNALING_SERVER);
             //$rootScope.signaling_socket = io(SIGNALING_SERVER);
             //$rootScope.signaling_socket = io();
-
-            $rootScope.signaling_socket.on('connect', function () {
-                console.log("Connected to signaling server");
+            //$rootScope.signaling_socket.on('connect', function () {
+          
+            // $rootScope.signaling_socket.$on('$open', function () {
+            //     console.log('Group call connectected'); 
                 setup_local_media(function () {
                     /* once the user has given us access to their
                         * microphone/camcorder, join the channel and start peering up */
@@ -32,8 +35,11 @@ app.factory('GroupCall', ['$rootScope',
                     console.log('join_chat_channel: ', userData.groupId);
                     join_chat_channel(userData.groupId, { 'userData': userData });
                 });
-            });
-            $rootScope.signaling_socket.on('disconnect', function () {
+            // }) 
+            
+            
+            //});
+            $rootScope.signaling_socket.$on('$close', function () {
                 console.log("Disconnected from signaling server");
                 /* Tear down all of our peer connections and remove all the
                     * media divs when we disconnect */
@@ -46,13 +52,44 @@ app.factory('GroupCall', ['$rootScope',
 
                 peers = {};
                 peer_media_elements = {};
+            }).$on('$message', function (message) { 
+                var parsedMessage = JSON.parse(message);
+                switch (parsedMessage.id) {
+                    case 'addPeer':
+                        addPeerEmitted(parsedMessage);
+                        break;
+                    case 'sessionDescription':
+                        sessionDescriptionEmitted(parsedMessage);
+                        break;
+                    case 'iceCandidate':
+                        iceCandidateEmitted(parsedMessage);
+                        break;
+                    case 'removePeer':
+                        removePeerEmitted(parsedMessage);
+                        break;
+                    default:
+                        console.error('Unrecognized message', parsedMessage);
+                }
             });
+
+            function sendMessage(message) {
+                $rootScope.signaling_socket.$emit(JSON.stringify(message));
+            }
             function join_chat_channel(channel, userdata) {
-                console.log('$rootScope.signaling_socket ',$rootScope.signaling_socket);
-                $rootScope.signaling_socket.emit('join', { "channel": channel, "userdata": userdata });
+                console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
+                var message = {
+                    id: 'join',
+                    channel: channel,
+                    userdata: userdata
+                }
+                sendMessage(message);
             }
             function part_chat_channel(channel) {
-                $rootScope.signaling_socket.emit('part', channel);
+                var message = {
+                    id: 'part',
+                    channel: channel
+                }
+                sendMessage(message);
             }
 
 
@@ -62,7 +99,8 @@ app.factory('GroupCall', ['$rootScope',
             * in the channel you will connect directly to the other 5, so there will be a total of 15 
             * connections in the network). 
             */
-            $rootScope.signaling_socket.on('addPeer', function (config) {
+            //$rootScope.signaling_socket.on('addPeer', function (config) {
+            function addPeerEmitted(config){
                 console.log('Signaling server said to add peer:', config);
                 var peer_id = config.peer_id;
                 if (peer_id in peers) {
@@ -80,13 +118,22 @@ app.factory('GroupCall', ['$rootScope',
 
                 peer_connection.onicecandidate = function (event) {
                     if (event.candidate) {
-                        $rootScope.signaling_socket.emit('relayICECandidate', {
+                        var message = {
+                            'id': 'relayICECandidate',
                             'peer_id': peer_id,
                             'ice_candidate': {
                                 'sdpMLineIndex': event.candidate.sdpMLineIndex,
                                 'candidate': event.candidate.candidate
                             }
-                        });
+                        };
+                        sendMessage(message);
+                        // $rootScope.signaling_socket.emit('relayICECandidate', {
+                        //     'peer_id': peer_id,
+                        //     'ice_candidate': {
+                        //         'sdpMLineIndex': event.candidate.sdpMLineIndex,
+                        //         'candidate': event.candidate.candidate
+                        //     }
+                        // });
                     }
                 }
                 peer_connection.onaddstream = function (event) {
@@ -117,8 +164,15 @@ app.factory('GroupCall', ['$rootScope',
                             console.log("Local offer description is: ", local_description);
                             peer_connection.setLocalDescription(local_description,
                                 function () {
-                                    $rootScope.signaling_socket.emit('relaySessionDescription',
-                                        { 'peer_id': peer_id, 'session_description': local_description });
+                                    var message = {
+                                        'id': 'relaySessionDescription',
+                                        'peer_id': peer_id,
+                                        'session_description': local_description
+                                    };
+                                    sendMessage(message);
+
+                                    // $rootScope.signaling_socket.emit('relaySessionDescription',
+                                    //     { 'peer_id': peer_id, 'session_description': local_description });
                                     console.log("Offer setLocalDescription succeeded");
                                 },
                                 function () { Alert("Offer setLocalDescription failed!"); }
@@ -128,7 +182,7 @@ app.factory('GroupCall', ['$rootScope',
                             console.log("Error sending offer: ", error);
                         });
                 }
-            });
+            }
 
 
             /** 
@@ -137,7 +191,8 @@ app.factory('GroupCall', ['$rootScope',
              * the 'offerer' sends a description to the 'answerer' (with type
              * "offer"), then the answerer sends one back (with type "answer").  
              */
-            $rootScope.signaling_socket.on('sessionDescription', function (config) {
+            //$rootScope.signaling_socket.on('sessionDescription', function (config) {
+            function sessionDescriptionEmitted(config){
                 console.log('Remote description received: ', config);
                 var peer_id = config.peer_id;
                 var peer = peers[peer_id];
@@ -155,8 +210,14 @@ app.factory('GroupCall', ['$rootScope',
                                     console.log("Answer description is: ", local_description);
                                     peer.setLocalDescription(local_description,
                                         function () {
-                                            $rootScope.signaling_socket.emit('relaySessionDescription',
-                                                { 'peer_id': peer_id, 'session_description': local_description });
+                                            var message = {
+                                                'id': 'relaySessionDescription',
+                                                'peer_id': peer_id,
+                                                'session_description': local_description
+                                            };
+                                            sendMessage(message);
+                                            // $rootScope.signaling_socket.emit('relaySessionDescription',
+                                            //     { 'peer_id': peer_id, 'session_description': local_description });
                                             console.log("Answer setLocalDescription succeeded");
                                         },
                                         function () { Alert("Answer setLocalDescription failed!"); }
@@ -173,18 +234,18 @@ app.factory('GroupCall', ['$rootScope',
                     }
                 );
                 console.log("Description Object: ", desc);
-
-            });
+            }
 
             /**
              * The offerer will send a number of ICE Candidate blobs to the answerer so they 
              * can begin trying to find the best path to one another on the net.
              */
-            $rootScope.signaling_socket.on('iceCandidate', function (config) {
+            //$rootScope.signaling_socket.on('iceCandidate', function (config) {
+            function iceCandidateEmitted(config){
                 var peer = peers[config.peer_id];
                 var ice_candidate = config.ice_candidate;
                 peer.addIceCandidate(new RTCIceCandidate(ice_candidate));
-            });
+            }
 
 
             /**
@@ -197,7 +258,8 @@ app.factory('GroupCall', ['$rootScope',
              * $rootScope.signaling_socket.on('disconnect') code will kick in and tear down
              * all the peer sessions.
              */
-            $rootScope.signaling_socket.on('removePeer', function (config) {
+            //$rootScope.signaling_socket.on('removePeer', function (config) {
+            function removePeerEmitted(config){
                 console.log('Signaling server said to remove peer:', config);
                 var peer_id = config.peer_id;
                 if (peer_id in peer_media_elements) {
@@ -209,7 +271,7 @@ app.factory('GroupCall', ['$rootScope',
 
                 delete peers[peer_id];
                 delete peer_media_elements[config.peer_id];
-            });
+            };
         }
 
         function stop() {

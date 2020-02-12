@@ -94,8 +94,13 @@ wss.on('connection', function (socket) {
     socket.channels = {};
     sockets[socket.id] = socket;
 
+    socket.on('error', function (error) {
+        console.log('Connection ' + socket.id + ' error');
+        //stop(sessionId);
+    });
+
     console.log("["+ socket.id + "] connection accepted");
-    socket.on('disconnect', function () {
+    socket.on('close', function () {
         for (var channel in socket.channels) {
             part(channel);
         }
@@ -103,8 +108,27 @@ wss.on('connection', function (socket) {
         delete sockets[socket.id];
     });
 
+    ws.on('message', function (_message) {
+        var message = JSON.parse(_message);
+        if (typeof message.event !== "undefined") message = JSON.parse(message.event);
+        console.log(message.id, ' = Connection   received message ', message);
+        switch (message.id) {
+            case 'join':
+                joinIt(message.config);
+                break;
+            case 'part':
+                part(message.channel);
+                break;    
+            case 'relayICECandidate':
+                relayICECandidate(message.config);
+                break;  
+            case 'relaySessionDescription':
+                relaySessionDescription(message.config);
+                break; 
+        }
+    });
 
-    socket.on('join', function (config) {
+    function joinIt(config){
         console.log("["+ socket.id + "] join ", config);
         var channel = config.channel;
         var userdata = config.userdata;
@@ -118,50 +142,124 @@ wss.on('connection', function (socket) {
             channels[channel] = {};
         }
 
+        var message={};
         for (id in channels[channel]) {
-            channels[channel][id].emit('addPeer', {'peer_id': socket.id, 'should_create_offer': false});
-            socket.emit('addPeer', {'peer_id': id, 'should_create_offer': true});
+            message={
+                'id':'addPeer',
+                'peer_id': socket.id,
+                'should_create_offer':false
+            };
+            sendMessage(channels[channel][id],message); 
+            //channels[channel][id].emit('addPeer', {'peer_id': socket.id, 'should_create_offer': false});
+            message={
+                'id':'addPeer',
+                'peer_id': id,
+                'should_create_offer':true
+            };
+            sendMessage(socket,message);
+            //socket.emit('addPeer', {'peer_id': id, 'should_create_offer': true});
         }
 
         channels[channel][socket.id] = socket;
         socket.channels[channel] = channel;
-    });
+    }
+
+    function sendMessage(socketEmit,message){
+        socketEmit.emit(message);
+    }
+    // socket.on('join', function (config) {
+    //     console.log("["+ socket.id + "] join ", config);
+    //     var channel = config.channel;
+    //     var userdata = config.userdata;
+    //     if (channel in socket.channels) {
+    //         console.log("["+ socket.id + "] ERROR: already joined ", channel);
+    //         return;
+    //     }
+    //     if (!(channel in channels)) {
+    //         channels[channel] = {};
+    //     }
+    //     for (id in channels[channel]) {
+    //         channels[channel][id].emit('addPeer', {'peer_id': socket.id, 'should_create_offer': false});
+    //         socket.emit('addPeer', {'peer_id': id, 'should_create_offer': true});
+    //     }
+    //     channels[channel][socket.id] = socket;
+    //     socket.channels[channel] = channel;
+    // });
 
     function part(channel) {
         console.log("["+ socket.id + "] part ");
-
         if (!(channel in socket.channels)) {
             console.log("["+ socket.id + "] ERROR: not in ", channel);
             return;
         }
-
         delete socket.channels[channel];
         delete channels[channel][socket.id];
-
+        var message={};
         for (id in channels[channel]) {
-            channels[channel][id].emit('removePeer', {'peer_id': socket.id});
-            socket.emit('removePeer', {'peer_id': id});
+            message={
+                'id':'removePeer',
+                'peer_id':socket.id
+            };
+            sendMessage(channels[channel][id],message);
+            //channels[channel][id].emit('removePeer', {'peer_id': socket.id});
+
+            message={
+                'id':'removePeer',
+                'peer_id': id
+            };
+            sendMessage(socket,message);
+            //socket.emit('removePeer', {'peer_id': id});
         }
     }
-    socket.on('part', part);
+    //socket.on('part', part);
 
-    socket.on('relayICECandidate', function(config) {
+    function relayICECandidate(config){
         var peer_id = config.peer_id;
         var ice_candidate = config.ice_candidate;
         console.log("["+ socket.id + "] relaying ICE candidate to [" + peer_id + "] ", ice_candidate);
 
         if (peer_id in sockets) {
-            sockets[peer_id].emit('iceCandidate', {'peer_id': socket.id, 'ice_candidate': ice_candidate});
+            var message={
+                'id':'iceCandidate',
+                'peer_id':socket.id,
+                'ice_candidate':ice_candidate
+            };
+            sendMessage(sockets[peer_id],message); 
+            //sockets[peer_id].emit('iceCandidate', {'peer_id': socket.id, 'ice_candidate': ice_candidate});
         }
-    });
+    }
+    // socket.on('relayICECandidate', function(config) {
+    //     var peer_id = config.peer_id;
+    //     var ice_candidate = config.ice_candidate;
+    //     console.log("["+ socket.id + "] relaying ICE candidate to [" + peer_id + "] ", ice_candidate);
 
-    socket.on('relaySessionDescription', function(config) {
+    //     if (peer_id in sockets) {
+    //         sockets[peer_id].emit('iceCandidate', {'peer_id': socket.id, 'ice_candidate': ice_candidate});
+    //     }
+    // });
+
+    function relaySessionDescription(config){
         var peer_id = config.peer_id;
         var session_description = config.session_description;
         console.log("["+ socket.id + "] relaying session description to [" + peer_id + "] ", session_description);
 
         if (peer_id in sockets) {
-            sockets[peer_id].emit('sessionDescription', {'peer_id': socket.id, 'session_description': session_description});
+            var message={
+                'id':'sessionDescription',
+                'peer_id':socket.id,
+                'session_description':session_description
+            };
+            sendMessage(sockets[peer_id],message);
+            //sockets[peer_id].emit('sessionDescription', {'peer_id': socket.id, 'session_description': session_description});
         }
-    });
+    }
+    // socket.on('relaySessionDescription', function(config) {
+    //     var peer_id = config.peer_id;
+    //     var session_description = config.session_description;
+    //     console.log("["+ socket.id + "] relaying session description to [" + peer_id + "] ", session_description);
+
+    //     if (peer_id in sockets) {
+    //         sockets[peer_id].emit('sessionDescription', {'peer_id': socket.id, 'session_description': session_description});
+    //     }
+    // });
 });

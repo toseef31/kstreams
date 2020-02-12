@@ -62,33 +62,37 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         let webSocketIp = $rootScope.projectData.domainUrl;
         if (hostIs[0] == 'localhost') webSocketIp = '127.0.0.1';
         $scope.o2oReqUrl = 'wss://' + webSocketIp + ':8443/one2one';
-        $scope.o2oGC = 'wss://' + webSocketIp + ':8080/groupCall';
+        $rootScope.o2oGC = 'wss://' + webSocketIp + ':8080/groupCall';
 
         $scope.o2oSocConnec();
-        $scope.connGroupCall();
-
+        $rootScope.signaling_socket = $websocket.$new({
+            url: $rootScope.o2oGC
+        });
+        $rootScope.signaling_socket.$on('$open', function () {
+            console.log('Group call connectected'); 
+        });
         // if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
-    $scope.connGroupCall = function () {
-        console.log('$scope.o2oGC ',$scope.o2oGC);
-        //new WebSocket($scope.o2oGC);
-        $rootScope.signaling_socket = $websocket.$new({
-            url: $scope.o2oGC
-        });
+    // $scope.connGroupCall = function () {
+    //     console.log('$rootScope.o2oGC ',$rootScope.o2oGC);
+    //     //new WebSocket($rootScope.o2oGC);
+    //     $rootScope.signaling_socket = $websocket.$new({
+    //         url: $rootScope.o2oGC
+    //     });
 
-        $rootScope.signaling_socket.$on('$open', function () {
-            console.log('Group call connectected');
-        })
-        .$on('$close', function () {
-            console.log('connGroupCall Socket closed trying to reconnect...');
-            //$scope.connGroupCall();
-        })
-        .$on('$error', function (err) {
-            console.log('connGroupCall Socket Error trying to reconnect... ',err);
-            //$scope.connGroupCall();
-        })
-    };
+    //     $rootScope.signaling_socket.$on('$open', function () {
+    //         console.log('Group call connectected');
+    //     }) 
+    //     .$on('$close', function () {
+    //         console.log('connGroupCall Socket closed trying to reconnect...');
+    //         //$scope.connGroupCall();
+    //     })
+    //     .$on('$error', function (err) {
+    //         console.log('connGroupCall Socket Error trying to reconnect... ',err);
+    //         //$scope.connGroupCall();
+    //     })
+    // };
 
     $scope.o2oSocLoaded = false;
     $scope.o2oSocConnec = function () {

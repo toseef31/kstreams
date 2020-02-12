@@ -114,16 +114,16 @@ wss.on('connection', function (socket) {
         console.log('Received message in group server.js ', message);
         switch (message.id) {
             case 'join':
-                joinIt(message.config);
+                joinIt(message);
                 break;
             case 'part':
                 part(message.channel);
                 break;    
             case 'relayICECandidate':
-                relayICECandidate(message.config);
+                relayICECandidate(message);
                 break;  
             case 'relaySessionDescription':
-                relaySessionDescription(message.config);
+                relaySessionDescription(message);
                 break; 
         }
     });

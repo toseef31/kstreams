@@ -90,12 +90,18 @@ var sockets = {};
  * information. After all of that happens, they'll finally be able to complete
  * the peer connection and will be streaming audio/video between eachother.
  */
+var idCounter = 0;
+function nextUniqueId() {
+    idCounter++;
+    return idCounter.toString();
+}
 wss.on('connection', function (socket) {
+    var sessionId = nextUniqueId();
     socket.channels = {};
-    sockets[socket.id] = socket;
-
+    sockets[sessionId] = socket;
+    
     socket.on('error', function (error) {
-        console.log('Connection ' + socket.id + ' error');
+        console.log('Connection ' + sessionId + ' error');
         //stop(sessionId);
     });
 
@@ -104,8 +110,8 @@ wss.on('connection', function (socket) {
         for (var channel in socket.channels) {
             part(channel);
         }
-        console.log("["+ socket.id + "] disconnected");
-        delete sockets[socket.id];
+        console.log("["+ sessionId + "] disconnected");
+        delete sockets[sessionId];
     });
 
     socket.on('message', function (_message) {
@@ -129,12 +135,12 @@ wss.on('connection', function (socket) {
     });
 
     function joinIt(config){
-        console.log("["+ socket.id + "] join ", config);
+        console.log("["+ sessionId + "] join ", config);
         var channel = config.channel;
         var userdata = config.userdata;
 
         if (channel in socket.channels) {
-            console.log("["+ socket.id + "] ERROR: already joined ", channel);
+            console.log("["+ sessionId + "] ERROR: already joined ", channel);
             return;
         }
 
@@ -146,7 +152,7 @@ wss.on('connection', function (socket) {
         for (id in channels[channel]) {
             message={
                 'id':'addPeer',
-                'peer_id': socket.id,
+                'peer_id': sessionId,
                 'should_create_offer':false
             };
             sendMessage(channels[channel][id],message); 
@@ -160,7 +166,7 @@ wss.on('connection', function (socket) {
             //socket.emit('addPeer', {'peer_id': id, 'should_create_offer': true});
         }
 
-        channels[channel][socket.id] = socket;
+        channels[channel][sessionId] = socket;
         socket.channels[channel] = channel;
     }
 
@@ -188,18 +194,18 @@ wss.on('connection', function (socket) {
     // });
 
     function part(channel) {
-        console.log("["+ socket.id + "] part ");
+        console.log("["+ sessionId + "] part ");
         if (!(channel in socket.channels)) {
-            console.log("["+ socket.id + "] ERROR: not in ", channel);
+            console.log("["+ sessionId + "] ERROR: not in ", channel);
             return;
         }
         delete socket.channels[channel];
-        delete channels[channel][socket.id];
+        delete channels[channel][sessionId];
         var message={};
         for (id in channels[channel]) {
             message={
                 'id':'removePeer',
-                'peer_id':socket.id
+                'peer_id':sessionId
             };
             sendMessage(channels[channel][id],message);
             //channels[channel][id].emit('removePeer', {'peer_id': socket.id});
@@ -217,12 +223,12 @@ wss.on('connection', function (socket) {
     function relayICECandidate(config){
         var peer_id = config.peer_id;
         var ice_candidate = config.ice_candidate;
-        console.log("["+ socket.id + "] relaying ICE candidate to [" + peer_id + "] ", ice_candidate);
+        console.log("["+ sessionId + "] relaying ICE candidate to [" + peer_id + "] ", ice_candidate);
 
         if (peer_id in sockets) {
             var message={
                 'id':'iceCandidate',
-                'peer_id':socket.id,
+                'peer_id':sessionId,
                 'ice_candidate':ice_candidate
             };
             sendMessage(sockets[peer_id],message); 
@@ -242,12 +248,12 @@ wss.on('connection', function (socket) {
     function relaySessionDescription(config){
         var peer_id = config.peer_id;
         var session_description = config.session_description;
-        console.log("["+ socket.id + "] relaying session description to [" + peer_id + "] ", session_description);
+        console.log("["+ sessionId + "] relaying session description to [" + peer_id + "] ", session_description);
 
         if (peer_id in sockets) {
             var message={
                 'id':'sessionDescription',
-                'peer_id':socket.id,
+                'peer_id':sessionId,
                 'session_description':session_description
             };
             sendMessage(sockets[peer_id],message);

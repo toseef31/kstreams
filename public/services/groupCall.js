@@ -278,7 +278,7 @@ app.factory('GroupCall', ['$rootScope',
 
         function stop() {
             console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
-            $rootScope.signaling_socket.emit('disconnect');
+            $rootScope.signaling_socket.$emit('disconnect');
         }
         /***********************/
         /** Local media stuff **/

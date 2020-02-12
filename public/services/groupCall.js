@@ -54,6 +54,7 @@ app.factory('GroupCall', ['$rootScope',
                 peer_media_elements = {};
             }).$on('$message', function (message) { 
                 var parsedMessage = JSON.parse(message);
+                console.log('Received message in groupCall.js ',parsedMessage);
                 switch (parsedMessage.id) {
                     case 'addPeer':
                         addPeerEmitted(parsedMessage);
@@ -73,6 +74,7 @@ app.factory('GroupCall', ['$rootScope',
             });
 
             function sendMessage(message) {
+                console.log('Sending message from groupCall.js ',message);
                 $rootScope.signaling_socket.$emit(JSON.stringify(message));
             }
             function join_chat_channel(channel, userdata) {

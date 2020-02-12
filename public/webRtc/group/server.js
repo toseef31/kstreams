@@ -111,7 +111,7 @@ wss.on('connection', function (socket) {
     ws.on('message', function (_message) {
         var message = JSON.parse(_message);
         if (typeof message.event !== "undefined") message = JSON.parse(message.event);
-        console.log(message.id, ' = Connection   received message ', message);
+        console.log('Received message in group server.js ', message);
         switch (message.id) {
             case 'join':
                 joinIt(message.config);
@@ -165,6 +165,7 @@ wss.on('connection', function (socket) {
     }
 
     function sendMessage(socketEmit,message){
+        console.log('Sending message from group server.js ', message);
         socketEmit.emit(message);
     }
     // socket.on('join', function (config) {

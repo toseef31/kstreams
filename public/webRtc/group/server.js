@@ -108,7 +108,7 @@ wss.on('connection', function (socket) {
         delete sockets[socket.id];
     });
 
-    ws.on('message', function (_message) {
+    socket.on('message', function (_message) {
         var message = JSON.parse(_message);
         if (typeof message.event !== "undefined") message = JSON.parse(message.event);
         console.log('Received message in group server.js ', message);

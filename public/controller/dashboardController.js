@@ -68,10 +68,32 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.signaling_socket = $websocket.$new({
             url: $rootScope.o2oGC
         });
+
         $rootScope.signaling_socket.$on('$open', function () {
-            console.log('Group call connectected DC'); 
-        }).$on('$message', function (message) {  
-            console.log('message rcvd dc ',message);
+            console.log('Group call connectected DC JS'); 
+        }).$on('$close', function () {
+            console.log("Disconnected from signaling server");
+            GroupCall.closeIt();
+            
+        }).$on('$message', function (message) { 
+            var parsedMessage = JSON.parse(message);
+            console.log('Received message in DC ',parsedMessage);
+            switch (parsedMessage.id) {
+                case 'addPeer':
+                    GroupCall.addPeerEmitted(parsedMessage);
+                    break;
+                case 'sessionDescription':
+                    GroupCall.sessionDescriptionEmitted(parsedMessage);
+                    break;
+                case 'iceCandidate':
+                    GroupCall.iceCandidateEmitted(parsedMessage);
+                    break;
+                case 'removePeer':
+                    GroupCall.removePeerEmitted(parsedMessage);
+                    break;
+                default:
+                    console.error('Unrecognized message', parsedMessage);
+            }
         });
         // if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });

@@ -105,7 +105,7 @@ wss.on('connection', function (socket) {
         //stop(sessionId);
     });
 
-    console.log("["+ socket + "] connection accepted");
+    console.log("["+ sessionId + "] connection accepted");
     socket.on('close', function () {
         for (var channel in socket.channels) {
             part(channel);

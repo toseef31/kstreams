@@ -69,7 +69,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             url: $rootScope.o2oGC
         });
         $rootScope.signaling_socket.$on('$open', function () {
-            console.log('Group call connectected'); 
+            console.log('Group call connectected DC'); 
+        }).$on('$message', function (message) {  
+            console.log('message rcvd dc ',message);
         });
         // if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });

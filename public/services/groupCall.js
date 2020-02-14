@@ -39,7 +39,9 @@ app.factory('GroupCall', ['$rootScope',
             
             
             //});
-            $rootScope.signaling_socket.$on('$close', function () {
+            $rootScope.signaling_socket.$on('$open', function () {
+                console.log('Group call connectected GC JS'); 
+            }).$on('$close', function () {
                 console.log("Disconnected from signaling server");
                 /* Tear down all of our peer connections and remove all the
                     * media divs when we disconnect */

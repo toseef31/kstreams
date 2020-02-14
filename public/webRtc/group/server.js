@@ -172,7 +172,7 @@ wss.on('connection', function (socket) {
 
     function sendMessage(socketEmit,message){
         console.log('Sending message from group server.js ', message);
-        socketEmit.emit(message);
+        socketEmit.send(message);
     }
     // socket.on('join', function (config) {
     //     console.log("["+ socket.id + "] join ", config);

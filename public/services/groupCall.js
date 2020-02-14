@@ -26,29 +26,31 @@ app.factory('GroupCall', ['$rootScope',
                 //GROUP ID would be the channel name
                 console.log('join_chat_channel: ', userData.groupId);
                 join_chat_channel(userData.groupId, { 'userData': userData });
-            }); 
-            
-            function sendMessage(message) {
-                console.log('Sending message from groupCall.js ',message);
-                $rootScope.signaling_socket.$emit(JSON.stringify(message));
-            }
-            function join_chat_channel(channel, userdata) {
-                console.log('join_chat_channel ');
-                var message = {
-                    id: 'join',
-                    channel: channel,
-                    userdata: userdata
-                }
-                sendMessage(message);
-            }
-            function part_chat_channel(channel) {
-                var message = {
-                    id: 'part',
-                    channel: channel
-                }
-                sendMessage(message);
-            } 
+            });  
         }
+
+        function sendMessage(message) {
+            console.log('Sending message from groupCall.js ',message);
+            $rootScope.signaling_socket.$emit(JSON.stringify(message));
+        }
+
+        function join_chat_channel(channel, userdata) {
+            console.log('join_chat_channel ',userdata);
+            var message = {
+                id: 'join',
+                channel: channel,
+                userdata: userdata
+            }
+            sendMessage(message);
+        }
+
+        function part_chat_channel(channel) {
+            var message = {
+                id: 'part',
+                channel: channel
+            }
+            sendMessage(message);
+        } 
 
         /** 
         * When we join a group, our signaling server will send out 'addPeer' events to each pair

@@ -234,6 +234,12 @@ app.factory('GroupCall', ['$rootScope',
         function stop() {
             console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
             $rootScope.signaling_socket.$emit('disconnect');
+            navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
+            function (stream) {
+                stream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+            });
             closeIt();
         }
         /***********************/

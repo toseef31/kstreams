@@ -70,14 +70,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         $rootScope.signaling_socket.$on('$open', function () {
-            console.log('Group call connectected DC JS'); 
+            console.log('Group call connectected DC JS');
         }).$on('$close', function () {
             console.log("Disconnected from signaling server");
             GroupCall.closeIt();
-            
-        }).$on('$message', function (message) { 
+
+        }).$on('$message', function (message) {
             var parsedMessage = JSON.parse(message);
-            console.log('Received message in DC ',parsedMessage);
+            console.log('Received message in DC ', parsedMessage);
             switch (parsedMessage.id) {
                 case 'addPeer':
                     GroupCall.addPeerEmitted(parsedMessage);
@@ -649,7 +649,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.countGroupMembers = 1;
         $scope.groupOrUser = '';
         $rootScope.user = response.data;
-  
+
         localStorage.setItem('tokenData', $rootScope.user._id);
         localStorage.setItem('userData', $rootScope.user);
         socket.emit('user_connected', {
@@ -1266,7 +1266,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     localStorage.removeItem('ss');
                     localStorage.removeItem('tokenIs');
                     localStorage.removeItem('tokenData');
-                   // localStorage.removeItem("isViewing");
+                    // localStorage.removeItem("isViewing");
                     $location.path('/');
                 }
             })
@@ -1280,7 +1280,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         /* video calling functionality*/
-        $scope.videoCall = function (type, callerId) { 
+        $scope.videoCall = function (type, callerId) {
             if ($scope.groupSelected) {
                 let userData = {
                     groupId: $scope.selectedGroupId,
@@ -1317,6 +1317,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.stopGroupCall = function () {
             GroupCall.stop();
+            $('#groupCallModal').hide();
         };
         /* this is the main function call after time up and no one receive the call*/
         $scope.dropCall = function () {

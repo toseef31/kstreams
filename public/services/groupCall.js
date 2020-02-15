@@ -1,5 +1,5 @@
-app.factory('GroupCall', ['$rootScope','$scope',
-    function ($rootScope,$scope) {
+app.factory('GroupCall', ['$rootScope',
+    function ($rootScope) {
         /** CONFIG 
             $rootScope.signaling_socket for emit purpose
         **/ 

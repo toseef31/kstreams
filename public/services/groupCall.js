@@ -235,6 +235,7 @@ app.factory('GroupCall', ['$rootScope',
         function stop() {
             console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
             $rootScope.signaling_socket.$emit('disconnect');
+            closeIt();
         }
         /***********************/
         /** Local media stuff **/
@@ -287,7 +288,7 @@ app.factory('GroupCall', ['$rootScope',
             for ($rootScope.peer_id in peers) {
                 peers[$rootScope.peer_id].close();
             }
-
+  
             peers = {};
             peer_media_elements = {};
         }

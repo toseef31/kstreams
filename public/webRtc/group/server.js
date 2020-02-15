@@ -117,6 +117,8 @@ wss.on('connection', function (socket) {
     socket.on('message', function (_message) {
         console.log('Received message in group server.js ', _message);
         var message = JSON.parse(_message);
+        console.log(message);
+        console.log(message.event);
         if (typeof message.event !== "undefined") message = JSON.parse(message.event);
         console.log('Received message in group parsed server.js ', message);
         switch (message.id) {

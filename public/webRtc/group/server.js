@@ -107,19 +107,19 @@ wss.on('connection', function (socket) {
 
     console.log("["+ sessionId + "] connection accepted");
     socket.on('close', function () {
-        for (var channel in socket.channels) {
-            part(channel);
-        }
-        console.log("["+ sessionId + "] disconnected");
-        delete sockets[sessionId];
+        closeIt();
     });
 
     socket.on('message', function (_message) {
         console.log('Received message in group server.js ', _message);
         var message = JSON.parse(_message);
         console.log(message);
+        if(message.event=='disconnect'){
+            closeIt();
+            return;
+        }
         console.log(message.event);
-        if (typeof message.event !== "undefined") message = JSON.parse(message.event);
+        if (typeof message.event !== "undefined" && message.event!='disconnect') message = JSON.parse(message.event);
         console.log('Received message in group parsed server.js ', message);
         switch (message.id) {
             case 'join':
@@ -137,6 +137,13 @@ wss.on('connection', function (socket) {
         }
     });
 
+    function closeIt(){
+        for (var channel in socket.channels) {
+            part(channel);
+        }
+        console.log("["+ sessionId + "] disconnected");
+        delete sockets[sessionId];
+    }
     function joinIt(config){
         console.log("["+ sessionId + "] join ", config);
         var channel = config.channel;

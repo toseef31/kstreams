@@ -219,16 +219,15 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('removePeer', function (config) {
         function removePeerEmitted(config){
-            console.log('Signaling server said to remove peer:', config);
-            $rootScope.peer_id = config.peer_id;
-            if ($rootScope.peer_id in peer_media_elements) {
-                peer_media_elements[$rootScope.peer_id].remove();
+            console.log('Signaling server said to remove peer:', config); 
+            if (config.peer_id in peer_media_elements) {
+                peer_media_elements[config.peer_id].remove();
             }
-            if ($rootScope.peer_id in peers) {
-                peers[$rootScope.peer_id].close();
+            if (config.peer_id in peers) {
+                peers[config.peer_id].close();
             }
 
-            delete peers[$rootScope.peer_id];
+            delete peers[config.peer_id];
             delete peer_media_elements[config.peer_id];
         };
             
@@ -268,7 +267,6 @@ app.factory('GroupCall', ['$rootScope',
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
                     attachMediaStream(local_media[0], stream);
-
                     if (callback) callback();
                 },
                 function () { /* user denied access to a/v */

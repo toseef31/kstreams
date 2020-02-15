@@ -1,5 +1,5 @@
-app.factory('GroupCall', ['$rootScope',
-    function ($rootScope) {
+app.factory('GroupCall', ['$rootScope','$scope',
+    function ($rootScope,$scope) {
         /** CONFIG 
             $rootScope.signaling_socket for emit purpose
         **/ 
@@ -61,10 +61,10 @@ app.factory('GroupCall', ['$rootScope',
         //$rootScope.signaling_socket.on('addPeer', function (config) {
         function addPeerEmitted(config){
             console.log('Signaling server said to add peer:', config);
-            var peer_id = config.peer_id;
-            if (peer_id in peers) {
+            $rootScope.peer_id = config.peer_id;
+            if ($rootScope.peer_id in peers) {
                 /* This could happen if the user joins multiple channels where the other peer is also in. */
-                console.log("Already connected to peer ", peer_id);
+                console.log("Already connected to peer ", $rootScope.peer_id);
                 return;
             }
             var peer_connection = new RTCPeerConnection(
@@ -73,13 +73,13 @@ app.factory('GroupCall', ['$rootScope',
                                                                 * eventually (supposedly), but is necessary 
                                                                 * for now to get firefox to talk to chrome */
             );
-            peers[peer_id] = peer_connection;
+            peers[$rootScope.peer_id] = peer_connection;
 
             peer_connection.onicecandidate = function (event) {
                 if (event.candidate) {
                     var message = {
                         'id': 'relayICECandidate',
-                        'peer_id': peer_id,
+                        'peer_id': $rootScope.peer_id,
                         'ice_candidate': {
                             'sdpMLineIndex': event.candidate.sdpMLineIndex,
                             'candidate': event.candidate.candidate
@@ -103,7 +103,7 @@ app.factory('GroupCall', ['$rootScope',
                     remote_media.attr("muted", "true");
                 }
                 remote_media.attr("controls", "");
-                peer_media_elements[peer_id] = remote_media;
+                peer_media_elements[$rootScope.peer_id] = remote_media;
                 $('.groupCallModalContent').append(remote_media);
                 attachMediaStream(remote_media[0], event.stream);
             }
@@ -117,7 +117,7 @@ app.factory('GroupCall', ['$rootScope',
                 * create an offer, then send back an answer 'sessionDescription' to us
                 */
             if (config.should_create_offer) {
-                console.log("Creating RTC offer to ", peer_id);
+                console.log("Creating RTC offer to ", $rootScope.peer_id);
                 peer_connection.createOffer(
                     function (local_description) {
                         console.log("Local offer description is: ", local_description);
@@ -125,7 +125,7 @@ app.factory('GroupCall', ['$rootScope',
                             function () {
                                 var message = {
                                     'id': 'relaySessionDescription',
-                                    'peer_id': peer_id,
+                                    'peer_id': $rootScope.peer_id,
                                     'session_description': local_description
                                 };
                                 sendMessage(message);
@@ -153,8 +153,8 @@ app.factory('GroupCall', ['$rootScope',
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
         function sessionDescriptionEmitted(config){
             console.log('Remote description received: ', config);
-            var peer_id = config.peer_id;
-            var peer = peers[peer_id];
+            $rootScope.peer_id = config.peer_id;
+            var peer = peers[$rootScope.peer_id];
             var remote_description = config.session_description;
             console.log(config.session_description);
 
@@ -171,7 +171,7 @@ app.factory('GroupCall', ['$rootScope',
                                     function () {
                                         var message = {
                                             'id': 'relaySessionDescription',
-                                            'peer_id': peer_id,
+                                            'peer_id': $rootScope.peer_id,
                                             'session_description': local_description
                                         };
                                         sendMessage(message);
@@ -220,15 +220,15 @@ app.factory('GroupCall', ['$rootScope',
         //$rootScope.signaling_socket.on('removePeer', function (config) {
         function removePeerEmitted(config){
             console.log('Signaling server said to remove peer:', config);
-            var peer_id = config.peer_id;
-            if (peer_id in peer_media_elements) {
-                peer_media_elements[peer_id].remove();
+            $rootScope.peer_id = config.peer_id;
+            if ($rootScope.peer_id in peer_media_elements) {
+                peer_media_elements[$rootScope.peer_id].remove();
             }
-            if (peer_id in peers) {
-                peers[peer_id].close();
+            if ($rootScope.peer_id in peers) {
+                peers[$rootScope.peer_id].close();
             }
 
-            delete peers[peer_id];
+            delete peers[$rootScope.peer_id];
             delete peer_media_elements[config.peer_id];
         };
             
@@ -279,14 +279,13 @@ app.factory('GroupCall', ['$rootScope',
 
         function closeIt(){
             /* Tear down all of our peer connections and remove all the
-                * media divs when we disconnect */ 
-            if(!peer_id) return;
-            console.log('closeIt called ',peer_id);
-            for (peer_id in peer_media_elements) {
-                peer_media_elements[peer_id].remove();
+                * media divs when we disconnect */  
+            console.log('closeIt called ',$rootScope.peer_id);
+            for ($rootScope.peer_id in peer_media_elements) {
+                peer_media_elements[$rootScope.peer_id].remove();
             }
-            for (peer_id in peers) {
-                peers[peer_id].close();
+            for ($rootScope.peer_id in peers) {
+                peers[$rootScope.peer_id].close();
             }
 
             peers = {};

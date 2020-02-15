@@ -119,7 +119,7 @@ wss.on('connection', function (socket) {
             return;
         }
         console.log(message.event);
-        if (typeof message.event !== "undefined" && message.event!='disconnect') message = JSON.parse(message.event);
+        if (typeof message.event !== "undefined") message = JSON.parse(message.event);
         console.log('Received message in group parsed server.js ', message);
         switch (message.id) {
             case 'join':

@@ -11,7 +11,12 @@ app.factory('GroupCall', ['$rootScope',
         /** You should probably use a different stun server doing commercial stuff **/
         /** Also see: https://gist.github.com/zziuni/3741933 **/
         var ICE_SERVERS = [
-            { url: "stun:stun.l.google.com:19302" }
+            //{ url: "stun:stun.l.google.com:19302" }
+            {
+                url: 'turn:178.128.19.180:3478?transport=udp',
+                credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
+                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
+            }
         ];
 
         // {

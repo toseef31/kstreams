@@ -235,7 +235,7 @@ var conference = function (config) {
     }
 
     function leave() {
-        console.log("leave");
+        console.log("leave screen share");
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -250,7 +250,7 @@ var conference = function (config) {
 
         // if owner leaves; try to remove his room from all other users side
         if (isbroadcaster) {
-            console.log("owner leave");
+            console.log("owner leave screen share");
             if (localStorage.getItem('ssStatus') == 1) {
                 var tokenIs = localStorage.getItem('tokenIs');
                 let userData = tokenIs.split('-');

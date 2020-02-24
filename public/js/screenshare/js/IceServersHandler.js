@@ -14,7 +14,7 @@ var IceServersHandler = (function() {
             {
                 url: 'turn:178.128.19.180:3478?transport=udp',
                 credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
-                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU'
+                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
             }
 
         ];

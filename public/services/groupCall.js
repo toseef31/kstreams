@@ -271,7 +271,7 @@ app.factory('GroupCall', ['$rootScope',
                     //local_media.muted=true;
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
-                    document.getElementById("parentVideo").muted = true;
+                    //document.getElementById("parentVideo").muted = true;
                     attachMediaStream(local_media[0], stream);
                     if (callback) callback();
                 },

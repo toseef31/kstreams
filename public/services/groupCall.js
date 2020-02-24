@@ -266,7 +266,8 @@ app.factory('GroupCall', ['$rootScope',
                     local_media_stream = stream;
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
-                    local_media.attr("muted", "true"); /* always mute ourselves by default */
+                    //local_media.attr("muted", "true"); /* always mute ourselves by default */
+                    local_media.muted=true;
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
                     attachMediaStream(local_media[0], stream);

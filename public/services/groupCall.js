@@ -10,20 +10,14 @@ app.factory('GroupCall', ['$rootScope',
 
         /** You should probably use a different stun server doing commercial stuff **/
         /** Also see: https://gist.github.com/zziuni/3741933 **/
+        //{ url: "stun:stun.l.google.com:19302" }
         var ICE_SERVERS = [
-            //{ url: "stun:stun.l.google.com:19302" }
             {
                 url: 'turn:178.128.19.180:3478?transport=udp',
                 credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
                 username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
             }
-        ];
-
-        // {
-        //     url: 'turn:178.128.19.180:3478?transport=udp',
-        //     credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
-        //     username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU'
-        // }
+        ]; 
         //$rootScope.signaling_socket = null;   /* our socket.io connection to our webserver */
         var local_media_stream = null; /* our own microphone / webcam */
         var peers = {};                /* keep track of our peer connections, indexed by peer_id (aka socket.io id) */
@@ -95,14 +89,7 @@ app.factory('GroupCall', ['$rootScope',
                             'candidate': event.candidate.candidate
                         }
                     };
-                    sendMessage(message);
-                    // $rootScope.signaling_socket.emit('relayICECandidate', {
-                    //     'peer_id': peer_id,
-                    //     'ice_candidate': {
-                    //         'sdpMLineIndex': event.candidate.sdpMLineIndex,
-                    //         'candidate': event.candidate.candidate
-                    //     }
-                    // });
+                    sendMessage(message); 
                 }
             }
             peer_connection.onaddstream = function (event) {
@@ -247,13 +234,8 @@ app.factory('GroupCall', ['$rootScope',
             local_media_stream.getTracks().forEach(function(track) {
                 track.stop();
             });
+            $(".groupCallModalContent #parentVideo").hide().remove();
             local_media_stream = null;
-            // navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
-            // function (stream) {
-            //     stream.getTracks().forEach(function(track) {
-            //         track.stop();
-            //     });
-            // });
             closeIt();
         }
         /***********************/
@@ -281,7 +263,7 @@ app.factory('GroupCall', ['$rootScope',
                 function (stream) { /* user accepted access to a/v */
                     console.log("Access granted to audio/video");
                     local_media_stream = stream;
-                    var local_media = USE_VIDEO ? $("<video>") : $("<audio>");
+                    var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
                     local_media.attr("muted", "true"); /* always mute ourselves by default */
                     local_media.attr("controls", "");

@@ -247,6 +247,7 @@ app.factory('GroupCall', ['$rootScope',
             local_media_stream.getTracks().forEach(function(track) {
                 track.stop();
             });
+            local_media_stream = null;
             // navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
             // function (stream) {
             //     stream.getTracks().forEach(function(track) {
@@ -259,10 +260,7 @@ app.factory('GroupCall', ['$rootScope',
         /** Local media stuff **/
         /***********************/
         function setup_local_media(callback, errorback) {
-            if (local_media_stream != null) {  /* ie, if we've already been initialized */
-                local_media_stream.getTracks().forEach(function(track) {
-                    track.start();
-                });
+            if (local_media_stream != null) {  /* ie, if we've already been initialized */ 
                 if (callback) callback();   
                 return;
             }

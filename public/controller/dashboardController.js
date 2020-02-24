@@ -510,7 +510,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $("#broadcastingVideoModal").modal('hide');
         $("#avPresenterModal").modal('hide');
         $("#broadcastingModal").modal('hide');
-
     }
 
     $scope.initiateViewer = function () {
@@ -605,7 +604,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             userId: $rootScope.user._id
         });
         $rootScope.o2oSocConEst = false;
-
 
         $scope.receiveCall = false;
         $scope.welcomePage = true;

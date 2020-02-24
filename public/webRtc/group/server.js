@@ -145,8 +145,7 @@ wss.on('connection', function (socket) {
         var channel = config.channel;
         var userdata = config.userdata;
         sessionId=userdata.callerId;
-        sockets[sessionId] = socket;
-        console.log('joinIt Socket Set ',sockets[sessionId]);
+        sockets[sessionId] = socket; 
         console.log("["+ sessionId + "] joinIt ");
         if (channel in socket.channels) {
             console.log("["+ sessionId + "] ERROR: already joined ", channel);

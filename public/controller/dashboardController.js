@@ -1324,17 +1324,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.callDropAfterTime($scope.chatWithId, $scope.user._id);
         }
         /* this function drop the group call after times up and no one receive call*/
-        // $scope.dropGroupCallAfterTime = function (members, callerId) {
-        //     //$scope.busy = false;
-        //     One2OneCall.setCallState(NO_CALL);
-        //     $rootScope.toggleBtn(false);
-        //     $scope.leaveRoom();
-        //     socket.emit('dropTheGroupCall', {
-        //         members,
-        //         members,
-        //         callerId: callerId
-        //     });
-        // }
+        $scope.dropGroupCallAfterTime = function (members, callerId) {
+            //$scope.busy = false;
+            One2OneCall.setCallState(NO_CALL);
+            $rootScope.toggleBtn(false);
+            $scope.leaveRoom();
+            socket.emit('dropTheGroupCall', {
+                members,
+                members,
+                callerId: callerId
+            });
+        }
         /* this function drop the call after times up and no one receive call*/
         $scope.callDropAfterTime = function (friendId, callerId) {
             One2OneCall.setCallState(NO_CALL);

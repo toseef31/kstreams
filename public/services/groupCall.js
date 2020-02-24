@@ -3,7 +3,7 @@ app.factory('GroupCall', ['$rootScope',
         /** CONFIG 
             $rootScope.signaling_socket for emit purpose
         **/ 
-        var USE_AUDIO = true;
+        var USE_AUDIO = false;
         var USE_VIDEO = true;
         //var DEFAULT_CHANNEL = 'some-global-channel-name';
         var MUTE_AUDIO_BY_DEFAULT = false;
@@ -234,7 +234,8 @@ app.factory('GroupCall', ['$rootScope',
             local_media_stream.getTracks().forEach(function(track) {
                 track.stop();
             });
-            $(".groupCallModalContent #parentVideo").hide().remove();
+            $(".groupCallModalContent").html();
+            // #parentVideo
             local_media_stream = null;
             closeIt();
         }

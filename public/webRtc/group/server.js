@@ -145,6 +145,8 @@ wss.on('connection', function (socket) {
         var channel = config.channel;
         var userdata = config.userdata;
         sessionId=userdata.callerId;
+        sockets[sessionId] = socket;
+        console.log('joinIt Socket Set ',sockets[sessionId]);
         console.log("["+ sessionId + "] joinIt ");
         if (channel in socket.channels) {
             console.log("["+ sessionId + "] ERROR: already joined ", channel);
@@ -231,7 +233,7 @@ wss.on('connection', function (socket) {
         var peer_id = config.peer_id;
         var ice_candidate = config.ice_candidate;
         console.log("["+ sessionId + "] relayICECandidate FUNCTION [" + peer_id + "] ");
-
+        console.log('sockets are ',sockets);
         if (peer_id in sockets) {
             var message={
                 'id':'iceCandidate',

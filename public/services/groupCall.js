@@ -260,7 +260,10 @@ app.factory('GroupCall', ['$rootScope',
         /***********************/
         function setup_local_media(callback, errorback) {
             if (local_media_stream != null) {  /* ie, if we've already been initialized */
-                if (callback) callback();
+                local_media_stream.getTracks().forEach(function(track) {
+                    track.start();
+                });
+                if (callback) callback();   
                 return;
             }
             /* Ask user for permission to use the computers microphone and/or camera, 

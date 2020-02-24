@@ -232,8 +232,7 @@ wss.on('connection', function (socket) {
     function relayICECandidate(config){
         var peer_id = config.peer_id;
         var ice_candidate = config.ice_candidate;
-        console.log("["+ sessionId + "] relayICECandidate FUNCTION [" + peer_id + "] ");
-        console.log('sockets are ',sockets);
+        console.log("["+ sessionId + "] relayICECandidate FUNCTION [" + peer_id + "] "); 
         if (peer_id in sockets) {
             var message={
                 'id':'iceCandidate',

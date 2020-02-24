@@ -29,7 +29,7 @@ app.factory('GroupCall', ['$rootScope',
                     * microphone/camcorder, join the channel and start peering up */
                 //GROUP ID would be the channel name
                 console.log('join_chat_channel: ', userData.groupId);
-                join_chat_channel(userData.groupId, { 'userData': userData });
+                join_chat_channel(userData.groupId, userData);
             });  
         }
 

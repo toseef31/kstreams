@@ -238,7 +238,7 @@ app.factory('GroupCall', ['$rootScope',
             $(".groupCallModalContent").html('');
             // #parentVideo
             local_media_stream = null;
-            closeIt();
+            //closeIt();
         }
         /***********************/
         /** Local media stuff **/

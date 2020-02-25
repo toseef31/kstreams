@@ -158,6 +158,7 @@ wss.on('connection', function (socket) {
 
         var message={};
         for (id in channels[channel]) {
+            if(id==sessionId) continue;
             message={
                 'id':'addPeer',
                 'peer_id': sessionId,
@@ -180,7 +181,10 @@ wss.on('connection', function (socket) {
 
     function sendMessage(socketEmit,message){
         console.log('sendMessage FUNCTION group server.js ', message);
-        socketEmit.send(JSON.stringify(message));
+        socketEmit.send(JSON.stringify(message), (err) => {
+            if (err) console.error(err);
+        });
+        //socketEmit.send(JSON.stringify(message));
     }
     // socket.on('join', function (config) {
     //     console.log("["+ socket.id + "] join ", config);

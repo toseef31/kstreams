@@ -239,6 +239,7 @@ app.factory('GroupCall', ['$rootScope',
             // #parentVideo
             local_media_stream = null;
             //closeIt();
+            
         }
         /***********************/
         /** Local media stuff **/

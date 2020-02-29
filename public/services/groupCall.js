@@ -286,14 +286,10 @@ app.factory('GroupCall', ['$rootScope',
         function closeIt(){
             /* Tear down all of our peer connections and remove all the
                 * media divs when we disconnect */  
+            if(typeof peer_id==='undefined' || !peer_id) return;   
             console.log('closeIt called ',peer_id);
-            for (peer_id in peer_media_elements) {
-                peer_media_elements[peer_id].remove();
-            }
-            for (peer_id in peers) {
-                peers[peer_id].close();
-            }
-  
+            for (peer_id in peer_media_elements) peer_media_elements[peer_id].remove();
+            for (peer_id in peers) peers[peer_id].close(); 
             peers = {};
             peer_media_elements = {};
         }

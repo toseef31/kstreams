@@ -71,7 +71,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         
         $rootScope.signaling_socket.$on('$open', function () {
             console.log('Group call connectected DC JS');
-            $interval(GroupCall.getGroupData, 6000);
+            $interval(GroupCall.getGroupData, 9000);
             GroupCall.getGroupData(); //call on start and then it will repeat by interval
         }).$on('$close', function () {
             console.log("Disconnected from signaling server");
@@ -104,10 +104,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             }
                             else return false;
                         }); 
-                        if(found) groupCallStatus.push(grpData) 
+                        if(found) $scope.groupCallStatus.push(grpData); 
                     }); 
                      
-                    console.log('groupCallStatus ',groupCallStatus.length,' and ',$scope.allGroups);
+                    console.log('groupCallStatus ',$scope.groupCallStatus.length,' and ',$scope.allGroups);
             break;
                 default:
                     console.error('Unrecognized message', parsedMessage);

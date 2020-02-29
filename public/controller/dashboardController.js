@@ -95,12 +95,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 case 'groupDataResp':  
                     parsedMessage.data.forEach(grpData => { 
                         for (var i in $scope.allGroups) {
-                            if($scope.allGroups[i]._id == grpData.groupId){
-                                $scope.allGroups[i]['joinCall']=true; 
-                            }
-                            else{
-                                $scope.allGroups[i]['joinCall']=false; 
-                            }
+                            if($scope.allGroups[i]._id == grpData.groupId) $scope.allGroups[i].joinCall=true; 
+                            else $scope.allGroups[i].joinCall=false;  
                         } 
                     }); 
                      
@@ -721,7 +717,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all group users*/
         $http.get("/getCreatedGroups/" + $scope.user._id + "/" + $rootScope.projectData._id)
             .then(function (response) {
-                $scope.allGroups = response.data; 
+                $scope.allGroups = response.data;  
+                for (var i in $scope.allGroups) $scope.allGroups[i]['joinCall']=false; 
                 console.log('$scope.allGroups ',$scope.allGroups);
                 $scope.groupsLoaded = true;
             });

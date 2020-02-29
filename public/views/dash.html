@@ -186,12 +186,13 @@
                   ng-repeat="groupA in allGroups| search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
                   ng-click="$parent.selection=$index">
                   <div ng-click="startChat({type:2,group:groupA, groupIndex:$index})">
-                    <span class="user-name-section">
-
+                    <span class="user-name-section"> 
                       <div class="avatar pull-left">
                         <img alt="Kim Steve Profile Picture" src="../images/profile-photos/noProfile.png">
                       </div>
                       <span class="messages-user-name">{{groupA.name}}</span>
+                      <br ng-if='groupA.joinCall' />
+                      <span ng-if='groupA.joinCall' class="callStatus" >Group call</span>
                     </span>
 
                     <div class="clear"></div>

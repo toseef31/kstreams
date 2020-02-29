@@ -92,25 +92,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 case 'removePeer':
                     GroupCall.removePeerEmitted(parsedMessage);
                     break;
-                case 'groupDataResp': 
-                    if(!$rootScope.user) break;
-                    $scope.groupCallStatus=[];
-                    var found=false; 
+                case 'groupDataResp':  
                     parsedMessage.data.forEach(grpData => { 
-                        found = $scope.allGroups.find(function(element) {
-                            if(element._id == grpData.groupId){
-                                element['joinCall']=true;
-                                return true;
+                        for (var i in $scope.allGroups) {
+                            if($scope.allGroups[i]._id == grpData.groupId){
+                                $scope.allGroups[i]['joinCall']=true; 
                             }
                             else{
-                                element['joinCall']=false;
-                                return false;
+                                $scope.allGroups[i]['joinCall']=false; 
                             }
-                        }); 
-                        if(found) $scope.groupCallStatus.push(grpData); 
+                        } 
                     }); 
                      
-                    console.log('groupCallStatus ',$scope.groupCallStatus.length,' and ',$scope.allGroups);
+                    console.log('groupCallStatus ',$scope.allGroups);
             break;
                 default:
                     console.error('Unrecognized message', parsedMessage);

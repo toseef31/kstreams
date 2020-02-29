@@ -239,7 +239,6 @@ app.factory('GroupCall', ['$rootScope',
             // #parentVideo
             local_media_stream = null;
             //closeIt();
-            
         }
         /***********************/
         /** Local media stuff **/
@@ -268,7 +267,7 @@ app.factory('GroupCall', ['$rootScope',
                     local_media_stream = stream;
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
-                    //local_media.attr("muted", "true"); /* always mute ourselves by default */
+                    local_media.attr("muted", "true"); /* always mute ourselves by default */
                     console.log('local_media ',local_media);
                     //local_media.muted=true;
                     local_media.attr("controls", "");

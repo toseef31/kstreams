@@ -140,7 +140,7 @@ wss.on('connection', function (socket) {
                         'groupId': i,
                         'count': groupsInCall[i].length
                     });
-                ws.send(JSON.stringify({
+                socket.send(JSON.stringify({
 					id: 'groupDataResp',
 					data: groupArr
 				}));

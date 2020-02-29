@@ -267,12 +267,12 @@ app.factory('GroupCall', ['$rootScope',
                     local_media_stream = stream;
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
-                    local_media.attr("muted", "true"); /* always mute ourselves by default */
+                    //local_media.attr("muted", "true"); /* always mute ourselves by default */
                     console.log('local_media ',local_media);
                     //local_media.muted=true;
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
-                    //document.getElementById("parentVideo").muted = true;
+                    document.getElementById("parentVideo").muted = true;
                     attachMediaStream(local_media[0], stream);
                     if (callback) callback();
                 },

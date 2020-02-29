@@ -102,7 +102,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 element['joinCall']=true;
                                 return true;
                             }
-                            else return false;
+                            else{
+                                element['joinCall']=false;
+                                return false;
+                            }
                         }); 
                         if(found) $scope.groupCallStatus.push(grpData); 
                     }); 

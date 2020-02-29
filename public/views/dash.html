@@ -191,8 +191,8 @@
                         <img alt="Kim Steve Profile Picture" src="../images/profile-photos/noProfile.png">
                       </div>
                       <span class="messages-user-name">{{groupA.name}}</span>
-                      <br ng-if='groupA.joinCall' />
-                      <span ng-if='groupA.joinCall' class="callStatus" >Group call</span>
+                      <br ng-if='groupA.joinCall==true' />
+                      <span ng-if='groupA.joinCall==true' class="callStatus" >Group call</span>
                     </span>
 
                     <div class="clear"></div>
@@ -255,6 +255,7 @@
             </span>
             <span ng-if="projectData.videoCall == 1" class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
+              <span ng-if="selGroupData.joinCall==true" class="callStatus ng-scope">Join Call</span>
             </span>
             <span ng-if="projectData.audioCall == 1" class="whiteTextColor" ng-if="!groupSelected">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id)"></i>

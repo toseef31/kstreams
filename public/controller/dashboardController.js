@@ -1,7 +1,7 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall, GroupCall) {
     $scope.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
-
-    $scope.selectedGroupId = 0;
+ 
+    $scope.selGroupData={};
     $scope.backPressed = false;
     $scope.usersLoaded = false;
     $scope.groupsLoaded = false;
@@ -95,7 +95,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 case 'groupDataResp':  
                     parsedMessage.data.forEach(grpData => { 
                         for (var i in $scope.allGroups) {
-                            if($scope.allGroups[i]._id == grpData.groupId) $scope.allGroups[i].joinCall=true; 
+                            if($scope.allGroups[i]._id == grpData.groupId && grpData.count>0) $scope.allGroups[i].joinCall=true; 
                             else $scope.allGroups[i].joinCall=false;  
                         } 
                     }); 
@@ -404,17 +404,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.edit = function () {
         $('#gnEdit').prop("disabled", false);
         $scope.editMode = true;
-        previousValue = $scope.selGroupName;
+        previousValue = $scope.selGroupData.name;
     };
     $scope.save = function () {
         $('#gnEdit').prop("disabled", true);
         $scope.editMode = false;
-        if (previousValue != $scope.selGroupName) {
-            $scope.allGroups[$scope.selectedUserNo].name = $scope.selGroupName;
+        if (previousValue != $scope.selGroupData.name) {
+            $scope.allGroups[$scope.selectedUserNo].name = $scope.selGroupData.name;
 
             //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
-            socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupName, 'funType': 1 });
-            $http.post("/editGroupName", { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupName }).
+            socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupData.name, 'funType': 1 });
+            $http.post("/editGroupName", { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupData.name }).
             then(function (response) {
             });
         }
@@ -969,7 +969,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $scope.isGroupChatStarted = true;
                 $scope.groupSelected = true;
-                $scope.selectedGroupId = obj.group._id;
+                $scope.selGroupData=obj.group; 
                 $scope.connectionId = obj.group._id;
                 $scope.selGroupName = obj.group.name;
                 $scope.selGrpMembers = obj.group.members;
@@ -1296,7 +1296,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.videoCall = function (type, callerId) {
             if ($scope.groupSelected) {
                 let userData = {
-                    groupId: $scope.selectedGroupId,
+                    groupId: $scope.selGroupData._id,
                     callerName: $scope.user.name,
                     callerId: $scope.user._id,
                 };
@@ -1308,7 +1308,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.post('/callAGroup', {
                     'userId': $scope.user._id,
-                    'groupId':$scope.selectedGroupId
+                    'groupId':$scope.selGroupData._id
                 });
                 
 

@@ -260,7 +260,7 @@
 
             <span ng-if="projectData.videoCall == 1 && groupSelected" class="whiteTextColor marginRight20">
               <i id="videoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
-              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope">Join Call</span>
+              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0)">Join Call</span>
             </span>
 
             

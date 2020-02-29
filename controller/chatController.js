@@ -6,6 +6,7 @@ const userModel = require("../model/users-model");
 const friendModel = require("../model/friendModel");
 const chatModel = require("../model/chatModel");
 const groupsModel = require("../model/groupsModel");
+const groupCall = require("../model/groupCall");
 const notifiModel = require("../model/notificationModel");
 const projectModel = require("../model/projectModel");
 const helpers = require("../helperfunctions/helpers");
@@ -172,28 +173,6 @@ module.exports = function (io, saveUser) {
         });
   };
 
-  router.getCreatedGroups = function (req, res) {
-    // get all groups
-    groupsModel
-      .find({ status: 1, projectId: req.params.projectId })
-      .populate("members")
-      .exec(function (err, groups) {
-        var tempGroups = [];
-        if (err) {
-          return console.log(err);
-        }
-
-        for (var i = 0; i < groups.length; i++) {
-          for (var j = 0; j < groups[i].members.length; j++) {
-            if (req.params.userId == groups[i].members[j]._id) {
-              tempGroups.push(groups[i]);
-            }
-          }
-        }
-
-        res.send(tempGroups); // send groups list
-      });
-  };
 
   router.addGroup = function (req, res) {
     var members = req.body.members;
@@ -1039,58 +1018,6 @@ module.exports = function (io, saveUser) {
       }
     } else res.json({ status: false, message: "Need authorization" });
   };
-
-  router.createUserGroup = (req, res) => {
-    let newGroup = new groupsModel(req.body.groupData);
-    newGroup.save(function (err, result) {
-      groupsModel
-        .find({ status: 1, projectId: req.body.groupData.projectId + "" })
-        .populate("members", { name: true })
-        .exec(function (err, groups) {
-          var tempGroups = [];
-          if (err) {
-            return console.log(err);
-          }
-
-          for (var i = 0; i < groups.length; i++) {
-            for (var j = 0; j < groups[i].members.length; j++) {
-              if (req.body.userId == groups[i].members[j]._id) {
-                tempGroups.push(groups[i]);
-              }
-            }
-          }
-          res.send(tempGroups); // send groups list
-        });
-    });
-  }
-
-  router.removeGroupUser = (req, res) => {
-    groupsModel.update(
-      { "_id": req.body.groupId },
-      { $pull: { members: req.body.memberId } }
-    ).exec(function (err, result) {
-      res.json(200);
-    })
-  }
-
-  router.editGroupName = (req, res) => {
-    groupsModel.update(
-      { "_id": req.body.groupId },
-      { "name": req.body.groupName }
-    ).exec(function (err, result) {
-      res.json(200);
-    })
-  }
-
-  router.addNewMembers = (req, res) => {
-    groupsModel.update(
-      { '_id': req.body.groupId },
-      { $push: { members: req.body.members } },
-    ).exec(function (err, result) {
-      res.json(200);
-    })
-  }
-
   // Broadcast function end ======
   return router;
 };

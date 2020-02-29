@@ -91,12 +91,14 @@ var sockets = {};
  * the peer connection and will be streaming audio/video between eachother.
  */
 var idCounter = 0;
+var groupsInCall = [];
 function nextUniqueId() {
     idCounter++;
     return idCounter.toString();
 }
 wss.on('connection', function (socket) {
     var sessionId = nextUniqueId();
+    var groupId=0;
     socket.channels = {};
     sockets[sessionId] = socket;
     
@@ -131,21 +133,56 @@ wss.on('connection', function (socket) {
             case 'relaySessionDescription':
                 relaySessionDescription(message);
                 break; 
+            case 'groupData': 
+                let groupArr = [];
+                for (var i in groupsInCall) 
+                    groupArr.push({
+                        'groupId': i,
+                        'count': groupsInCall[i].length
+                    });
+                ws.send(JSON.stringify({
+					id: 'groupDataResp',
+					data: groupArr
+				}));
+                break; 
         }
     });
 
     function closeIt(){
-        for (var channel in socket.channels) {
-            part(channel);
-        }
-        console.log("["+ sessionId + "] disconnected");
+        for (var channel in socket.channels) part(channel);
+         
+        console.log("["+ sessionId + "] disconnected ",groupId);
         delete sockets[sessionId];
+
+        for (var i in groupsInCall[groupId]) {
+            if (groupsInCall[groupId][i]== sessionId) { 
+                groupsInCall[groupId].splice(i, 1);
+                console.log('sessId rm: ',sessionId,' and ',groupsInCall[groupId]);
+            }
+        }
     }
     function joinIt(config){ 
         var channel = config.channel;
         var userdata = config.userdata;
+        groupId=config.userdata.groupId;
         sessionId=userdata.callerId;
         sockets[sessionId] = socket; 
+
+        if(groupsInCall[groupId] && groupsInCall[groupId].length>0){
+            var found = groupsInCall[groupId].find(function(element) {
+                return element == sessionId;
+            });
+            if(!found){ 
+                groupsInCall[groupId].push(sessionId);
+                console.log('sessId id: ',sessionId,' added in ',groupId);
+            } 
+        }
+        else{
+            groupsInCall[groupId]=[];
+            groupsInCall[groupId].push(sessionId);
+            console.log('New //sessId id: ',sessionId,' added in ',groupId);
+        }
+
         console.log("["+ sessionId + "] joinIt ");
         if (channel in socket.channels) {
             console.log("["+ sessionId + "] ERROR: already joined ", channel);

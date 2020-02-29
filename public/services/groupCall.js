@@ -297,6 +297,13 @@ app.factory('GroupCall', ['$rootScope',
             peers = {};
             peer_media_elements = {};
         }
+
+        function getGroupData() {
+            var message = {
+                id: 'groupData'
+            };
+            sendMessage(message);
+        }
         return {
             init: init,
             setup_local_media: setup_local_media,
@@ -305,7 +312,8 @@ app.factory('GroupCall', ['$rootScope',
             removePeerEmitted:removePeerEmitted,
             iceCandidateEmitted:iceCandidateEmitted,
             sessionDescriptionEmitted:sessionDescriptionEmitted,
-            addPeerEmitted:addPeerEmitted
+            addPeerEmitted:addPeerEmitted,
+            getGroupData:getGroupData
         }
     }
 ]);

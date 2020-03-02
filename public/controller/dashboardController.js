@@ -51,6 +51,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.scrollHeight = 0;
     //-> 0-No Broadcast, 1- Broadcasting, 2- Viewing Broadcast
     $scope.broadcastingStatus = 0;
+
+    $scope.CallTitle="";
+
     // 0: nothing, 1: screenShare button pressed, 2: screen is sharing
     // $rootScope.incomingScreenshare = 0;
     // $scope.isReceivingSS = false;
@@ -218,6 +221,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.openssShareModal = function () {
+        if ($scope.selectedUserData.pStatus !=0 )return;
+
         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.chatWithId + '-' + $rootScope.user.name);
         $("#ssShareModal").modal('show');
         //startScreenshare();
@@ -921,6 +926,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $scope.chatLength = 0;
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
+            console.log(obj.user);
             if (obj.isChatDocker == 0) resetScrollVar();
             if (!obj) return;
 
@@ -948,6 +954,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if(obj.type == 2 && $scope.selectedUserNo != obj.groupIndex){
                 $scope.selectedUserNo = obj.groupIndex; 
                 $scope.selectedUserData = obj.user;
+            }
+
+            if (obj.type == 1 && obj.user.pStatus != 0){
+                $scope.CallTitle="user is offline";
+            }
+            else{
+                $scope.CallTitle="";  
             }
 
             $scope.isRepeatFinish = false;
@@ -1342,6 +1355,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /* video calling functionality*/
         $scope.videoCall = function (type, callerId) {
+          
+
             if ($scope.groupSelected) {
                 let userData = {
                     groupId: $scope.selGroupData._id,
@@ -1363,9 +1378,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 GroupCall.init(userData);
                 return;
             }
+
+            if ($scope.selectedUserData.pStatus != 0) return
+
             if (type == 1) document.querySelector('.audioTab').style.display = 'block';
             else document.querySelector('.videoTabNew').style.display = 'block';
-
+            
             $rootScope.toggleBtn(true);
             $scope.caller = true;
             $scope.ringbell.loop = true;
@@ -1387,6 +1405,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             GroupCall.stop();
             $('#groupCallModal').hide();
         };
+
+
         /* this is the main function call after time up and no one receive the call*/
         $scope.dropCall = function () {
             $scope.callDropAfterTime($scope.chatWithId, $scope.user._id);

@@ -750,3 +750,7 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     float: right;
     margin-top: 4px;
   }
+
+  .unavailableButton{
+    opacity: 0.6 !important;
+  }

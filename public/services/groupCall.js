@@ -2,7 +2,7 @@ app.factory('GroupCall', ['$rootScope',
     function ($rootScope) {
         /** CONFIG 
             $rootScope.signaling_socket for emit purpose
-        **/ 
+        **/
         var USE_AUDIO = true;
         var USE_VIDEO = true;
         //var DEFAULT_CHANNEL = 'some-global-channel-name';
@@ -17,29 +17,29 @@ app.factory('GroupCall', ['$rootScope',
                 credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
                 username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
             }
-        ]; 
+        ];
         //$rootScope.signaling_socket = null;   /* our socket.io connection to our webserver */
         var local_media_stream = null; /* our own microphone / webcam */
         var peers = {};                /* keep track of our peer connections, indexed by peer_id (aka socket.io id) */
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
 
-        function init(userData) { 
+        function init(userData) {
             setup_local_media(function () {
                 /* once the user has given us access to their
                     * microphone/camcorder, join the channel and start peering up */
                 //GROUP ID would be the channel name
                 console.log('join_chat_channel: ', userData.groupId);
                 join_chat_channel(userData.groupId, userData);
-            });  
+            });
         }
 
         function sendMessage(message) {
-            console.log('Sending message from groupCall.js ',message);
+            console.log('Sending message from groupCall.js ', message);
             $rootScope.signaling_socket.$emit(JSON.stringify(message));
         }
 
         function join_chat_channel(channel, userdata) {
-            console.log('join_chat_channel ',userdata);
+            console.log('join_chat_channel ', userdata);
             var message = {
                 id: 'join',
                 channel: channel,
@@ -54,7 +54,7 @@ app.factory('GroupCall', ['$rootScope',
                 channel: channel
             }
             sendMessage(message);
-        } 
+        }
 
         /** 
         * When we join a group, our signaling server will send out 'addPeer' events to each pair
@@ -63,7 +63,7 @@ app.factory('GroupCall', ['$rootScope',
         * connections in the network). 
         */
         //$rootScope.signaling_socket.on('addPeer', function (config) {
-        function addPeerEmitted(config){
+        function addPeerEmitted(config) {
             console.log('Signaling server said to add peer:', config);
             var peer_id = config.peer_id;
             if (peer_id in peers) {
@@ -89,7 +89,7 @@ app.factory('GroupCall', ['$rootScope',
                             'candidate': event.candidate.candidate
                         }
                     };
-                    sendMessage(message); 
+                    sendMessage(message);
                 }
             }
             peer_connection.onaddstream = function (event) {
@@ -148,7 +148,7 @@ app.factory('GroupCall', ['$rootScope',
          * "offer"), then the answerer sends one back (with type "answer").  
          */
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
-        function sessionDescriptionEmitted(config){
+        function sessionDescriptionEmitted(config) {
             console.log('Remote description received: ', config);
             var peer_id = config.peer_id;
             var peer = peers[peer_id];
@@ -197,7 +197,7 @@ app.factory('GroupCall', ['$rootScope',
          * can begin trying to find the best path to one another on the net.
          */
         //$rootScope.signaling_socket.on('iceCandidate', function (config) {
-        function iceCandidateEmitted(config){
+        function iceCandidateEmitted(config) {
             var peer = peers[config.peer_id];
             var ice_candidate = config.ice_candidate;
             peer.addIceCandidate(new RTCIceCandidate(ice_candidate));
@@ -215,8 +215,8 @@ app.factory('GroupCall', ['$rootScope',
          * all the peer sessions.
          */
         //$rootScope.signaling_socket.on('removePeer', function (config) {
-        function removePeerEmitted(config){
-            console.log('Signaling server said to remove peer:', config); 
+        function removePeerEmitted(config) {
+            console.log('Signaling server said to remove peer:', config);
             var peer_id = config.peer_id;
             if (peer_id in peer_media_elements) {
                 peer_media_elements[peer_id].remove();
@@ -228,14 +228,18 @@ app.factory('GroupCall', ['$rootScope',
             delete peers[peer_id];
             delete peer_media_elements[peer_id];
         };
-            
+
         function stop() {
             console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
             $rootScope.signaling_socket.$emit('disconnect');
-            local_media_stream.getTracks().forEach(function(track) {
+            $(".groupCallModalContent").html('');
+          
+            // if already null then return otherwise will generate error
+            if (local_media_stream == null) return; 
+
+            local_media_stream.getTracks().forEach(function (track) {
                 track.stop();
             });
-            $(".groupCallModalContent").html('');
             // #parentVideo
             local_media_stream = null;
             //closeIt();
@@ -244,8 +248,8 @@ app.factory('GroupCall', ['$rootScope',
         /** Local media stuff **/
         /***********************/
         function setup_local_media(callback, errorback) {
-            if (local_media_stream != null) {  /* ie, if we've already been initialized */ 
-                if (callback) callback();   
+            if (local_media_stream != null) {  /* ie, if we've already been initialized */
+                if (callback) callback();
                 return;
             }
             /* Ask user for permission to use the computers microphone and/or camera, 
@@ -268,7 +272,7 @@ app.factory('GroupCall', ['$rootScope',
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
                     //local_media.attr("muted", "true"); /* always mute ourselves by default */
-                    console.log('local_media ',local_media);
+                    console.log('local_media ', local_media);
                     //local_media.muted=true;
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
@@ -283,13 +287,13 @@ app.factory('GroupCall', ['$rootScope',
                 });
         }
 
-        function closeIt(){
+        function closeIt() {
             /* Tear down all of our peer connections and remove all the
-                * media divs when we disconnect */  
-            if(typeof peer_id==='undefined' || !peer_id) return;   
-            console.log('closeIt called ',peer_id);
+                * media divs when we disconnect */
+            if (typeof peer_id === 'undefined' || !peer_id) return;
+            console.log('closeIt called ', peer_id);
             for (peer_id in peer_media_elements) peer_media_elements[peer_id].remove();
-            for (peer_id in peers) peers[peer_id].close(); 
+            for (peer_id in peers) peers[peer_id].close();
             peers = {};
             peer_media_elements = {};
         }
@@ -304,12 +308,12 @@ app.factory('GroupCall', ['$rootScope',
             init: init,
             setup_local_media: setup_local_media,
             stop: stop,
-            closeIt:closeIt,
-            removePeerEmitted:removePeerEmitted,
-            iceCandidateEmitted:iceCandidateEmitted,
-            sessionDescriptionEmitted:sessionDescriptionEmitted,
-            addPeerEmitted:addPeerEmitted,
-            getGroupData:getGroupData
+            closeIt: closeIt,
+            removePeerEmitted: removePeerEmitted,
+            iceCandidateEmitted: iceCandidateEmitted,
+            sessionDescriptionEmitted: sessionDescriptionEmitted,
+            addPeerEmitted: addPeerEmitted,
+            getGroupData: getGroupData
         }
     }
 ]);

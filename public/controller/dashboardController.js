@@ -8,10 +8,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.chatLoaded = false;
     $scope.isChatPanel = false;
     $scope.isSidePanel = true;
-    $scope.nchatIndex = 0;
-    $scope.gchatIndex = 1;
+   
     $scope.loggedUserId = 0;
-    $scope.tempUsers = null;
+    $rootScope.tempUsers = null;
     const NO_CALL = 0;
     /*save with whom user are chatting*/
     $scope.chatWithId = '';
@@ -24,7 +23,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.allGroups;
     $scope.editMsgIconStatus = false;
     $scope.unSeenMessages;
-    $scope.isGroupChatStarted = false;
     $scope.receiverActivePanel = '';
     /*socket io connection*/
 
@@ -46,6 +44,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.replyMenuStatus = true;
     $scope.replyIconId = "";
     $scope.selectedUserNo = -1;
+
     $scope.selectedUserData = null;
     $scope.userOrderList = 0;
     $scope.isChatFullscreen = false;
@@ -665,7 +664,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /*get all users*/
         $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList + '/' + $rootScope.projectData._id)
             .then(function (response) {
-                $scope.tempUsers = response.data.usersList; // used for user search result
+                $rootScope.tempUsers = response.data.usersList; // used for user search result
                 $scope.allUsers = response.data.usersList;
 
                 $scope.selectedUserNo = 0;
@@ -787,25 +786,39 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
 
         $scope.groupSelected = false;
-        $scope.chatActive = function (index) {
-            $scope.deActivate();
-            $scope.nchatIndex = 0;
-            $scope.gchatIndex = 1;
+        $scope.chatActive = function (isChatDocker) {
+            $scope.selectedUserNo = -1;
+            $scope.selectedUserData = null;
+            
+            $scope.resetUserSelectionData();
+
+            $scope.deActivate(isChatDocker);
             $scope.groupSelected = false;
-            $scope.isGroupChatStarted = false;
         }
 
-        $scope.groupChatActive = function () {
-            $scope.deActivate();
-            $scope.nchatIndex = 1;
-            $scope.gchatIndex = 0;
+        $scope.groupChatActive = function (isChatDocker) {
+            $scope.selectedUserNo = -1;
+            $scope.selectedUserData = null;
+            
+            $scope.resetUserSelectionData();
+ 
+            $scope.deActivate(isChatDocker);
             $scope.groupSelected = true;
-            $scope.isGroupChatStarted = false;
         }
 
         $scope.chatBack = function () {
             $scope.selectedUserNo = -1;
             $scope.selectedUserData = null;
+            
+            $scope.groupSelected = false;
+            $scope.selGrpMembers = [];
+            $scope.selUserName = null;
+            $scope.userProfileUrl = null;
+            $scope.chatWithImage = null;
+            $scope.chatWithId = null;
+            $scope.status = 0;
+            $scope.connectionId = 0;
+            
             $scope.isChatPanel = false;
             $scope.isSidePanel = true;
             $scope.welcomePage = true;
@@ -895,15 +908,39 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // $scope.chatLength = 0;
         /*on click on a user this function get chat between them*/
         $scope.startChat = function (obj) {
-            resetScrollVar();
+            if (obj.isChatDocker == 0) resetScrollVar();
             if (!obj) return;
-            $scope.selectedUserNo = obj.userIndex;
-            $scope.selectedUserData = obj.user;
+
+            // -------------- If selected one is the user -------------------
+            if (obj.type == 1 && $scope.selectedUserNo == obj.userIndex){
+                $scope.selectedUserNo = -1; 
+                $scope.selectedUserData = null;
+                $scope.resetUserSelectionData();
+
+                return;
+            }
+            else if (obj.type == 1 && $scope.selectedUserNo != obj.userIndex){
+                $scope.selectedUserNo = obj.userIndex;
+                $scope.selectedUserData = obj.user;
+            }
+
+            // -------------- If selected one is the group -------------------
+            if (obj.type == 2 && $scope.selectedUserNo == obj.groupIndex){
+                $scope.selectedUserNo = -1; 
+                $scope.selectedUserData = null;
+                $scope.resetUserSelectionData();
+
+                return;
+            }
+            else if(obj.type == 2 && $scope.selectedUserNo != obj.groupIndex){
+                $scope.selectedUserNo = obj.groupIndex; 
+                $scope.selectedUserData = obj.user;
+            }
 
             $scope.isRepeatFinish = false;
             $scope.moreChatExist = true;
+            $scope.deActivate(obj.isChatDocker);
 
-            $scope.deActivate();
             $scope.isSidePanel = false;
             $scope.isChatPanel = true;
             $scope.welcomePage = false;
@@ -911,7 +948,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             /*obj is an object send from view it may be a chat or a group info*/
             if (obj.type == 1) {
-                $scope.isGroupChatStarted = false;
+             
                 $scope.groupSelected = false;
                 $scope.selGrpMembers = [];
                 $scope.selUserName = obj.user.name;
@@ -949,10 +986,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         //scrollbottom();
                     });
             } else {
-                $scope.selectedUserNo = obj.groupIndex;
                 $scope.selectedUserData = obj.group;
-
-                $scope.isGroupChatStarted = true;
                 $scope.groupSelected = true;
                 $scope.selectedGroupId = obj.group._id;
                 $scope.connectionId = obj.group._id;
@@ -972,6 +1006,22 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     //   scrollbottom();
                 })
             }
+        }
+
+        $scope.resetUserSelectionData = function () {
+            $scope.selGrpMembers = [];
+            $scope.selUserName = null;
+            $scope.userProfileUrl = null;
+            $scope.chatWithImage = null;
+            $scope.chatWithId = null;
+            $scope.status = 0;
+            $scope.connectionId = 0;
+            $scope.isChatPanel = false;
+            $scope.welcomePage = false;
+            $scope.isSidePanel = true;
+
+            $scope.selectedGroupId = null;
+            $scope.selGroupName = "";
         }
 
         $scope.seenNotification = () => {
@@ -1227,15 +1277,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         }
 
-        $scope.deActivate = function () {
+        $scope.deActivate = function (isChatDocker = 0) {
             $scope.commentReplyId = "";
             $scope.isReplying = false;
             $scope.selectedMsg = null;
             $("#applyPic").removeClass('commentReplyPanel');
             $("#sendMsgButton").removeClass('alignSendMsgButton');
-            document.querySelector('.showCommentsReply').style.display = 'none';
+            if (isChatDocker == 0)
+              document.querySelector('.showCommentsReply').style.display = 'none';
         }
-
 
         /*this array save group members*/
         $scope.members = [];

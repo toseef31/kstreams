@@ -1,0 +1,213 @@
+<div class="row" ng-if="!sessionDestroy" ng-controller="dashController">
+
+    <div class="panel-default" style="overflow-x: hidden;">
+    <!-- ---------------------- CHAT-DOCKER-HEADER ----------------------------------------- -->
+    <div class="panel-heading top-bar">
+      <div class="col-md-8 col-xs-8">
+        <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span>
+          Chat Participants
+        </h3>
+      </div>
+      <!-- <div class="col-md-4 col-xs-4" style="text-align: right;">
+        <a><span id="minim_chat_window" class="glyphicon glyphicon-minus icon_minim"></span></a>
+      </div> -->
+    </div>
+    <!-- ---------------------- CHAT-DOCKER-HEADER ----------------------------------------- -->
+
+    <div id="messagebody" class="panel-body msg_container_base">
+      <div class="col-sm-12 col-md-12 col-lg-12 mobilerightpanedocker"
+        ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
+        <form method="post" class="messages-search-users-form">
+
+
+          <!-- ------------------- SEARCH FIELD ---------------------------------------------------- -->
+          <div class="form-group inner-addon left-addon messages-search-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-search">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input ng-model="keyword" type="text" name="query" id="query" class="form-control customPadding"
+              placeholder="Search" autocomplete="off">
+          </div>
+          <!-- -------------------- --------------------------------------------------------- -->
+          <!-- -------------------- TABS --------------------------------------------------------- -->
+          <!-- -------------------- --------------------------------------------------------- -->
+
+          <ul id="moodtabs" class=" nav nav-tabs wo_msg_tabs_Docker side bar tabs">
+            
+            <li id="tabs1" class="tab mbutton current" ng-click="chatActive(1)">
+              <a data-toggle="tab" data-target="#users-message-docker" id="user-message-tabDocker">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-message-square" ng-class="{grpChecked: $parent.selection==$index}">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Users
+              </a>
+            </li>
+            <li id="tabs2" class="tab mbutton" ng-click="groupChatActive(1)" style="border-left: 2px solid #a3c3a3;">
+              <a data-toggle="tab" data-target="#groups-message-docker" id="groups-message-tabDocker">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-grid">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Groups
+
+              </a>
+            </li>
+          </ul>
+
+          <!--  ----------------- ---------------------------------------------------------- -->
+          <!--  ------------------ USERS LIST ------------------------------------------------ -->
+          <!--  ----------------- ---------------------------------------------------------- -->
+
+          <div id="usersList" class="tab-content messages-users-list-docker">
+
+            <div ng-if="!groupSelected">
+              <div id="users-message-docker" class="messages-chat-list">
+                <div ng-if="allUsers.length > 1">
+                  <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
+                    ng-repeat="userA in allUsers | search: keyword | orderBy: '-tempDate'"
+                    ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
+                    ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
+
+                    <div ng-click="startChat({type:1,user:userA, userIndex:$index, isChatDocker: 1})">
+                      <span class="user-name-section">
+                        <div class="pull-right">
+                          <span class="new-message-alert hidden">0</span>
+                        </div>
+                        <div class="avatar pull-left">
+                          <span ng-if="userA.onlineStatus == 0">
+                            <span class="status userStatusMargin" ng-class="{offlineSt:userA.onlineStatus==0}"></span>
+                          </span>
+                          <span ng-if="userA.onlineStatus == 1">
+                            <span class="status userStatusMargin"
+                              ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
+                          </span>
+
+                          <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
+                            <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
+                              alt="{{user.name}}" />
+                          </span>
+                          <span ng-if="userA.user_image != '' && projectData.profileImgLocation">
+                            <img class="" ng-if="userA.receiverId != user._id"
+                              src="{{projectData.profileImgLocation}}{{userA.user_image }}" alt="{{userA.name}}" />
+                          </span>
+                        </div>
+                        <div class="messages-user-name" style="padding: 18px 0 0 0;">
+                          <span>{{userA.name}}</span>
+                          <span ng-if="userA.hasOwnProperty('usCount')">
+                            <span class="unreadMsgAlign" ng-if="userA.usCount != 0">
+                              <span class="badge badge-pill badge-warning unreadBadge">{{userA.usCount}}</span>
+                            </span>
+                          </span>
+                        </div>
+
+                        <div>
+                          <span class="userTitleText">{{userA.userTitle}}</span>
+                        </div>
+                      </span>
+                      <div class="clear"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div ng-if="allUsers.length <=1">
+                <div class="notfound">
+                  <p class="text-center">No friends found</p>
+                </div>
+              </div>
+
+              <div ng-if="!usersLoaded">
+                <img class="contatctLoadingImage" src="/images/loading.gif">
+                <!-- <strong class="loadingText">Loading...</strong> -->
+              </div>
+            </div>
+            <!--  ----------------- ---------------------------------------------------------- -->
+            <!--  ----------------- GROUPS lIST ------------------------------------------------ -->
+            <!--  ----------------- ---------------------------------------------------------- -->
+
+            <div id="groups-message-docker" class="messages-group-list">
+              <div ng-if="groupSelected">
+                <div ng-if="allGroups.length > 0">
+                  <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
+                    ng-repeat="groupA in allGroups| search: keyword" 
+                    ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
+                    ng-click="$parent.selection=$index">
+
+                    <div ng-click="startChat({type:2,group:groupA, groupIndex:$index, isChatDocker: 1})">
+                      <span class="user-name-section">
+
+                        <div class="avatar pull-left">
+                          <img alt="Kim Steve Profile Picture" src="../images/profile-photos/noProfile.png">
+                        </div>
+                        <span class="messages-user-name">{{groupA.name}}</span>
+                      </span>
+
+                      <div class="clear"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div ng-if="allGroups.length <= 0" class="notfound">
+                  <p class="text-center">No groups found</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- ******************************************************************************************* -->
+<!-- ***************************************************************************************** -->
+<!-- ******************************************************************************************* -->
+
+<script>
+  var socket = io.connect();
+
+  $('#user-message-tabDocker').on('click', function () {
+    $('#users-message-docker').addClass('in active');
+    $('#groups-message-docker').removeClass('in active');
+    $('.group-pointer').removeClass('active');
+    $('.user-pointer').addClass('active');
+  });
+
+  $('#groups-message-tabDocker').on('click', function () {
+    $('#groups-message-docker').addClass('in active');
+    $('#users-message-docker').removeClass('in active');
+    $('.user-pointer').removeClass('active');
+    $('.group-pointer').addClass('active');
+  });
+
+  jQuery(function ($) { // DOM ready
+    $('.tabs').each(function () {
+
+      var $tab = $(this).find(".tab");
+
+      $tab.on("click", function () {
+
+        var tabId = this.id.replace(/\D/g, '');
+
+        $tab.not(this).removeClass('current');
+        $(this).addClass('current');
+
+        $(".tabContent").removeClass("current");
+        $("#tabs-" + tabId).addClass("current");
+
+      });
+    });
+  });
+</script>

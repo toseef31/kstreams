@@ -76,7 +76,7 @@
         <!-- -------------------- --------------------------------------------------------- -->
 
         <ul id="moodtabs" class=" nav nav-tabs wo_msg_tabs side bar tabs">
-          <li id="tabs1" class="tab mbutton current" ng-click="chatActive()">
+          <li id="tabs1" class="tab mbutton current" ng-click="chatActive(0)">
             <a data-toggle="tab" data-target="#users-message" id="user-message-tab">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -86,7 +86,7 @@
               Users
             </a>
           </li>
-          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive()" style="border-left: 2px solid #a3c3a3;">
+          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive(0)" style="border-left: 2px solid #a3c3a3;">
             <a data-toggle="tab" data-target="#groups-message" id="groups-message-tab">
 
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -122,7 +122,7 @@
                   ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
 
-                  <div ng-click="startChat({type:1,user:userA, userIndex:$index })">
+                  <div ng-click="startChat({type:1,user:userA, userIndex:$index , isChatDocker: 0})">
                     <span class="user-name-section">
                       <div class="pull-right">
                         <span class="new-message-alert hidden">0</span>
@@ -183,9 +183,10 @@
             <div ng-if="groupSelected">
               <div ng-if="allGroups.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
-                  ng-repeat="groupA in allGroups| search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
+                  ng-repeat="groupA in allGroups| search: keyword" 
+                  ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index">
-                  <div ng-click="startChat({type:2,group:groupA, groupIndex:$index})">
+                  <div ng-click="startChat({type:2,group:groupA, groupIndex:$index, isChatDocker: 0})">
                     <span class="user-name-section">
 
                       <div class="avatar pull-left">

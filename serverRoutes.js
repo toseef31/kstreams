@@ -4,6 +4,7 @@
 */
 
 const chatController = require('./controller/chatController');
+const groupController = require('./controller/groupController');
 //const loginController = require('./public/controller/logincontroller')
 const clientPushNotif = require('./public/client');
 const multer = require('multer');
@@ -29,6 +30,7 @@ module.exports = function (app, io, saveUser) {
 
     /*create new object of chatController*/
     var chatCon = new chatController(io, saveUser);
+    var groupCon = new groupController(io, saveUser);
     //app.post('/notification', clientPushNotif.send);
     //app.post('/notification');
 
@@ -41,7 +43,7 @@ module.exports = function (app, io, saveUser) {
     // app.get('/checkSession/:userId',chatCon.checkSession);
     app.get('/createUser/:name', chatCon.createUser);
     app.get('/getUsers/:userId/:allList/:projectId', chatCon.getUsers);
-    app.get('/getCreatedGroups/:userId/:projectId', chatCon.getCreatedGroups);  // it is used to get groups itself
+    
 
     app.post('/addgroup', chatCon.addGroup);
     app.get('/getGroups/:userId', chatCon.getGroups);
@@ -96,10 +98,12 @@ module.exports = function (app, io, saveUser) {
     app.post('/stopViewer', chatCon.stopViewer);
     app.get('/stopPresenter', chatCon.stopPresenter);
 
-    // -------------- CREATE GROUP ROUTES---------------------------------
-    app.post('/createUserGroup', chatCon.createUserGroup);
-    app.post('/removeGroupUser', chatCon.removeGroupUser);
-    app.post('/editGroupName', chatCon.editGroupName);
-    app.post('/addNewMembers', chatCon.addNewMembers);
-
+    // -------------- GROUP ROUTES---------------------------------
+    app.get('/getCreatedGroups/:userId/:projectId', groupCon.getCreatedGroups);  // it is used to get groups itself
+    app.post('/createUserGroup', groupCon.createUserGroup);
+    app.post('/removeGroupUser', groupCon.removeGroupUser);
+    app.post('/editGroupName', groupCon.editGroupName);
+    app.post('/addNewMembers', groupCon.addNewMembers);
+    app.post('/callAGroup', groupCon.callAGroup);
+    
 }

@@ -298,3 +298,9 @@
 .text-white{
     color: #fff;
 }
+.callStatus{
+    color: green;
+    background-color: #fff;
+    border-radius: 5px; 
+    padding: 5px;
+}

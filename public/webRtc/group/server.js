@@ -91,12 +91,14 @@ var sockets = {};
  * the peer connection and will be streaming audio/video between eachother.
  */
 var idCounter = 0;
+var groupsInCall = [];
 function nextUniqueId() {
     idCounter++;
     return idCounter.toString();
 }
 wss.on('connection', function (socket) {
     var sessionId = nextUniqueId();
+    var groupId=0;
     socket.channels = {};
     sockets[sessionId] = socket;
     
@@ -110,15 +112,12 @@ wss.on('connection', function (socket) {
         closeIt();
     });
 
-    socket.on('message', function (_message) {
-        console.log('Received message in group server.js ', _message);
-        var message = JSON.parse(_message);
-        console.log(message);
+    socket.on('message', function (_message) { 
+        var message = JSON.parse(_message); 
         if(message.event=='disconnect'){
             closeIt();
             return;
-        }
-        console.log(message.event);
+        } 
         if (typeof message.event !== "undefined") message = JSON.parse(message.event);
         console.log('Received message in group parsed server.js ', message);
         switch (message.id) {
@@ -134,21 +133,57 @@ wss.on('connection', function (socket) {
             case 'relaySessionDescription':
                 relaySessionDescription(message);
                 break; 
+            case 'groupData': 
+                let groupArr = [];
+                for (var i in groupsInCall) 
+                    groupArr.push({
+                        'groupId': i,
+                        'count': groupsInCall[i].length
+                    });
+                socket.send(JSON.stringify({
+					id: 'groupDataResp',
+					data: groupArr
+				}));
+                break; 
         }
     });
 
     function closeIt(){
-        for (var channel in socket.channels) {
-            part(channel);
-        }
-        console.log("["+ sessionId + "] disconnected");
+        for (var channel in socket.channels) part(channel);
+         
+        console.log("["+ sessionId + "] disconnected ",groupId);
         delete sockets[sessionId];
+
+        for (var i in groupsInCall[groupId]) {
+            if (groupsInCall[groupId][i]== sessionId) { 
+                groupsInCall[groupId].splice(i, 1);
+                console.log('sessId rm: ',sessionId,' and ',groupsInCall[groupId]);
+            }
+        }
     }
-    function joinIt(config){
-        console.log("["+ sessionId + "] join ", config);
+    function joinIt(config){ 
         var channel = config.channel;
         var userdata = config.userdata;
+        groupId=config.userdata.groupId;
+        sessionId=userdata.callerId;
+        sockets[sessionId] = socket; 
 
+        if(groupsInCall[groupId] && groupsInCall[groupId].length>0){
+            var found = groupsInCall[groupId].find(function(element) {
+                return element == sessionId;
+            });
+            if(!found){ 
+                groupsInCall[groupId].push(sessionId);
+                console.log('sessId id: ',sessionId,' added in ',groupId);
+            } 
+        }
+        else{
+            groupsInCall[groupId]=[];
+            groupsInCall[groupId].push(sessionId);
+            console.log('New //sessId id: ',sessionId,' added in ',groupId);
+        }
+
+        console.log("["+ sessionId + "] joinIt ");
         if (channel in socket.channels) {
             console.log("["+ sessionId + "] ERROR: already joined ", channel);
             return;
@@ -160,6 +195,7 @@ wss.on('connection', function (socket) {
 
         var message={};
         for (id in channels[channel]) {
+            if(id==sessionId) continue;
             message={
                 'id':'addPeer',
                 'peer_id': sessionId,
@@ -181,8 +217,11 @@ wss.on('connection', function (socket) {
     }
 
     function sendMessage(socketEmit,message){
-        console.log('Sending message from group server.js ', message);
-        socketEmit.send(JSON.stringify(message));
+        console.log('sendMessage FUNCTION group server.js ', message);
+        socketEmit.send(JSON.stringify(message), (err) => {
+            if (err) console.error(err);
+        });
+        //socketEmit.send(JSON.stringify(message));
     }
     // socket.on('join', function (config) {
     //     console.log("["+ socket.id + "] join ", config);
@@ -204,7 +243,7 @@ wss.on('connection', function (socket) {
     // });
 
     function part(channel) {
-        console.log("["+ sessionId + "] part ");
+        console.log("["+ sessionId + "] part FUNCTION ");
         if (!(channel in socket.channels)) {
             console.log("["+ sessionId + "] ERROR: not in ", channel);
             return;
@@ -233,8 +272,7 @@ wss.on('connection', function (socket) {
     function relayICECandidate(config){
         var peer_id = config.peer_id;
         var ice_candidate = config.ice_candidate;
-        console.log("["+ sessionId + "] relaying ICE candidate to [" + peer_id + "] ", ice_candidate);
-
+        console.log("["+ sessionId + "] relayICECandidate FUNCTION [" + peer_id + "] "); 
         if (peer_id in sockets) {
             var message={
                 'id':'iceCandidate',
@@ -258,7 +296,7 @@ wss.on('connection', function (socket) {
     function relaySessionDescription(config){
         var peer_id = config.peer_id;
         var session_description = config.session_description;
-        console.log("["+ sessionId + "] relaying session description to [" + peer_id + "] ", session_description);
+        console.log("["+ sessionId + "] relaySessionDescription function [" + peer_id + "] ");
 
         if (peer_id in sockets) {
             var message={

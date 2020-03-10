@@ -98,12 +98,18 @@ module.exports = function (app, io, saveUser) {
     app.post('/stopViewer', chatCon.stopViewer);
     app.get('/stopPresenter', chatCon.stopPresenter);
 
-    // -------------- GROUP ROUTES---------------------------------
+    // -------------- GROUP ROUTES---------------------------------------
     app.get('/getCreatedGroups/:userId/:projectId', groupCon.getCreatedGroups);  // it is used to get groups itself
     app.post('/createUserGroup', groupCon.createUserGroup);
     app.post('/removeGroupUser', groupCon.removeGroupUser);
     app.post('/editGroupName', groupCon.editGroupName);
     app.post('/addNewMembers', groupCon.addNewMembers);
+
+    // -------------- GROUP CALL ROUTES---------------------------------
     app.post('/callAGroup', groupCon.callAGroup);
-    
+    app.post('/createGroupCall', groupCon.createGroupCall);
+    app.post('/joinCallGroup', groupCon.joinCallGroup);
+    app.post('/leaveCallGroup', groupCon.leaveCallGroup);
+    app.post('/getCallGroups', groupCon.getCallGroups);
+    app.post('/updateGroupCallStatus', groupCon.updateGroupCallStatus);
 }

@@ -23,28 +23,39 @@ app.factory('GroupCall', ['$rootScope',
         var peers = {};                /* keep track of our peer connections, indexed by peer_id (aka socket.io id) */
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
 
-        function init(userData) {
+        function init(userData, status = 0) {
+            console.log("init:-> " + status);
             setup_local_media(function () {
                 /* once the user has given us access to their
                     * microphone/camcorder, join the channel and start peering up */
                 //GROUP ID would be the channel name
                 console.log('join_chat_channel: ', userData.groupId);
-                join_chat_channel(userData.groupId, userData);
+                join_chat_channel(userData.groupId, userData, status);
             });
         }
 
         function sendMessage(message) {
-            console.log('Sending message from groupCall.js ', message);
+            // console.log('Sending message from groupCall.js ', message);
             $rootScope.signaling_socket.$emit(JSON.stringify(message));
         }
 
-        function join_chat_channel(channel, userdata) {
+        function join_chat_channel(channel, userdata, status = 0) {
             console.log('join_chat_channel ', userdata);
             var message = {
                 id: 'join',
                 channel: channel,
                 userdata: userdata
             }
+            console.log("join_chat_channel:-> " + status);
+            // status: 0- for caller,, 1- for joiner,, 2- caller stopped the call,, 3- joined user has left
+                $.ajax({
+                    type: "POST",
+                    url: "/gCallStatus",
+                    data: { 'status': status, 'userdata': userdata }
+                }).done(function () {
+                    console.log("gCallStatus - DONE");
+                })
+
             sendMessage(message);
         }
 
@@ -93,7 +104,7 @@ app.factory('GroupCall', ['$rootScope',
                 }
             }
             peer_connection.onaddstream = function (event) {
-                console.log("onAddStream", event);
+             //   console.log("onAddStream", event);
                 var remote_media = USE_VIDEO ? $("<video>") : $("<audio>");
                 remote_media.attr("autoplay", "autoplay");
                 if (MUTE_AUDIO_BY_DEFAULT) {
@@ -149,11 +160,11 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
         function sessionDescriptionEmitted(config) {
-            console.log('Remote description received: ', config);
+           // console.log('Remote description received: ', config);
             var peer_id = config.peer_id;
             var peer = peers[peer_id];
             var remote_description = config.session_description;
-            console.log(config.session_description);
+         //   console.log(config.session_description);
 
             var desc = new RTCSessionDescription(remote_description);
             var stuff = peer.setRemoteDescription(desc,
@@ -229,19 +240,29 @@ app.factory('GroupCall', ['$rootScope',
             delete peer_media_elements[peer_id];
         };
 
-        function stop() {
-            console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
+        // status: 2- means caller has stopped the call, 3- joined user has left the call
+        function stop(userData=null, status=2) {
+            // console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
             $rootScope.signaling_socket.$emit('disconnect');
             $(".groupCallModalContent").html('');
-          
+
             // if already null then return otherwise will generate error
-            if (local_media_stream == null) return; 
+            if (local_media_stream == null) return;
 
             local_media_stream.getTracks().forEach(function (track) {
                 track.stop();
             });
             // #parentVideo
             local_media_stream = null;
+
+            $.ajax({
+                type: "POST",
+                url: "/gCallStatus",
+                data: {'status': status, 'userdata': userData}
+            }).done(function () {
+                console.log("gCallStatus: STOP- DONE");
+            })
+
             //closeIt();
         }
         /***********************/

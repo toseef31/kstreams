@@ -1,5 +1,5 @@
   var timmer = function(element){
-    
+  
     var obj = {};
     obj.ele = element;
     obj.callDropTime = 30;
@@ -34,6 +34,7 @@
       }
       document.querySelector(obj.ele).innerHTML = obj.hour + ' h ' + obj.mint + ' m ' + obj.sec + ' s ';
     }
+    
     obj.stopCallTimmer = function(){
       clearInterval(obj.calltimmer);
     }
@@ -47,6 +48,3 @@
     }
     return obj;
   }
-  
-  
-  

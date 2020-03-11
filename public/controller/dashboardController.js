@@ -1332,7 +1332,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 callType: type
             };
             $("#timmer").addClass('hidden');
-            One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
+             One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
         }
 
         $scope.stopGroupCall = function () {
@@ -1563,7 +1563,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 callerId: $scope.callerId,
                 friendId: $scope.friendId
             });
-            One2OneCall.startCall();
+             One2OneCall.startCall();
             document.getElementById('incommingCall').style.display = 'none';
             $rootScope.audio.pause(); // stop the ring after receive
             $(".ringingBell").addClass('hidden');

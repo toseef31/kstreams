@@ -24,12 +24,12 @@ app.factory('GroupCall', ['$rootScope',
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
 
         function init(userData, status = 0) {
-            console.log("init:-> " + status);
+          //  console.log("init:-> " + status);
             setup_local_media(function () {
                 /* once the user has given us access to their
                     * microphone/camcorder, join the channel and start peering up */
                 //GROUP ID would be the channel name
-                console.log('join_chat_channel: ', userData.groupId);
+               // console.log('join_chat_channel: ', userData.groupId);
                 join_chat_channel(userData.groupId, userData, status);
             });
         }
@@ -255,14 +255,13 @@ app.factory('GroupCall', ['$rootScope',
             // #parentVideo
             local_media_stream = null;
 
-            $.ajax({
-                type: "POST",
-                url: "/gCallStatus",
-                data: {'status': status, 'userdata': userData}
-            }).done(function () {
-                console.log("gCallStatus: STOP- DONE");
-            })
-
+            if (status != -1){
+                $.ajax({
+                    type: "POST",
+                    url: "/gCallStatus",
+                    data: {'status': status, 'userdata': userData}
+                })
+            }
             //closeIt();
         }
         /***********************/

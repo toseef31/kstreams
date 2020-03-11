@@ -809,7 +809,7 @@
     </div>
     <div class="incomming-btn-container">
       <button title="Accept" class="incomming-card-btn success pull-left"
-        ng-click="joinCall();connectUsers('updateconnectusers')">
+        ng-click="joinCall();">
         <i class="fa fa-phone color-green" aria-hidden="true"></i>
       </button>
       <button title="Decline" ng-click="callDrop('notReceive')" class="incomming-card-btn danger pull-right">
@@ -1301,7 +1301,7 @@
       <div class="modal-content ">  
         <div class="modal-header clearfix">
           <div class='col-md-4 text-white'>Group Call</div>
-          <p id="groupCallTime" style="color: white; float: right"></p>
+          <span id="groupCallTime" style="color: white; float: right"></span>
           <!-- <div class='col-md-2 pull-right'>
           </div> -->
         </div>

@@ -322,6 +322,12 @@ app.post('/updateSSstatus', (req, res) => {
 	res.status(200).json({});
 });
 
+app.post('/gCallStatus', (req, res) => {
+	console.log("gCallStatus SBS");
+	io.emit('gCallStatusUpdater', req.body); 
+	res.status(200).json({});
+})
+
 var serveStatic = require('serve-static');
 app.use(serveStatic('./'));
 //app.use(express.static(path.join(__dirname, "client")));

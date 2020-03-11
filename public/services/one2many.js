@@ -10,6 +10,7 @@ factory('One2ManyCall', ['$rootScope',
                 dispose();
             } else {
                 $rootScope.webRtcO2MPeer.processAnswer(message.sdpAnswer);
+                $('#bctest').text(message.data);
                 $rootScope.presenterArr = message.data;
             }
         }

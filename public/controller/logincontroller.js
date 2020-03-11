@@ -5,6 +5,8 @@
 app.controller("loginController", function ($scope, $http, $location, $rootScope,$websocket,$interval,One2ManyCall,$window) {
     $scope.notAuthorize = false; // show invalid username password message
     $scope.showLoginButton = true;
+
+    // $rootScope.chatDockerStatus = 0;
     //$scope.testProjectId = "5d4c07fb030f5d0600bf5c03"; //5d4c07fb030f5d0600bf5c03
     $rootScope.projectData=[];
     user={};
@@ -18,7 +20,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         if(hostIs[0]=='localhost') webSocketIp='127.0.0.1';
         //let reqUrl='wss://'+webSocketIp+':8443/one2one';
         let broadCastUrl='wss://'+webSocketIp+':8444/one2many';
-     //   console.log('WebSocket: ',reqUrl);
+        //console.log('WebSocket: ',reqUrl);
         
         //$rootScope.O2OSoc= $websocket.$new(reqUrl); 
         $rootScope.O2MSoc= $websocket.$new(broadCastUrl);

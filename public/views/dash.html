@@ -76,7 +76,7 @@
         <!-- -------------------- --------------------------------------------------------- -->
 
         <ul id="moodtabs" class=" nav nav-tabs wo_msg_tabs side bar tabs">
-          <li id="tabs1" class="tab mbutton current" ng-click="chatActive()">
+          <li id="tabs1" class="tab mbutton current" ng-click="chatActive(0)">
             <a data-toggle="tab" data-target="#users-message" id="user-message-tab">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -86,7 +86,7 @@
               Users
             </a>
           </li>
-          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive()" style="border-left: 2px solid #a3c3a3;">
+          <li id="tabs2" class="tab mbutton" ng-click="groupChatActive(0)" style="border-left: 2px solid #a3c3a3;">
             <a data-toggle="tab" data-target="#groups-message" id="groups-message-tab">
 
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -122,7 +122,7 @@
                   ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index" ng-if="userA._id != user._id">
 
-                  <div ng-click="startChat({type:1,user:userA, userIndex:$index })">
+                  <div ng-click="startChat({type:1,user:userA, userIndex:$index , isChatDocker: 0})">
                     <span class="user-name-section">
                       <div class="pull-right">
                         <span class="new-message-alert hidden">0</span>
@@ -183,15 +183,18 @@
             <div ng-if="groupSelected">
               <div ng-if="allGroups.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
-                  ng-repeat="groupA in allGroups| search: keyword" ng-class="{grpChecked: $parent.selection==$index}"
+                  ng-repeat="groupA in allGroups| search: keyword" 
+                  ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index">
-                  <div ng-click="startChat({type:2,group:groupA, groupIndex:$index})">
-                    <span class="user-name-section"> 
+                  <div ng-click="startChat({type:2,group:groupA, groupIndex:$index, isChatDocker: 0})">
+                    <span class="user-name-section">
+
                       <div class="avatar pull-left">
                         <img alt="Kim Steve Profile Picture" src="../images/profile-photos/noProfile.png">
                       </div>
-                      <span class="messages-user-name">{{groupA.name}}</span>
-                      <br ng-if='groupA.joinCall==true' />
+
+                      <span class="messages-user-name lineHeightGroupList">{{groupA.name}}</span>
+                      <!-- <br ng-if='groupA.joinCall==true' /> -->
                       <span ng-if='groupA.joinCall==true' class="callStatus" >Group call</span>
                     </span>
 
@@ -250,23 +253,34 @@
           </span>
 
           <span class="pull-right userInteraction">
-            <span class="whiteTextColor marginRight20" title="Share Screen" ng-click="openssShareModal()" ng-if="!groupSelected">
+            <span  ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}" class="whiteTextColor marginRight20" ng-attr-title="{{CallTitle}}" ng-click="openssShareModal()">
               <i id="screenShare" class="fa fa fa-slideshare"></i>
             </span>
 
-            <span ng-if="projectData.videoCall == 1 && !groupSelected" class="whiteTextColor marginRight20">
+            <span ng-class="{unavailableButton: selectedUserData.pStatus != 0}" ng-if="projectData.videoCall == 1 && !groupSelected" ng-attr-title="{{CallTitle}}" class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
 
-            <span ng-if="projectData.videoCall == 1 && groupSelected" class="whiteTextColor marginRight20">
-              <i id="videoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
-              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0)">Join Call</span>
-            </span>
-
-            
-            <span ng-if="projectData.audioCall == 1" class="whiteTextColor" ng-if="!groupSelected">
+            <span ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}" ng-attr-title="{{CallTitle}}" ng-if="projectData.audioCall == 1" class="whiteTextColor">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id)"></i>
             </span>
+
+            <!-- ------------------------- GROUP CALL BUTTONS ---------------------------------------- -->
+            <span ng-if="projectData.videoCall == 1 && groupSelected" class="whiteTextColor marginRight20">
+              <i id="videoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0,0,0)"></i>
+
+              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">Join Call</span>
+            </span>
+            
+            <span ng-if="groupSelected && projectData.audioCall == 1" class="whiteTextColor">
+              <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id, 0)"></i>
+            </span>
+
+            <!-- FOR TESTING PURPOSES - WILL BE REMOVED IN FUTURE -->
+            <!-- <a href='javascript:void(0)' ng-click="testJoinFunction()" class='btn btn-primary'>Join</a>
+            <a href='javascript:void(0)' ng-click="testLeaveFunction()" class='btn btn-primary'>User Leave</a> -->
+            <!-- ------------------------- ------------------ ---------------------------------------- -->
+
           </span>
         </li>
 
@@ -279,6 +293,7 @@
             <div id="dropImage" class="dropImage">
               <img height="22%" width="22%" src="../images/fileDrop_image.png">
             </div>
+            
             <!-- --------------  -------------------------------------------------------- -->
             <!-- -------------- NORMAL CHAT ------------------------------------------------ -->
             <!-- --------------  -------------------------------------------------------- -->
@@ -630,6 +645,10 @@
                     </div>
                   </div>
                 </div>
+<!-- NEEEEED REEECHECKING NINININI (640) -->
+                <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
+                  {{ngRepeatFinish()}}
+                </span>
 
               </div>
             </div>
@@ -790,7 +809,7 @@
     </div>
     <div class="incomming-btn-container">
       <button title="Accept" class="incomming-card-btn success pull-left"
-        ng-click="joinCall();connectUsers('updateconnectusers')">
+        ng-click="joinCall();">
         <i class="fa fa-phone color-green" aria-hidden="true"></i>
       </button>
       <button title="Decline" ng-click="callDrop('notReceive')" class="incomming-card-btn danger pull-right">
@@ -856,6 +875,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Broadcasting...
+          <p id="bctest"></p>
           <button ng-if="broadcastingStatus == 2" class="btn btn-danger btn-sm closeButton"
             ng-click="closeVideoBroadcastPanel()" style="float: right"> CLOSE </button>
 
@@ -1281,19 +1301,51 @@
       <div class="modal-content ">  
         <div class="modal-header clearfix">
           <div class='col-md-4 text-white'>Group Call</div>
-          <div class='col-md-2 pull-right'>
-            <a href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
-          </div>
+          <span id="groupCallTime" style="color: white; float: right"></span>
+          <!-- <div class='col-md-2 pull-right'>
+          </div> -->
         </div>
-        <div class="modal-body groupCallModalContent"></div>
-        <div class="modal-footer"></div>
+        <div class="modal-body groupCallModalContent">
+        </div>
+
+        <div id="joinedUsersSection">
+          <b>Joined Users: </b> {{joinedUsersList.length}}
+          <br>
+          <ol id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
+           <li id="joinerName">
+             {{joiner.callerName}}
+           </li>
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
+        </div>
       </div>
     </div>
   </div>
   <!-- Group Call end-->
-</div>
- 
 
+  <!-- Incoming GroupCall Notification Modal -->
+  <div id="incomingGroupCallModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content ">  
+        <div class="modal-header clearfix">
+          <div class='col-md-4 text-white'>Incoming {{groupCallerName}} Call</div>
+        </div>
+        <div class="modal-body">
+          <p id="incomingGroupCallMsg">There is group Call Going On, want to join?</p>
+          <p id="incomingGroupCallTime"></p>
+        </div>
+        <div class="modal-footer">
+          <a href='javascript:void(0)' ng-click="videoCall(0,0,1)" class='btn btn-primary'>Join</a>
+          <a href='javascript:void(0)' ng-click="rejectIncomingGroupCall()" class='btn btn-danger'>Reject</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Incoming GroupCall end -->
+
+</div>
 
 <script type="text/javascript">
 

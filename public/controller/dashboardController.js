@@ -1376,7 +1376,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     else {
                         gData = $scope.selGroupCallData;
                     }
-                   // console.log(gData);
 
                     $http.post('/joinCallGroup', {
                         '_id': gData.groupCallid,
@@ -1793,7 +1792,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.allGroups[g].groupCallid = data.userdata.groupCallid;
                         $scope.bypassGroupSelected = true;
                         $scope.groupCallerName = data.userdata.callerName;
-                        $('#incomingGroupCallModal').modal();
+                        $('#incomingGroupCallModal').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        })
+                    
                         $('#incomingGroupCallModal').show();
 
                         $scope.ringbell.loop = true;
@@ -1819,6 +1822,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 }
                                 else {
                                     $scope.allUsersLeft = 2;
+                                    $scope.ringbell.pause();
                                     $scope.joinedUsersList.push(data.userdata);    
                                     resetGroupTimer();
                                     groupTimmer(0,0);
@@ -1829,6 +1833,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     else {
                         $scope.joinedUsersList.push(data.userdata);
                         $scope.allUsersLeft = 2;
+                        $scope.ringbell.pause();
                         resetGroupTimer();
                         groupTimmer(0,0);
                     }
@@ -1844,6 +1849,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                    //    console.log(data.userdata.groupId +" == "+ $scope.allGroups[g]._id +" && "+ data.userdata.callerId +" != "+ $scope.user._id);
                         if (data.userdata.groupId == $scope.allGroups[g]._id && data.userdata.callerId != $scope.user._id) {
                             $scope.allGroups[g].joinCall = false;
+                            $scope.ringbell.pause();
                             $scope.groupCallerName = "";
                             cancelTimmer = true;
                             resetGroupTimer();
@@ -1864,6 +1870,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         if (data.userdata.groupId == $scope.allGroups[g]._id && data.userdata.callerId != $scope.user._id) {
                             $scope.allGroups[g].joinCall = false;
                             cancelTimmer = true;
+                            $scope.ringbell.pause();
                             resetGroupTimer();
                             $('#groupCallTime').text('Group call ended');
                             $('#stopGroupCallBtn').text('Close');
@@ -1907,7 +1914,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // * if this function receives 'callTimeLimit' zero, then timer will not end until user ends it *
         function groupTimmer(callTimeLimit, status) {
            // console.log("cancelTimmer: "+ cancelTimmer);
-            if (cancelTimmer) { cancelTimmer = false; return; }
+            if (cancelTimmer) { $scope.ringbell.pause(); cancelTimmer = false; return; }
 
             gCall_sec++;
            // console.log("status: "+ status);
@@ -1926,8 +1933,27 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
 
             if (callTimeLimit != 0 && gCall_sec == callTimeLimit) {
+                $scope.ringbell.pause();
                 cancelTimmer = true;
-                GroupCall.stop(null, 2);
+
+                let gData = {};
+              
+                if ($scope.selGroupData){
+                    gData = $scope.selGroupData;
+                    $scope.selGroupCallData = $scope.selGroupData;
+                }
+                else {
+                    gData = $scope.selGroupCallData;
+                }
+
+                userData = {
+                    groupId: gData._id,
+                    groupCallid: gData.groupCallid,
+                    callerName: $scope.user.name,
+                    callerId: $scope.user._id,
+                };
+
+                GroupCall.stop(userData, 2);
                 gCall_sec = 0;
                 gCall_mint = 0;
                 gCall_hour = 0;
@@ -1939,10 +1965,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 else if (status == 1 && $scope.allUsersLeft == 0)
                     $('#incomingGroupCallTime').text("Call Ended");
 
+                for (var j=0; j<$scope.allGroups.length; j++){
+                    console.log($scope.selGroupCallData.groupCallid +" == "+ $scope.allGroups[j]._id);
+                    if ($scope.selGroupCallData.groupCallid == $scope.allGroups[j]._id)
+                        $scope.allGroups[j].joinCall = false; 
+                }
+                console.log($scope.selGroupCallData);
                 $http.post('/leaveCallGroup', {
-                    'groupCallid': $scope.selGroupCallData.groupCallid,
-                    'groupId': $scope.selGroupData._id,
-                    'callerId': $scope.user._id,
+                    '_id': gData.groupCallid,
+                    'groupId': gData._id,
+                    'userId': $scope.user._id,
                     'status': 0
                 });
 

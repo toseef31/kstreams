@@ -2,7 +2,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
 
     // REVIEW **************** GROUP CALL CODE NEEDS LITTLE OPTIMIZATION ***********************
-    
+
     $scope.loggedUserId = 0; // REVIEW *** will be removed in future ***
     $scope.inComCallData = 0; // REVIEW *** will be removed in future ***
 
@@ -1425,15 +1425,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.stopGroupCall = function () {
-            console.log($scope.selGroupCallData);
-            console.log($scope.selGroupData);
-
             let gData = {};
             let userData = {};
-
+            console.log($scope.selGroupData);
              if ($scope.selGroupData != null){
                  userData = {
-                    groupCallid: $scope.selGroupCallData.groupCallid,
+                    groupCallid: $scope.selGroupData.groupCallid,
                     groupId: $scope.selGroupData._id,
                     callerName: $scope.user.name,
                     callerId: $scope.user._id,

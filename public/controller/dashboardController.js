@@ -21,6 +21,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $rootScope.audio = new Audio('audio/call.mp3');
     $scope.ringbell = new Audio('audio/ring_bells.mp3');
 
+    $scope.caller = false;
     // KURENTO WebRtc  ======================================================
     const NO_CALL = 0;
     $rootScope.webRtcO2OPeer = null;
@@ -201,8 +202,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
     }
 
-
     windowElement.on('beforeunload', function (event) {
+        console.log($scope.caller);
+        if ($scope.caller){
+            $http.post('/leaveCallGroup', {
+                '_id': $scope.selGroupData.groupCallid,
+                'groupId': $scope.selGroupData._id,
+                'userId': $scope.user._id,
+                'status': 0
+            });
+        }
+
         $http.get('/emptyChatWithId/' + $rootScope.user._id);
     });
 
@@ -629,7 +639,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;
         $scope.welcomePage = true;
-        $scope.caller = false;
+    //    $scope.caller = false;
         $scope.groupSelected = false;
         $scope.bypassGroupSelected = false; //if groupCall incoming Modal is open then this becomes true
         $scope.isPagination = false;
@@ -1325,6 +1335,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             cancelTimmer = false;
 
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
+               
                 $scope.bypassGroupSelected = false;
                 
                 $('#incomingGroupCallModal').hide();
@@ -1347,6 +1358,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         'callerId': $scope.user._id,
                         'projectId': $rootScope.projectData._id
                     }).then(function (groupCallData) {
+                        $scope.caller = true;
                         $scope.callingGroups.push(groupCallData.data);
                         for (var i in $scope.allGroups) {
                             if ($scope.allGroups[i]._id == groupCallData.data.groupId._id) {

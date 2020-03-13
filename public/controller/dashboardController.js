@@ -7,6 +7,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.inComCallData = 0; // REVIEW *** will be removed in future ***
 
     //$scope.selGroupData = {};
+    $scope.usersLoaded = false;
     $scope.selGroupData = null;
     $scope.isChatPanel = false;
     $scope.isSidePanel = true;
@@ -724,7 +725,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.isSidePanel = false;
                     }
                 }
-
+                $scope.usersLoaded = true;
                 if ($scope.user.chatWithRefId) {
                     $scope.startChat(userChatToOpen);
                 } else {

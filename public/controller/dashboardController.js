@@ -1,10 +1,13 @@
 app.controller("dashController", function ($scope, $http, $window, $location, $rootScope, $uibModal, $websocket, $interval, One2OneCall, One2ManyCall, GroupCall) {
     $scope.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
 
+    // REVIEW **************** GROUP CALL CODE NEEDS LITTLE OPTIMIZATION ***********************
+    
     $scope.loggedUserId = 0; // REVIEW *** will be removed in future ***
     $scope.inComCallData = 0; // REVIEW *** will be removed in future ***
 
-    $scope.selGroupData = {};
+    //$scope.selGroupData = {};
+    $scope.selGroupData = null;
     $scope.isChatPanel = false;
     $scope.isSidePanel = true;
 
@@ -638,7 +641,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.allUsersLeft = 0; // * 0: nothing, 1: users left call after joining, 2: users has not left call
         $scope.commentReplyId = '';
         $scope.selectedMsg = null;
-        $scope.selGroupCallData = {};
+        $scope.selGroupCallData = null;
 
         $scope.groupCallerName = "";
         $scope.joinedUsersList = [];
@@ -1368,15 +1371,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $('#stopGroupCallBtn').text("Leave");
                     cancelTimmer = true;
                     let gData = {};
-              
-                    if ($scope.selGroupData){
+                   // console.log($scope.selGroupData);
+                    if ($scope.selGroupData != null){
                         gData = $scope.selGroupData;
                         $scope.selGroupCallData = $scope.selGroupData;
+                     //   console.log("if");
                     }
                     else {
                         gData = $scope.selGroupCallData;
+                      //  console.log("else");
                     }
-
+                    console.log(gData);
                     $http.post('/joinCallGroup', {
                         '_id': gData.groupCallid,
                         'groupId': gData._id,
@@ -1390,7 +1395,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             callerName: $scope.user.name,
                             callerId: $scope.user._id,
                         };
-                      //  console.log(userData.groupCallid);
+                      // console.log(userData.groupCallid);
                         GroupCall.init(userData, status);
                     })
                 }
@@ -1420,12 +1425,28 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.stopGroupCall = function () {
-            let userData = {
-                groupCallid: $scope.selGroupCallData.groupCallid,
-                groupId: $scope.selGroupData._id,
-                callerName: $scope.user.name,
-                callerId: $scope.user._id,
-            };
+            console.log($scope.selGroupCallData);
+            console.log($scope.selGroupData);
+
+            let gData = {};
+            let userData = {};
+
+             if ($scope.selGroupData != null){
+                 userData = {
+                    groupCallid: $scope.selGroupCallData.groupCallid,
+                    groupId: $scope.selGroupData._id,
+                    callerName: $scope.user.name,
+                    callerId: $scope.user._id,
+                };
+             }                 
+             else {
+                userData = {
+                    groupCallid: $scope.selGroupCallData.groupCallid,
+                    groupId: $scope.selGroupCallData.groupId,
+                    callerName: $scope.user.name,
+                    callerId: $scope.user._id,
+                };
+             }
 
             // if status: 0, then im a caller and stop the call
             // if status: 1, then im a joiner and leave the call
@@ -1804,7 +1825,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         groupTimmer(20, 1);
 
                         $scope.selGroupCallData = data.userdata;
-                       // console.log($scope.selGroupCallData);
+                        console.log($scope.selGroupCallData);
 
                         console.log("******** RECEIVING GROUP CALL *********");
                         break;
@@ -1913,11 +1934,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // status: 0- incoming GroupCall Modal 1- GroupCall Modal itself
         // * if this function receives 'callTimeLimit' zero, then timer will not end until user ends it *
         function groupTimmer(callTimeLimit, status) {
-           // console.log("cancelTimmer: "+ cancelTimmer);
+            //console.log("cancelTimmer: "+ cancelTimmer);
             if (cancelTimmer) { $scope.ringbell.pause(); cancelTimmer = false; return; }
 
             gCall_sec++;
-           // console.log("status: "+ status);
+         
             if (status == 0)
                 $('#groupCallTime').text(gCall_hour + ' h ' + gCall_mint + ' m ' + gCall_sec + ' s ');
             else if (status == 1)
@@ -1932,6 +1953,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 gCall_mint = 0;
             }
 
+           // console.log(callTimeLimit +" && "+ gCall_sec +" == "+ callTimeLimit);
             if (callTimeLimit != 0 && gCall_sec == callTimeLimit) {
                 $scope.ringbell.pause();
                 cancelTimmer = true;
@@ -1958,10 +1980,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 gCall_mint = 0;
                 gCall_hour = 0;
 
-                if (status == 0 && $scope.allUsersLeft == 0)
+             
+                if (status == 0 && $scope.allUsersLeft == 0){
+                    $scope.allUsersLeft = 0;
                     $('#groupCallTime').text("No one has joined your call");
-                else if (status == 0 && $scope.allUsersLeft == 1)
+                }
+                else if (status == 0 && $scope.allUsersLeft == 1){
+                    $scope.allUsersLeft = 0;
                     $('#groupCallTime').text("Call Ended (All users left your call)");
+                }
                 else if (status == 1 && $scope.allUsersLeft == 0)
                     $('#incomingGroupCallTime').text("Call Ended");
 
@@ -1994,12 +2021,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     // * so thats why timmer will keep on running until user ends it by himself
                     // ** if callTimeLimit is zero, then it means keep the timmer running **
                  
-                  //  console.log($scope.allUsersLeft+" && "+ $scope.joinedUsersList.length + " && " + callTimeLimit);
+                    console.log($scope.allUsersLeft+" && "+ $scope.joinedUsersList.length + " && " + callTimeLimit);
                     if (($scope.allUsersLeft == 0 || $scope.allUsersLeft == 2) && callTimeLimit == 0 && $scope.joinedUsersList.length > 0) {
                         groupTimmer(0, status);
                     }
                     //  otherwise timmer will ends on value of 'callTimeLimit'
-                    else if ($scope.allUsersLeft == 0 && callTimeLimit != 0 && $scope.joinedUsersList.length == 0) {
+                    // REVIEW *** $scope.allUsersLeft == 1 -> needs reTest ***
+                    else if (($scope.allUsersLeft == 0 || $scope.allUsersLeft == 1) && callTimeLimit != 0 && $scope.joinedUsersList.length == 0) {
                         groupTimmer(callTimeLimit, status);
                     }
                     else if ($scope.allUsersLeft == 1 && callTimeLimit == 0 && $scope.joinedUsersList.length == 0) {

@@ -168,7 +168,7 @@ module.exports = function (io, saveUser) {
 
   router.getCallGroups = (req, res) => {
     // get all groups who are in calling state
-    groupCall.find({ status: 1, projectId: req.body.projectId }).populate('groupId').exec(function (err, callingGroups) {
+    groupCall.find({ status: 1, projectId: req.body.projectId }).populate('members', {name:true, _id:true}).populate('groupId').exec(function (err, callingGroups) {
 
         var tempGroups = [];
         if (err) return console.log(err);

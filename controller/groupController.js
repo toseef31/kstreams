@@ -133,8 +133,16 @@ module.exports = function (io, saveUser) {
       { $push: { members: req.body.member } },
     ).exec(function (err, result) {
       if (err) return; //console.log(err);
-     // console.log(result);
-      res.send(result);
+    
+      groupCall.findOne({'_id': req.body._id ,status: 1, projectId: req.body.projectId })
+              .populate('members', {name:true, _id:true})
+              .populate('groupId')
+              .exec(function (err, callingGroup) {
+                if (err) return; console.log(err);
+                res.send(callingGroup);
+      })
+
+      
       // res.json(200);
     })
   }

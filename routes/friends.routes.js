@@ -6,7 +6,7 @@ let friendModel = require('../model/friendModel');
 
 
 friendsRouter.route('/createfriend').post(function (req, res) {
-    
+    console.log(req.body);
     userModel.findOne({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { password: false })
         .lean().exec(function (err, userResult) {
         if (!userResult) res.send({ 'message': 'User Id doesnt exist', 'status': false }); 

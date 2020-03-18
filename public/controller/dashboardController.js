@@ -2006,12 +2006,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             // -- if any joined user has left the groupCall, then update it to all remaining joined users --
             else if (data.status == 3) {
-                //console.log("status: "+ data.status);
+                console.log("3");      console.log($scope.joinedUsersList);
                 // REVIEW ----------------------------------------
-                for (var g = 0; g < $scope.callingGroups.length; g++) {
-                    if (data.userdata.groupCallid == $scope.callingGroups[g]._id) {
+                console.log($scope.allGroups);
+                for (var g = 0; g < $scope.allGroups.length; g++) {
+                    if (data.userdata.groupId == $scope.allGroups[g]._id) {
+                        console.log("if 1");
                         for (var j = 0; j < $scope.joinedUsersList.length; j++) {
                             if (data.userdata.callerId == $scope.joinedUsersList[j].callerId) {
+                                console.log("if 2");
                                 $scope.joinedUsersList.splice(j, 1);
                                 //  console.log($scope.joinedUsersList.length);
                                 if ($scope.joinedUsersList.length == 0) {

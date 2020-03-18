@@ -1311,11 +1311,11 @@
         <div id="joinedUsersSection">
           <b>Joined Users: </b> {{joinedUsersList.length}}
           <br>
-          <ol id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
+          <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
            <li id="joinerName">
              {{joiner.name}}
            </li>
-          </ol>
+          </ul>
         </div>
         <div class="modal-footer">
           <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>

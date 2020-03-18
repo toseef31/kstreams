@@ -85,11 +85,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         $rootScope.signaling_socket.$on('$open', function () {
-           // console.log('Group call connectected DC JS');
+            // console.log('Group call connectected DC JS');
             $interval(GroupCall.getGroupData, 9000);
             GroupCall.getGroupData(); //call on start and then it will repeat by interval
         }).$on('$close', function () {
-           // console.log("Disconnected from signaling server");
+            // console.log("Disconnected from signaling server");
             GroupCall.closeIt();
         }).$on('$message', function (message) {
             var parsedMessage = JSON.parse(message);
@@ -119,7 +119,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     console.error('Unrecognized message', parsedMessage);
             }
         });
-         if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
+        if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
     // $scope.connGroupCall = function () {
@@ -204,14 +204,43 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     windowElement.on('beforeunload', function (event) {
-       // console.log($scope.caller);
-        if ($scope.caller) {
+        if ($scope.caller && $scope.myCallStatus == 0) {
             $http.post('/leaveCallGroup', {
                 '_id': $scope.selGroupData.groupCallid,
                 'groupId': $scope.selGroupData._id,
                 'userId': $scope.user._id,
                 'status': 0
             });
+            userData = {
+                groupCallid: $scope.selGroupData.groupCallid,
+                groupId: $scope.selGroupData._id,
+                callerName: $scope.user.name,
+                callerId: $scope.user._id,
+            };
+            $.ajax({
+                type: "POST",
+                url: "/gCallStatus",
+                data: {'status': 2, 'userdata': userData}
+            })
+        }
+        else if (!$scope.caller && $scope.myCallStatus == 1){
+            $http.post('/leaveCallGroup', {
+                '_id': $scope.selGroupCallData.groupCallid,
+                'groupId': $scope.selGroupCallData.groupId,
+                'userId': $scope.user._id,
+                'status': 1
+            });
+            userData = {
+                groupCallid: $scope.selGroupCallData.groupCallid,
+                groupId: $scope.selGroupCallData.groupId,
+                callerName: $scope.user.name,
+                callerId: $scope.user._id,
+            };
+            $.ajax({
+                type: "POST",
+                url: "/gCallStatus",
+                data: {'status': 3, 'userdata': userData}
+            })
         }
 
         $http.get('/emptyChatWithId/' + $rootScope.user._id);
@@ -742,8 +771,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 $http.post("/getCallGroups", { 'userId': $rootScope.user._id, 'projectId': $rootScope.projectData._id }).then(function (callingGroups) {
                     $scope.callingGroups = callingGroups.data;
-                  //  console.log($scope.callingGroups);
-                    
+                    //  console.log($scope.callingGroups);
+
                     // REVIEW ----------------------------------------
                     if ($scope.callingGroups.length > 0) {
                         for (var i in $scope.allGroups) {
@@ -1020,14 +1049,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $scope.groupchats = groupchat.data;
                     $scope.chatLength = $scope.groupchats.length;
                 })
-                    
+
                 // REVIEW ----------------------------------------
                 // *** Get GroupCall Members of selected group ***
-                $scope.joinedUsersList = [];
+                console.log($scope.joinedUsersList);
                 for (var j in $scope.callingGroups) {
-                    if (obj.group._id == $scope.callingGroups[j].groupId._id){
-                         $scope.joinedUsersList = $scope.callingGroups[j].members;
-                         break;
+                    if (obj.group._id == $scope.callingGroups[j].groupId._id) {
+                        $scope.joinedUsersList = $scope.callingGroups[j].members;
+                        console.log("---- start chat ----");
+                        console.log($scope.joinedUsersList);
+                        break;
                     }
                 }
 
@@ -1347,9 +1378,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // -------- (About Third 'status' Param): 0- calling, 1- joining --------------- 
         $scope.videoCall = function (type, callerId, status = 0) {
             cancelTimmer = false;
-           // console.log($scope.joinedUsersList);
+            // console.log($scope.joinedUsersList);
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
-                console.log("if Group");
+                // console.log("if Group");
                 $scope.bypassGroupSelected = false;
 
                 $('#incomingGroupCallModal').hide();
@@ -1380,8 +1411,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 $scope.allGroups[i].groupCallid = groupCallData.data._id;
 
                                 //--- needs reChecking ----------
-                             //   console.log("Creating Group:");
-                              //  console.log($scope.selGroupData);
+                                //   console.log("Creating Group:");
+                                //  console.log($scope.selGroupData);
 
                                 let gData = {};
                                 if ($scope.selGroupData != null) {
@@ -1397,7 +1428,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 else {
                                     gData = $scope.selGroupCallData;
                                 }
-                             //   console.log(gData);
+                                //   console.log(gData);
                                 userData = {
                                     'groupId': gData.groupId,
                                     'groupCallid': gData.groupCallid,
@@ -1432,7 +1463,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     else {
                         gData = $scope.selGroupCallData;
                     }
-                  //  console.log(gData);
+                    //  console.log(gData);
                     $http.post('/joinCallGroup', {
                         '_id': gData.groupCallid,
                         'groupId': gData.groupId,
@@ -1447,8 +1478,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             callerId: $scope.user._id,
                         };
                         //console.log(callingGroupData);
-                      //  $scope.joinedUsersList = [];
-                      //  $scope.joinedUsersList = callingGroupData.data.members;
+                        //  $scope.joinedUsersList = [];
+                        //  $scope.joinedUsersList = callingGroupData.data.members;
                         // console.log(userData.groupCallid);
                         GroupCall.init(userData, status);
                     })
@@ -1862,7 +1893,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         // GROUP CALL SOCKET RECEIVER ----------------------------------------------------------
         socket.on('gCallStatusUpdater', function (data) {
             console.log("GC SOCKET:-> ");
-             console.log(data);
+            console.log(data);
             // ----- open incoming modal for all receiver users -----
             if (data.status == 0) {
                 for (var g = 0; g < $scope.allGroups.length; g++) {
@@ -1878,32 +1909,32 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                         $('#incomingGroupCallModal').show();
 
-                     //   $scope.ringbell.loop = true;
-                     //   $scope.ringbell.play();
+                        //   $scope.ringbell.loop = true;
+                        //   $scope.ringbell.play();
                         groupTimmer(20, 1);
 
                         $scope.selGroupCallData = data.userdata;
-                       // console.log($scope.selGroupCallData);
-                       // console.log("******** RECEIVING GROUP CALL *********");
+                        // console.log($scope.selGroupCallData);
+                        // console.log("******** RECEIVING GROUP CALL *********");
                         break;
                     }
                 }
             }
             // -- push the joined user in array - if already added then break from loop and go on -----
             else if (data.status == 1) {
-               
+
                 for (var g = 0; g < $scope.allGroups.length; g++) {
                     if (data.userdata.groupId == $scope.allGroups[g]._id) {
-                        console.log($scope.joinedUsersList.length);
+                        //   console.log($scope.joinedUsersList.length);
                         if ($scope.joinedUsersList.length > 0) {
                             for (var c = 0; c < $scope.joinedUsersList.length; c++) {
                                 if (data.userdata.callerId == $scope.joinedUsersList[c].callerId) {
-                                    console.log("inside if");
+                                    // console.log("inside if");
                                     break;
                                 }
-                                else if (data.userdata.callerId != $scope.joinedUsersList[c].callerId && c == ($scope.joinedUsersList.length-1)){
-                                    console.log("inside else:");
-                                    console.log(data.userdata);
+                                else if (data.userdata.callerId != $scope.joinedUsersList[c].callerId && c == ($scope.joinedUsersList.length - 1)) {
+                                    //  console.log("inside else:");
+                                    // console.log(data.userdata);
                                     $scope.allUsersLeft = 2;
                                     $scope.ringbell.pause();
                                     $scope.joinedUsersList.push(data.userdata);
@@ -1913,8 +1944,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             }
                         }
                         else {
-                            console.log("outside else:");
-                            console.log(data.userdata);
+                            // console.log("outside else:");
+                            // console.log(data.userdata);
                             $scope.joinedUsersList.push(data.userdata);
                             $scope.allUsersLeft = 2;
                             $scope.ringbell.pause();
@@ -1931,7 +1962,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if (data.status == 2) {
                 // if users have not joined the call but receiving it, and caller has ended the call
                 // * before any user join it, then execute below "if section"
-               // console.log($scope.joinedUsersList.length);
+                // console.log($scope.joinedUsersList.length);
                 if ($scope.joinedUsersList.length == 0) {
                     for (var g = 0; g < $scope.allGroups.length; g++) {
                         //    console.log(data.userdata.groupId +" == "+ $scope.allGroups[g]._id +" && "+ data.userdata.callerId +" != "+ $scope.user._id);
@@ -1940,7 +1971,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             $scope.ringbell.pause();
                             $scope.groupCallerName = "";
                             cancelTimmer = true;
-                           // GroupCall.stop(null, -1);
+                            // GroupCall.stop(null, -1);
                             resetGroupTimer();
                             $('#incomingGroupCallTime').text('group call ended');
                             $('#incomingGroupCallMsg').text('');
@@ -1956,9 +1987,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 // * then execute below "else section"
                 else {
                     for (var g = 0; g < $scope.allGroups.length; g++) {
-                      //  console.log(data.userdata.groupId +" == "+ $scope.allGroups[g]._id +" && "+ data.userdata.callerId +" != "+ $scope.user._id);
+                        //  console.log(data.userdata.groupId +" == "+ $scope.allGroups[g]._id +" && "+ data.userdata.callerId +" != "+ $scope.user._id);
                         if (data.userdata.groupId == $scope.allGroups[g]._id && data.userdata.callerId != $scope.user._id) {
-                           // console.log("iifff");
+                            // console.log("iifff");
                             $scope.allGroups[g].joinCall = false;
                             GroupCall.stop(null, -1);
                             cancelTimmer = true;
@@ -1982,16 +2013,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         for (var j = 0; j < $scope.joinedUsersList.length; j++) {
                             if (data.userdata.callerId == $scope.joinedUsersList[j].callerId) {
                                 $scope.joinedUsersList.splice(j, 1);
-                              //  console.log($scope.joinedUsersList.length);
+                                //  console.log($scope.joinedUsersList.length);
                                 if ($scope.joinedUsersList.length == 0) {
                                     $scope.allUsersLeft = 1;
                                     for (var j = 0; j < $scope.allGroups.length; j++) {
-                                      //  console.log(data.userdata.groupId +" == "+ $scope.allGroups[j]._id);
+                                        //  console.log(data.userdata.groupId +" == "+ $scope.allGroups[j]._id);
                                         if (data.userdata.groupId == $scope.allGroups[j]._id)
                                             $scope.allGroups[j].joinCall = false;
                                     }
                                 }
-                               
+
                                 break;
                             }
                         }
@@ -2067,11 +2098,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $('#incomingGroupCallTime').text("Call Ended");
 
                 for (var j = 0; j < $scope.allGroups.length; j++) {
-                  //  console.log($scope.selGroupCallData.groupCallid + " == " + $scope.allGroups[j]._id);
+                    //  console.log($scope.selGroupCallData.groupCallid + " == " + $scope.allGroups[j]._id);
                     if ($scope.selGroupCallData.groupCallid == $scope.allGroups[j]._id)
                         $scope.allGroups[j].joinCall = false;
                 }
-              //  console.log($scope.selGroupCallData);
+                //  console.log($scope.selGroupCallData);
                 $http.post('/leaveCallGroup', {
                     '_id': gData.groupCallid,
                     'groupId': gData._id,
@@ -2095,7 +2126,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     // * so thats why timmer will keep on running until user ends it by himself
                     // ** if callTimeLimit is zero, then it means keep the timmer running **
 
-                   // console.log($scope.allUsersLeft + " && " + $scope.joinedUsersList.length + " && " + callTimeLimit);
+                    // console.log($scope.allUsersLeft + " && " + $scope.joinedUsersList.length + " && " + callTimeLimit);
                     if (($scope.allUsersLeft == 0 || $scope.allUsersLeft == 2) && callTimeLimit == 0 && $scope.joinedUsersList.length > 0) {
                         groupTimmer(0, status);
                     }
@@ -2123,7 +2154,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         //Update Viewers and hide their modal + reload their iframe
         socket.on('updateScreenshareStatus', function (data) {
-           // console.log(data);
+            // console.log(data);
             if (data.modalStatus == 0 && $scope.user._id == data.chatWithId) {
                 $("#ssViewerModal").modal('hide');
                 document.getElementById('viewerIframe').contentWindow.location.reload();

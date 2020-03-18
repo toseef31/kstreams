@@ -312,7 +312,7 @@ io.on('connection', function (socket) {
 });
 
 app.post('/pauseChatFunc', (req, res) => {
-	console.log('pauseCH sbs');
+	//console.log('pauseCH sbs');
 	io.emit('pauseChatFunctionality', req.body.chatId); // this emitted function is after line#900
 	res.status(200).json({});
 });
@@ -323,7 +323,7 @@ app.post('/updateSSstatus', (req, res) => {
 });
 
 app.post('/gCallStatus', (req, res) => {
-	console.log("gCallStatus SBS");
+	//console.log("gCallStatus SBS");
 	io.emit('gCallStatusUpdater', req.body); 
 	res.status(200).json({});
 })

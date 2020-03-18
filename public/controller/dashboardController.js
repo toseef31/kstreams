@@ -1878,8 +1878,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                         $('#incomingGroupCallModal').show();
 
-                        $scope.ringbell.loop = true;
-                        $scope.ringbell.play();
+                     //   $scope.ringbell.loop = true;
+                     //   $scope.ringbell.play();
                         groupTimmer(20, 1);
 
                         $scope.selGroupCallData = data.userdata;

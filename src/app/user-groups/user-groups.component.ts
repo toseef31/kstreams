@@ -46,7 +46,8 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     this.loggedUserId = this.sessionService.get('user_session_data').id;
 
     this.activatedForm = this.sessionService.get('activatedForm');
-    if (this.sessionService.get('activatedForm') == null || this.sessionService.get('activatedForm') == "") {
+    console.log(this.activatedForm);
+    if (this.sessionService.get('activatedForm') == null || this.sessionService.get('activatedForm') == "" || this.activatedForm == 3) {
       this.activatedForm = 0;
     }
     else {

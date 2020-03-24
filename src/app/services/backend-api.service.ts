@@ -8,9 +8,9 @@ import { Title } from '@angular/platform-browser';
 })
 export class BackendApiService {
 
-  private userBaseUrl: string = 'https://192.168.100.12:22000/business';
-  private groupsBaseUrl: string = 'https://localhost:22000/groups';
-  private projectBaseUrl: string = 'https://localhost:22000/projects';
+  private userBaseUrl: string = 'https://192.168.10.7:22000/business';
+  private groupsBaseUrl: string = 'https://192.168.10.7:22000/groups';
+  private projectBaseUrl: string = 'https://192.168.10.7:22000/projects';
   public projectData;
 
   public updateUserList = new Subject<any>();

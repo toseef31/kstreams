@@ -21,6 +21,7 @@ const upload = multer({
 // -----------------------------------------------------------------------------------------------
 
 registrationRoutes.route("/login").post(function (req, res) {
+    res.header('Access-Control-Allow-Origins','*');
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 

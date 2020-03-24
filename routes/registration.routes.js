@@ -26,12 +26,12 @@ registrationRoutes.route("/login").post(function (req, res) {
 
     projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
         //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
-       // console.log(req.body);
-        if (req.body.email != ''){   
-            User.findOne({'email':req.body.email}).then(
+        // console.log(req.body);
+        if (req.body.email != '') {
+            User.findOne({ 'email': req.body.email }).then(
                 (result) => {
-                   
-                    if (!result) {     
+
+                    if (!result) {
                         return res.json({ 'message': "Incorrect email", 'isUserExist': false });
                     }
                     else {
@@ -50,17 +50,17 @@ registrationRoutes.route("/login").post(function (req, res) {
                     res.status(500).send(err);
                 });
         }
-        else{
-            User.findOne({'phone':req.body.phone}).then(
+        else if (req.body.phone != '') {
+            User.findOne({ 'phone': req.body.phone }).then(
                 (result) => {
-                    if (!result) {     
+                    if (!result) {
                         return res.json({ 'message': "Incorrect phone", 'isUserExist': false });
                     }
                     else {
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
-                  
+
                         var imageFile = "";
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
@@ -73,7 +73,30 @@ registrationRoutes.route("/login").post(function (req, res) {
                     res.status(500).send(err);
                 });
         }
-      
+        else if (req.body.name != '') {
+            User.findOne({ 'name': req.body.name }).then(
+                (result) => {
+                    if (!result) {
+                        return res.json({ 'message': "Incorrect username", 'isUserExist': false });
+                    }
+                    else {
+                        if (!bcrypt.compareSync(req.body.password, result.password)) {
+                            return res.json({ 'message': "Incorrect password", 'isUserExist': false });
+                        }
+
+                        var imageFile = "";
+                        if (result.user_image != '') {
+                            var imageFile = fullUrl + result.user_image;
+                        }
+
+                        const data = { 'id': result.id, 'email': result.email, 'name': result.name };
+                        return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
+                    }
+                }).catch(err => {
+                    res.status(500).send(err);
+                });
+        }
+
     })
 });
 

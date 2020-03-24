@@ -13,14 +13,24 @@ groupsRouter.route('/addusergroup').post(function (req, res) {
             var Group = groupModel;
             var User = userModel;
 
-            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
+            Group.find({ '_id': req.body.selectedGroupId })
+                 .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } })
+                 .populate({ path: 'projectId', match: {status: 1} ,select: {'_id': true, 'status': true}})
+                 .exec(function (err, users) {
                 if (err) { return console.log(err); }
                 var groupUsers = users;
 
                 User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
                     if (err) { return console.log(err); }
 
-                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+                    let projectIdUsers = [];
+                    for (var i = 0; i < remainingUsers.length; i++) {
+                        if ((remainingUsers[i].projectId+'') == (groupUsers[0].projectId._id+'')){
+                            projectIdUsers.push(remainingUsers[i]);
+                        }
+                    }
+
+                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': projectIdUsers });
                 })
 
             });
@@ -40,14 +50,24 @@ groupsRouter.route("/deletegroupuser").post(function (req, res) {
             var Group = groupModel;
             var User = userModel;
 
-            Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
+            Group.find({ '_id': req.body.selectedGroupId })
+                 .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } })
+                 .populate({ path: 'projectId', match: {status: 1} ,select: {'_id': true, 'status': true}})
+                 .exec(function (err, users) {
                 if (err) { return console.log(err); }
                 var groupUsers = users;
 
                 User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
                     if (err) { return console.log(err); }
 
-                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+                    let projectIdUsers = [];
+                    for (var i = 0; i < remainingUsers.length; i++) {
+                        if ((remainingUsers[i].projectId+'') == (groupUsers[0].projectId._id+'')){
+                            projectIdUsers.push(remainingUsers[i]);
+                        }
+                    }
+
+                    res.send({ 'groupUsers': groupUsers, 'remainingUsers': projectIdUsers });
                 })
 
             });
@@ -63,8 +83,17 @@ groupsRouter.route("/creategroup").post(function (req, res) {
     newGroupModel.save().then(
         reg => {
             var Group = groupModel;
-            Group.find({ 'status': 1 }, { '_id': true, 'name': true, 'status': true }, function (err, groups) {
-                res.send(groups);
+            Group.find({ 'status': 1 }, { '_id': true, 'name': true, 'status': true })
+                 .populate({path: 'projectId', match: {status: 1} ,select: {'status': true}})
+                 .exec(function (err, groups) {
+
+                let projectIdGroups = [];
+                for (var i = 0; i < groups.length; i++) {
+                    if (groups[i].projectId != null && groups[i].projectId.status == 1)
+                        projectIdGroups.push(groups[i]);
+                }
+
+                res.send(projectIdGroups);
             })
         }).catch(
             err => {
@@ -78,13 +107,22 @@ groupsRouter.route("/editgroup").post(function (req, res) {
    
     Group.findByIdAndUpdate(req.body.groupId, { 'name': req.body.groupName }).then(
         (result) => {
-            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
-                res.send(groups);
-            })
+            Group.find({ 'status': 1 })
+            .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } })
+            .populate({ path: 'projectId', match: {status: 1}, select: {'status': true}})
+            .exec(function (err, groups) {
+
+           let projectIdGroups = [];
+           for (var i = 0; i < groups.length; i++) {
+               if (groups[i].projectId != null && groups[i].projectId.status == 1)
+                   projectIdGroups.push(groups[i]);
+           }
+                res.send(projectIdGroups);
         }
     ).catch(err => {
         res.status(400).send({ 'message': "failed to update group", 'status': false })
     })
+})
 })
 
 groupsRouter.route("/deletegroup").post(function (req, res) {
@@ -93,20 +131,39 @@ groupsRouter.route("/deletegroup").post(function (req, res) {
     Group.findByIdAndUpdate(req.body.groupId, { 'status': 0 }).then(
         (result) => {
             var Group = groupModel;
-            Group.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
-                res.send(groups);
-            })
+            Group.find({ 'status': 1 })
+            .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } })
+            .populate({ path: 'projectId', match: {status: 1}, select: {'status': true}})
+            .exec(function (err, groups) {
 
+           let projectIdGroups = [];
+           for (var i = 0; i < groups.length; i++) {
+               if (groups[i].projectId != null && groups[i].projectId.status == 1)
+                   projectIdGroups.push(groups[i]);
+           }
+           res.send(projectIdGroups);
         }).catch(err => {
             res.status(400).send({ 'message': "failed to delete the group", 'status': false });
         });
+})
 })
 
 groupsRouter.route("/getgroups").get(function (req, res) {
     var Groups = groupModel;
 
-    Groups.find({ 'status': 1 }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } }).exec(function (err, groups) {
-        res.send(groups);
+    Groups.find({ 'status': 1 })
+    .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 }, select: { 'password': false } })
+    .populate({ path: 'projectId', match: {status: 1} ,select: {'status': true}})
+    .exec(function (err, groups) {
+      
+        let projectIdGroups = [];
+        for (var i = 0; i < groups.length; i++) {
+
+            if (groups[i].projectId != null && groups[i].projectId.status == 1)
+                projectIdGroups.push(groups[i]);
+        }
+        
+        res.send(projectIdGroups);
     })
 })
 
@@ -114,14 +171,23 @@ groupsRouter.route("/getaddedusers").post(function (req, res) {
     var Group = groupModel;
     var User = userModel;
 
-    Group.find({ '_id': req.body.selectedGroupId }).populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } }).exec(function (err, users) {
+    Group.find({ '_id': req.body.selectedGroupId })
+    .populate({ path: 'members', match: { status: { $gt: 0 }, isAdmin: 0 } })
+    .populate({ path: 'projectId', match: {status: 1} ,select: {'_id': true, 'status': true}})
+    .exec(function (err, groups) {
         if (err) { return console.log(err); }
-        var groupUsers = users;
+        var groupUsers = groups;
+        console.log(groups);
 
         User.find({ '_id': { $nin: groupUsers[0].members }, 'isAdmin': 0, 'status': {$gt : 0} }, {}).exec(function (err, remainingUsers) {
             if (err) { return console.log(err); }
-
-            res.send({ 'groupUsers': groupUsers, 'remainingUsers': remainingUsers });
+            let projectIdUsers = [];
+            for (var i = 0; i < remainingUsers.length; i++) {
+                if ((remainingUsers[i].projectId+'') == (groupUsers[0].projectId._id+'')){
+                    projectIdUsers.push(remainingUsers[i]);
+                }
+            }
+            res.send({ 'groupUsers': groupUsers, 'remainingUsers': projectIdUsers });
         })
     });
 })

@@ -131,7 +131,7 @@ registrationRoutes.post('/getusers', function (req, res) {
             if (users[i].user_image != "")
                 users[i]['userImageLink'] = (fullUrl + users[i].user_image);
 
-            if (users[i].projectId.status == 1)
+            if (users[i].projectId != null && users[i].projectId.status == 1)
                 activeProjectUsers.push(users[i]);
         }
         res.send(activeProjectUsers);

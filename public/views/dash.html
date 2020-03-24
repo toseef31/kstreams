@@ -1296,14 +1296,32 @@
   <!-- Create-Group EDIT Modal -->
 
   <!-- Group Call start-->
+  <!-- <div id="groupCallModal" class="modal fade" role="dialog">
+    <div class='text-white'>Group Call</div>
+
+    <div id="joinedUsersSection">
+      <b>Joined Users: </b> {{joinedUsersList.length}}
+      <br>
+
+      <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
+       <li id="joinerName">
+         {{joiner.name}}
+       </li>
+      </ul>
+    </div>
+    
+    <br>
+    <div class="modal-footer">
+      <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
+    </div>
+  </div> -->
+
   <div id="groupCallModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content ">  
         <div class="modal-header clearfix">
           <div class='col-md-4 text-white'>Group Call</div>
           <span id="groupCallTime" style="color: white; float: right"></span>
-          <!-- <div class='col-md-2 pull-right'>
-          </div> -->
         </div>
         <div class="modal-body groupCallModalContent">
         </div>
@@ -1317,6 +1335,7 @@
            </li>
           </ul>
         </div>
+
         <div class="modal-footer">
           <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
         </div>

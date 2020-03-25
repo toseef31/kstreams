@@ -7,10 +7,9 @@ let projectModel = require('../model/projectModel')
 
 projectsRouter.route('/register-user').post(function (req, res) {
     var userData = req.body;
-
     let newUserModel = new userModel(userData);
-
     var fullUrl = req.protocol + '://' + req.get('host') + 'profilePhotos';
+    console.log("REGISTERING USER");
     console.log(userData);
     if (userData.email != ''){
         console.log("1: "+ userData.email);

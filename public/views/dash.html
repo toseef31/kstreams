@@ -266,8 +266,8 @@
             </span>
 
             <!-- ------------------------- GROUP CALL BUTTONS ---------------------------------------- -->
-            <span ng-if="projectData.videoCall == 1 && groupSelected" class="whiteTextColor marginRight20">
-              <i id="videoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0,0,0)"></i>
+            <span ng-if="projectData.videoCall == 1 && groupSelected && !groupCallMinimized" class="whiteTextColor marginRight20">
+              <i id="groupVideoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0,0,0)"></i>
 
               <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">Join Call</span>
             </span>
@@ -1338,7 +1338,7 @@
 
         <div class="modal-footer">
           <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
-          <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-danger'>Minimize</a>
+          <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-warning'>Minimize</a>
         </div>
       </div>
     </div>
@@ -1364,6 +1364,16 @@
     </div>
   </div>
   <!-- Incoming GroupCall end -->
+
+  <div id="minimizedGroupCall" class="minimizedVideoTab minimizedVideoPanelMobile">
+    <div class="incomming-btn-container" style="background-color: white  !important">
+        <img class="callImageAlign" src="images/Broadcast.png" style="width: 40%;">
+        <button class="trans-btn maximizeIconAlign" title="call minimize"
+            ng-click="minimizeVideoCall(1,chatWith || callerId);">
+            <img src="images/callmaximizered.png" style="width: 30px">
+        </button>
+    </div>
+</div>
 
 </div>
 

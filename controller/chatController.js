@@ -274,7 +274,7 @@ module.exports = function (io, saveUser) {
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
           .exec(function (err, data) {
-            console.log(data);
+          //  console.log(data);
             helper.addNewMessage(data);
             res.json(data);
           });
@@ -403,9 +403,11 @@ module.exports = function (io, saveUser) {
   };
 
   router.out = (req, res) => {
-    //console.log("GOOING OUTTT");
-    //console.log(req.session.user);
+    console.log("GOOING OUTTT");
+    console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
+    if (!req.session.user) return;
+
     userModel
       .update(
         { _id: req.session.user._id },
@@ -418,6 +420,8 @@ module.exports = function (io, saveUser) {
   };
 
   router.set = (req, res) => {
+      console.log("setting session");
+      console.log(req.body);
     // if email is empty then check it by phone number
     if (req.body.email != "") {
       userModel
@@ -441,6 +445,26 @@ module.exports = function (io, saveUser) {
     else if (req.body.phone != "") {
       userModel
         .findOne({ phone: req.body.phone })
+        .lean()
+        .then(function (data) {
+          req.session.user = data;
+          chatModel
+            .find({ receiverId: data._id, isSeen: 0 })
+            .count()
+            .exec(function (err, unreadMsgs) {
+              if (data.length == 0) res.json({ usersList: data });
+              res.json({
+                sessionData: req.session.user,
+                unreadMsgs: unreadMsgs
+              });
+            });
+        });
+    }
+
+    else if (req.body.name != "") {
+ 
+      userModel
+        .findOne({ name: req.body.name })
         .lean()
         .then(function (data) {
           req.session.user = data;
@@ -504,7 +528,7 @@ module.exports = function (io, saveUser) {
         { $set: { name: name, user_image: image, userTitle: skill } }
       )
       .exec(function (err, result) {
-        console.log(result);
+       // console.log(result);
         if (err) res.json(false);
         else {
           res.json(true);
@@ -513,6 +537,7 @@ module.exports = function (io, saveUser) {
   };
 
   router.login = function (req, res) {
+    var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
     var phone = req.body.phone;
@@ -597,6 +622,44 @@ module.exports = function (io, saveUser) {
           } else res.json(null);
         }
       );
+    }else if (name != "") {
+      helper.getData(
+        userModel,
+        { name: name, email: "", password: password },
+        function (user) {
+          if (user) {
+            //--------------------------------------------------------------------------------------------
+            // *** for those users who are registered but these values are not updated ***
+            if (userImage)
+              userModel
+                .update({ _id: user._id }, { $set: { user_image: userImage } })
+                .exec();
+            if (userTitle)
+              userModel
+                .update({ _id: user._id }, { $set: { userTitle: userTitle } })
+                .exec();
+            if (userProfile)
+              userModel
+                .update(
+                  { _id: user._id },
+                  { $set: { userProfileUrl: userProfile } }
+                )
+                .exec();
+            //--------------------------------------------------------------------------------------------
+
+            /*change status from offline to online*/
+            helper.changeStatus(user._id, {}, function (data) {
+              /*set session */
+              req.session.user = user;
+              /*this function use to move user info to another view*/
+              saveUser(user);
+              /*get users to show order by newly messages*/
+              //helper.RTU();
+              res.json(user);
+            });
+          } else res.json(null);
+        }
+      );
     }
   };
   router.createUser = function (req, res) {
@@ -615,8 +678,11 @@ module.exports = function (io, saveUser) {
   };
 
   router.logout = function (req, res) {
+    console.log("LOGOUT");
+    console.log(req.session.user);
     if (req.session.user) {
       req.session.destroy(function (err) {
+        console.log(req.params.userId);
         userModel
           .update(
             { _id: req.params.userId },
@@ -844,7 +910,7 @@ module.exports = function (io, saveUser) {
   };
 
   router.removeUser = (req, res) => {
-    console.log("removeUser: Logic need to be updated");
+   // console.log("removeUser: Logic need to be updated");
     // recentModel.findOneAndDelete({_id:req.body.id},(err, data) => {
     //     if (err) throw err;
     //     chatModel.deleteMany({$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}]},(err,data) => {
@@ -865,12 +931,12 @@ module.exports = function (io, saveUser) {
   };
 
   router.setPerStatus = (req, res) => {
-    console.log(
-      "Set pStatus: ",
-      req.session.user._id,
-      " and ",
-      req.body.pStatus
-    );
+    // console.log(
+    //   "Set pStatus: ",
+    //   req.session.user._id,
+    //   " and ",
+    //   req.body.pStatus
+    // );
     if (req.session.user)
       userModel.findOneAndUpdate(
         { _id: req.session.user._id },

@@ -121,7 +121,26 @@ module.exports = function(io){
 				}
 			});	
 		}
-
+		else if (obj.name != ''){ 
+			model.findOne({'name':obj.name, 'status': 1, 'isAdmin': 0})
+			.populate({
+				path: 'projectId',
+				match: {
+				  status: 1 
+				}
+			  }).lean().exec(function(err,data){ 
+				if(err || !data) callback(null);
+				else{
+					if (!bcrypt.compareSync(obj.password, data.password))  
+						callback(null);
+					else
+						userModel.update({'name': obj.name}, {'onlineStatus': 1})
+						.lean().exec(function (err, result) { 
+						     callback(data);
+						})
+				}
+			});	
+		}
 		}else{
 			model.find({status:1}).populate('projectId').exec(function(err,data){
 				callback(data);

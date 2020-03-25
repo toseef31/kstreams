@@ -758,3 +758,18 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
   .lineHeightGroupList{
       line-height: 4 !important;
   }
+
+  .minimizedVideoTab{
+    /* float: right; */
+    z-index: 9999;
+    position: absolute;
+    right: 0;
+    left: 47%;
+    width: 120px;
+    top: 0;
+    background: #fff;
+    display: none;
+    border: 2px solid #666;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.5);
+    text-align: center;
+  }

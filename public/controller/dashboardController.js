@@ -665,6 +665,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.myCallStatus = 0; //0- calling, 1- joiner
         $scope.countGroupMembers = 1;
         $rootScope.user = response.data;
+        $scope.groupCallMinimized = false;
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;
         $scope.welcomePage = true;
@@ -1375,12 +1376,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /* Video Calling Functionality */
         // -------- (About Third 'status' Param): 0- calling, 1- joining --------------- 
         $scope.videoCall = function (type, callerId, status = 0) {
+          
+            if ($scope.groupCallMinimized) {
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
+                $("#groupVideoCall").css("color", "white");
+                return;
+            }
+   
+            $("#groupVideoCall").css("color", "#ea5a5a;");
             cancelTimmer = false;
-            // console.log($scope.joinedUsersList);
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
-                // console.log("if Group");
                 $scope.bypassGroupSelected = false;
-
                 $('#incomingGroupCallModal').hide();
                 $("#groupCallModal").modal({
                     backdrop: 'static',
@@ -1499,11 +1509,29 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
              One2OneCall.videoKCall($scope.user._id, $scope.chatWithId, userData, type);
         }
 
+        $scope.minGroupCall = function () {
+            $scope.groupCallMinimized = !$scope.groupCallMinimized;
+
+            console.log($scope.groupCallMinimized);
+            if ($scope.groupCallMinimized){
+                $('#groupCallModal').hide();
+                $("#minimizedGroupCall").modal();
+                $('#minimizedGroupCall').show();
+               
+            }
+            else {
+                $('#minimizedGroupCall').hide();
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
+            }
+        }
+
         $scope.stopGroupCall = function () {
             let userData = {};
             if ($scope.selGroupData != null) {
-                console.log("stopGroupCall- if");
-                console.log($scope.selGroupData);
                 userData = {
                     groupCallid: $scope.selGroupData.groupCallid,
                     groupId: $scope.selGroupData._id,
@@ -1553,9 +1581,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 GroupCall.stop(userData, 3);
             }
 
+            $("#groupVideoCall").css("color", "white");
             $('#groupCallModal').hide();
             $('#stopGroupCallBtn').text('Stop');
             cancelTimmer = true;
+            $scope.groupCallMinimized = false;
             resetGroupTimer();
             $scope.selGroupCallData = {};
             $scope.myCallStatus = 0;

@@ -623,12 +623,10 @@ module.exports = function (io, saveUser) {
         }
       );
     }else if (name != "") {
-      console.log("name login");
       helper.getData(
         userModel,
         { name: name, email: "", password: password },
         function (user) {
-          console.log(user);
           if (user) {
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
@@ -652,8 +650,11 @@ module.exports = function (io, saveUser) {
             /*change status from offline to online*/
             helper.changeStatus(user._id, {}, function (data) {
               /*set session */
+<<<<<<< HEAD
               console.log("helper side");
               console.log(user);
+=======
+>>>>>>> 4e30b408df3247028855fc85b6b9c4d71fafa414
               req.session.user = user;
               /*this function use to move user info to another view*/
               saveUser(user);

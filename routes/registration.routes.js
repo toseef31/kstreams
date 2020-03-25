@@ -27,7 +27,7 @@ registrationRoutes.route("/login").post(function (req, res) {
 
     projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
         //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
-        // console.log(req.body);
+         console.log(req.body);
         if (req.body.email != '') {
             console.log("if");
             User.findOne({ 'email': req.body.email }).then(

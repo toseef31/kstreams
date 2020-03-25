@@ -29,6 +29,7 @@ registrationRoutes.route("/login").post(function (req, res) {
         //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
         // console.log(req.body);
         if (req.body.email != '') {
+            console.log("if");
             User.findOne({ 'email': req.body.email }).then(
                 (result) => {
 
@@ -52,6 +53,7 @@ registrationRoutes.route("/login").post(function (req, res) {
                 });
         }
         else if (req.body.phone != '') {
+            console.log("else if 1");
             User.findOne({ 'phone': req.body.phone }).then(
                 (result) => {
                     if (!result) {
@@ -75,12 +77,17 @@ registrationRoutes.route("/login").post(function (req, res) {
                 });
         }
         else if (req.body.name != '') {
+            console.log("else if 2");
+            console.log(req.body);
+            console.log(req.body.name);
             User.findOne({ 'name': req.body.name }).then(
                 (result) => {
+                    console.log(result);
                     if (!result) {
                         return res.json({ 'message': "Incorrect username", 'isUserExist': false });
                     }
                     else {
+                        console.log(req.body.password);
                         if (!bcrypt.compareSync(req.body.password, result.password)) {
                             return res.json({ 'message': "Incorrect password", 'isUserExist': false });
                         }
@@ -89,7 +96,7 @@ registrationRoutes.route("/login").post(function (req, res) {
                         if (result.user_image != '') {
                             var imageFile = fullUrl + result.user_image;
                         }
-
+                        console.log(result);
                         const data = { 'id': result.id, 'email': result.email, 'name': result.name };
                         return res.json({ 'data': data, 'imageFile': imageFile, 'isUserExist': true });
                     }

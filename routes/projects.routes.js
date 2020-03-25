@@ -11,7 +11,7 @@ projectsRouter.route('/register-user').post(function (req, res) {
     let newUserModel = new userModel(userData);
 
     var fullUrl = req.protocol + '://' + req.get('host') + 'profilePhotos';
-    //console.log(userData);
+    console.log(userData);
     if (userData.email != ''){
         console.log("1: "+ userData.email);
         userModel.findOne({ 'email': userData.email })

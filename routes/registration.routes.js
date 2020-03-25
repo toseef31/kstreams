@@ -20,7 +20,8 @@ const upload = multer({
 })
 // -----------------------------------------------------------------------------------------------
 
-registrationRoutes.route("/login").post(function (req, res) {
+registrationRoutes.route("/login").post(function (req, res) { 
+
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 

@@ -93,8 +93,8 @@ var authUser;
 
 const corsOptions = {
 	origin: ["https://peekhelpers.com", "https://www.peekhelpers.com", "http://127.0.0.1:8000",
-			 "https://www.jobcallme.com", "https://jobcallme.com", "https://stemenglishlearn.com",
-			 "https://www.stemenglishlearn.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
+			 "https://www.jobcallme.com", "https://jobcallme.com","https://alllinkshare.com",
+			 "https://stemenglishlearn.com", "https://www.stemenglishlearn.com"], //the port my react app is running on. https://alllinkshare.com   / https://searchbysearch.com
 	credentials: true,
 };
 

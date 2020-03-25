@@ -89,8 +89,7 @@ projectsRouter.route('/registerProject').post(function (req, res) {
     })
 })
 
-projectsRouter.route('/getProject').post(function (req, res) { 
-
+projectsRouter.route('/getProject').get(function (req, res) { 
     projectModel.findOne({'status': 1})
     .lean().exec(function (err, projectData) { 
         res.send(projectData);

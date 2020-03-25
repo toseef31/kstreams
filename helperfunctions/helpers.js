@@ -122,6 +122,7 @@ module.exports = function(io){
 			});	
 		}
 		else if (obj.name != ''){ 
+			console.log("helperName: "+ obj.name);
 			model.findOne({'name':obj.name, 'status': 1, 'isAdmin': 0})
 			.populate({
 				path: 'projectId',
@@ -129,6 +130,7 @@ module.exports = function(io){
 				  status: 1 
 				}
 			  }).lean().exec(function(err,data){ 
+				console.log(data);
 				if(err || !data) callback(null);
 				else{
 					if (!bcrypt.compareSync(obj.password, data.password))  

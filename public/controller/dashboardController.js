@@ -1051,6 +1051,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                 // REVIEW ----------------------------------------
                 // *** Get GroupCall Members of selected group ***
+              if (!$scope.groupCallMinimized){
                 console.log($scope.callingGroups);
                 for (var j in $scope.callingGroups) {
                     if (obj.group._id == $scope.callingGroups[j]._id) {
@@ -1060,6 +1061,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         break;
                     }
                 }
+              }
             }
         }
 
@@ -1511,8 +1513,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.minGroupCall = function () {
             $scope.groupCallMinimized = !$scope.groupCallMinimized;
-
-            console.log($scope.groupCallMinimized);
             if ($scope.groupCallMinimized){
                 $('#groupCallModal').hide();
                 $("#minimizedGroupCall").modal();

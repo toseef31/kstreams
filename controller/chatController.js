@@ -402,11 +402,46 @@ module.exports = function (io, saveUser) {
       });
   };
 
+  router.logout = function (req, res) {
+    console.log("LOGOUT");
+    console.log(req.session.user);
+    req.session.destroy(function (err) {
+      console.log(req.params.userId);
+      userModel
+        .update(
+          { userId: req.params.userId },
+          { onlineStatus: 0, chatWithRefId: "" }
+        )
+        .exec(function (err, result) {
+          res.status(404).send();
+        });
+        res.json({ msg: "session destroy" });
+      })
+    // if (req.session.user) {
+    //   req.session.destroy(function (err) {
+    //     console.log(req.params.userId);
+    //     userModel
+    //       .update(
+    //         { userId: req.params.userId },
+    //         { onlineStatus: 0, chatWithRefId: "" }
+    //       )
+    //       .exec(function (err, result) {
+    //         res.status(404).send();
+    //       });
+    //   });
+    //   res.json({ msg: "session destroy" });
+    // }
+    // else{
+    //   res.json({ message: "failed to destroy session" });
+    // }
+  };
+
+
   router.out = (req, res) => {
     console.log("GOOING OUTTT");
     console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-    if (!req.session.user) return;
+    if (!req.session.user) res.json({ message: "failed to destroy session" });
 
     userModel
       .update(
@@ -421,7 +456,7 @@ module.exports = function (io, saveUser) {
 
   router.set = (req, res) => {
       console.log("setting session");
-      console.log(req.body);
+      console.log(req.body.name);
     // if email is empty then check it by phone number
     if (req.body.email != "") {
       userModel
@@ -481,6 +516,7 @@ module.exports = function (io, saveUser) {
         });
     }
   };
+
 
   router.get = (req, res) => {
     if (req.session.user && typeof req.session.user._id !== "undefiend") {
@@ -623,11 +659,13 @@ module.exports = function (io, saveUser) {
         }
       );
     }else if (name != "") {
+    //  console.log("name: "+ name);
       helper.getData(
         userModel,
-        { name: name, email: "", password: password },
+        { name: name, email: "", phone: "", password: password },
         function (user) {
           if (user) {
+         //   console.log(user);
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
             if (userImage)
@@ -651,6 +689,8 @@ module.exports = function (io, saveUser) {
             helper.changeStatus(user._id, {}, function (data) {
               /*set session */
               req.session.user = user;
+              console.log("helper session setting");
+              console.log(req.session.user);
               /*this function use to move user info to another view*/
               saveUser(user);
               /*get users to show order by newly messages*/
@@ -677,24 +717,7 @@ module.exports = function (io, saveUser) {
     });
   };
 
-  router.logout = function (req, res) {
-    console.log("LOGOUT");
-    console.log(req.session.user);
-    if (req.session.user) {
-      req.session.destroy(function (err) {
-        console.log(req.params.userId);
-        userModel
-          .update(
-            { _id: req.params.userId },
-            { onlineStatus: 0, chatWithRefId: "" }
-          )
-          .exec(function (err, result) {
-            res.status(404).send();
-          });
-      });
-      res.json({ msg: "session destroy" });
-    }
-  };
+
 
   router.deleteMsg = function (req, res) {
     var msgId = req.params.msgId;

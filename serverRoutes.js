@@ -78,7 +78,7 @@ module.exports = function (app, io, saveUser) {
     app.post('/SUDTS', chatCon.saveUserDataToSession);
     app.post('/set', chatCon.set);
     app.get('/get', chatCon.get);
-    app.get('/logout', chatCon.out);
+    // app.get('/logout', chatCon.out);
 
     // app.post('/recent',chatCon.recent);
     app.post('/updateUser', chatCon.updateUser);

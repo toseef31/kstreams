@@ -118,7 +118,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     console.error('Unrecognized message', parsedMessage);
             }
         });
-      //  if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
+       if ($rootScope.projectData.videoCall == 1) $interval(ping, 10000);
     });
 
     // $scope.connGroupCall = function () {

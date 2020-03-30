@@ -405,35 +405,24 @@ module.exports = function (io, saveUser) {
   router.logout = function (req, res) {
     console.log("LOGOUT");
     console.log(req.session.user);
-    req.session.destroy(function (err) {
-      console.log(req.params.userId);
-      userModel
-        .update(
-          { userId: req.params.userId },
-          { onlineStatus: 0, chatWithRefId: "" }
-        )
-        .exec(function (err, result) {
-          res.status(404).send();
-        });
-        res.json({ msg: "session destroy" });
-      })
-    // if (req.session.user) {
-    //   req.session.destroy(function (err) {
-    //     console.log(req.params.userId);
-    //     userModel
-    //       .update(
-    //         { userId: req.params.userId },
-    //         { onlineStatus: 0, chatWithRefId: "" }
-    //       )
-    //       .exec(function (err, result) {
-    //         res.status(404).send();
-    //       });
-    //   });
-    //   res.json({ msg: "session destroy" });
-    // }
-    // else{
-    //   res.json({ message: "failed to destroy session" });
-    // }
+
+    if (req.session.user) {
+      req.session.destroy(function (err) {
+        console.log(req.params.userId);
+        userModel
+          .update(
+            { userId: req.params.userId },
+            { onlineStatus: 0, chatWithRefId: "" }
+          )
+          .exec(function (err, result) {
+            res.status(404).send();
+          });
+      });
+      res.json({ msg: "session destroy" });
+    }
+    else{
+      res.json({ message: "failed to destroy session" });
+    }
   };
 
 

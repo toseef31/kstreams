@@ -102,7 +102,8 @@ app.use(cors(corsOptions));
 app.use(session({
 	secret: "kstreams@123",
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+
 })); //resave changed to 'true'
 app.use(express.static('public'));
 app.use(express.static('images'));	

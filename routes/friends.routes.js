@@ -23,7 +23,7 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                         ).exec(function (err, result) { 
                         if (result){
                             result.status=1;
-                            result.save();
+                            //result.save();
                             userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
                             res.send({ 'message': 'Success', 'status': true });
                         } 

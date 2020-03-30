@@ -427,7 +427,7 @@ module.exports = function (io, saveUser) {
 
 
   router.out = (req, res) => {
-    console.log("GOOING OUTTT");
+    console.log("GOING OUTTT");
     console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
     if (!req.session.user) res.json({ message: "failed to destroy session" });
@@ -508,6 +508,8 @@ module.exports = function (io, saveUser) {
 
 
   router.get = (req, res) => {
+    console.log("GET");
+    console.log(req.session.user);
     if (req.session.user && typeof req.session.user._id !== "undefiend") {
       helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);
@@ -516,7 +518,8 @@ module.exports = function (io, saveUser) {
   };
 
   router.checkSession = function (req, res) {
-    // console.log(req.session.user);
+    console.log("SET");
+    console.log(req.session.user);
     if (req.session.user) {
       helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);

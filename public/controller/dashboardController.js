@@ -202,6 +202,17 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
     }
 
+    
+    $rootScope.updateGC = function (){
+        console.log("updateGC");
+        $http.post('/leaveCallGroup', {
+            '_id': $scope.selGroupData.groupCallid,
+            'groupId': $scope.selGroupData._id,
+            'userId': $scope.user._id,
+            'status': 0
+        });
+    }
+
     windowElement.on('beforeunload', function (event) {
         if ($scope.caller && $scope.myCallStatus == 0) {
             $http.post('/leaveCallGroup', {
@@ -646,9 +657,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 
-    // ============================== ========== ===============================================
-    // ============================== ========== ===============================================
-    // ============================== ========== ===============================================
+    // ============================== ========== ============================================
+    // ============================== ========== ============================================
+    // ============================== ========== ============================================
 
     /*check session of the user if he is logged in or not*/
     $http({
@@ -1291,15 +1302,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         $scope.deActivate();
                     }
                     
-                    socket.emit('updateGroupChat', {
-                        id: res.data._id,
-                        data: res.data,
-                        case: 'new'
-                    });
+                    console.log(res.data);
 
                     $http.post('/groupChat', groupmMsgObj)
                         .then(function (res) {
                             $scope.message = '';  
+                            socket.emit('updateGroupChat', {
+                                id: res.data._id,
+                                data: res.data,
+                                case: 'new'
+                            });
                             scrollbottom();
                         })
                 }
@@ -1790,6 +1802,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             return $scope.modalInst
         }
 
+
         /* this function join the call when the user receive the call*/
         $scope.joinCall = function () {
             if ($scope.callType == 1) document.querySelector('.audioTab').style.display = 'block';
@@ -1920,6 +1933,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
         })
+        
+       
+        // socket.on('_stopGroupCall', function (data){
+        //            if ($rootScope.user._id == )
+        //             // $http.post('/leaveCallGroup', {
+        //             //     '_id': $scope.selGroupData.groupCallid,
+        //             //     'groupId': $scope.selGroupData._id,
+        //             //     'userId': $scope.user._id,
+        //             //     'status': 0
+        //             // });
+              
+        // })
 
         // GROUP CALL SOCKET RECEIVER ----------------------------------------------------------
         socket.on('gCallStatusUpdater', function (data) {

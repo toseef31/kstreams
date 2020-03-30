@@ -2316,6 +2316,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $location.path('/');
     });
 
+
+    
+
     $scope.showHideDots = function (id, isShow = 0) {
         if (isShow == 1) $("#msg3dots-" + id).removeClass('hidden');
         else $("#msg3dots-" + id).addClass('hidden');

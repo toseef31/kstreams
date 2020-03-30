@@ -21,13 +21,17 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                     friendModel.findOne(
                         { 'userId': userResult._id, 'friendId': friendResult._id}
                         ).exec(function (err, result) { 
+                            console.log("result");
+                            console.log(result);
                         if (result){
+                            console.log("if create friend");
                             result.status=1;
-                            result.save();
+                            //result.save();
                             userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
                             res.send({ 'message': 'Success', 'status': true });
                         } 
                         else {
+                            console.log("else create friend");
                             // get reference ids of both iserId and friendId 
                             let newFriendModel = new friendModel({ 'userId': userResult._id, 'friendId': friendResult._id });
                             newFriendModel.save().then(reslt => { // save both ref-Ids in friend table

@@ -408,10 +408,9 @@ module.exports = function (io, saveUser) {
 
     if (req.session.user) {
       req.session.destroy(function (err) {
-        console.log(req.params.userId);
         userModel
           .update(
-            { userId: req.params.userId },
+            { _id: req.params.userId },
             { onlineStatus: 0, chatWithRefId: "" }
           )
           .exec(function (err, result) {
@@ -486,7 +485,7 @@ module.exports = function (io, saveUser) {
     }
 
     else if (req.body.name != "") {
- 
+  
       userModel
         .findOne({ name: req.body.name })
         .lean()
@@ -508,6 +507,8 @@ module.exports = function (io, saveUser) {
 
 
   router.get = (req, res) => {
+    console.log("GET");
+    console.log(req.session.user);
     if (req.session.user && typeof req.session.user._id !== "undefiend") {
       helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);
@@ -516,7 +517,8 @@ module.exports = function (io, saveUser) {
   };
 
   router.checkSession = function (req, res) {
-    // console.log(req.session.user);
+    console.log("checkSession");
+     console.log(req.session.user);
     if (req.session.user) {
       helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
         res.json(data);

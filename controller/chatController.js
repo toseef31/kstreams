@@ -426,7 +426,7 @@ module.exports = function (io, saveUser) {
 
 
   router.out = (req, res) => {
-    console.log("GOOING OUTTT");
+    console.log("GOING OUTTT");
     console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
     if (!req.session.user) res.json({ message: "failed to destroy session" });

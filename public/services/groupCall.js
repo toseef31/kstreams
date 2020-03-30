@@ -1,5 +1,5 @@
 app.factory('GroupCall', ['$rootScope',
-    function ($rootScope) {
+    function ($rootScope, $http) {
         /** CONFIG 
             $rootScope.signaling_socket for emit purpose
         **/
@@ -29,7 +29,7 @@ app.factory('GroupCall', ['$rootScope',
                 /* once the user has given us access to their
                     * microphone/camcorder, join the channel and start peering up */
                 //GROUP ID would be the channel name
-               // console.log('join_chat_channel: ', userData.groupId);
+                console.log('join_chat_channel: ', userData.groupId);
                 join_chat_channel(userData.groupId, userData, status);
             });
         }
@@ -268,6 +268,7 @@ app.factory('GroupCall', ['$rootScope',
         /** Local media stuff **/
         /***********************/
         function setup_local_media(callback, errorback) {
+          
             if (local_media_stream != null) {  /* ie, if we've already been initialized */
                 if (callback) callback();
                 return;
@@ -301,8 +302,10 @@ app.factory('GroupCall', ['$rootScope',
                     if (callback) callback();
                 },
                 function () { /* user denied access to a/v */
-                  //  console.log("Access denied for audio/video");
-                    alert("You chose not to provide access to the camera/microphone, demo will not work.");
+                   
+                    console.log("Access denied for audio/video");
+                    $rootScope.updateGC();
+                    alert("You choose not to provide access to the camera/microphone");
                     if (errorback) errorback();
                 });
         }

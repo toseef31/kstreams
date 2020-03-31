@@ -103,6 +103,7 @@ app.use(session({
 	secret: "kstreams@123",
 	resave: true,
 	saveUninitialized: true,
+	cookie: { secure: false }
 
 })); //resave changed to 'true'
 app.use(express.static('public'));

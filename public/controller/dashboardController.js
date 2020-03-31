@@ -1301,8 +1301,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         };
                         $scope.deActivate();
                     }
-                    
-                    console.log(res.data);
 
                     $http.post('/groupChat', groupmMsgObj)
                         .then(function (res) {

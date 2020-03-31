@@ -573,11 +573,12 @@ module.exports = function (io, saveUser) {
     var userProfile = req.body.userProfileUrl;
 
     if (email != "") {
-      //console.log('if');
+      console.log('email:' + email);
       helper.getData(
         userModel,
-        { email: email, phone: "", password: password },
+        { email: email, phone: "", name: "", password: password },
         function (user) {
+          console.log(user);
           if (user._id) {
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
@@ -614,7 +615,7 @@ module.exports = function (io, saveUser) {
     } else if (phone != "") {
       helper.getPData(
         userModel,
-        { phone: phone, email: "", password: password },
+        { phone: phone, email: "", name: "", password: password },
         function (user) {
           if (user) {
             //--------------------------------------------------------------------------------------------
@@ -650,7 +651,7 @@ module.exports = function (io, saveUser) {
         }
       );
     }else if (name != "") {
-    //  console.log("name: "+ name);
+      console.log("name: "+ name);
       helper.getData(
         userModel,
         { name: name, email: "", phone: "", password: password },

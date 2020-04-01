@@ -274,7 +274,6 @@ module.exports = function (io, saveUser) {
           .populate("receiverId", { _id: true, name: true })
           .sort({ updatedAt: -1 })
           .exec(function (err, data) {
-          //  console.log(data);
             helper.addNewMessage(data);
             res.json(data);
           });
@@ -408,7 +407,6 @@ module.exports = function (io, saveUser) {
 
     if (req.session.user) {
       req.session.destroy(function (err) {
-        console.log(req.params.userId);
         userModel
           .update(
             { userId: req.params.userId },
@@ -453,11 +451,11 @@ module.exports = function (io, saveUser) {
         .lean()
         .then(function (data) {
           req.session.user = data;
+          
           chatModel
             .find({ receiverId: data._id, isSeen: 0 })
             .count()
             .exec(function (err, unreadMsgs) {
-              // console.log(unreadMsgs);
               res.json({
                 sessionData: req.session.user,
                 unreadMsgs: unreadMsgs
@@ -492,6 +490,8 @@ module.exports = function (io, saveUser) {
         .lean()
         .then(function (data) {
           req.session.user = data;
+          console.log("*** data ***");
+          console.log(data);
           chatModel
             .find({ receiverId: data._id, isSeen: 0 })
             .count()
@@ -518,7 +518,7 @@ module.exports = function (io, saveUser) {
   };
 
   router.checkSession = function (req, res) {
-    console.log("SET");
+    console.log("checkSession");
     console.log(req.session.user);
     if (req.session.user) {
       helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
@@ -538,12 +538,6 @@ module.exports = function (io, saveUser) {
     //res.sendFile(filepath);
   };
 
-  // router.downloadFile = function(req, res){
-  //     console.log(req.body);
-  //     filepath = path.join('/images/'+req.body.urloffolder+'/'+req.body.filename);
-  //     res.sendFile(filepath);
-  // }
-
   router.updateUser = function (req, res) {
     var userId = req.body.id;
     var name = req.body.name;
@@ -556,7 +550,6 @@ module.exports = function (io, saveUser) {
         { $set: { name: name, user_image: image, userTitle: skill } }
       )
       .exec(function (err, result) {
-       // console.log(result);
         if (err) res.json(false);
         else {
           res.json(true);
@@ -574,7 +567,6 @@ module.exports = function (io, saveUser) {
     var userProfile = req.body.userProfileUrl;
 
     if (email != "") {
-      //console.log('if');
       helper.getData(
         userModel,
         { email: email, phone: "", password: password },
@@ -651,13 +643,11 @@ module.exports = function (io, saveUser) {
         }
       );
     }else if (name != "") {
-    //  console.log("name: "+ name);
       helper.getData(
         userModel,
         { name: name, email: "", phone: "", password: password },
         function (user) {
           if (user) {
-         //   console.log(user);
             //--------------------------------------------------------------------------------------------
             // *** for those users who are registered but these values are not updated ***
             if (userImage)
@@ -890,11 +880,6 @@ module.exports = function (io, saveUser) {
   router.getcurrentgroupchat = function (req, res) {
     var id = req.body.id;
     var _senderId = req.body.senderId;
-    // groupsModel.find({ _id: id, senderId: _senderId, 'status': 1 }).lean().exec(function (err, data) {
-    //     console.log(data);
-    //     res.json(data);
-    // })
-
     groupsModel.find({ groupId: id, senderId: _senderId }, function (err, data) {
       res.json(data);
     });
@@ -925,15 +910,8 @@ module.exports = function (io, saveUser) {
   };
 
   router.removeUser = (req, res) => {
-   // console.log("removeUser: Logic need to be updated");
-    // recentModel.findOneAndDelete({_id:req.body.id},(err, data) => {
-    //     if (err) throw err;
-    //     chatModel.deleteMany({$or:[{senderId:data.senderId,receiverId:data.receiverId},{senderId:data.receiverId,receiverId:data.senderId}]},(err,data) => {
-    //         if (err) throw err;
-    //         res.json(data);
-    //     })
-    // });
   };
+
   router.updateUserImage = (req, res) => {
     userModel.findOneAndUpdate(
       { userId: req.body.id },
@@ -946,12 +924,6 @@ module.exports = function (io, saveUser) {
   };
 
   router.setPerStatus = (req, res) => {
-    // console.log(
-    //   "Set pStatus: ",
-    //   req.session.user._id,
-    //   " and ",
-    //   req.body.pStatus
-    // );
     if (req.session.user)
       userModel.findOneAndUpdate(
         { _id: req.session.user._id },
@@ -1056,11 +1028,6 @@ module.exports = function (io, saveUser) {
     else
       res.json({ status: false, message: 'Need authorization' });
   }
-
-  //  router.updateScreenshareStatus = (req, res) => {
-  //     console.log ("new way");
-  //     res.json(null);
-  //  }
 
   router.stopViewer = (req, res) => {
 

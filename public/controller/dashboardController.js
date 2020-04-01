@@ -660,25 +660,22 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     // ============================== ========== ============================================
     // ============================== ========== ============================================
     // ============================== ========== ============================================
-    console.log("**************");
-    var user = angular.fromJson($window.sessionStorage.getItem('userSession'))
-    console.log(user);
+
     /*check session of the user if he is logged in or not*/
-    // $http({
-    //     method: 'GET',
-    //     url: '/get',
-    //     xhrFields: {
-    //         withCredentials: true
-    //     }
-    // }).then(function successCallback(response) 
-    if (user)
-    {
-        $scope.loggedUserId = user._id;  // REVIEW *** needs review ***
+    $http({
+        method: 'GET',
+        url: '/get',
+        xhrFields: {
+            withCredentials: true
+        }
+    }).then(function successCallback(response) {
+
+        $scope.loggedUserId = response.data._id;  // REVIEW *** needs review ***
         $scope.usersInGroup = 1; // REVIEW *** needs review ***
 
         $scope.myCallStatus = 0; //0- calling, 1- joiner
         $scope.countGroupMembers = 1;
-        $rootScope.user = user;
+        $rootScope.user = response.data;
         $scope.groupCallMinimized = false;
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;
@@ -745,7 +742,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         /*get all users*/
-        $http.get("/getUsers/" + user._id + '/' + $rootScope.projectData.allList + '/' + $rootScope.projectData._id)
+        $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList + '/' + $rootScope.projectData._id)
             .then(function (response) {
                 $scope.allUsers = response.data.usersList;
                 $scope.selectedUserNo = 0;
@@ -2338,20 +2335,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $(".ringingBell").addClass('hidden');
         });
 
-    }
-    else{
+    }, function errorCallback(response) {
         $scope.sessionDestroy = true;
-          $location.path('/');
-    }
-    // , function errorCallback(response) {
-    //     $scope.sessionDestroy = true;
-    //     $location.path('/');
-    // });
-
-
-
-
-
+        $location.path('/');
+    });
 
     $scope.showHideDots = function (id, isShow = 0) {
         if (isShow == 1) $("#msg3dots-" + id).removeClass('hidden');

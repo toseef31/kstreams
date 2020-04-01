@@ -72,7 +72,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         socket.emit('logoutUpdate', $scope.loggedUserId);
         $window.location.href="/#!/dash";
     }, function errorCallback(response) {
-      console.log(response);
+        console.log(response);
     });
 
     /*login function*/

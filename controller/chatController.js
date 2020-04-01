@@ -470,6 +470,7 @@ module.exports = function (io, saveUser) {
         .lean()
         .then(function (data) {
           req.session.user = data;
+          
           chatModel
             .find({ receiverId: data._id, isSeen: 0 })
             .count()
@@ -490,18 +491,21 @@ module.exports = function (io, saveUser) {
         .lean()
         .then(function (data) {
           req.session.user = data;
+          res.json(req.session.user);
+
           console.log("*** data ***");
           console.log(data);
-          chatModel
-            .find({ receiverId: data._id, isSeen: 0 })
-            .count()
-            .exec(function (err, unreadMsgs) {
-              if (data.length == 0) res.json({ usersList: data });
-              res.json({
-                sessionData: req.session.user,
-                unreadMsgs: unreadMsgs
-              });
-            });
+
+          // chatModel
+          //   .find({ receiverId: data._id, isSeen: 0 })
+          //   .count()
+          //   .exec(function (err, unreadMsgs) {
+          //     if (data.length == 0) res.json({ usersList: data });
+          //     res.json({
+          //       sessionData: req.session.user,
+          //       unreadMsgs: unreadMsgs
+          //     });
+          //   });
         });
     }
   };

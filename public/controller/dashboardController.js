@@ -2334,8 +2334,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
     }, function errorCallback(response) {
-        $scope.sessionDestroy = true;
-        $location.path('/');
+        console.log(response);
+        // $scope.sessionDestroy = true;
+        // $location.path('/');
     });
 
 

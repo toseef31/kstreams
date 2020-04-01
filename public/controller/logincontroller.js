@@ -64,16 +64,16 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     });
     
     /*check session*/
-    $http({
-        method: 'GET',
-        url: '/checkSession',
-    }).then(function successCallback(response) { 
-        $rootScope.user = response.data; 
-        socket.emit('logoutUpdate', $scope.loggedUserId);
-        $window.location.href="/#!/dash";
-    }, function errorCallback(response) {
-        console.log(response);
-    });
+    // $http({
+    //     method: 'GET',
+    //     url: '/checkSession',
+    // }).then(function successCallback(response) { 
+    //     $rootScope.user = response.data; 
+    //     socket.emit('logoutUpdate', $scope.loggedUserId);
+    //     $window.location.href="/#!/dash";
+    // }, function errorCallback(response) {
+    //     console.log(response);
+    // });
 
     /*login function*/
     $scope.login = function () {
@@ -89,7 +89,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                 $scope.showLoginButton = true;
             }
             else{
+                console.log(response);
                 $rootScope.user = response.data;
+                $window.sessionStorage.setItem(userSession, response.data);
                 $window.location.href="/#!/dash";
             }
         }, function errorCallback(response) {

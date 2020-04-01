@@ -14,6 +14,16 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
 
     $http.post("/getProject").then(function (response) {
         $rootScope.projectData = response.data;   
+        //console.log($rootScope.projectData);
+
+        if ($window.sessionStorage.getItem('userSession')){
+            console.log("111");
+            socket.emit('logoutUpdate', $scope.loggedUserId);
+            $window.location.href="/#!/dash";
+        }
+        else{
+            $location.path('/');
+        }
 
         let hostIs = location.host.split(':');
         let webSocketIp =  $rootScope.projectData.domainUrl;  //localhost || www.jobcallme.com 
@@ -64,16 +74,17 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
     });
     
     /*check session*/
-    $http({
-        method: 'GET',
-        url: '/checkSession',
-    }).then(function successCallback(response) { 
-        $rootScope.user = response.data; 
-        socket.emit('logoutUpdate', $scope.loggedUserId);
-        $window.location.href="/#!/dash";
-    }, function errorCallback(response) {
-        console.log(response);
-    });
+    // $http({
+    //     method: 'GET',
+    //     url: '/checkSession',
+    // }).then(function successCallback(response) { 
+    //     $rootScope.user = response.data; 
+    //     socket.emit('logoutUpdate', $scope.loggedUserId);
+    //     $window.location.href="/#!/dash";
+    // }, function errorCallback(response) {
+    //     console.log(response);
+    // });
+
 
     /*login function*/
     $scope.login = function () {
@@ -90,6 +101,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             }
             else{
                 $rootScope.user = response.data;
+                console.log($rootScope.user);
+                $window.sessionStorage.setItem('userSession', angular.toJson($rootScope.user));
+                //$window.sessionStorage.setItem('userSession', response.data);
                 $window.location.href="/#!/dash";
             }
         }, function errorCallback(response) {

@@ -12,8 +12,29 @@ const projectModel = require("../model/projectModel");
 const helpers = require("../helperfunctions/helpers");
 const isImage = require("is-image");
 const broadModel = require("../model/broadcast");
-
+const auth = require('../auth');
 var path = require("path");
+
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+}, (email, password, done) => {
+  console.log('passport email: '+ email);
+  userModel.findOne({ email })
+    .then((user) => {
+      console.log("passport: 1");
+     // console.log(user);
+      if (!user) {
+        return done(null, false, { errors: { 'email or password': 'is invalid' } });
+      }
+
+      return done(null, user);
+    }).catch(done);
+}));
+
 
 module.exports = function (io, saveUser) {
   var User;
@@ -21,6 +42,7 @@ module.exports = function (io, saveUser) {
   var helper = new helpers(io);
   /*main router object which contain all function*/
   var router = {};
+
 
   router.getProjectData = function (req, res) {
     projectModel
@@ -172,7 +194,6 @@ module.exports = function (io, saveUser) {
           chatModelFunc(data);
         });
   };
-
 
   router.addGroup = function (req, res) {
     var members = req.body.members;
@@ -418,7 +439,7 @@ module.exports = function (io, saveUser) {
       });
       res.json({ msg: "session destroy" });
     }
-    else{
+    else {
       res.json({ message: "failed to destroy session" });
     }
   };
@@ -441,97 +462,71 @@ module.exports = function (io, saveUser) {
       });
   };
 
-  router.set = (req, res) => {
-      console.log("setting session");
-      console.log(req.body.name);
-    // if email is empty then check it by phone number
-    if (req.body.email != "") {
-      userModel
-        .findOne({ email: req.body.email })
-        .lean()
-        .then(function (data) {
-          req.session.user = data;
-          
-          chatModel
-            .find({ receiverId: data._id, isSeen: 0 })
-            .count()
-            .exec(function (err, unreadMsgs) {
-              res.json({
-                sessionData: req.session.user,
-                unreadMsgs: unreadMsgs
-              });
-            });
-        });
-    }
-    // if phone number is empty then check it by email
-    else if (req.body.phone != "") {
-      userModel
-        .findOne({ phone: req.body.phone })
-        .lean()
-        .then(function (data) {
-          req.session.user = data;
-          
-          chatModel
-            .find({ receiverId: data._id, isSeen: 0 })
-            .count()
-            .exec(function (err, unreadMsgs) {
-              if (data.length == 0) res.json({ usersList: data });
-              res.json({
-                sessionData: req.session.user,
-                unreadMsgs: unreadMsgs
-              });
-            });
-        });
-    }
+  // router.set = (req, res) => {
+  //   console.log("setting session");
+  //   console.log(req.body.name);
+  //   // if email is empty then check it by phone number
+  //   if (req.body.email != "") {
+  //     userModel
+  //       .findOne({ email: req.body.email })
+  //       .lean()
+  //       .then(function (data) {
+  //         req.session.user = data;
 
-    else if (req.body.name != "") {
-  
-      userModel
-        .findOne({ name: req.body.name })
-        .lean()
-        .then(function (data) {
-          req.session.user = data;
-          res.json(req.session.user);
+  //         chatModel
+  //           .find({ receiverId: data._id, isSeen: 0 })
+  //           .count()
+  //           .exec(function (err, unreadMsgs) {
+  //             res.json({
+  //               sessionData: req.session.user,
+  //               unreadMsgs: unreadMsgs
+  //             });
+  //           });
+  //       });
+  //   }
+  //   // if phone number is empty then check it by email
+  //   else if (req.body.phone != "") {
+  //     userModel
+  //       .findOne({ phone: req.body.phone })
+  //       .lean()
+  //       .then(function (data) {
+  //         req.session.user = data;
+  //         chatModel
+  //           .find({ receiverId: data._id, isSeen: 0 })
+  //           .count()
+  //           .exec(function (err, unreadMsgs) {
+  //             if (data.length == 0) res.json({ usersList: data });
+  //             res.json({
+  //               sessionData: req.session.user,
+  //               unreadMsgs: unreadMsgs
+  //             });
+  //           });
+  //       });
+  //   }
 
-          console.log("*** data ***");
-          console.log(data);
+  //   else if (req.body.name != "") {
 
-          // chatModel
-          //   .find({ receiverId: data._id, isSeen: 0 })
-          //   .count()
-          //   .exec(function (err, unreadMsgs) {
-          //     if (data.length == 0) res.json({ usersList: data });
-          //     res.json({
-          //       sessionData: req.session.user,
-          //       unreadMsgs: unreadMsgs
-          //     });
-          //   });
-        });
-    }
-  };
+  //     userModel
+  //       .findOne({ name: req.body.name })
+  //       .lean()
+  //       .then(function (data) {
+  //         req.session.user = data;
+  //         console.log("*** data ***");
+  //         console.log(data);
+  //         chatModel
+  //           .find({ receiverId: data._id, isSeen: 0 })
+  //           .count()
+  //           .exec(function (err, unreadMsgs) {
+  //             if (data.length == 0) res.json({ usersList: data });
+  //             res.json({
+  //               sessionData: req.session.user,
+  //               unreadMsgs: unreadMsgs
+  //             });
+  //           });
+  //       });
+  //   }
+  // };
 
-
-  router.get = (req, res) => {
-    console.log("GET");
-    console.log(req.session.user);
-    if (req.session.user && typeof req.session.user._id !== "undefiend") {
-      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
-        res.json(data);
-      });
-    } else res.status(401).send();
-  };
-
-  router.checkSession = function (req, res) {
-    console.log("checkSession");
-    console.log(req.session.user);
-    if (req.session.user) {
-      helper.changeStatus(req.session.user._id, { pStatus: 0 }, function (data) {
-        res.json(data);
-      });
-    } else {
-      res.status(401).send();
-    }
-  };
 
   router.downloadFile = function (req, res) {
     var filename = req.params.filename;
@@ -561,134 +556,191 @@ module.exports = function (io, saveUser) {
       });
   };
 
-  router.login = function (req, res) {
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
-    var phone = req.body.phone;
-    var userTitle = req.body.userskill;
-    var userImage = req.body.userImage;
-    var userProfile = req.body.userProfileUrl;
+  // router.get = (req, res) => {
+  //   console.log("GET");
+  // };
 
-    if (email != "") {
-      helper.getData(
-        userModel,
-        { email: email, phone: "", name: "", password: password },
-        function (user) {
-          console.log(user);
-          if (user._id) {
-            //--------------------------------------------------------------------------------------------
-            // *** for those users who are registered but these values are not updated ***
-            if (userImage)
-              userModel
-                .update({ _id: user._id }, { $set: { user_image: userImage } })
-                .exec();
-            if (userTitle)
-              userModel
-                .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-                .exec();
-            if (userProfile)
-              userModel
-                .update(
-                  { _id: user._id },
-                  { $set: { userProfileUrl: userProfile } }
-                )
-                .exec();
-            //--------------------------------------------------------------------------------------------
+  router.checkSession = function (req, res, next) {
+    console.log("checkSession");
+    console.log(req.body);
+    //const { payload: { id } } = req.body._id;
 
-            /*change status from offline to online*/
-            helper.changeStatus(user._id, {}, function (data) {
-              /*set session */
-              req.session.user = user;
-              /*this function use to move user info to another view*/
-              saveUser(user);
-              /*get users to show order by newly messages*/
-              //helper.RTU();
-              res.json(user);
-            });
-          } else res.json(null);
+    userModel.findById(req.body)
+      .then((user) => {
+        console.log(user);
+        if(!user) {
+          return res.sendStatus(400);
         }
-      );
-    } else if (phone != "") {
-      helper.getPData(
-        userModel,
-        { phone: phone, email: "", name: "", password: password },
-        function (user) {
-          if (user) {
-            //--------------------------------------------------------------------------------------------
-            // *** for those users who are registered but these values are not updated ***
-            if (userImage)
-              userModel
-                .update({ _id: user._id }, { $set: { user_image: userImage } })
-                .exec();
-            if (userTitle)
-              userModel
-                .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-                .exec();
-            if (userProfile)
-              userModel
-                .update(
-                  { _id: user._id },
-                  { $set: { userProfileUrl: userProfile } }
-                )
-                .exec();
-            //--------------------------------------------------------------------------------------------
-
-            /*change status from offline to online*/
-            helper.changeStatus(user._id, {}, function (data) {
-              /*set session */
-              req.session.user = user;
-              /*this function use to move user info to another view*/
-              saveUser(user);
-              /*get users to show order by newly messages*/
-              //helper.RTU();
-              res.json(user);
-            });
-          } else res.json(null);
-        }
-      );
-    }else if (name != "") {
-      helper.getData(
-        userModel,
-        { name: name, email: "", phone: "", password: password },
-        function (user) {
-          if (user) {
-            //--------------------------------------------------------------------------------------------
-            // *** for those users who are registered but these values are not updated ***
-            if (userImage)
-              userModel
-                .update({ _id: user._id }, { $set: { user_image: userImage } })
-                .exec();
-            if (userTitle)
-              userModel
-                .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-                .exec();
-            if (userProfile)
-              userModel
-                .update(
-                  { _id: user._id },
-                  { $set: { userProfileUrl: userProfile } }
-                )
-                .exec();
-            //--------------------------------------------------------------------------------------------
-
-            /*change status from offline to online*/
-            helper.changeStatus(user._id, {}, function (data) {
-              /*set session */
-              req.session.user = user;
-              console.log("helper session setting");
-              console.log(req.session.user);
-              /*this function use to move user info to another view*/
-              saveUser(user);
-              /*get users to show order by newly messages*/
-              //helper.RTU();
-              res.json(user);
-            });
-          } else res.json(null);
-        }
-      );
-    }
+  
+        return res.json({ user: user.toAuthJSON() });
+      });
   };
+
+
+  router.login = function (req, res, next) { // where next is callBack
+    console.log("LOGIN Func");
+    console.log(req.body);
+
+    if (!req.body.email) {
+      return res.status(422).json({
+        errors: {
+          email: 'is required',
+        },
+      });
+    }
+    
+    return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+      if (err) {
+        return next(err);
+      }
+      console.log("aaa");
+      console.log(passportUser);
+
+      if (passportUser) {
+        const user = passportUser;
+        user.token = passportUser.generateJWT();
+        console.log("Generated Token:");
+        console.log(user.token);
+        return res.json({ user: user.toAuthJSON() });
+      }
+      console.log("bbbb");
+      console.log(info);
+      return res.json(info);
+    })(req, res, next);
+
+  }
+
+
+  // router.login = function (req, res) {
+  //   var name = req.body.name;
+  //   var email = req.body.email;
+  //   var password = req.body.password;
+  //   var phone = req.body.phone;
+  //   var userTitle = req.body.userskill;
+  //   var userImage = req.body.userImage;
+  //   var userProfile = req.body.userProfileUrl;
+
+  //   if (email != "") {
+  //     helper.getData(
+  //       userModel,
+  //       { email: email, phone: "", password: password },
+  //       function (user) {
+  //         if (user._id) {
+  //           //--------------------------------------------------------------------------------------------
+  //           // *** for those users who are registered but these values are not updated ***
+  //           if (userImage)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
+  //               .exec();
+  //           if (userTitle)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
+  //               .exec();
+  //           if (userProfile)
+  //             userModel
+  //               .update(
+  //                 { _id: user._id },
+  //                 { $set: { userProfileUrl: userProfile } }
+  //               )
+  //               .exec();
+  //           //--------------------------------------------------------------------------------------------
+
+  //           /*change status from offline to online*/
+  //           helper.changeStatus(user._id, {}, function (data) {
+  //             /*set session */
+  //             req.session.user = user;
+  //             /*this function use to move user info to another view*/
+  //             saveUser(user);
+  //             /*get users to show order by newly messages*/
+  //             //helper.RTU();
+  //             res.json(user);
+  //           });
+  //         } else res.json(null);
+  //       }
+  //     );
+  //   } else if (phone != "") {
+  //     helper.getPData(
+  //       userModel,
+  //       { phone: phone, email: "", password: password },
+  //       function (user) {
+  //         if (user) {
+  //           //--------------------------------------------------------------------------------------------
+  //           // *** for those users who are registered but these values are not updated ***
+  //           if (userImage)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
+  //               .exec();
+  //           if (userTitle)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
+  //               .exec();
+  //           if (userProfile)
+  //             userModel
+  //               .update(
+  //                 { _id: user._id },
+  //                 { $set: { userProfileUrl: userProfile } }
+  //               )
+  //               .exec();
+  //           //--------------------------------------------------------------------------------------------
+
+  //           /*change status from offline to online*/
+  //           helper.changeStatus(user._id, {}, function (data) {
+  //             /*set session */
+  //             req.session.user = user;
+  //             /*this function use to move user info to another view*/
+  //             saveUser(user);
+  //             /*get users to show order by newly messages*/
+  //             //helper.RTU();
+  //             res.json(user);
+  //           });
+  //         } else res.json(null);
+  //       }
+  //     );
+  //   }else if (name != "") {
+  //     helper.getData(
+  //       userModel,
+  //       { name: name, email: "", phone: "", password: password },
+  //       function (user) {
+  //         if (user) {
+  //           //--------------------------------------------------------------------------------------------
+  //           // *** for those users who are registered but these values are not updated ***
+  //           if (userImage)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
+  //               .exec();
+  //           if (userTitle)
+  //             userModel
+  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
+  //               .exec();
+  //           if (userProfile)
+  //             userModel
+  //               .update(
+  //                 { _id: user._id },
+  //                 { $set: { userProfileUrl: userProfile } }
+  //               )
+  //               .exec();
+  //           //--------------------------------------------------------------------------------------------
+
+  //           /*change status from offline to online*/
+  //           helper.changeStatus(user._id, {}, function (data) {
+  //             /*set session */
+  //             req.session.user = user;
+  //             console.log("helper session setting");
+  //             console.log(req.session.user);
+
+
+  //             /*this function use to move user info to another view*/
+  //             saveUser(user);
+  //             /*get users to show order by newly messages*/
+  //             //helper.RTU();
+  //             res.json(user);
+  //           });
+  //         } else res.json(null);
+  //       }
+  //     );
+  //   }
+  // };
+
   router.createUser = function (req, res) {
     var name = req.params.name;
     var newUser = new userModel({

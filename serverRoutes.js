@@ -5,11 +5,9 @@
 
 const chatController = require('./controller/chatController');
 const groupController = require('./controller/groupController');
-//const loginController = require('./public/controller/logincontroller')
 const clientPushNotif = require('./public/client');
 const multer = require('multer');
-//const server = require('./public/webRtc/server');
-//const upload          = multer({ dest: 'public/share' });
+const auth = require('./auth');
 
 // ------------------- MULTER IMAGE STORING CODE --------------------------------------------------
 const storage = multer.diskStorage({
@@ -36,10 +34,11 @@ module.exports = function (app, io, saveUser) {
 
     app.get('/download/:filename', chatCon.downloadFile);
     //app.post('/download', chatCon.downloadFile);
-    app.post('/login', chatCon.login);
+    app.post('/login',auth.optional, chatCon.login);
     app.post('/groupChat', chatCon.groupChat);
 
-    app.get('/checkSession', chatCon.checkSession);
+    //app.get('/checkSession',auth.required, chatCon.checkSession);
+    app.post('/checkSession',auth.required, chatCon.checkSession);
     // app.get('/checkSession/:userId',chatCon.checkSession);
     app.get('/createUser/:name', chatCon.createUser);
     app.get('/getUsers/:userId/:allList/:projectId', chatCon.getUsers);
@@ -76,8 +75,8 @@ module.exports = function (app, io, saveUser) {
     app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
     // app.get('/changeStatus',chatCon.changeStatus);
     app.post('/SUDTS', chatCon.saveUserDataToSession);
-    app.post('/set', chatCon.set);
-    app.get('/get', chatCon.get);
+    //app.post('/set', chatCon.set);
+    //app.get('/get', chatCon.get);
     app.get('/logout', chatCon.out);
 
     // app.post('/recent',chatCon.recent);

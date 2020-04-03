@@ -30,6 +30,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.webRtcPeer = null;
     $rootScope.presenterArr = [];
     $scope.o2oSocLoaded = false;
+
     //  =====================================================================
 
     $scope.callCancelTimmer = new timmer('#checker');
@@ -657,25 +658,36 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.webRtcO2OPeer.getLocalStream().getAudioTracks()[0].enabled = $rootScope.openVoice;
     };
 
+    $scope.groupCallStatus = false;
+    $scope.groupCallSection = function (){
+        $scope.groupCallStatus = !$scope.groupCallStatus;
+    }
     // ============================== ========== ============================================
     // ============================== ========== ============================================
     // ============================== ========== ============================================
 
     /*check session of the user if he is logged in or not*/
+    console.log(localStorage.getItem('userToken'));
     $http({
-        method: 'GET',
-        url: '/get',
+        method: 'POST',
+        url: '/checkSession',
+        headers : {
+            'Content-Type' : 'application/json',    
+            'Authorization': localStorage.getItem('userToken')
+        },
+        data: {'_id': localStorage.getItem('userId')},
         xhrFields: {
             withCredentials: true
         }
     }).then(function successCallback(response) {
-
-        $scope.loggedUserId = response.data._id;  // REVIEW *** needs review ***
+    
+        $scope.loggedUserId = response.data.user._id;  // REVIEW *** needs review ***
         $scope.usersInGroup = 1; // REVIEW *** needs review ***
 
         $scope.myCallStatus = 0; //0- calling, 1- joiner
         $scope.countGroupMembers = 1;
-        $rootScope.user = response.data;
+        $rootScope.user = response.data.user;
+        console.log($rootScope.user);
         $scope.groupCallMinimized = false;
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;
@@ -742,7 +754,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         /*get all users*/
-        $http.get("/getUsers/" + response.data._id + '/' + $rootScope.projectData.allList + '/' + $rootScope.projectData._id)
+        $http.get("/getUsers/" + response.data.user._id + '/' + $rootScope.projectData.allList + '/' + $rootScope.projectData._id)
             .then(function (response) {
                 $scope.allUsers = response.data.usersList;
                 $scope.selectedUserNo = 0;
@@ -1393,11 +1405,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.videoCall = function (type, callerId, status = 0) {
           
             if ($scope.groupCallMinimized) {
-                $("#groupCallModal").modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                $('#groupCallModal').show();
+                $scope.groupCallStatus = true;
+                // $("#groupCallModal").modal({
+                //     backdrop: 'static',
+                //     keyboard: false
+                // });
+                // $('#groupCallModal').show();
                 $("#groupVideoCall").css("color", "white");
                 return;
             }
@@ -1407,11 +1420,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
                 $scope.bypassGroupSelected = false;
                 $('#incomingGroupCallModal').hide();
-                $("#groupCallModal").modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                $('#groupCallModal').show();
+                $scope.groupCallStatus = true;
+                // $("#groupCallModal").modal({
+                //     backdrop: 'static',
+                //     keyboard: false
+                // });
+                // $('#groupCallModal').show();
 
                 let userData = {};
                 console.log($scope.selGroupData);

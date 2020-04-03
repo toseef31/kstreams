@@ -14,6 +14,7 @@ const cors = require('cors');
 const sslConfig = require('./ssl-config');
 var os = require('os');
 var ifaces = os.networkInterfaces();
+const passport = require('passport');
 
 var keysOpt = {};
 var serverIpAdd = [];
@@ -55,7 +56,8 @@ const config = require('./config/DB');
 //const db = "./config/DB";
 mongoose.Promise = global.Promise;
 mongoose.connect(config.url, {
-	useNewUrlParser: true
+	useNewUrlParser: true,
+	useUnifiedTopology: true
 }).then(
 	() => {
 		console.log('Database is connected')
@@ -101,10 +103,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(session({
 	secret: "kstreams@123",
-	resave: true,
-	saveUninitialized: true,
+	resave: false,
+	saveUninitialized: false,
 	//cookie: { secure: false }
 })); //resave changed to 'true'
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.static('public'));
 app.use(express.static('images'));	
 

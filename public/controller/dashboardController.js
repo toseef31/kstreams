@@ -2423,7 +2423,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.reloadCurrent = function () {
-        //$window.location.reload();
+        $window.location.reload();
     }
 
 });

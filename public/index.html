@@ -60,9 +60,10 @@
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
     if(getParameterByName('userToken') && getParameterByName('userId')){ 
-      localStorage.setItem("userToken", getParameterByName('userToken'));
-      localStorage.setItem("userId", getParameterByName('userId'));
+      localStorage.setItem("userToken", "Bearer "+getParameterByName('userToken'));
+      localStorage.setItem("userId", getParameterByName('userId')); 
     } 
+    console.log(localStorage.getItem("userToken")+' and '+getParameterByName('userId'));
 </script>
 <body id="LoginForm" style="overflow-x: hidden;">
 

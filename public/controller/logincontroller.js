@@ -95,7 +95,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             url: '/login',
             data: { email: $scope.user.email, password: $scope.user.password }
         }).then(function successCallback(response) {
-            console.log(response.data.user);
+            console.log('login result ',response.data.user);
             if (response.data.user == null) {
                 $scope.notAuthorize = true;
                 $scope.showLoginButton = true;

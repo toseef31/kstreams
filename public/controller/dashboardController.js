@@ -196,7 +196,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     function ping() {
         if (!$rootScope.user || typeof $rootScope.user._id === "undefined") return;
-        if (!$rootScope.o2oSocConEst) $window.location.reload();
+        if (!$rootScope.o2oSocConEst) $scope.reloadCurrent();
         One2OneCall.sendKMessage({
             id: '__ping__',
             from: $rootScope.user._id
@@ -665,9 +665,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     // ============================== ========== ============================================
     // ============================== ========== ============================================
     // ============================== ========== ============================================
-
+   
     /*check session of the user if he is logged in or not*/
-  //  console.log(localStorage.getItem('userToken'));
+    console.log('userToken ',localStorage.getItem('userToken'));
     $http({
         method: 'POST',
         url: '/checkSession',
@@ -1314,8 +1314,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         };
                         $scope.deActivate();
                     }
-                    
-                    console.log(res.data);
 
                     $http.post('/groupChat', groupmMsgObj)
                         .then(function (res) {
@@ -1406,11 +1404,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           
             if ($scope.groupCallMinimized) {
                 $scope.groupCallStatus = true;
-                // $("#groupCallModal").modal({
-                //     backdrop: 'static',
-                //     keyboard: false
-                // });
-                // $('#groupCallModal').show();
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
                 $("#groupVideoCall").css("color", "white");
                 return;
             }
@@ -1421,11 +1419,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.bypassGroupSelected = false;
                 $('#incomingGroupCallModal').hide();
                 $scope.groupCallStatus = true;
-                // $("#groupCallModal").modal({
-                //     backdrop: 'static',
-                //     keyboard: false
-                // });
-                // $('#groupCallModal').show();
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
 
                 let userData = {};
                 console.log($scope.selGroupData);
@@ -2354,6 +2352,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $location.path('/');
     });
 
+
+    
+
     $scope.showHideDots = function (id, isShow = 0) {
         if (isShow == 1) $("#msg3dots-" + id).removeClass('hidden');
         else $("#msg3dots-" + id).addClass('hidden');
@@ -2423,7 +2424,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.reloadCurrent = function () {
-        location.reload();
+        $window.location.reload();
     }
 
 });

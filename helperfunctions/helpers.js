@@ -79,8 +79,9 @@ module.exports = function(io){
 
 	helper.getData = function (model,obj = 0, callback){
 		if(obj != 0 && obj != null){
+			console.log(obj.password);
 			if(typeof obj.password ===undefined) callback({err:err});
-
+			console.log(obj.email);
            if (obj.email != ''){
 			model.findOne({'email':obj.email, 'status': 1, 'isAdmin': 0})
 			.populate({
@@ -89,8 +90,12 @@ module.exports = function(io){
 				  status: 1 
 				}
 			  }).lean().exec(function(err,data){ 
+				  console.log("** data **");
+				  console.log(data);
+				  console.log(err);
 				if(err || !data) callback({err:err});
 				else{
+					console.log(data.password);
 					if (!bcrypt.compareSync(obj.password, data.password))  
 						callback({err:err});
 					else

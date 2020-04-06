@@ -19,16 +19,16 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
 passport.use(new LocalStrategy({
-  usernameField: 'email',
+  usernameField: 'name',
   passwordField: 'password',
-}, (email, password, done) => {
-  console.log('passport email: '+ email);
-  userModel.findOne({ email })
+}, (name, password, done) => {
+  console.log('passport name: '+ name);
+  userModel.findOne({ name })
     .then((user) => {
       console.log("passport: 1");
      // console.log(user);
       if (!user) {
-        return done(null, false, { errors: { 'email or password': 'is invalid' } });
+        return done(null, false, { errors: { 'name or password': 'is invalid' } });
       }
 
       return done(null, user);
@@ -430,7 +430,7 @@ module.exports = function (io, saveUser) {
       req.session.destroy(function (err) {
         userModel
           .update(
-            { userId: req.params.userId },
+            { _id: req.params.userId },
             { onlineStatus: 0, chatWithRefId: "" }
           )
           .exec(function (err, result) {
@@ -581,10 +581,10 @@ module.exports = function (io, saveUser) {
     console.log("LOGIN Func");
     console.log(req.body);
 
-    if (!req.body.email) {
+    if (!req.body.name) {
       return res.status(422).json({
         errors: {
-          email: 'is required',
+          name: 'is required',
         },
       });
     }

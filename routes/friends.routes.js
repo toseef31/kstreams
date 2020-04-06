@@ -107,12 +107,13 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
                   let newUserModel = new userModel(friendData);
                   newUserModel.save();
                 }
-                    friendModel.findOne(
-                        { 'userId': userResult._id, 'friendId': friendResult._id}
-                        ).exec(function (err, result) { 
+                    friendModel.findOne({ 
+                          $or: [{ 'userId': userResult._id, 'friendId': friendResult._id},
+                          { 'userId': friendResult._id, 'friendId': userResult._id}] 
+                        }).exec(function (err, result) { 
                         if (result){
                             result.status=1;
-                            result.save();
+                            //result.save();
                             userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
                             res.send({ 'message': 'Already Friends - Success', 'status': true });
                         } 

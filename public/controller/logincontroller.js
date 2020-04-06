@@ -104,9 +104,9 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                 $rootScope.user = response.data.user;
                 localStorage.setItem('userToken', ('Bearer '+response.data.user.token));
                 localStorage.setItem('userId', response.data.user._id);
-                console.log(localStorage.getItem('userId'));
+               // console.log(localStorage.getItem('userId'));
                 
-                console.log("GOOO TOOO LOGGIN");
+               // console.log("GOOO TOOO LOGGIN");
                 $window.location.href = "/#!/dash";
             }
         }, function errorCallback(response) {

@@ -667,7 +667,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     // ============================== ========== ============================================
 
     /*check session of the user if he is logged in or not*/
-    console.log(localStorage.getItem('userToken'));
+  //  console.log(localStorage.getItem('userToken'));
     $http({
         method: 'POST',
         url: '/checkSession',
@@ -687,7 +687,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.myCallStatus = 0; //0- calling, 1- joiner
         $scope.countGroupMembers = 1;
         $rootScope.user = response.data.user;
-        console.log($rootScope.user);
+       // console.log($rootScope.user);
         $scope.groupCallMinimized = false;
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;

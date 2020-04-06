@@ -117,14 +117,14 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
                   if (result){
                       result.status=1;
                       //result.save();
-                      userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': req.body.friendId } }).exec();
+                    //  userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': req.body.friendId } }).exec();
                       res.send({ 'message': 'Already Friends - Success', 'status': true });
                   } 
                   else {
                       // get reference ids of both iserId and friendId 
                       let newFriendModel = new friendModel({ 'userId': userResult._id, 'friendId': req.body.friendId });
                       newFriendModel.save().then(reslt => { // save both ref-Ids in friend table
-                          userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': req.body.friendId } }).exec();
+                         // userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': req.body.friendId } }).exec();
                           res.send({ 'message': 'Friend Created - Success', 'status': true });
                       })
                   }

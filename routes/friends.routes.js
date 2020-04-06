@@ -97,7 +97,8 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
    console.log('create_register_friend');
    console.log(req.body);
     userModel.findOne({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { password: false })
-        .lean().exec(function (err, userResult) {
+        .lean().exec(function (err, _userResult) {
+            var userResult = _userResult;
             console.log("userResult");
            // console.log(userResult);
         if (!userResult) res.send({ 'message': 'UserId or ProjectId doesnt exist', 'status': false }); 

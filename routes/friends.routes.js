@@ -17,9 +17,14 @@ friendsRouter.route('/createfriend').post(function (req, res) {
             .lean().exec(function (err, friendResult) { 
                 if (!friendResult) res.send({ 'message': 'FriendId doesnt exist', 'status': false });
                 else {
+
+//      { 'userId': userResult._id, 'friendId': friendResult._id}
                     // does userId and friendId already exist in friend table or not
                     friendModel.findOne(
-                        { 'userId': userResult._id, 'friendId': friendResult._id}
+                        { $or: [
+                            { $and: [{ 'userId': userResult._id, 'friendId': friendResult._id}] },
+                            { $and: [{ 'userId': friendResult._id, 'friendId': userResult._id}] }
+                        ]}
                         ).exec(function (err, result) { 
                             console.log("result");
                             console.log(result);

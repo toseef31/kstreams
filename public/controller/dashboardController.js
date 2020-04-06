@@ -1404,11 +1404,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           
             if ($scope.groupCallMinimized) {
                 $scope.groupCallStatus = true;
-                // $("#groupCallModal").modal({
-                //     backdrop: 'static',
-                //     keyboard: false
-                // });
-                // $('#groupCallModal').show();
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
                 $("#groupVideoCall").css("color", "white");
                 return;
             }
@@ -1419,11 +1419,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.bypassGroupSelected = false;
                 $('#incomingGroupCallModal').hide();
                 $scope.groupCallStatus = true;
-                // $("#groupCallModal").modal({
-                //     backdrop: 'static',
-                //     keyboard: false
-                // });
-                // $('#groupCallModal').show();
+                $("#groupCallModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#groupCallModal').show();
 
                 let userData = {};
                 console.log($scope.selGroupData);

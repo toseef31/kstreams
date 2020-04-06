@@ -111,6 +111,8 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
 
                   userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
                   .lean().exec(function (err, _friendResult) { 
+                      console.log(_friendResult);
+                      console.log(userResult);
                     friendModel.findOne({ 
                         $or: [{ 'userId': userResult._id, 'friendId': _friendResult._id},
                         { 'userId': _friendResult._id, 'friendId': userResult._id}] 

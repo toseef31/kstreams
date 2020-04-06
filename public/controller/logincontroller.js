@@ -93,7 +93,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
         $http({
             method: 'POST',
             url: '/login',
-            data: { email: $scope.user.email, password: $scope.user.password }
+            data: { name: $scope.user.name, password: $scope.user.password }
         }).then(function successCallback(response) {
             console.log('login result ',response.data.user);
             if (response.data.user == null) {

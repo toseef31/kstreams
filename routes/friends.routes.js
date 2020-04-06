@@ -21,10 +21,15 @@ friendsRouter.route('/createfriend').post(function (req, res) {
 //      { 'userId': userResult._id, 'friendId': friendResult._id}
                     // does userId and friendId already exist in friend table or not
                     friendModel.findOne(
-                        { $or: [
-                            { $and: [{ 'userId': userResult._id, 'friendId': friendResult._id}] },
-                            { $and: [{ 'userId': friendResult._id, 'friendId': userResult._id}] }
-                        ]}
+                        { 
+                           // $and: [
+                          //  { 
+                                $or: [{ 'userId': userResult._id, 'friendId': friendResult._id},
+                                { 'userId': friendResult._id, 'friendId': userResult._id}] 
+                    //    },
+                            // { $or: [{ 'userId': friendResult._id, 'friendId': userResult._id}] }
+                       // ]
+                    }
                         ).exec(function (err, result) { 
                             console.log("result");
                             console.log(result);
@@ -33,7 +38,7 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                             result.status=1;
                             //result.save();
                             userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
-                            res.send({ 'message': 'Success', 'status': true });
+                            res.send({ 'message': 'We are already friends brother', 'status': true });
                         } 
                         else {
                             console.log("else create friend");

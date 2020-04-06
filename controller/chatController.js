@@ -107,8 +107,10 @@ module.exports = function (io, saveUser) {
 
   router.getUsers = function (req, res) {
     function chatModelFunc(data) {
+      console.log(data);
       for (let i = 0; i < data.length; i++) {
-        chatModel
+       // if(data[i]) {
+          chatModel
           .find({
             senderId: data[i]._id,
             receiverId: req.params.userId,
@@ -119,6 +121,7 @@ module.exports = function (io, saveUser) {
             data[i]["usCount"] = count;
             if (i == data.length - 1) res.json({ usersList: data });
           });
+      //  }
       }
       if (data.length == 0) res.json({ usersList: data });
     }
@@ -423,25 +426,25 @@ module.exports = function (io, saveUser) {
   };
 
   router.logout = function (req, res) {
-    console.log("LOGOUT");
+    console.log("LOGOUT unuse");
     console.log(req.session.user);
 
-    if (req.session.user) {
-      req.session.destroy(function (err) {
-        userModel
-          .update(
-            { _id: req.params.userId },
-            { onlineStatus: 0, chatWithRefId: "" }
-          )
-          .exec(function (err, result) {
-            res.status(404).send();
-          });
-      });
-      res.json({ msg: "session destroy" });
-    }
-    else {
-      res.json({ message: "failed to destroy session" });
-    }
+    // if (req.session.user) {
+    //   req.session.destroy(function (err) {
+    //     userModel
+    //       .update(
+    //         { _id: req.params.userId },
+    //         { onlineStatus: 0, chatWithRefId: "" }
+    //       )
+    //       .exec(function (err, result) {
+    //         res.status(404).send();
+    //       });
+    //   });
+    //   res.json({ msg: "session destroy" });
+    // }
+    // else {
+    //   res.json({ message: "failed to destroy session" });
+    // }
   };
 
 

@@ -2347,6 +2347,16 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $(".ringingBell").addClass('hidden');
         });
 
+        socket.on('_externalLogout', function (data){
+            console.log("_externalLogout");
+            console.log(data);
+            console.log($scope.user._id);
+            if (data.userId == $scope.user._id){
+                console.log("LS cleared");
+                localStorage.clear();
+            }
+        })
+
     }, function errorCallback(response) {
         $scope.sessionDestroy = true;
         $location.path('/');

@@ -107,14 +107,17 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
             userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
             .lean().exec(function (err, friendResult) { 
                  console.log("1");
+                 console.log(userResult);
                  console.log(req.body.friendData);
                 if (!friendResult) {
                   var friendData = req.body.friendData;
                   let newUserModel = new userModel(friendData);
                   console.log("2");
+                  console.log(userResult);
                   console.log(req.body.friendId);
                   newUserModel.save().then(reslt => {
                     console.log("3");
+                    console.log(userResult);
                     console.log(reslt);
                     userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
                     .lean().exec(function (err, _friendResult) { 

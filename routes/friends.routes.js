@@ -94,7 +94,8 @@ friendsRouter.route('/resetChatRefId').post(function (req, res) {
 
 // performs additional functionality including creating friend, i.e. if friend's exist then registers it 
 friendsRouter.route('/create_register_friend').post(function (req, res) {
-   
+   console.log('create_register_friend');
+   console.log(req.body);
     userModel.findOne({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { password: false })
         .lean().exec(function (err, userResult) {
         if (!userResult) res.send({ 'message': 'UserId or ProjectId doesnt exist', 'status': false }); 
@@ -102,6 +103,7 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
             // check friendId and projectId exist in userTable or not
             userModel.findOne({ 'userId': req.body.friendId, 'projectId': req.body.projectId }, { password: false })
             .lean().exec(function (err, friendResult) { 
+                console.log(friendResult);
                 if (!friendResult) {
                   var friendData = req.body.friendData;
                   let newUserModel = new userModel(friendData);
@@ -111,6 +113,7 @@ friendsRouter.route('/create_register_friend').post(function (req, res) {
                           $or: [{ 'userId': userResult._id, 'friendId': friendResult._id},
                           { 'userId': friendResult._id, 'friendId': userResult._id}] 
                         }).exec(function (err, result) { 
+                            console.log(result);
                         if (result){
                             result.status=1;
                             //result.save();

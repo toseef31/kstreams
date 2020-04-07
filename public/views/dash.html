@@ -474,7 +474,7 @@
                     </div>
                   </div>
                 </div>
-
+            
                 <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
                   {{ngRepeatFinish()}}
                 </span>
@@ -646,7 +646,8 @@
                   </div>
                 </div>
 <!-- NEEEEED REEECHECKING NINININI (640) -->
-                <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
+
+                <span ng-if="$index == (groupchats.length-1) && !isRepeatFinish">
                   {{ngRepeatFinish()}}
                 </span>
 
@@ -988,18 +989,6 @@
       </div>
     </div>
   </div>
-
-
-  <!-- minimized Broadcast modal -->
-  <!-- minimized Broadcast modal -->
-  <!-- <div id="minimizedBroadcast" class="minimizedBroadcast minimizedPanelMobile">
-      <div class="incomming-btn-container">
-          <img class="braodcastImageAlign" src="images/Broadcast.png">
-          <button class="trans-btn maximizeIconAlign" title="Broadcast minimize" ng-click="minimizeBroadcastPanel();">
-              <img src="images/callmaximize.png" style="width: 32px">
-          </button>
-      </div>
-  </div> -->
 
   <!-- Show available presenter  -->
   <div id="avPresenterModal" class="modal fade" role="dialog">

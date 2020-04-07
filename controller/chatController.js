@@ -334,6 +334,34 @@ module.exports = function (io, saveUser) {
     userModel.update({ _id: sender }, { $set: { chatWithRefId: "" } }).exec();
   };
 
+  
+  // router.getgroupchat = function (req, res) {
+  //   var id = req.body.id;
+  //   groupsModel
+  //     .find({ _id: id, status: 1, isGroup: 1 })
+  //     .lean()
+  //     .then(function (data) {
+  //       res.json(data);
+  //     });
+  // };
+
+
+  router.getGroupChat = function (req, res) {
+    var id = req.params.groupId;
+    let msgCountLimit = parseInt(req.params.limit);
+
+    chatModel
+      .find({ groupId: id })
+      .populate("commentId")
+      .populate("senderId", { _id: true, name: true })
+      .sort({ createdAt: -1 })
+      .limit(msgCountLimit)
+      .exec(function (err, data) {
+        data.reverse();
+        res.json(data);
+      });
+  };
+
   router.getChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
@@ -370,6 +398,25 @@ module.exports = function (io, saveUser) {
       });
   };
 
+  router.getMoreGroupChat = function (req, res){
+    var id = req.params.groupId;
+    var msgCountLimit = parseInt(req.params.limit);
+    var chatTime = req.params.chatTime;
+    console.log("GroupId: "+ id);
+    chatModel
+      .find({ createdAt: { $lt: chatTime }, groupId: id})
+      .populate("receiverId", { _id: true, name: true })
+      .populate("senderId", { _id: true, name: true })
+      .sort({ createdAt: -1 })
+      .limit(msgCountLimit)
+      .populate("commentId")
+      .lean()
+      .exec(function (err, data) {
+        if (err) throw err;
+        res.json(data);
+      });
+  }
+
   router.getMoreChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
@@ -397,20 +444,6 @@ module.exports = function (io, saveUser) {
       });
   };
 
-  router.getGroup = function (req, res) {
-    var id = req.params.groupId;
-    // chatModel.find({ groupId: id }).populate('senderId').lean().then(function (data) {
-    //     res.json(data);
-    // })
-
-    chatModel
-      .find({ groupId: id })
-      .populate("commentId")
-      .populate("senderId", { _id: true, name: true })
-      .exec(function (err, data) {
-        res.json(data);
-      });
-  };
 
   router.getLastGroupMsg = function (req, res) {
     var id = req.body.id;
@@ -927,15 +960,15 @@ module.exports = function (io, saveUser) {
     // res.json({ message: 'done' });
   };
 
-  router.getgroupchat = function (req, res) {
-    var id = req.body.id;
-    groupsModel
-      .find({ _id: id, status: 1, isGroup: 1 })
-      .lean()
-      .then(function (data) {
-        res.json(data);
-      });
-  };
+  // router.getgroupchat = function (req, res) {
+  //   var id = req.body.id;
+  //   groupsModel
+  //     .find({ _id: id, status: 1, isGroup: 1 })
+  //     .lean()
+  //     .then(function (data) {
+  //       res.json(data);
+  //     });
+  // };
 
   router.getcurrentgroupchat = function (req, res) {
     var id = req.body.id;

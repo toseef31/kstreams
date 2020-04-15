@@ -183,11 +183,11 @@
             <div ng-if="groupSelected">
               <div ng-if="allGroups.length > 0">
                 <div class="messages-recipients-list mobileopenlist" id="messages-recipient-3"
-                  ng-repeat="groupA in allGroups| search: keyword" 
+                  ng-repeat="groupA in allGroups| search: keyword"
                   ng-class="{grpChecked: $parent.selection==$index, selectedUserColor: selectedUserNo==$index}"
                   ng-click="$parent.selection=$index">
                   <div ng-click="startChat({type:2,group:groupA, groupIndex:$index, isChatDocker: 0})">
-                   
+
                     <span class="user-name-section">
                       <div class="avatar pull-left">
                         <img alt="Kim Steve Profile Picture" src="../images/profile-photos/noProfile.png">
@@ -195,7 +195,7 @@
 
                       <span class="messages-user-name lineHeightGroupList">{{groupA.name}}</span>
                       <!-- <br ng-if='groupA.joinCall==true' /> -->
-                      <span ng-if='groupA.joinCall==true' class="callStatus" >Group call</span>
+                      <span ng-if='groupA.joinCall==true' class="callStatus">Group call</span>
                     </span>
 
                     <div class="clear"></div>
@@ -208,9 +208,7 @@
               </div>
             </div>
           </div>
-
         </div>
-
       </form>
 
       <ul class="statusDrpOptions hoverIt" ng-class="showDrpDwnSt?'':'hidden'">
@@ -220,13 +218,9 @@
         <li ng-class="currSt==3?'active':''" ng-click='changeSt(3)'>Invisible</li>
       </ul>
     </div>
-
-    <div class="clean"></div>
-
     <!-- --------------------- ----- ------------------------------------------------------ -->
     <!-- --------------------- CHAT PANEL ---------------------------------------------------- -->
     <!-- --------------------- ----- ------------------------------------------------------ -->
-
     <div class="col-sm-8 col-md-9 col-lg-9 mobileleftpane" ng-class="{hidden: !isChatPanel && isSidePanel}">
       <ul class="list-group text-sender-container"
         ng-click="disableMsgEdit(); showDDwnDisabler(); $event.stopPropagation()">
@@ -242,36 +236,45 @@
           <span id="user-name" class="">
             <!-- https://peekhelpers.com/job-detail/office-staff-required-1 -->
             <!-- http://peekhelpers.com/profile/4489 -->
-            <span class="status-bar participants" ng-if="groupSelected" ng-click="openEditGroup()"> {{selGroupName}} </span>
-            <span class="participants" ng-if="groupSelected" ng-click="openEditGroup()">({{selGrpMembers.length}} Participants)</span>
+            <span class="status-bar participants" ng-if="groupSelected" ng-click="openEditGroup()"> {{selGroupName}}
+            </span>
+            <span class="participants" ng-if="groupSelected" ng-click="openEditGroup()">({{selGrpMembers.length}}
+              Participants)</span>
             <a ng-if="userProfileUrl != ''" href="{{userProfileUrl}}" target="_blank">
               <span class="status-bar whiteTextColor" ng-if="!groupSelected"> {{selUserName}} </span>
             </a>
             <span ng-if="userProfileUrl == '' && !groupSelected" class="status-bar whiteTextColor">
               {{selUserName}}
-            </span> 
+            </span>
           </span>
 
           <span class="pull-right userInteraction">
-            <span  ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}" class="whiteTextColor marginRight20" ng-attr-title="{{CallTitle}}" ng-click="openssShareModal()">
+            <span ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}"
+              class="whiteTextColor marginRight20" ng-attr-title="{{CallTitle}}" ng-click="openssShareModal()">
               <i id="screenShare" class="fa fa fa-slideshare"></i>
             </span>
 
-            <span ng-class="{unavailableButton: selectedUserData.pStatus != 0}" ng-if="projectData.videoCall == 1 && !groupSelected" ng-attr-title="{{CallTitle}}" class="whiteTextColor marginRight20">
+            <span ng-class="{unavailableButton: selectedUserData.pStatus != 0}"
+              ng-if="projectData.videoCall == 1 && !groupSelected" ng-attr-title="{{CallTitle}}"
+              class="whiteTextColor marginRight20">
               <i id="videoCall" class="fa fa fa-video-camera" ng-click="videoCall(0)"></i>
             </span>
 
-            <span ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}" ng-attr-title="{{CallTitle}}" ng-if="projectData.audioCall == 1" class="whiteTextColor">
+            <span ng-if="!groupSelected" ng-class="{unavailableButton: selectedUserData.pStatus != 0}"
+              ng-attr-title="{{CallTitle}}" ng-if="projectData.audioCall == 1" class="whiteTextColor">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id)"></i>
             </span>
 
             <!-- ------------------------- GROUP CALL BUTTONS ---------------------------------------- -->
-            <span ng-if="projectData.videoCall == 1 && groupSelected && !groupCallMinimized" class="whiteTextColor marginRight20">
-              <i id="groupVideoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera" ng-click="videoCall(0,0,0)"></i>
+            <span ng-if="projectData.videoCall == 1 && groupSelected && !groupCallMinimized"
+              class="whiteTextColor marginRight20">
+              <i id="groupVideoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera"
+                ng-click="videoCall(0,0,0)"></i>
 
-              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">Join Call</span>
+              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">Join
+                Call</span>
             </span>
-            
+
             <span ng-if="groupSelected && projectData.audioCall == 1" class="whiteTextColor">
               <i id="call" class="fa fa-phone" ng-click="videoCall(1, user._id, 0)"></i>
             </span>
@@ -293,7 +296,7 @@
             <div id="dropImage" class="dropImage">
               <img height="22%" width="22%" src="../images/fileDrop_image.png">
             </div>
-            
+
             <!-- --------------  -------------------------------------------------------- -->
             <!-- -------------- NORMAL CHAT ------------------------------------------------ -->
             <!-- --------------  -------------------------------------------------------- -->
@@ -444,7 +447,8 @@
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
                             uib-tooltip="Edit" ng-click="editMsg()"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
-                            ng-click="deleteMsg('fromMe')"></span>
+                            ng-click="confirmModal()"></span>
+                          <!-- deleteMsg('fromMe')  -->
                         </li>
                       </ul>
 
@@ -474,7 +478,7 @@
                     </div>
                   </div>
                 </div>
-            
+
                 <span ng-if="$index == (chats.length-1) && !isRepeatFinish">
                   {{ngRepeatFinish()}}
                 </span>
@@ -492,6 +496,7 @@
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
+                  
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
@@ -536,6 +541,7 @@
                     <div class="clear"></div>
                   </div>
 
+                  
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
@@ -613,7 +619,7 @@
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
                             uib-tooltip="Edit" ng-click="editMsg()"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
-                            ng-click="deleteMsg('fromMe')"></span>
+                            ng-click="confirmModal()"></span>
                         </li>
                       </ul>
                       <div class="top-left">
@@ -625,7 +631,7 @@
 
                     <div class="clear"></div>
                   </div>
-
+                  
                   <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
                     <div class="messages-wrapper messages-text message-model pull-right">
                       <div class="clear"></div>
@@ -644,13 +650,14 @@
                       </div>
                     </div>
                   </div>
+
                 </div>
-<!-- NEEEEED REEECHECKING NINININI (640) -->
+                <!-- NEEEEED REEECHECKING NINININI (640) -->
 
                 <span ng-if="$index == (groupchats.length-1) && !isRepeatFinish">
                   {{ngRepeatFinish()}}
                 </span>
-
+                <div class="clear"></div>
               </div>
             </div>
           </div> <!-- ---NG REPEAT ENDS --- -->
@@ -809,8 +816,7 @@
       <h1 id="callerName"></h1>
     </div>
     <div class="incomming-btn-container">
-      <button title="Accept" class="incomming-card-btn success pull-left"
-        ng-click="joinCall();">
+      <button title="Accept" class="incomming-card-btn success pull-left" ng-click="joinCall();">
         <i class="fa fa-phone color-green" aria-hidden="true"></i>
       </button>
       <button title="Decline" ng-click="callDrop('notReceive')" class="incomming-card-btn danger pull-right">
@@ -1093,8 +1099,9 @@
     </div>
   </div>
   <!-- end -->
-
   <!-- Broadcasting modals end  -->
+
+  <!-- server connect modal -->
   <div class="alert alert-info alert-dismissible show callServerNoti" ng-if="projectData.videoCall == 1"
     ng-class="{hidden: o2oSocConEst}" role="alert">
     <span class='waitMsg'><strong>Wait!</strong> Connecting to calling server...</span>
@@ -1102,6 +1109,40 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
+
+    <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
+    <div id="groupDelConfirmModal" class="modal fade" role="dialog" style="z-index: 1200;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modal-title">Confirmation</h3>
+        </div>
+        <div class="modal-body" id="modal-body" style="background-color: aliceblue;">
+          Are you sure you want to delete the group?
+        </div>
+        <div class="modal-footer" style="background-color: aliceblue;">
+          <button class="btn btn-primary" type="button" ng-click="DeleteGroup()">Ok</button>
+          <button class="btn btn-warning" type="button" ng-click="confirmModalGroupDel()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
+
+  <!-- ------------------- MSG DELETE CONFIRMATION MODAL ------------------- -->
+  <div id="confirmationModal" class="modal fade" role="dialog" style="z-index: 1200;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Confirmation</h3>
+      </div>
+      <div class="modal-body" id="modal-body" style="background-color: aliceblue;">
+        Are you sure you want to delete?
+      </div>
+      <div class="modal-footer" style="background-color: aliceblue;">
+        <button class="btn btn-primary" type="button" ng-click="deleteMsg('fromMe')">Ok</button>
+        <button class="btn btn-warning" type="button" ng-click="confirmModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <!-- ------------------- MSG DELETE CONFIRMATION MODAL ------------------- -->
 
   <!-- Create-Group modal  -->
   <div id="createGroupModal" class="modal fade" role="dialog">
@@ -1172,25 +1213,31 @@
       <div class="modal-content createGroupModal">
         <div class="modal-header">
           <span ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
-            <input id="gnEdit" type="text" class="editGroupNameText" ng-model="selGroupName" focus-me="focusInput" disabled>
-            <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName" aria-hidden="true"></i> 
-            <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
+            <input id="gnEdit" type="text" class="editGroupNameText" ng-model="selGroupName" focus-me="focusInput"
+              disabled>
+              <i ng-if="selGroupData.creatorUserId == user._id" ng-click="confirmModalGroupDel()" class="fa fa-trash groupDeleteIcon" aria-hidden="true"></i>
+
+              <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName"
+               aria-hidden="true"></i>
+              <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
           </span>
         </div>
         <div class="modal-body">
 
           <span ng-if="!addMemberStatus">
             <span class="totalPartic">Total Participants: {{selGrpMembers.length}}</span>
-            <span><i ng-click="addMemberModalStatus()" class="fa fa-plus addMember" aria-hidden="true">Add Member</i></span>
+            <span><i ng-click="addMemberModalStatus()" class="fa fa-plus addMember" aria-hidden="true">Add
+                Member</i></span>
           </span>
 
           <span ng-if="addMemberStatus">
             <span class="totalPartic">Users Selected: {{groupUsers.length}}</span>
           </span>
-          
+
           <br><br>
 
-          <div ng-if="!addMemberStatus" class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in selGrpMembers">
+          <div ng-if="!addMemberStatus" class="messages-recipients-list" id="messages-recipient-3"
+            ng-repeat="userA in selGrpMembers">
             <span class="user-name-section">
               <div class="avatar pull-left">
                 <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
@@ -1207,7 +1254,8 @@
               </div>
 
               <div class="messages-user-name userAddButton">
-                <a ng-if="userA._id != user._id" ng-click="removeCreatedGroupUser(userA)" style="text-decoration: none;">Remove</a>
+                <a ng-if="userA._id != user._id" ng-click="removeCreatedGroupUser(userA)"
+                  style="text-decoration: none;">Remove</a>
               </div>
 
               <div>
@@ -1220,10 +1268,10 @@
           <div ng-if="addMemberStatus">
             <div style="border-bottom: 1px solid black;"></div>
             <h5 style="font-weight: 700;">Add to Group:</h5>
-      
-              <div class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in nonGroupUsers"
+
+            <div class="messages-recipients-list" id="messages-recipient-3" ng-repeat="userA in nonGroupUsers"
               ng-if="userA._id != user._id">
-  
+
               <span class="user-name-section">
                 <div class="avatar pull-left">
                   <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
@@ -1250,9 +1298,9 @@
             </div>
 
             <div ng-if="nonGroupUsers.length == 0">
-                <h5> No Available Members to Add </h5>
+              <h5> No Available Members to Add </h5>
             </div>
-      
+
           </div>
         </div>
         <div class="modal-footer">
@@ -1267,12 +1315,12 @@
               </button>
             </span>
           </span>
-         
+
           <span ng-if="addMemberStatus">
             <button id="gcSubmitButton" ng-if="nonGroupUsers.length != 0" ng-click="submitNewMember()">
               Submit
             </button>
-  
+
             <button id="gcCloseButton" ng-click="addMemberModalStatus()">
               Back
             </button>
@@ -1285,49 +1333,33 @@
   <!-- Create-Group EDIT Modal -->
 
   <!-- Group Call start-->
-  <!-- <div ng-if="groupCallStatus" id="groupCallModal" role="dialog" style="z-index: 9999;">
-    <div class='text-white'>Group Call</div>
-
-    <div id="joinedUsersSection">
-      <b>Joined Users: </b> {{joinedUsersList.length}}
-      <br>
-
-      <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
-       <li id="joinerName">
-         {{joiner.name}}
-       </li>
-      </ul>
-    </div>
-    
-    <br>
-    <div class="modal-footer">
-      <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
-    </div>
-  </div> -->
-
   <div id="groupCallModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content ">  
+    <div class="modal-dialog-custom">
+      <div class="modal-content ">
         <div class="modal-header clearfix">
-          <div class='col-md-4 text-white'>Group Call</div>
+          <div class='text-white'>
+            <b>Group Call</b>
+            <span style="float: right;"><b>Joined Users: </b> {{joinedUsersList.length}}</span>
+          </div>
+
           <span id="groupCallTime" style="color: white; float: right"></span>
         </div>
         <div class="modal-body groupCallModalContent">
+          <!-- test area folks test area -->
+          <!-- <video id="parentVideo" autoplay="autoplay" controls="controls"></video>-->
         </div>
 
-        <div id="joinedUsersSection">
-          <b>Joined Users: </b> {{joinedUsersList.length}}
-          <br>
+        <!-- <div id="joinedUsersSection">
           <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
            <li id="joinerName">
              {{joiner.name}}
            </li>
           </ul>
-        </div>
+        </div> -->
 
-        <div class="modal-footer">
+        <div class="modal-footer" style="text-align: center;">
+          <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-primary'>Chat</a>
           <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
-          <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-warning'>Minimize</a>
         </div>
       </div>
     </div>
@@ -1337,7 +1369,7 @@
   <!-- Incoming GroupCall Notification Modal -->
   <div id="incomingGroupCallModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-      <div class="modal-content ">  
+      <div class="modal-content">
         <div class="modal-header clearfix">
           <div class='col-md-4 text-white'>Incoming {{groupCallerName}} Call</div>
         </div>
@@ -1356,11 +1388,10 @@
 
   <div id="minimizedGroupCall" class="minimizedVideoTab minimizedVideoPanelMobile" data-backdrop="false">
     <div class="incomming-btn-container" style="background-color: white  !important">
-        <img class="callImageAlign" src="images/Broadcast.png" style="width: 40%;">
-        <button class="trans-btn maximizeIconAlign" title="call minimize"
-            ng-click="minGroupCall();">
-            <img src="images/callmaximizered.png" style="width: 30px">
-        </button>
+      <img class="callImageAlign" src="images/Broadcast.png" style="width: 40%;">
+      <button class="trans-btn maximizeIconAlign" title="call minimize" ng-click="minGroupCall();">
+        <img src="images/callmaximizered.png" style="width: 30px">
+      </button>
     </div>
   </div>
 

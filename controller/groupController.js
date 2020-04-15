@@ -14,7 +14,7 @@ module.exports = function (io, saveUser) {
     newGroup.save(function (err, result) {
       groupsModel
         .find({ status: 1, projectId: req.body.groupData.projectId + "" })
-        .populate("members", { name: true })
+        .populate("members", { password: false })
         .exec(function (err, groups) {
           var tempGroups = [];
           if (err) return console.log(err);
@@ -77,6 +77,32 @@ module.exports = function (io, saveUser) {
         res.send(tempGroups); // send groups list
       });
   };
+
+  
+  router.deleteGroup = function (req, res){
+    var groupId = req.body.groupId;
+
+    groupsModel.findByIdAndUpdate(groupId, { status: 0 }, function (err, data) {
+      if (err) throw err;
+      // groupsModel
+      // .find({ status: 1, projectId: req.body.projectId })
+      // .populate("members")
+      // .exec(function (err, groups) {
+      //   var tempGroups = [];
+      //   if (err) return console.log(err);
+
+      //   var i = 0, j = 0;
+      //   for (i; i < groups.length; i++) {
+      //     j = 0
+      //     for (j; j < groups[i].members.length; j++) {
+      //       if (req.params.userId == groups[i].members[j]._id) tempGroups.push(groups[i]);
+      //     }
+      //   }
+
+        res.send(true); 
+    //  });
+    });
+  }
 
   // ********************************** *****************************************************
   // ********************************** GROUP CALL [IN PROGRESS] *******************************

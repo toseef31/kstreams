@@ -78,7 +78,7 @@ module.exports = function (app, io, saveUser) {
     app.post('/SUDTS', chatCon.saveUserDataToSession);
     //app.post('/set', chatCon.set);
     //app.get('/get', chatCon.get);
-    app.get('/logout', chatCon.out);
+   // app.get('/logout', chatCon.out);
 
     // app.post('/recent',chatCon.recent);
     app.post('/updateUser', chatCon.updateUser);
@@ -104,7 +104,7 @@ module.exports = function (app, io, saveUser) {
     app.post('/removeGroupUser', groupCon.removeGroupUser);
     app.post('/editGroupName', groupCon.editGroupName);
     app.post('/addNewMembers', groupCon.addNewMembers);
-
+    app.post('/deleteGroup', groupCon.deleteGroup);
     // -------------- GROUP CALL ROUTES---------------------------------
     app.post('/callAGroup', groupCon.callAGroup);
     app.post('/createGroupCall', groupCon.createGroupCall);

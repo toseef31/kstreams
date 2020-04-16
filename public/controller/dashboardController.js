@@ -569,6 +569,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
           $scope.groupDeleteConfirmStatus = false;
           $('#groupDelConfirmModal').hide();
           $('#editGroupModal').hide();
+          $scope.resetUserSelectionData();
         });
     }
 
@@ -1480,7 +1481,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         'projectId': $rootScope.projectData._id
                     }).then(function (groupCallData) {
                         $scope.caller = true;
-
+                    
                         for (var i in $scope.allGroups) {
                             if ($scope.allGroups[i]._id == groupCallData.data.groupId._id) {
                                 $scope.allGroups[i].groupCallid = groupCallData.data._id;
@@ -2093,6 +2094,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             $scope.allUsersLeft = 2;
                             $scope.ringbell.pause();
                             resetGroupTimer();
+                            cancelTimmer = true;
                             groupTimmer(0, 0);
                             break;
                         }
@@ -2230,8 +2232,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             if (status == 0)
                 $('#groupCallTime').text(gCall_hour + ' h ' + gCall_mint + ' m ' + gCall_sec + ' s ');
-            else if (status == 1)
-                $('#incomingGroupCallTime').text(gCall_hour + ' h ' + gCall_mint + ' m ' + gCall_sec + ' s ');
+            // else if (status == 1)
+            //     $('#incomingGroupCallTime').text(gCall_hour + ' h ' + gCall_mint + ' m ' + gCall_sec + ' s ');
 
             if (gCall_sec == 60) {
                 gCall_mint++;
@@ -2242,7 +2244,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 gCall_mint = 0;
             }
 
-            // console.log(callTimeLimit +" && "+ gCall_sec +" == "+ callTimeLimit);
+            //  console.log(callTimeLimit +" && "+ gCall_sec +" == "+ callTimeLimit);
             if (callTimeLimit != 0 && gCall_sec == callTimeLimit) {
                 $scope.ringbell.pause();
                 cancelTimmer = true;
@@ -2326,7 +2328,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         groupTimmer(1, status);
                     }
 
-                }, 1500);
+                }, 1000);
             }
         }
 
@@ -2422,10 +2424,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         socket.on('updateAllGroupChat', function (chats) {
-            console.log(chats);
+           // console.log(chats);
             $scope.$apply(function () {
                 if (chats.case == 'new') $scope.groupchats.push(chats.data);
                 else if (chats.case == 'edit') $scope.groupchats = chats.data;
+
+                scrollbottom();
             });
         })
 

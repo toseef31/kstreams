@@ -1349,13 +1349,15 @@
           <!-- <video id="parentVideo" autoplay="autoplay" controls="controls"></video>-->
         </div>
 
-        <!-- <div id="joinedUsersSection">
-          <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
-           <li id="joinerName">
-             {{joiner.name}}
-           </li>
-          </ul>
-        </div> -->
+        <div id="joinedUsersSection">
+          <b ng-if="joinedUsersList.length > 0">Joined Users: </b>
+          <span id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
+           <span ng-if="$index < (joinedUsersList.length-1)">, </span>
+           <span id="joinerName" style="padding-left: 10px;">
+             {{joiner.name}} 
+           </span>
+          </span>
+        </div>
 
         <div class="modal-footer" style="text-align: center;">
           <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-primary'>Chat</a>

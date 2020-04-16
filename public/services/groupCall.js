@@ -315,7 +315,7 @@ app.factory('GroupCall', ['$rootScope',
                    
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>")
                     .add("<span id='name' class='groupCallVideoName'>")
-                    .append(""+userData.name): $("<audio id='parentAudio'>");
+                    .append("My Video"): $("<audio id='parentAudio'>");
 
                     // var local_media = USE_VIDEO ? $("<div>").append(
                     //     $("<video id='parentVideo'>").attr({autoplay:"autoplay", controls: ""}).append(

@@ -10,17 +10,18 @@ app.factory('GroupCall', ['$rootScope',
         /** You should probably use a different stun server doing commercial stuff **/
         /** Also see: https://gist.github.com/zziuni/3741933 **/
         /**
-         * {
-                url: 'turn:178.128.19.180:3478?transport=udp',
-                credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
-                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
-            }
-         */
-        var ICE_SERVERS = [
+         * 
             {
                 url: 'turn:turn.peekvideochat.com:3478?transport=udp',
                 credential: '12345',
                 username: 'peekinter'
+            }
+         */
+        var ICE_SERVERS = [
+            {
+                url: 'turn:178.128.19.180:3478?transport=udp',
+                credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
+                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
             }
         ];
         //$rootScope.signaling_socket = null;   /* our socket.io connection to our webserver */
@@ -29,9 +30,9 @@ app.factory('GroupCall', ['$rootScope',
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
         var tempUserdata = null;
 
-        function init(userData, status = 0) { 
+        function init(userData, status = 0) {
             setup_local_media(userData, function () {
-                tempUserdata = userData;     
+                tempUserdata = userData;
                 /* once the user has given us access to their
                 * microphone/camcorder, join the channel and start peering up */
                 join_chat_channel(userData.groupId, userData, status);
@@ -51,11 +52,11 @@ app.factory('GroupCall', ['$rootScope',
                 userdata: userdata
             }
             // status: 0- for caller,, 1- for joiner,, 2- caller stopped the call,, 3- joined user has left
-                $.ajax({
-                    type: "POST",
-                    url: "/gCallStatus",
-                    data: { 'status': status, 'userdata': userdata}
-                })
+            $.ajax({
+                type: "POST",
+                url: "/gCallStatus",
+                data: { 'status': status, 'userdata': userdata }
+            })
 
             sendMessage(message);
         }
@@ -107,11 +108,11 @@ app.factory('GroupCall', ['$rootScope',
                 }
             }
             peer_connection.onaddstream = function (event) {
-               console.log(event);
-               var remote_media = USE_VIDEO ? 
-               $("<video id='setId'>")
-                .add("<span id='setVideoName' class='groupCallVideos'>") : 
-                $("<audio>");
+                console.log(event);
+                var remote_media = USE_VIDEO ?
+                    $("<video id='setId'>")
+                        .add("<span id='setVideoName' class='groupCallVideos'>") :
+                    $("<audio>");
 
                 remote_media.attr("autoplay", "autoplay");
                 if (MUTE_AUDIO_BY_DEFAULT) {
@@ -120,20 +121,20 @@ app.factory('GroupCall', ['$rootScope',
                 remote_media.attr("controls", "");
                 peer_media_elements[peer_id] = remote_media;
                 console.log(peer_media_elements);
-                let spanId =  Math.floor(100000000 + Math.random() * 900000000);
+                let spanId = Math.floor(100000000 + Math.random() * 900000000);
                 var spanTag = $(`<span id='${spanId}' class='groupCallVideoSpan'>`);
                 $('.groupCallModalContent').append(spanTag);
-                $('#'+spanId).append(remote_media);
+                $('#' + spanId).append(remote_media);
 
-               if(tempUserdata && tempUserdata.callerId == $rootScope.user._id){
-                   tempUserdata = null;
-                 //  console.log("**** SOCKET CALLED ****");
-                // $.ajax({
-                //     type: "POST",
-                //     url: "/gCallStatus",
-                //     data: {'status': 4, 'spanId': spanId, 'name': $rootScope.user.name, 'id': $rootScope.user._id}
-                // })
-               }
+                if (tempUserdata && tempUserdata.callerId == $rootScope.user._id) {
+                    tempUserdata = null;
+                    //  console.log("**** SOCKET CALLED ****");
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "/gCallStatus",
+                    //     data: {'status': 4, 'spanId': spanId, 'name': $rootScope.user.name, 'id': $rootScope.user._id}
+                    // })
+                }
 
                 event.stream.userName = $rootScope.user.name;
                 attachMediaStream(remote_media[0], event.stream);
@@ -141,10 +142,10 @@ app.factory('GroupCall', ['$rootScope',
 
             /* Add our local stream */
             console.log("addStream");
-         
+
             peer_connection.addStream(local_media_stream);
-        
-           // console.log(local_media_stream);
+
+            // console.log(local_media_stream);
             /* Only one side of the peer connection should create the
                 * offer, the signaling server picks one to be the offerer. 
                 * The other user will get a 'sessionDescription' event and will
@@ -185,7 +186,7 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
         function sessionDescriptionEmitted(config) {
-           // console.log('sessionDescriptionEmitted: ', config);
+            // console.log('sessionDescriptionEmitted: ', config);
             var peer_id = config.peer_id;
             var peer = peers[peer_id];
             var remote_description = config.session_description;
@@ -292,36 +293,36 @@ app.factory('GroupCall', ['$rootScope',
         /** Local media stuff **/
         /***********************/
         function setup_local_media(userData, callback, errorback) {
-       //   console.log("setup_local_media 1");
-       //   console.log(local_media_stream);
+            //   console.log("setup_local_media 1");
+            //   console.log(local_media_stream);
             if (local_media_stream != null) {  /* ie, if we've already been initialized */
                 if (callback) callback();
                 return;
             }
             /* Ask user for permission to use the computers microphone and/or camera, 
                 * attach it to an <audio> or <video> tag if they give us access. */
-          //  console.log("Requesting access to local audio / video inputs");
-        //  console.log("setup_local_media 2");
+            //  console.log("Requesting access to local audio / video inputs");
+            //  console.log("setup_local_media 2");
             navigator.getUserMedia = (navigator.getUserMedia ||
                 navigator.webkitGetUserMedia ||
                 navigator.mozGetUserMedia ||
                 navigator.msGetUserMedia);
 
             attachMediaStream = function (element, stream) {
-              //  console.log("setup_local_media 3");
-             //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
+                //  console.log("setup_local_media 3");
+                //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
                 element.srcObject = stream;
             };
-          //  console.log("setup_local_media 4");
+            //  console.log("setup_local_media 4");
             navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
                 function (stream) { /* user accepted access to a/v */
-                  //("setup_local_media 5");
+                    //("setup_local_media 5");
                     local_media_stream = stream;
                     local_media_stream.userData = userData;
-                   
+
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>")
-                    .add("<span id='name' class='groupCallVideoName'>")
-                    .append("My Video"): $("<audio id='parentAudio'>");
+                        .add("<span id='name' class='groupCallVideoName'>")
+                        .append("My Video") : $("<audio id='parentAudio'>");
 
                     // var local_media = USE_VIDEO ? $("<div>").append(
                     //     $("<video id='parentVideo'>").attr({autoplay:"autoplay", controls: ""}).append(

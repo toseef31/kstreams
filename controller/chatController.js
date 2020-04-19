@@ -19,16 +19,16 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
 passport.use(new LocalStrategy({
-  usernameField: 'email',
+  usernameField: 'name',
   passwordField: 'password',
-}, (email, password, done) => {
-  console.log('passport email: '+ email);
-  userModel.findOne({ email })
+}, (name, password, done) => {
+  //console.log('passport name: '+ name);
+  userModel.findOne({ name })
     .then((user) => {
-      console.log("passport: 1");
+    //  console.log("passport: 1");
      // console.log(user);
       if (!user) {
-        return done(null, false, { errors: { 'email or password': 'is invalid' } });
+        return done(null, false, { errors: { 'name or password': 'is invalid' } });
       }
 
       return done(null, user);
@@ -107,8 +107,10 @@ module.exports = function (io, saveUser) {
 
   router.getUsers = function (req, res) {
     function chatModelFunc(data) {
+     // console.log(data);
       for (let i = 0; i < data.length; i++) {
-        chatModel
+       // if(data[i]) {
+          chatModel
           .find({
             senderId: data[i]._id,
             receiverId: req.params.userId,
@@ -119,6 +121,7 @@ module.exports = function (io, saveUser) {
             data[i]["usCount"] = count;
             if (i == data.length - 1) res.json({ usersList: data });
           });
+      //  }
       }
       if (data.length == 0) res.json({ usersList: data });
     }
@@ -331,6 +334,33 @@ module.exports = function (io, saveUser) {
     userModel.update({ _id: sender }, { $set: { chatWithRefId: "" } }).exec();
   };
 
+  // router.getgroupchat = function (req, res) {
+  //   var id = req.body.id;
+  //   groupsModel
+  //     .find({ _id: id, status: 1, isGroup: 1 })
+  //     .lean()
+  //     .then(function (data) {
+  //       res.json(data);
+  //     });
+  // };
+
+
+  router.getGroupChat = function (req, res) {
+    var id = req.params.groupId;
+    let msgCountLimit = parseInt(req.params.limit);
+
+    chatModel
+      .find({ groupId: id })
+      .populate("commentId")
+      .populate("senderId", { _id: true, name: true })
+      .sort({ createdAt: -1 })
+      .limit(msgCountLimit)
+      .exec(function (err, data) {
+        data.reverse();
+        res.json(data);
+      });
+  };
+
   router.getChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
@@ -367,6 +397,25 @@ module.exports = function (io, saveUser) {
       });
   };
 
+  router.getMoreGroupChat = function (req, res){
+    var id = req.params.groupId;
+    var msgCountLimit = parseInt(req.params.limit);
+    var chatTime = req.params.chatTime;
+   // console.log("GroupId: "+ id);
+    chatModel
+      .find({ createdAt: { $lt: chatTime }, groupId: id})
+      .populate("receiverId", { _id: true, name: true })
+      .populate("senderId", { _id: true, name: true })
+      .sort({ createdAt: -1 })
+      .limit(msgCountLimit)
+      .populate("commentId")
+      .lean()
+      .exec(function (err, data) {
+        if (err) throw err;
+        res.json(data);
+      });
+  }
+
   router.getMoreChat = function (req, res) {
     var sender = req.params.senderId;
     var receiver = req.params.receiverId;
@@ -394,20 +443,6 @@ module.exports = function (io, saveUser) {
       });
   };
 
-  router.getGroup = function (req, res) {
-    var id = req.params.groupId;
-    // chatModel.find({ groupId: id }).populate('senderId').lean().then(function (data) {
-    //     res.json(data);
-    // })
-
-    chatModel
-      .find({ groupId: id })
-      .populate("commentId")
-      .populate("senderId", { _id: true, name: true })
-      .exec(function (err, data) {
-        res.json(data);
-      });
-  };
 
   router.getLastGroupMsg = function (req, res) {
     var id = req.body.id;
@@ -423,44 +458,44 @@ module.exports = function (io, saveUser) {
   };
 
   router.logout = function (req, res) {
-    console.log("LOGOUT");
-    console.log(req.session.user);
+   // console.log("LOGOUT unuse");
+    //console.log(req.session.user);
 
-    if (req.session.user) {
-      req.session.destroy(function (err) {
-        userModel
-          .update(
-            { userId: req.params.userId },
-            { onlineStatus: 0, chatWithRefId: "" }
-          )
-          .exec(function (err, result) {
-            res.status(404).send();
-          });
-      });
-      res.json({ msg: "session destroy" });
-    }
-    else {
-      res.json({ message: "failed to destroy session" });
-    }
+    // if (req.session.user) {
+    //   req.session.destroy(function (err) {
+    //     userModel
+    //       .update(
+    //         { _id: req.params.userId },
+    //         { onlineStatus: 0, chatWithRefId: "" }
+    //       )
+    //       .exec(function (err, result) {
+    //         res.status(404).send();
+    //       });
+    //   });
+    //   res.json({ msg: "session destroy" });
+    // }
+    // else {
+    //   res.json({ message: "failed to destroy session" });
+    // }
   };
 
 
-  router.out = (req, res) => {
-    console.log("GOING OUTTT");
-    console.log(req.session.user);
+  //router.out = (req, res) => {
+  //  console.log("GOING OUTTT");
+  //  console.log(req.session.user);
     // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-    if (!req.session.user) res.json({ message: "failed to destroy session" });
+    // if (!req.session.user) res.json({ message: "failed to destroy session" });
 
-    userModel
-      .update(
-        { _id: req.session.user._id },
-        { onlineStatus: 0, chatWithRefId: "" }
-      )
-      .exec(function (err, result) {
-        req.session.destroy();
-        res.json({ message: "session destroy" });
-      });
-  };
+    // userModel
+    //   .update(
+    //     { _id: req.session.user._id },
+    //     { onlineStatus: 0, chatWithRefId: "" }
+    //   )
+    //   .exec(function (err, result) {
+    //     req.session.destroy();
+    //     res.json({ message: "session destroy" });
+    //   });
+  //};
 
   // router.set = (req, res) => {
   //   console.log("setting session");
@@ -561,13 +596,13 @@ module.exports = function (io, saveUser) {
   // };
 
   router.checkSession = function (req, res, next) {
-    console.log("checkSession");
-    console.log(req.body);
+  //  console.log("checkSession");
+   // console.log(req.body);
     //const { payload: { id } } = req.body._id;
 
     userModel.findById(req.body)
       .then((user) => {
-        console.log(user);
+       // console.log(user);
         if(!user) {
           return res.sendStatus(400);
         }
@@ -578,13 +613,13 @@ module.exports = function (io, saveUser) {
 
 
   router.login = function (req, res, next) { // where next is callBack
-    console.log("LOGIN Func");
-    console.log(req.body);
+    //console.log("LOGIN Func");
+   // console.log(req.body);
 
-    if (!req.body.email) {
+    if (!req.body.name) {
       return res.status(422).json({
         errors: {
-          email: 'is required',
+          name: 'is required',
         },
       });
     }
@@ -593,18 +628,18 @@ module.exports = function (io, saveUser) {
       if (err) {
         return next(err);
       }
-      console.log("aaa");
-      console.log(passportUser);
+    //  console.log("aaa");
+   //   console.log(passportUser);
 
       if (passportUser) {
         const user = passportUser;
         user.token = passportUser.generateJWT();
-        console.log("Generated Token:");
-        console.log(user.token);
+      //  console.log("Generated Token:");
+      //  console.log(user.token);
         return res.json({ user: user.toAuthJSON() });
       }
-      console.log("bbbb");
-      console.log(info);
+   //   console.log("bbbb");
+    //  console.log(info);
       return res.json(info);
     })(req, res, next);
 
@@ -924,15 +959,15 @@ module.exports = function (io, saveUser) {
     // res.json({ message: 'done' });
   };
 
-  router.getgroupchat = function (req, res) {
-    var id = req.body.id;
-    groupsModel
-      .find({ _id: id, status: 1, isGroup: 1 })
-      .lean()
-      .then(function (data) {
-        res.json(data);
-      });
-  };
+  // router.getgroupchat = function (req, res) {
+  //   var id = req.body.id;
+  //   groupsModel
+  //     .find({ _id: id, status: 1, isGroup: 1 })
+  //     .lean()
+  //     .then(function (data) {
+  //       res.json(data);
+  //     });
+  // };
 
   router.getcurrentgroupchat = function (req, res) {
     var id = req.body.id;

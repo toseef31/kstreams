@@ -5,7 +5,6 @@ app.factory('GroupCall', ['$rootScope',
         **/
         var USE_AUDIO = true;
         var USE_VIDEO = true;
-        //var DEFAULT_CHANNEL = 'some-global-channel-name';
         var MUTE_AUDIO_BY_DEFAULT = false;
 
         /** You should probably use a different stun server doing commercial stuff **/
@@ -28,39 +27,35 @@ app.factory('GroupCall', ['$rootScope',
         var local_media_stream = null; /* our own microphone / webcam */
         var peers = {};                /* keep track of our peer connections, indexed by peer_id (aka socket.io id) */
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
+        var tempUserdata = null;
 
-        function init(userData, status = 0) {
-            //  console.log("init:-> " + status);
-            setup_local_media(function () {
+        function init(userData, status = 0) { 
+            setup_local_media(userData, function () {
+                tempUserdata = userData;     
                 /* once the user has given us access to their
-                    * microphone/camcorder, join the channel and start peering up */
-                //GROUP ID would be the channel name
-                console.log('join_chat_channel: ', userData.groupId);
+                * microphone/camcorder, join the channel and start peering up */
                 join_chat_channel(userData.groupId, userData, status);
             });
         }
 
         function sendMessage(message) {
-            // console.log('Sending message from groupCall.js ', message);
+            console.log('Sending message from groupCall.js ', message);
             $rootScope.signaling_socket.$emit(JSON.stringify(message));
         }
 
         function join_chat_channel(channel, userdata, status = 0) {
-            //  console.log('join_chat_channel ', userdata);
+            console.log('join_chat_channel');
             var message = {
                 id: 'join',
                 channel: channel,
                 userdata: userdata
             }
-            //   console.log("join_chat_channel:-> " + status);
             // status: 0- for caller,, 1- for joiner,, 2- caller stopped the call,, 3- joined user has left
-            $.ajax({
-                type: "POST",
-                url: "/gCallStatus",
-                data: { 'status': status, 'userdata': userdata }
-            }).done(function () {
-                console.log("gCallStatus - DONE");
-            })
+                $.ajax({
+                    type: "POST",
+                    url: "/gCallStatus",
+                    data: { 'status': status, 'userdata': userdata}
+                })
 
             sendMessage(message);
         }
@@ -81,11 +76,11 @@ app.factory('GroupCall', ['$rootScope',
         */
         //$rootScope.signaling_socket.on('addPeer', function (config) {
         function addPeerEmitted(config) {
-            //  console.log('Signaling server said to add peer:', config);
+            console.log('addPeerEmitted:', config);
             var peer_id = config.peer_id;
             if (peer_id in peers) {
                 /* This could happen if the user joins multiple channels where the other peer is also in. */
-                // console.log("Already connected to peer ", peer_id);
+                console.log("Already connected to peer ", peer_id);
                 return;
             }
             var peer_connection = new RTCPeerConnection(
@@ -95,8 +90,10 @@ app.factory('GroupCall', ['$rootScope',
                                                                 * for now to get firefox to talk to chrome */
             );
             peers[peer_id] = peer_connection;
-
+            console.log(peers);
             peer_connection.onicecandidate = function (event) {
+                console.log("onicecandidate");
+                console.log(event);
                 if (event.candidate) {
                     var message = {
                         'id': 'relayICECandidate',
@@ -110,21 +107,44 @@ app.factory('GroupCall', ['$rootScope',
                 }
             }
             peer_connection.onaddstream = function (event) {
-                //   console.log("onAddStream", event);
-                var remote_media = USE_VIDEO ? $("<video>") : $("<audio>");
+               console.log(event);
+               var remote_media = USE_VIDEO ? 
+               $("<video id='setId'>")
+                .add("<span id='setVideoName' class='groupCallVideos'>") : 
+                $("<audio>");
+
                 remote_media.attr("autoplay", "autoplay");
                 if (MUTE_AUDIO_BY_DEFAULT) {
                     remote_media.attr("muted", "true");
                 }
                 remote_media.attr("controls", "");
                 peer_media_elements[peer_id] = remote_media;
-                $('.groupCallModalContent').append(remote_media);
+                console.log(peer_media_elements);
+                let spanId =  Math.floor(100000000 + Math.random() * 900000000);
+                var spanTag = $(`<span id='${spanId}' class='groupCallVideoSpan'>`);
+                $('.groupCallModalContent').append(spanTag);
+                $('#'+spanId).append(remote_media);
+
+               if(tempUserdata && tempUserdata.callerId == $rootScope.user._id){
+                   tempUserdata = null;
+                 //  console.log("**** SOCKET CALLED ****");
+                // $.ajax({
+                //     type: "POST",
+                //     url: "/gCallStatus",
+                //     data: {'status': 4, 'spanId': spanId, 'name': $rootScope.user.name, 'id': $rootScope.user._id}
+                // })
+               }
+
+                event.stream.userName = $rootScope.user.name;
                 attachMediaStream(remote_media[0], event.stream);
             }
 
             /* Add our local stream */
+            console.log("addStream");
+         
             peer_connection.addStream(local_media_stream);
-
+        
+           // console.log(local_media_stream);
             /* Only one side of the peer connection should create the
                 * offer, the signaling server picks one to be the offerer. 
                 * The other user will get a 'sessionDescription' event and will
@@ -134,7 +154,6 @@ app.factory('GroupCall', ['$rootScope',
                 // console.log("Creating RTC offer to ", peer_id);
                 peer_connection.createOffer(
                     function (local_description) {
-                        //  console.log("Local offer description is: ", local_description);
                         peer_connection.setLocalDescription(local_description,
                             function () {
                                 var message = {
@@ -146,7 +165,7 @@ app.factory('GroupCall', ['$rootScope',
 
                                 // $rootScope.signaling_socket.emit('relaySessionDescription',
                                 //     { 'peer_id': peer_id, 'session_description': local_description });
-                                // console.log("Offer setLocalDescription succeeded");
+                                console.log("Offer setLocalDescription succeeded");
                             },
                             function () { Alert("Offer setLocalDescription failed!"); }
                         );
@@ -166,11 +185,10 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
         function sessionDescriptionEmitted(config) {
-            // console.log('Remote description received: ', config);
+           // console.log('sessionDescriptionEmitted: ', config);
             var peer_id = config.peer_id;
             var peer = peers[peer_id];
             var remote_description = config.session_description;
-            //   console.log(config.session_description);
 
             var desc = new RTCSessionDescription(remote_description);
             var stuff = peer.setRemoteDescription(desc,
@@ -180,7 +198,6 @@ app.factory('GroupCall', ['$rootScope',
                         // console.log("Creating answer");
                         peer.createAnswer(
                             function (local_description) {
-                                //    console.log("Answer description is: ", local_description);
                                 peer.setLocalDescription(local_description,
                                     function () {
                                         var message = {
@@ -215,6 +232,7 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('iceCandidate', function (config) {
         function iceCandidateEmitted(config) {
+            console.log("iceCandidateEmitted");
             var peer = peers[config.peer_id];
             var ice_candidate = config.ice_candidate;
             peer.addIceCandidate(new RTCIceCandidate(ice_candidate));
@@ -273,42 +291,55 @@ app.factory('GroupCall', ['$rootScope',
         /***********************/
         /** Local media stuff **/
         /***********************/
-        function setup_local_media(callback, errorback) {
-
+        function setup_local_media(userData, callback, errorback) {
+       //   console.log("setup_local_media 1");
+       //   console.log(local_media_stream);
             if (local_media_stream != null) {  /* ie, if we've already been initialized */
                 if (callback) callback();
                 return;
             }
             /* Ask user for permission to use the computers microphone and/or camera, 
                 * attach it to an <audio> or <video> tag if they give us access. */
-            //  console.log("Requesting access to local audio / video inputs");
+          //  console.log("Requesting access to local audio / video inputs");
+        //  console.log("setup_local_media 2");
             navigator.getUserMedia = (navigator.getUserMedia ||
                 navigator.webkitGetUserMedia ||
                 navigator.mozGetUserMedia ||
                 navigator.msGetUserMedia);
 
             attachMediaStream = function (element, stream) {
-                //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
+              //  console.log("setup_local_media 3");
+             //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
                 element.srcObject = stream;
             };
-
+          //  console.log("setup_local_media 4");
             navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
                 function (stream) { /* user accepted access to a/v */
-                    //   console.log("Access granted to audio/video");
+                  //("setup_local_media 5");
                     local_media_stream = stream;
-                    var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
-                    local_media.attr("autoplay", "autoplay");
-                    //local_media.attr("muted", "true"); /* always mute ourselves by default */
-                    //  console.log('local_media ', local_media);
-                    //local_media.muted=true;
+                    local_media_stream.userData = userData;
+                   
+                    var local_media = USE_VIDEO ? $("<video id='parentVideo'>")
+                    .add("<span id='name' class='groupCallVideoName'>")
+                    .append("My Video"): $("<audio id='parentAudio'>");
+
+                    // var local_media = USE_VIDEO ? $("<div>").append(
+                    //     $("<video id='parentVideo'>").attr({autoplay:"autoplay", controls: ""}).append(
+                    //         $("<span id='name'>").append(""+userData.name)
+                    //     )
+                    // ): $("<audio id='parentAudio'>");
+
                     local_media.attr("controls", "");
+                    local_media.attr("autoplay", "autoplay");
+                    //console.log(local_media);
+                    //local_media.attr("muted", "true"); /* always mute ourselves by default */
+                    //local_media.muted=true;
                     $('.groupCallModalContent').append(local_media);
                     document.getElementById("parentVideo").muted = true;
                     attachMediaStream(local_media[0], stream);
                     if (callback) callback();
                 },
                 function () { /* user denied access to a/v */
-
                     console.log("Access denied for audio/video");
                     $rootScope.updateGC();
                     alert("You choose not to provide access to the camera/microphone");

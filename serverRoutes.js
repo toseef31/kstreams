@@ -58,7 +58,8 @@ module.exports = function (app, io, saveUser) {
     app.get('/emptyChatWithId/:_id', chatCon.chatWithId)
 
     //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
-    app.get('/getGroup/:groupId', chatCon.getGroup); // it is used to get group chats only
+    app.get('/getGroupChat/:groupId/:limit', chatCon.getGroupChat); // it is used to get group chats only
+    app.get('/getMoreGroupChat/:groupId/:limit/:chatTime', chatCon.getMoreGroupChat);
     app.post('/getLastGroupMsg', chatCon.getLastGroupMsg);
 
     app.get('/deleteMsg/:msgId/:type', chatCon.deleteMsg);
@@ -67,7 +68,7 @@ module.exports = function (app, io, saveUser) {
     app.get('/deleteGroupMsg/:msgId/:type/:groupId', chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId', chatCon.getNotification);
     app.post('/notificationseen', chatCon.notificationseen);
-    app.post('/getgroupchat', chatCon.getgroupchat);
+    //app.post('/getgroupchat', chatCon.getgroupchat);
     app.post('/getcurrentgroupchat', chatCon.getcurrentgroupchat);
 
     // app.post('/chatFilesShare', upload.single('file'), chatCon.addfiles);
@@ -77,7 +78,7 @@ module.exports = function (app, io, saveUser) {
     app.post('/SUDTS', chatCon.saveUserDataToSession);
     //app.post('/set', chatCon.set);
     //app.get('/get', chatCon.get);
-    app.get('/logout', chatCon.out);
+   // app.get('/logout', chatCon.out);
 
     // app.post('/recent',chatCon.recent);
     app.post('/updateUser', chatCon.updateUser);
@@ -103,7 +104,7 @@ module.exports = function (app, io, saveUser) {
     app.post('/removeGroupUser', groupCon.removeGroupUser);
     app.post('/editGroupName', groupCon.editGroupName);
     app.post('/addNewMembers', groupCon.addNewMembers);
-
+    app.post('/deleteGroup', groupCon.deleteGroup);
     // -------------- GROUP CALL ROUTES---------------------------------
     app.post('/callAGroup', groupCon.callAGroup);
     app.post('/createGroupCall', groupCon.createGroupCall);

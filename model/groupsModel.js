@@ -15,6 +15,10 @@ const groupSchema = mongoose.Schema({
 		ref: 'projects'
 	},
 	"name": String,
+	"creatorUserId": {
+		type: Schema.ObjectId,
+		ref: 'users'
+	},
 	"status": {
 		type: Number,
 		default: 1        //1=Active, 0=Deleted

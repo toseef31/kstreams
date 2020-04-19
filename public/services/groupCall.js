@@ -10,12 +10,18 @@ app.factory('GroupCall', ['$rootScope',
 
         /** You should probably use a different stun server doing commercial stuff **/
         /** Also see: https://gist.github.com/zziuni/3741933 **/
-        //{ url: "stun:stun.l.google.com:19302" }
-        var ICE_SERVERS = [
-            {
+        /**
+         * {
                 url: 'turn:178.128.19.180:3478?transport=udp',
                 credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
                 username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
+            }
+         */
+        var ICE_SERVERS = [
+            {
+                url: 'turn:turn.peekvideochat.com:3478?transport=udp',
+                credential: '12345',
+                username: 'peekinter'
             }
         ];
         //$rootScope.signaling_socket = null;   /* our socket.io connection to our webserver */
@@ -24,7 +30,7 @@ app.factory('GroupCall', ['$rootScope',
         var peer_media_elements = {};  /* keep track of our <video>/<audio> tags, indexed by peer_id */
 
         function init(userData, status = 0) {
-          //  console.log("init:-> " + status);
+            //  console.log("init:-> " + status);
             setup_local_media(function () {
                 /* once the user has given us access to their
                     * microphone/camcorder, join the channel and start peering up */
@@ -40,21 +46,21 @@ app.factory('GroupCall', ['$rootScope',
         }
 
         function join_chat_channel(channel, userdata, status = 0) {
-          //  console.log('join_chat_channel ', userdata);
+            //  console.log('join_chat_channel ', userdata);
             var message = {
                 id: 'join',
                 channel: channel,
                 userdata: userdata
             }
-         //   console.log("join_chat_channel:-> " + status);
+            //   console.log("join_chat_channel:-> " + status);
             // status: 0- for caller,, 1- for joiner,, 2- caller stopped the call,, 3- joined user has left
-                $.ajax({
-                    type: "POST",
-                    url: "/gCallStatus",
-                    data: { 'status': status, 'userdata': userdata }
-                }).done(function () {
-                    console.log("gCallStatus - DONE");
-                })
+            $.ajax({
+                type: "POST",
+                url: "/gCallStatus",
+                data: { 'status': status, 'userdata': userdata }
+            }).done(function () {
+                console.log("gCallStatus - DONE");
+            })
 
             sendMessage(message);
         }
@@ -75,11 +81,11 @@ app.factory('GroupCall', ['$rootScope',
         */
         //$rootScope.signaling_socket.on('addPeer', function (config) {
         function addPeerEmitted(config) {
-          //  console.log('Signaling server said to add peer:', config);
+            //  console.log('Signaling server said to add peer:', config);
             var peer_id = config.peer_id;
             if (peer_id in peers) {
                 /* This could happen if the user joins multiple channels where the other peer is also in. */
-               // console.log("Already connected to peer ", peer_id);
+                // console.log("Already connected to peer ", peer_id);
                 return;
             }
             var peer_connection = new RTCPeerConnection(
@@ -104,7 +110,7 @@ app.factory('GroupCall', ['$rootScope',
                 }
             }
             peer_connection.onaddstream = function (event) {
-             //   console.log("onAddStream", event);
+                //   console.log("onAddStream", event);
                 var remote_media = USE_VIDEO ? $("<video>") : $("<audio>");
                 remote_media.attr("autoplay", "autoplay");
                 if (MUTE_AUDIO_BY_DEFAULT) {
@@ -125,10 +131,10 @@ app.factory('GroupCall', ['$rootScope',
                 * create an offer, then send back an answer 'sessionDescription' to us
                 */
             if (config.should_create_offer) {
-               // console.log("Creating RTC offer to ", peer_id);
+                // console.log("Creating RTC offer to ", peer_id);
                 peer_connection.createOffer(
                     function (local_description) {
-                      //  console.log("Local offer description is: ", local_description);
+                        //  console.log("Local offer description is: ", local_description);
                         peer_connection.setLocalDescription(local_description,
                             function () {
                                 var message = {
@@ -140,13 +146,13 @@ app.factory('GroupCall', ['$rootScope',
 
                                 // $rootScope.signaling_socket.emit('relaySessionDescription',
                                 //     { 'peer_id': peer_id, 'session_description': local_description });
-                               // console.log("Offer setLocalDescription succeeded");
+                                // console.log("Offer setLocalDescription succeeded");
                             },
                             function () { Alert("Offer setLocalDescription failed!"); }
                         );
                     },
                     function (error) {
-                     //   console.log("Error sending offer: ", error);
+                        //   console.log("Error sending offer: ", error);
                     });
             }
         }
@@ -160,21 +166,21 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('sessionDescription', function (config) {
         function sessionDescriptionEmitted(config) {
-           // console.log('Remote description received: ', config);
+            // console.log('Remote description received: ', config);
             var peer_id = config.peer_id;
             var peer = peers[peer_id];
             var remote_description = config.session_description;
-         //   console.log(config.session_description);
+            //   console.log(config.session_description);
 
             var desc = new RTCSessionDescription(remote_description);
             var stuff = peer.setRemoteDescription(desc,
                 function () {
-                  //  console.log("setRemoteDescription succeeded");
+                    //  console.log("setRemoteDescription succeeded");
                     if (remote_description.type == "offer") {
-                       // console.log("Creating answer");
+                        // console.log("Creating answer");
                         peer.createAnswer(
                             function (local_description) {
-                           //    console.log("Answer description is: ", local_description);
+                                //    console.log("Answer description is: ", local_description);
                                 peer.setLocalDescription(local_description,
                                     function () {
                                         var message = {
@@ -191,16 +197,16 @@ app.factory('GroupCall', ['$rootScope',
                                 );
                             },
                             function (error) {
-                              //  console.log("Error creating answer: ", error);
-                               // console.log(peer);
+                                //  console.log("Error creating answer: ", error);
+                                // console.log(peer);
                             });
                     }
                 },
                 function (error) {
-                   // console.log("setRemoteDescription error: ", error);
+                    // console.log("setRemoteDescription error: ", error);
                 }
             );
-           // console.log("Description Object: ", desc);
+            // console.log("Description Object: ", desc);
         }
 
         /**
@@ -227,7 +233,7 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('removePeer', function (config) {
         function removePeerEmitted(config) {
-          //  console.log('Signaling server said to remove peer:', config);
+            //  console.log('Signaling server said to remove peer:', config);
             var peer_id = config.peer_id;
             if (peer_id in peer_media_elements) {
                 peer_media_elements[peer_id].remove();
@@ -241,7 +247,7 @@ app.factory('GroupCall', ['$rootScope',
         };
 
         // status: 2- means caller has stopped the call, 3- joined user has left the call
-        function stop(userData=null, status=2) {
+        function stop(userData = null, status = 2) {
             // console.log('$rootScope.signaling_socket ', $rootScope.signaling_socket);
             $rootScope.signaling_socket.$emit('disconnect');
             $(".groupCallModalContent").html('');
@@ -255,11 +261,11 @@ app.factory('GroupCall', ['$rootScope',
             // #parentVideo
             local_media_stream = null;
 
-            if (status != -1){
+            if (status != -1) {
                 $.ajax({
                     type: "POST",
                     url: "/gCallStatus",
-                    data: {'status': status, 'userdata': userData}
+                    data: { 'status': status, 'userdata': userData }
                 })
             }
             //closeIt();
@@ -268,32 +274,32 @@ app.factory('GroupCall', ['$rootScope',
         /** Local media stuff **/
         /***********************/
         function setup_local_media(callback, errorback) {
-          
+
             if (local_media_stream != null) {  /* ie, if we've already been initialized */
                 if (callback) callback();
                 return;
             }
             /* Ask user for permission to use the computers microphone and/or camera, 
                 * attach it to an <audio> or <video> tag if they give us access. */
-          //  console.log("Requesting access to local audio / video inputs");
+            //  console.log("Requesting access to local audio / video inputs");
             navigator.getUserMedia = (navigator.getUserMedia ||
                 navigator.webkitGetUserMedia ||
                 navigator.mozGetUserMedia ||
                 navigator.msGetUserMedia);
 
             attachMediaStream = function (element, stream) {
-             //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
+                //   console.log('DEPRECATED, attachMediaStream will soon be removed.');
                 element.srcObject = stream;
             };
 
             navigator.getUserMedia({ "audio": USE_AUDIO, "video": USE_VIDEO },
                 function (stream) { /* user accepted access to a/v */
-                 //   console.log("Access granted to audio/video");
+                    //   console.log("Access granted to audio/video");
                     local_media_stream = stream;
                     var local_media = USE_VIDEO ? $("<video id='parentVideo'>") : $("<audio id='parentAudio'>");
                     local_media.attr("autoplay", "autoplay");
                     //local_media.attr("muted", "true"); /* always mute ourselves by default */
-                  //  console.log('local_media ', local_media);
+                    //  console.log('local_media ', local_media);
                     //local_media.muted=true;
                     local_media.attr("controls", "");
                     $('.groupCallModalContent').append(local_media);
@@ -302,7 +308,7 @@ app.factory('GroupCall', ['$rootScope',
                     if (callback) callback();
                 },
                 function () { /* user denied access to a/v */
-                   
+
                     console.log("Access denied for audio/video");
                     $rootScope.updateGC();
                     alert("You choose not to provide access to the camera/microphone");
@@ -314,7 +320,7 @@ app.factory('GroupCall', ['$rootScope',
             /* Tear down all of our peer connections and remove all the
                 * media divs when we disconnect */
             if (typeof peer_id === 'undefined' || !peer_id) return;
-           // console.log('closeIt called ', peer_id);
+            // console.log('closeIt called ', peer_id);
             for (peer_id in peer_media_elements) peer_media_elements[peer_id].remove();
             for (peer_id in peers) peers[peer_id].close();
             peers = {};

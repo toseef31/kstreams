@@ -17,13 +17,21 @@ app.factory('GroupCall', ['$rootScope',
                 username: 'peekinter'
             }
          */
+        // var ICE_SERVERS = [
+        //     {
+        //         url: 'turn:178.128.19.180:3478?transport=udp',
+        //         credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
+        //         username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
+        //     }
+        // ];
         var ICE_SERVERS = [
             {
-                url: 'turn:178.128.19.180:3478?transport=udp',
-                credential: '3d7d3ed8-838d-11e9-9a3a-7a7a3a22eac8',
-                username: 'pl_zD4H7uQH7knjmjBXK999m6Y221Ytd08i3rN1_olJMgD21YRzzm9vlkQTrXwr0AAAAAFzw_yFsaW5rc2hhcmU='
+                url: 'turn:turn.peekvideochat.com:3478?transport=udp',
+                credential: '12345',
+                username: 'peekinter'
             }
         ];
+        
         //$rootScope.signaling_socket = null;   /* our socket.io connection to our webserver */
         var local_media_stream = null; /* our own microphone / webcam */
         var peers = {};                /* keep track of our peer connections, indexed by peer_id (aka socket.io id) */

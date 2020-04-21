@@ -157,7 +157,7 @@
 			var title    = ('title' in options) ? options.title : 'Notice';
 			var message  = ('message' in options) ? options.message : null;
 			var priority = ('priority' in options) ? options.priority : 'success';
-
+		
 			if (message !== null)
 			{
 				toasting.notify(title, message, priority);

@@ -293,11 +293,14 @@ io.on('connection', function (socket) {
 		console.log('ucu socket');
 		io.emit('updateConnectedUsers', data);
 	})
-	socket.on('removeconnectUser', function (data) {
-		io.emit('deductConnectedUser', data);
-	})
+	// socket.on('removeconnectUser', function (data) {
+	// 	io.emit('deductConnectedUser', data);
+	// })
 	socket.on('dropCall', function (data) {
 		io.emit('callDroped', data);
+	})
+	socket.on('endCall', function (data) {
+		io.emit('_endCall', data);
 	})
 	socket.on('dropTheCall', function (data) {
 		io.emit('dropeTheFriendCall', data);
@@ -313,11 +316,16 @@ io.on('connection', function (socket) {
 		io.emit('updateFriendsGroups', data);
 	});
 
+	socket.on('updateUserPStatus', function (data) {
+		io.emit('_updateUserPStatus', data);
+	});
+
 	//listen on typing
 	socket.on('typing', (data) => {
 		io.emit('typing', data)
 	});
 });
+
 
 app.post('/pauseChatFunc', (req, res) => {
 	//console.log('pauseCH sbs');

@@ -33,32 +33,24 @@ module.exports = function (app, io, saveUser) {
     //app.post('/notification');
 
     app.get('/download/:filename', chatCon.downloadFile);
-    //app.post('/download', chatCon.downloadFile);
     app.post('/login',auth.optional, chatCon.login);
     app.post('/groupChat', chatCon.groupChat);
 
-    //app.get('/checkSession',auth.required, chatCon.checkSession);
     app.post('/checkSession',auth.required, chatCon.checkSession);
-    // app.get('/checkSession/:userId',chatCon.checkSession);
-    app.get('/createUser/:name', chatCon.createUser);
     app.get('/getUsers/:userId/:allList/:projectId', chatCon.getUsers);
-    
 
     app.post('/addgroup', chatCon.addGroup);
     app.get('/getGroups/:userId', chatCon.getGroups);
     app.post('/chat', chatCon.chat);
-    // app.post('/reply', chatCon.reply);
 
     app.post('/updateChat/:id', chatCon.updateChat);
 
     app.get('/getChat/:senderId/:receiverId/:limit', chatCon.getChat);
     app.get('/getMoreChat/:senderId/:receiverId/:limit/:chatTime', chatCon.getMoreChat);
     app.get('/getBroadcastId/:presenterId', chatCon.getBroadcastId)
-    //app.post('/unreadMsg/:senderId/:receiverId',chatCon.unreadMsg);
     app.get('/emptyChatWithId/:_id', chatCon.chatWithId)
 
-    //app.get('/getGroup/:groupId/:mem_id',chatCon.getGroup);
-    app.get('/getGroupChat/:groupId/:limit', chatCon.getGroupChat); // it is used to get group chats only
+    app.get('/getGroupChat/:groupId/:limit', chatCon.getGroupChat);
     app.get('/getMoreGroupChat/:groupId/:limit/:chatTime', chatCon.getMoreGroupChat);
     app.post('/getLastGroupMsg', chatCon.getLastGroupMsg);
 
@@ -68,38 +60,29 @@ module.exports = function (app, io, saveUser) {
     app.get('/deleteGroupMsg/:msgId/:type/:groupId', chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId', chatCon.getNotification);
     app.post('/notificationseen', chatCon.notificationseen);
-    //app.post('/getgroupchat', chatCon.getgroupchat);
     app.post('/getcurrentgroupchat', chatCon.getcurrentgroupchat);
 
-    // app.post('/chatFilesShare', upload.single('file'), chatCon.addfiles);
     app.post('/chatFilesShare', upload.array('file'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
-    // app.get('/changeStatus',chatCon.changeStatus);
     app.post('/SUDTS', chatCon.saveUserDataToSession);
-    //app.post('/set', chatCon.set);
-    //app.get('/get', chatCon.get);
-   // app.get('/logout', chatCon.out);
 
-    // app.post('/recent',chatCon.recent);
     app.post('/updateUser', chatCon.updateUser);
     app.post('/removeUser', chatCon.removeUser);
     app.post('/updateUser/image', chatCon.updateUserImage);
     app.post('/setPerStatus', chatCon.setPerStatus);
-    app.get('/checkPerStatus', chatCon.checkPerStatus);
 
     // -------------- PROJECT ROUTES--------------------------------------
     app.post('/getProject', chatCon.getProjectData);
-    // app.post('/setProjectDomain', server.setProjectDomain);
     // -------------------------------------------------------------------
 
     // -------------- BROADCAST ROUTES------------------------------------
     app.post('/startPresenter', chatCon.startPresenter);
     app.post('/joinViewer', chatCon.joinViewer);
     app.post('/stopViewer', chatCon.stopViewer);
-    app.get('/stopPresenter', chatCon.stopPresenter);
+    app.get('/stopPresenter/:userId', chatCon.stopPresenter);
 
     // -------------- GROUP ROUTES---------------------------------------
-    app.get('/getCreatedGroups/:userId/:projectId', groupCon.getCreatedGroups);  // it is used to get groups itself
+    app.get('/getCreatedGroups/:userId/:projectId', groupCon.getCreatedGroups); 
     app.post('/createUserGroup', groupCon.createUserGroup);
     app.post('/removeGroupUser', groupCon.removeGroupUser);
     app.post('/editGroupName', groupCon.editGroupName);

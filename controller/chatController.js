@@ -458,118 +458,12 @@ module.exports = function (io, saveUser) {
   };
 
   router.logout = function (req, res) {
-   // console.log("LOGOUT unuse");
-    //console.log(req.session.user);
-
-    // if (req.session.user) {
-    //   req.session.destroy(function (err) {
-    //     userModel
-    //       .update(
-    //         { _id: req.params.userId },
-    //         { onlineStatus: 0, chatWithRefId: "" }
-    //       )
-    //       .exec(function (err, result) {
-    //         res.status(404).send();
-    //       });
-    //   });
-    //   res.json({ msg: "session destroy" });
-    // }
-    // else {
-    //   res.json({ message: "failed to destroy session" });
-    // }
   };
-
-
-  //router.out = (req, res) => {
-  //  console.log("GOING OUTTT");
-  //  console.log(req.session.user);
-    // <<<<<<<<<< RECHECK NEEDED >>>>>>>>>>>>>>>>>>>
-    // if (!req.session.user) res.json({ message: "failed to destroy session" });
-
-    // userModel
-    //   .update(
-    //     { _id: req.session.user._id },
-    //     { onlineStatus: 0, chatWithRefId: "" }
-    //   )
-    //   .exec(function (err, result) {
-    //     req.session.destroy();
-    //     res.json({ message: "session destroy" });
-    //   });
-  //};
-
-  // router.set = (req, res) => {
-  //   console.log("setting session");
-  //   console.log(req.body.name);
-  //   // if email is empty then check it by phone number
-  //   if (req.body.email != "") {
-  //     userModel
-  //       .findOne({ email: req.body.email })
-  //       .lean()
-  //       .then(function (data) {
-  //         req.session.user = data;
-
-  //         chatModel
-  //           .find({ receiverId: data._id, isSeen: 0 })
-  //           .count()
-  //           .exec(function (err, unreadMsgs) {
-  //             res.json({
-  //               sessionData: req.session.user,
-  //               unreadMsgs: unreadMsgs
-  //             });
-  //           });
-  //       });
-  //   }
-  //   // if phone number is empty then check it by email
-  //   else if (req.body.phone != "") {
-  //     userModel
-  //       .findOne({ phone: req.body.phone })
-  //       .lean()
-  //       .then(function (data) {
-  //         req.session.user = data;
-  //         chatModel
-  //           .find({ receiverId: data._id, isSeen: 0 })
-  //           .count()
-  //           .exec(function (err, unreadMsgs) {
-  //             if (data.length == 0) res.json({ usersList: data });
-  //             res.json({
-  //               sessionData: req.session.user,
-  //               unreadMsgs: unreadMsgs
-  //             });
-  //           });
-  //       });
-  //   }
-
-  //   else if (req.body.name != "") {
-
-  //     userModel
-  //       .findOne({ name: req.body.name })
-  //       .lean()
-  //       .then(function (data) {
-  //         req.session.user = data;
-  //         console.log("*** data ***");
-  //         console.log(data);
-  //         chatModel
-  //           .find({ receiverId: data._id, isSeen: 0 })
-  //           .count()
-  //           .exec(function (err, unreadMsgs) {
-  //             if (data.length == 0) res.json({ usersList: data });
-  //             res.json({
-  //               sessionData: req.session.user,
-  //               unreadMsgs: unreadMsgs
-  //             });
-  //           });
-  //       });
-  //   }
-  // };
-
 
   router.downloadFile = function (req, res) {
     var filename = req.params.filename;
-    // res.download('../kstreams/images/chatImages/' + filename);
     filepath = path.join(__dirname, "../images/chatImages") + "/" + filename;
-
     res.download(filepath);
-    //res.sendFile(filepath);
   };
 
   router.updateUser = function (req, res) {
@@ -591,18 +485,9 @@ module.exports = function (io, saveUser) {
       });
   };
 
-  // router.get = (req, res) => {
-  //   console.log("GET");
-  // };
-
   router.checkSession = function (req, res, next) {
-  //  console.log("checkSession");
-   // console.log(req.body);
-    //const { payload: { id } } = req.body._id;
-
     userModel.findById(req.body)
       .then((user) => {
-       // console.log(user);
         if(!user) {
           return res.sendStatus(400);
         }
@@ -612,10 +497,7 @@ module.exports = function (io, saveUser) {
   };
 
 
-  router.login = function (req, res, next) { // where next is callBack
-    //console.log("LOGIN Func");
-   // console.log(req.body);
-
+  router.login = function (req, res, next) { 
     if (!req.body.name) {
       return res.status(422).json({
         errors: {
@@ -628,170 +510,14 @@ module.exports = function (io, saveUser) {
       if (err) {
         return next(err);
       }
-    //  console.log("aaa");
-   //   console.log(passportUser);
-
       if (passportUser) {
         const user = passportUser;
         user.token = passportUser.generateJWT();
-      //  console.log("Generated Token:");
-      //  console.log(user.token);
         return res.json({ user: user.toAuthJSON() });
       }
-   //   console.log("bbbb");
-    //  console.log(info);
       return res.json(info);
     })(req, res, next);
-
   }
-
-
-  // router.login = function (req, res) {
-  //   var name = req.body.name;
-  //   var email = req.body.email;
-  //   var password = req.body.password;
-  //   var phone = req.body.phone;
-  //   var userTitle = req.body.userskill;
-  //   var userImage = req.body.userImage;
-  //   var userProfile = req.body.userProfileUrl;
-
-  //   if (email != "") {
-  //     helper.getData(
-  //       userModel,
-  //       { email: email, phone: "", password: password },
-  //       function (user) {
-  //         if (user._id) {
-  //           //--------------------------------------------------------------------------------------------
-  //           // *** for those users who are registered but these values are not updated ***
-  //           if (userImage)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
-  //               .exec();
-  //           if (userTitle)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-  //               .exec();
-  //           if (userProfile)
-  //             userModel
-  //               .update(
-  //                 { _id: user._id },
-  //                 { $set: { userProfileUrl: userProfile } }
-  //               )
-  //               .exec();
-  //           //--------------------------------------------------------------------------------------------
-
-  //           /*change status from offline to online*/
-  //           helper.changeStatus(user._id, {}, function (data) {
-  //             /*set session */
-  //             req.session.user = user;
-  //             /*this function use to move user info to another view*/
-  //             saveUser(user);
-  //             /*get users to show order by newly messages*/
-  //             //helper.RTU();
-  //             res.json(user);
-  //           });
-  //         } else res.json(null);
-  //       }
-  //     );
-  //   } else if (phone != "") {
-  //     helper.getPData(
-  //       userModel,
-  //       { phone: phone, email: "", password: password },
-  //       function (user) {
-  //         if (user) {
-  //           //--------------------------------------------------------------------------------------------
-  //           // *** for those users who are registered but these values are not updated ***
-  //           if (userImage)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
-  //               .exec();
-  //           if (userTitle)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-  //               .exec();
-  //           if (userProfile)
-  //             userModel
-  //               .update(
-  //                 { _id: user._id },
-  //                 { $set: { userProfileUrl: userProfile } }
-  //               )
-  //               .exec();
-  //           //--------------------------------------------------------------------------------------------
-
-  //           /*change status from offline to online*/
-  //           helper.changeStatus(user._id, {}, function (data) {
-  //             /*set session */
-  //             req.session.user = user;
-  //             /*this function use to move user info to another view*/
-  //             saveUser(user);
-  //             /*get users to show order by newly messages*/
-  //             //helper.RTU();
-  //             res.json(user);
-  //           });
-  //         } else res.json(null);
-  //       }
-  //     );
-  //   }else if (name != "") {
-  //     helper.getData(
-  //       userModel,
-  //       { name: name, email: "", phone: "", password: password },
-  //       function (user) {
-  //         if (user) {
-  //           //--------------------------------------------------------------------------------------------
-  //           // *** for those users who are registered but these values are not updated ***
-  //           if (userImage)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { user_image: userImage } })
-  //               .exec();
-  //           if (userTitle)
-  //             userModel
-  //               .update({ _id: user._id }, { $set: { userTitle: userTitle } })
-  //               .exec();
-  //           if (userProfile)
-  //             userModel
-  //               .update(
-  //                 { _id: user._id },
-  //                 { $set: { userProfileUrl: userProfile } }
-  //               )
-  //               .exec();
-  //           //--------------------------------------------------------------------------------------------
-
-  //           /*change status from offline to online*/
-  //           helper.changeStatus(user._id, {}, function (data) {
-  //             /*set session */
-  //             req.session.user = user;
-  //             console.log("helper session setting");
-  //             console.log(req.session.user);
-
-
-  //             /*this function use to move user info to another view*/
-  //             saveUser(user);
-  //             /*get users to show order by newly messages*/
-  //             //helper.RTU();
-  //             res.json(user);
-  //           });
-  //         } else res.json(null);
-  //       }
-  //     );
-  //   }
-  // };
-
-  router.createUser = function (req, res) {
-    var name = req.params.name;
-    var newUser = new userModel({
-      name: name,
-      email: name + "@gmail.com",
-      password: helper.incrypt(name),
-      phone: "03339876859",
-      country: "pakistan"
-    });
-    newUser.save(function (err, data) {
-      if (err) throw err;
-      res.json(data);
-    });
-  };
-
-
 
   router.deleteMsg = function (req, res) {
     var msgId = req.params.msgId;
@@ -800,12 +526,9 @@ module.exports = function (io, saveUser) {
       if (err) throw err;
       res.json(data);
     });
-
-    // chatModel.findByIdAndUpdate(msgId,{delete:type},function(err,data){
-    //     if (err) throw err;
-    //     res.json(data);
-    // })
   };
+
+
   router.updateChat = function (req, res) {
     var chatId = req.params.id;
     var message = req.body.message;
@@ -836,13 +559,6 @@ module.exports = function (io, saveUser) {
           res.json(groupMsgs);
         });
     });
-
-    // groupsModel.update({'message._id':id},{$set:{'message.$.message':message}},function(err,data){
-    //     if(err) throw err;
-    //     helper.getData(groupsModel,{_id:groupId},function(data){
-    //         res.json(data);
-    //     })
-    // });
   };
 
   router.notificationseen = (req, res) => {
@@ -872,24 +588,9 @@ module.exports = function (io, saveUser) {
           res.json(groupMsgs);
         });
     });
-
-    // groupsModel.update({'message._id':msgId},{$set:{'message.$.delete':type}},function(err,data){
-    //     if(err) throw err;
-    //     helper.getData(groupsModel,{_id:groupId},function(data){
-    //         res.json(data);
-    //     })
-    // });
   };
 
   router.addfiles = function (req, res, next) {
-    // var newchat = new chatModel({
-    //     "senderId": req.body.senderId,
-    //     "receiverId": req.body.friendId,
-    //     "message": req.file.originalname,
-    // });
-    // newchat.save( function (err, data) {
-    //     if (err) throw err;
-    // })
     let isFileImage = 1;
 
     for (var i = 0; i < req.files.length; i++) {
@@ -926,7 +627,6 @@ module.exports = function (io, saveUser) {
         groupId: req.body.id,
         senderId: req.body.senderId,
         isGroup: 1,
-        //  "receiverId": req.body.friendId,
         message: req.files[i].originalname,
         messageType: isFileImage
       });
@@ -945,29 +645,9 @@ module.exports = function (io, saveUser) {
           .then(function (data) {
             res.json(data);
           });
-
-        //   res.send(data);
       });
-
-      // groupsModel.update({ _id: id }, { $push: { message: {isGroup:1, messageType: msgType, message: message } }, lastMsg: originalName }, function (err, data) {
-      //     if (err) throw err;
-      // })
-
-      //  res.send(req.files);
     }
-    // helper.RTGU();
-    // res.json({ message: 'done' });
   };
-
-  // router.getgroupchat = function (req, res) {
-  //   var id = req.body.id;
-  //   groupsModel
-  //     .find({ _id: id, status: 1, isGroup: 1 })
-  //     .lean()
-  //     .then(function (data) {
-  //       res.json(data);
-  //     });
-  // };
 
   router.getcurrentgroupchat = function (req, res) {
     var id = req.body.id;
@@ -1016,49 +696,28 @@ module.exports = function (io, saveUser) {
   };
 
   router.setPerStatus = (req, res) => {
-    if (req.session.user)
       userModel.findOneAndUpdate(
-        { _id: req.session.user._id },
+        { _id: req.body.userId },
         { pStatus: req.body.pStatus },
         function (err, data) {
           if (err) throw err;
           res.json({ status: true, id: req.body.id });
         }
       );
-    else res.json({ status: false, message: "Need authorization" });
-  };
-
-  router.checkPerStatus = (req, res) => {
-    if (req.session.user)
-      userModel
-        .find({ _id: req.session.user._id })
-        .lean()
-        .then(function (result) {
-          res.json({
-            status: true,
-            pStatus: result[0].pStatus,
-            email: result[0].email
-          });
-        });
-    else res.json({ status: false, message: "Need authorization" });
   };
 
   // Broadcast functions start =====
   router.startPresenter = (req, res) => {
-    if (req.session.user) {
       var broad = new broadModel({
-        "presenterId": req.session.user._id,
+        "presenterId": req.body.userId,
         "password": req.body.password,
       });
       broad.save(function (err, data) {
         if (err) console.log(err);
-        broadModel.findOne({ 'presenterId': req.session.user._id, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
+        broadModel.findOne({ 'presenterId': req.body.userId, 'endDate': null }).sort({ _id: -1 }).limit(1).lean().exec(function (err, result) {
           res.json({ status: true, message: 'Saved successfully', 'broadcastRefId': result });
         })
       });
-    }
-    else
-      res.json({ status: false, message: 'Need authorization' });
   }
 
   router.getBroadcastId = (req, res) => {
@@ -1071,7 +730,6 @@ module.exports = function (io, saveUser) {
     let userBroadcastingId = req.body.preId;
     let broadcastRefId = req.body.broadcastId;
 
-    if (req.session.user) {
       broadModel.find({ 'presenterId': req.body.preId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
       function updateAllFound(err, preData) {
         var ids = preData.map(function (item) {
@@ -1079,7 +737,7 @@ module.exports = function (io, saveUser) {
         });
 
         if (ids.length > 0) {
-          broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.session.user } } }, function (err, data) {
+          broadModel.findOneAndUpdate({ _id: ids[0] }, { $push: { 'viewers': { viewerId: req.body.userData } } }, function (err, data) {
             if (err) throw err;
             let newMessage = new chatModel(req.body.joinMsg);
             newMessage.save();
@@ -1092,18 +750,15 @@ module.exports = function (io, saveUser) {
                 });
               }
             });
-            //  res.json({ status: true, message: 'user has joined the broadcasting' });
           })
         }
         else
           res.json({ status: false, message: 'Update failed' });
       }
-    }
   }
 
   router.stopPresenter = (req, res) => {
-    if (req.session.user) {
-      broadModel.find({ 'presenterId': req.session.user._id }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
+      broadModel.find({ 'presenterId': req.params.userId }).sort({ _id: -1 }).limit(1).exec(updateAllFound);
       function updateAllFound(err, preData) {
         var ids = preData.map(function (item) {
           return item._id;
@@ -1116,14 +771,10 @@ module.exports = function (io, saveUser) {
         else
           res.json({ status: false, message: 'Update failed' });
       }
-    }
-    else
-      res.json({ status: false, message: 'Need authorization' });
   }
 
   router.stopViewer = (req, res) => {
 
-    if (req.session.user) {
       let newMessage = new chatModel(req.body.leftMsg);
       newMessage.save();
 
@@ -1139,7 +790,7 @@ module.exports = function (io, saveUser) {
         if (ids.length > 0) {
 
           broadModel.findOneAndUpdate(
-            { _id: ids[0], "viewers.viewerId": req.session.user },
+            { _id: ids[0], "viewers.viewerId": req.body.userData },
             {
               $set: {
                 "viewers.$.endDate": new Date()
@@ -1156,7 +807,6 @@ module.exports = function (io, saveUser) {
         }
         else res.json({ status: false, message: "Update failed" });
       }
-    } else res.json({ status: false, message: "Need authorization" });
   };
   // Broadcast function end ======
   return router;

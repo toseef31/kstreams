@@ -39,7 +39,9 @@
       clearInterval(obj.calltimmer);
     }
     obj.showTime = function(){
-      return obj.hour + ' h ' + obj.mint + ' m ' + obj.sec + ' s ';
+      if (obj.hour == '' && obj.mint == '')  return obj.sec + ' s ';
+      if (obj.hour == '')  return obj.mint + ' m ' + obj.sec + ' s ';
+      if (obj.min == '')  return obj.sec + ' s ';
     }
     obj.reset = function(){
       obj.sec  = 0;

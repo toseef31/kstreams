@@ -1333,7 +1333,7 @@
   <!-- Create-Group EDIT Modal -->
 
   <!-- Group Call start-->
-  <div id="groupCallModal" class="modal fade" role="dialog">
+  <div id="groupCallModal" class="modal fade customModalCentering" role="dialog">
     <div class="modal-dialog-custom">
       <div class="modal-content ">
         <div class="modal-header clearfix">
@@ -1352,9 +1352,9 @@
         <div id="joinedUsersSection">
           <b ng-if="joinedUsersList.length > 0">Joined Users: </b>
           <span id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
-           <span ng-if="$index < (joinedUsersList.length-1)">, </span>
            <span id="joinerName" style="padding-left: 10px;">
              {{joiner.name}} 
+             <span ng-if="$index < (joinedUsersList.length-1)">, </span>
            </span>
           </span>
         </div>
@@ -1386,7 +1386,7 @@
       </div>
     </div>
   </div>
-  <!-- Incoming GroupCall end -->
+  <!-- Incoming GroupCall Notification end -->
 
   <div id="minimizedGroupCall" class="minimizedVideoTab minimizedVideoPanelMobile" data-backdrop="false">
     <div class="incomming-btn-container" style="background-color: white  !important">
@@ -1396,6 +1396,13 @@
       </button>
     </div>
   </div>
+ 
+  <!-- <div ng-if="msgNotif" id ="msgNotification" class="alert alert-info alert-dismissible show msgNotif" role="alert">
+    <span id="msgNotifText">{{msgNotifText}}</span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div> -->
 
 </div>
 

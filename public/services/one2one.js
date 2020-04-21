@@ -187,6 +187,7 @@ factory('One2OneCall', ['$rootScope',
                         userData:userData,
                         sdpOffer:offerSdp
                     };  
+
                     sendKMessage(message);
                 });
             });

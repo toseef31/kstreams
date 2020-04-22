@@ -733,7 +733,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.isScrollExecuted = false;
         $scope.showJoinedUsers = false;
 
-        $scope.groupChatActive = false;
+        $scope.groupChatBoxActive = false;
         $scope.isReplying = false;
         $scope.allUsersLeft = 0; // * 0: nothing, 1: users left call after joining, 2: users has not left call
         $scope.commentReplyId = '';
@@ -916,7 +916,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
 
         $scope.gcChatBox = function (){
-            $scope.groupChatActive = !$scope.groupChatActive;
+            $scope.groupChatBoxActive = !$scope.groupChatBoxActive;
         }
 
          
@@ -1643,7 +1643,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.stopGroupCall = function () {
             let userData = {};
-            $scope.groupChatActive = true;
+            $scope.groupChatBoxActive = true;
             if ($scope.selGroupData != null) {
                 userData = {
                     groupCallid: $scope.selGroupData.groupCallid,

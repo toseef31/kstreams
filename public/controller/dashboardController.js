@@ -723,6 +723,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $rootScope.o2oSocConEst = false;
         $scope.receiveCall = false;
         $scope.welcomePage = true;
+        $rootScope.userBusy = false;
 
         $scope.groupSelected = false;
         $scope.bypassGroupSelected = false; //if groupCall incoming Modal is open then this becomes true
@@ -730,15 +731,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.moreChatExist = true;
         $scope.isRepeatFinish = false;
         $scope.isScrollExecuted = false;
+        $scope.showJoinedUsers = false;
 
-        $scope.msgNotif = false;
+        $scope.groupChatActive = false;
         $scope.isReplying = false;
         $scope.allUsersLeft = 0; // * 0: nothing, 1: users left call after joining, 2: users has not left call
         $scope.commentReplyId = '';
         $scope.selectedMsg = null;
         $scope.selGroupCallData = null;
-        // $scope.callStartTime = null;
-        // $scope.callEndTime = null;
 
         $scope.groupCallerName = "";
         $scope.joinedUsersList = [];
@@ -781,6 +781,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.callModal(obj);
         }
         // ----------------------------------------------------------------------------------
+       
 
         socket.emit('user_connected', {
             userId: $rootScope.user._id
@@ -914,6 +915,23 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.notiCount = response.data.count;
             });
 
+        $scope.gcChatBox = function (){
+            $scope.groupChatActive = !$scope.groupChatActive;
+        }
+
+         
+        $scope.activateJoinedUsers = function (){
+            $scope.showJoinedUsers = !$scope.showJoinedUsers;
+            if ($scope.showJoinedUsers){
+                $('#joinedUsersSectionModal').modal();
+                $('#joinedUsersSectionModal').show();
+            }
+            else{
+                $('#joinedUsersSectionModal').hide();
+            }
+        }
+
+
         $scope.chatActive = function (isChatDocker) {
             $scope.selectedUserNo = -1;
             $scope.selectedUserData = null;
@@ -1001,7 +1019,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         // --------- called from template (html) ------------------------
         $scope.ngRepeatFinish = function () {
-            // console.log("ngRepeatFinish");
+            console.log("ngRepeatFinish");
             $scope.isRepeatFinish = true;
             var con = document.getElementsByClassName('msg_history')[0];
             var previousScrollHeight;
@@ -1165,6 +1183,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $scope.message = $scope.msgEdit;
             var ele = $('#sendMsg').emojioneArea();
             ele[0].emojioneArea.setText($scope.message);
+
+            // var ele = $('#sendGMsg').emojioneArea();
+            // ele[0].emojioneArea.setText($scope.message);
+
             $rootScope.editMsgMenu1 = false;
         }
         /* disconnect the call*/
@@ -1192,23 +1214,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
         }
 
-        // $rootScope.setStartTime = function (){
-        //     let date = new Date();
-        //     let time = date.getTime();
-        //     $scope.callStartTime = time;
-        // }
-
-        // $rootScope.calculateCallTime = function (){
-        //     let date = new Date();
-        //     let time = date.getTime();
-        //     $scope.callEndTime = time;
-
-        //     let diff = $scope.callStartTime - $scope.callEndTime;
-        //     var hours = Math.floor(diff / 1000 / 60 / 60);
-        //     console.log(hours);
-        // }
-
-
         /*disconnect the call from other side through socket io*/
         socket.on('calldis', function (data) {
             if (data.friendId == $scope.user._id) {
@@ -1225,7 +1230,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
         })
 
-        /* send braodcast message */
+        /* send broadcast message */
         $scope.sendBCMessage = function (sendType, message, chkmsg) {
             if (!chkmsg || typeof chkmsg == "undefined") chkmsg = 0;
             if (!message || typeof message == "undefined") message = 0;
@@ -1386,6 +1391,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 }
             }
 
+            // var ele = $('#sendGMsg').emojioneArea();
+            // ele[0].emojioneArea.setText('');
+             $('#sendGMsg').val('')
+             setTimeout(() => {
+                scrollGroupBottom();
+             }, 500);
+
             var ele = $('#sendMsg').emojioneArea();
             ele[0].emojioneArea.setText('');
         }
@@ -1474,6 +1486,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $("#groupVideoCall").css("color", "#ea5a5a;");
             cancelTimmer = false;
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
+                scrollGroupBottom();
+
                 $scope.bypassGroupSelected = false;
                 $('#incomingGroupCallModal').hide();
                 $scope.groupCallStatus = true;
@@ -1629,6 +1643,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.stopGroupCall = function () {
             let userData = {};
+            $scope.groupChatActive = true;
             if ($scope.selGroupData != null) {
                 userData = {
                     groupCallid: $scope.selGroupData.groupCallid,
@@ -1719,6 +1734,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             });
         }
 
+        // ---------- Needs ReCheck ---------------------------------
+        $rootScope.userBusyMsg = function (){
+            socket.emit('userBusy', {'callerId': $scope.user._id});
+        }
+        // ---------- Needs ReCheck ---------------------------------
+
         /* drop the call when user didn't received the call and times up*/
         socket.on('dropeTheFriendCall', function (data) {
             $scope.$apply(function () {
@@ -1763,25 +1784,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     }
         })
 
-        // socket.on('deductConnectedUser', function (data) {
-        //     var i = 0;
-        //     for (i; i < data.members.length; i++)
-        //         if (data.members[i].id == $scope.user._id)
-        //             $scope.$apply(function () {
-        //                 $scope.countGroupMembers -= 1;
-        //                 if (data.check == 'afterReceive') {
-        //                     $scope.usersInGroup -= 1;
-        //                     if ($scope.usersInGroup == 1 && $scope.callerId == $scope.user._id) {
-        //                         One2OneCall.setCallState(NO_CALL);
-        //                         $rootScope.toggleBtn(false);
-        //                         $scope.leaveRoom();
-        //                     }
-        //                 }
-        //             })
-        // })
-
         /*show alert to the user that the person is busy on another call*/
-        socket.on('userBusy', function (data) {
+        socket.on('_userBusy', function (data) {
             if (data.callerId == $scope.user._id) {
                 $rootScope.toggleBtn(false);
                 $.toaster({
@@ -1944,21 +1948,19 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         })
 
         socket.on('_endCall', function (data) {
-           // console.log("*** _endCall ***");
-           // console.log(data.callerId +" == "+ $scope.chatWithId);
             if (data.callerId == $scope.chatWithId) {
+                $rootScope.userBusy = false;
                 let callDuration = 'Call duration: ' + $rootScope.timmerObj.showTime();
                 $.toaster({
                     priority: 'danger',
                     title: 'call ended',
                     message: callDuration
                 });
-             //   console.log("INSIDE");
                 $scope.chatWithId = 0;
             }
             else{
-               // console.log(data.chatWithId +" == "+ $scope.user._id);
                 if (data.chatWithId == $scope.user._id){
+                    $rootScope.userBusy = false;
                     document.getElementById('incommingCall').style.display = 'none';
                     One2OneCall.setCallState(NO_CALL);
                     $rootScope.toggleBtn(false);
@@ -2558,18 +2560,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
     }
 
-    // $scope.msgNotifText = "";
     socket.on('_updateUserPStatus', (data) => {
-        //    console.log(data);      console.log($scope.allUsers);
         for (var i = 0; i < $scope.allUsers.length; i++) {
             if ($scope.allUsers[i]._id == data.userId) {
                 let prevPStatus = $scope.allUsers[i].pStatus;
                 $scope.allUsers[i].pStatus = data.pStatus;
 
-                // console.log($scope.allUsers[i]._id +" != "+data.userId);
-                // console.log(prevPStatus +" != "+ data.pStatus);
                 if ($scope.allUsers[i]._id != $scope.user._id && prevPStatus != data.pStatus) {
-                    $scope.msgNotif = true;
                     let status = '';
                     if (data.pStatus == 0) status = "is now active";
                     if (data.pStatus == 1) status = "is away";
@@ -2583,10 +2580,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         title: 'user status',
                         message: msgNotifText
                     });
-
-                    // setTimeout(() => {
-                    //     $scope.msgNotif = false;
-                    // }, 9000);
                 }
                 break;
             }

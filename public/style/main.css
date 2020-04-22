@@ -644,6 +644,15 @@ img{ max-width:90%;}
   overflow-y: auto;
 }
 
+.gMsg_history{
+  padding: 10px;
+  background: #dadada;
+  /* height: 450px; */
+  width: 100%;
+  height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+
 .status-bar{
   font-size: 18px;
 }
@@ -1193,9 +1202,7 @@ height: 70% !important;
   .messaging{
     height: 88%; 
   }
-  /* .msg_history{
-    height: 82%;
-  } */
+
   .inbox_people {
     height: 95%;
   }
@@ -1247,6 +1254,9 @@ height: 70% !important;
   .msg_history {
     height: calc(100vh - 142px);
   }
+  .gMsg_history{
+    height: calc(100vh - 142px);
+  }
   .time_date {
     font-size: 11px;
   }
@@ -1261,9 +1271,7 @@ height: 70% !important;
   .sent_msg {
     width: 70%;
   }
-  /* .msg_history {
-    height: 346px;
-  } */
+
   .inbox_people {
         height: 440px;
   }
@@ -1273,12 +1281,7 @@ height: 70% !important;
   }
 }
 @media screen and (max-width: 425px) {
-  /* .msg_history {
-    height: 82%;
-  } */
-  /*.messaging{
-    height: 88%;
-  }*/
+ 
   .inbox_people {
     height: 100%;
         }
@@ -1287,9 +1290,7 @@ height: 70% !important;
   }
 }
 @media screen and (max-width: 320px){
-   /* .msg_history {
-    height: 77%;
- } */
+
   .messaging {
     height: 85%;
 }

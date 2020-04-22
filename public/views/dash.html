@@ -496,7 +496,7 @@
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
-                  
+
                   <div ng-if="!chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
@@ -541,7 +541,7 @@
                     <div class="clear"></div>
                   </div>
 
-                  
+
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
@@ -558,7 +558,6 @@
                 </div>
 
                 <!-- ---------------------  SEND MESSAGES -------------------------------------->
-
                 <div ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
                   ng-if="chat.senderId._id == user._id">
                   <div ng-if="!chat.isDeleted">
@@ -631,7 +630,7 @@
 
                     <div class="clear"></div>
                   </div>
-                  
+
                   <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
                     <div class="messages-wrapper messages-text message-model pull-right">
                       <div class="clear"></div>
@@ -659,6 +658,7 @@
                 </span>
                 <div class="clear"></div>
               </div>
+
             </div>
           </div> <!-- ---NG REPEAT ENDS --- -->
         </div>
@@ -791,23 +791,6 @@
     </div>
   </div>
 
-  <!-- incoming screenShare modal -->
-  <!-- incoming screenShare modal -->
-  <!-- <div id="incomingScreenshare">
-    <div class="incomming-card">
-      <h3 id="screenerName"></h1>  <h4>incomming screenshare</h4>
-    </div>
-    <div class="incomming-btn-container">
-      <button title="Accept" class="join"
-        ng-click="">
-        <i class="fa fa-phone color-green" aria-hidden="true"></i>
-      </button>
-      <button title="Decline" ng-click="" class="incomming-card-btn danger pull-right">
-        <i class="fa fa-ban color-red" aria-hidden="true"></i>
-      </button>
-    </div>
-  </div> -->
-
   <!-- incomming call modal -->
   <!-- incomming call modal -->
   <div id="incommingCall">
@@ -914,6 +897,7 @@
           </div>
         </div>
 
+        <!-- ******* BC chatBox ends ****** -->
         <div class="bcSubPanelWidth" style="background-color: #f8f3f3; float:right">
           <div class="messagejoint msg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
             id="{{connectionId}}">
@@ -972,6 +956,7 @@
           </div>
 
         </div>
+        <!-- ******* BC chatBox ends ******* -->
       </div>
     </div>
   </div>
@@ -1110,22 +1095,22 @@
     </button>
   </div>
 
-    <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
-    <div id="groupDelConfirmModal" class="modal fade" role="dialog" style="z-index: 1200;">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <h3 class="modal-title" id="modal-title">Confirmation</h3>
-        </div>
-        <div class="modal-body" id="modal-body" style="background-color: aliceblue;">
-          Are you sure you want to delete the group?
-        </div>
-        <div class="modal-footer" style="background-color: aliceblue;">
-          <button class="btn btn-primary" type="button" ng-click="DeleteGroup()">Ok</button>
-          <button class="btn btn-warning" type="button" ng-click="confirmModalGroupDel()">Cancel</button>
-        </div>
+  <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
+  <div id="groupDelConfirmModal" class="modal fade" role="dialog" style="z-index: 1200;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Confirmation</h3>
+      </div>
+      <div class="modal-body" id="modal-body" style="background-color: aliceblue;">
+        Are you sure you want to delete the group?
+      </div>
+      <div class="modal-footer" style="background-color: aliceblue;">
+        <button class="btn btn-primary" type="button" ng-click="DeleteGroup()">Ok</button>
+        <button class="btn btn-warning" type="button" ng-click="confirmModalGroupDel()">Cancel</button>
       </div>
     </div>
-    <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
+  </div>
+  <!-- ------------------- GROUP DELETE CONFIRMATION MODAL ------------------- -->
 
   <!-- ------------------- MSG DELETE CONFIRMATION MODAL ------------------- -->
   <div id="confirmationModal" class="modal fade" role="dialog" style="z-index: 1200;">
@@ -1215,11 +1200,12 @@
           <span ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
             <input id="gnEdit" type="text" class="editGroupNameText" ng-model="selGroupName" focus-me="focusInput"
               disabled>
-              <i ng-if="selGroupData.creatorUserId == user._id" ng-click="confirmModalGroupDel()" class="fa fa-trash groupDeleteIcon" aria-hidden="true"></i>
+            <i ng-if="selGroupData.creatorUserId == user._id" ng-click="confirmModalGroupDel()"
+              class="fa fa-trash groupDeleteIcon" aria-hidden="true"></i>
 
-              <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName"
-               aria-hidden="true"></i>
-              <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
+            <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName"
+              aria-hidden="true"></i>
+            <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
           </span>
         </div>
         <div class="modal-body">
@@ -1338,35 +1324,286 @@
       <div class="modal-content ">
         <div class="modal-header clearfix">
           <div class='text-white'>
-            <b>Group Call</b>
-            <span style="float: right;"><b>Joined Users: </b> {{joinedUsersList.length}}</span>
+            <b style="float: left;">Group Call</b>
+
+            <span style="float: right; padding-left: 20px;">
+              <a id="groupChatBtn" href='javascript:void(0)' ng-click="gcChatBox()"
+                class='btn btn-primary'>Chat</a>
+              <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()"
+                class='btn btn-info'>Minimize</a>
+              <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()"
+                class='btn btn-danger'>Stop</a>
+            </span>
+           
+            <span style="padding-left: 20px;"><b style="cursor: pointer;" ng-click="activateJoinedUsers()">Joined Users: </b> {{joinedUsersList.length}}</span>
+          </div>
+          <span id="groupCallTime" style="color: white; float: left;"></span>
+        </div>
+        <div class="modal-body" style="padding: 0 !important;">    
+          <div class="col-sm-8 col-md-8 groupCallModalContent">
+            <!-- test area folks test area -->
+            <!-- <video id="parentVideo" autoplay="autoplay" controls="controls"></video> -->
           </div>
 
-          <span id="groupCallTime" style="color: white; float: right"></span>
-        </div>
-        <div class="modal-body groupCallModalContent">
-          <!-- test area folks test area -->
-          <!-- <video id="parentVideo" autoplay="autoplay" controls="controls"></video>-->
+          <!-- ******* GC chatBox ends ****** -->
+          <div ng-if="groupChatActive" onscroll="scrolled(this)" class="col-sm-4 col-md-4  gcSubPanelWidth" style="float:right">
+            <div class="messagejoint gMsg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
+              id="{{connectionId}}">
+              <div class="messages-container">
+                <div ng-repeat="chat in groupchats track by $index">
+<!--  ng-mouseover="showReplyIcon(chat._id,1)"  ng-mouseout="showReplyIcon(chat._id,0)"  -->
+                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
+                <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id">
+
+                <div ng-if="!chat.isDeleted">
+                  <div class="message-contnaier incoming pull-left">
+                    <div class="messages-wrapper messages-text message-model pull-left">
+                      <div class="clear"></div>
+                      <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
+                        <strong>{{chat.senderId.name}}</strong>
+                        <p class="message-text" dir="auto"> {{chat.message}} </p>
+                        <div class="message-media">
+                          <div class="clear"></div>
+                        </div>
+                      </div>
+                      <!-- --------------- REPLY GROUP MSG ------------------------------------------ -->
+                      <div class="message" ng-if="chat.chatType == 1">
+                        <p class="message-text" dir="auto">
+                          <div class="panel panel-default replyPanel">
+                            <div class="panel-body">{{chat.commentId.message}}</div>
+                          </div>
+                          {{chat.message}}
+                        </p>
+                        <div class="message-media">
+                          <div class="clear"></div>
+                        </div>
+                      </div>
+                      <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
+                        <img src="/images/chatImages/{{chat.message}}" alt="{{chat.name}}" />
+                      </a>
+                      <a href="download/{{chat.message}}" ng-if="chat.messageType == 2">
+                        <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
+                        <span>{{chat.message}}</span>
+                      </a>
+
+                      <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                        {{ chat.createdAt | timeago}}
+                      </div>
+                    </div>
+
+                    <!-- <span class="replyMenu" ng-if="replyIconId == chat._id" id="replyIcon-{{chat._id}}">
+                      <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                    </span> -->
+
+                  </div>
+                  <div class="clear"></div>
+                </div>
+
+
+                <div ng-if="chat.isDeleted">
+                  <div class="message-contnaier incoming pull-left">
+                    <div class="messages-wrapper messages-text message-model pull-left">
+                      <div class="deleted_received_msg">this message has been deleted
+                      </div>
+                      <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                        {{chat.createdAt | timeago}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+
+              </div>
+              <!-- *************** RECEIVED GROUP MSGZ ***************** -->
+
+              <!-- ---------------------  SEND MESSAGES -------------------------------------->
+              <!--  ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)" -->
+              <div ng-if="chat.senderId._id == user._id">
+              <div ng-if="!chat.isDeleted">
+
+                <div class="clear"></div>
+
+                <div class="message-contnaier outgoing pull-right">
+                  <div class="messages-wrapper messages-text message-model pull-right rightAlign">
+                    <div class="clear"></div>
+
+                    <!-- --------------- NORMAL MSG ---------------------------------------------- -->
+                    <div class="message" ng-if="chat.messageType == 0 && chat.chatType == 0">
+                      <p class="message-text" dir="auto">
+                        {{chat.message}}
+                      </p>
+                      <div class="message-media">
+                        <div class="clear"></div>
+                      </div>
+                    </div>
+
+                    <!-- --------------- REPLY GROUP MSG ------------------------------------------ -->
+                    <div class="message" ng-if="chat.chatType == 1">
+                      <p class="message-text" dir="auto">
+                        <div class="panel panel-default replyPanel">
+                          <div class="panel-body">{{chat.commentId.message}}</div>
+                        </div>
+                        {{chat.message}}
+                      </p>
+                      <div class="message-media">
+                        <div class="clear"></div>
+                      </div>
+                    </div>
+
+                    <!-- --------------- IMAGE MSG ---------------------------------------------- -->
+                    <a href="download/{{chat.message}}" ng-if="chat.messageType == 1">
+                      <img src="/images/chatImages/{{chat.message}}" ng-click="download(chat.message)" />
+                    </a>
+
+                    <!-- --------------- FILE MSG ---------------------------------------------- -->
+
+                    <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
+                      ng-if="chat.messageType == 2">
+                      <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />
+                      <span class="msgType2Margin">{{chat.message}}</span>
+                    </a>
+
+
+                    <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                      {{ chat.createdAt | timeago}}
+                    </div>
+                  </div>
+
+                  <!-- <ul class="chatMenu" ng-if="editMsgId == chat._id && editMsgMenu1">
+                    <li>
+                      <span id="replyIcon-{{chat._id}}">
+                        <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
+                      </span>
+                      <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
+                        uib-tooltip="Edit" ng-click="editMsg()"></span>
+                      <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
+                        ng-click="confirmModal()"></span>
+                    </li>
+                  </ul> -->
+                  <!-- <div class="top-left">
+                    <img src="images/3dots.png" id='msg3dots-{{chat._id}}' style="left: 47%;"
+                      class="msg3dotsNew hoverIt hidden" ng-click="editMenu(chat); $event.stopPropagation()" />
+                  </div> -->
+
+                </div>
+
+                <div class="clear"></div>
+              </div>
+
+              <div class="message-contnaier outgoing pull-right" ng-if="chat.isDeleted">
+                <div class="messages-wrapper messages-text message-model pull-right">
+                  <div class="clear"></div>
+                  <div class="message">
+                    <p class="message-text" dir="auto">
+                      this message has been deleted
+                    </p>
+                    <div class="message-media">
+                      <div class="clear"></div>
+                    </div>
+                  </div>
+
+                  <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
+                    {{ chat.createdAt | timeago }}
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+              <!-- *************** SEND GROUP MSGZ ***************** -->
+              <!-- {{$index}} == {{(groupchats.length-1)}} && {{isRepeatFinish}} -->
+              <!-- <span ng-if="$index == (groupchats.length-1) && !isRepeatFinish">
+                {{ngRepeatFinish()}}
+              </span> -->
+              <div class="clear"></div>
+
+                </div>
+              </div>
+            </div>
+
+            <!--- ----------------------- SEND GC MESSAGE BOX ----------------------------------- -->
+            <div class="input-group"
+              ng-keydown="$event.keyCode == 13">
+              <div style="position:relative">
+                <input id="sendGMsg" type="text" class="form-control border0 sendGMsgInput"
+                  ng-keydown="$event.keyCode == 13 && sendMessage(0,message)" ng-model="message">
+
+                <div class="input-group-btn bcMessage-option-btns">
+                  <div class="col-md-1 col-xs-2 chatIcons" ng-class="{chatIconsMargin: !isSafari}">
+                    <span class='hoverIt' ng-click="sendMessage(0,message)">
+                      <i class="fa fa-send" style="line-height: 2"></i>
+                    </span>
+                    <span ng-if="!isSafari" class='hoverIt' onclick="triggerfile()">
+                      <i class="fa fa-paperclip"></i>
+                    </span>
+
+                    <span ng-if="isSafari" class='hoverIt safari-message-option-btns-Spacer'>
+                      <label for="safariUpload">
+                        <span class="fa fa-paperclip"></span>
+                      </label>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <span class="input-group-btn" ng-click="sendMessage(0,message)">
+                <button class="btn-main btn btn-file MS-File send-button marginSendButton broadcastSendButtonSize"
+                  type="button">
+                  <i class="fa fa-arrow-right"></i></button>
+              </span>
+            </div>
+
+          </div>
+          <!-- ******* GC chatBox ends ****** -->
         </div>
 
-        <div id="joinedUsersSection">
+        <!-- <div id="joinedUsersSection">
           <b ng-if="joinedUsersList.length > 0">Joined Users: </b>
           <span id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
-           <span id="joinerName" style="padding-left: 10px;">
-             {{joiner.name}} 
-             <span ng-if="$index < (joinedUsersList.length-1)">, </span>
-           </span>
+            <span id="joinerName" style="padding-left: 10px;">
+              {{joiner.name}}
+              <span ng-if="$index < (joinedUsersList.length-1)">, </span>
+            </span>
           </span>
-        </div>
+        </div> -->
 
         <div class="modal-footer" style="text-align: center;">
-          <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-primary'>Chat</a>
-          <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a>
+          <!-- <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()" class='btn btn-primary'>Chat</a>
+          <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()" class='btn btn-danger'>Stop</a> -->
         </div>
       </div>
     </div>
   </div>
   <!-- Group Call end-->
+
+  <!-- Joined Users list Modal -->
+  <div id="joinedUsersSectionModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header clearfix">
+          <div class='col-md-4 text-white'>Joined Users</div>
+        </div>
+        <div class="modal-body">
+          <span ng-if="joinedUsersList.length > 0">
+            <ul id="joinedUsersGroupList" ng-repeat="joiner in joinedUsersList track by $index">
+              <li id="joinerName" style="padding-left: 10px;">
+                {{joiner.name}}
+                <span ng-if="$index < (joinedUsersList.length-1)">, </span>
+              </li>
+            </ul>
+          </span>
+          <span ng-if="joinedUsersList.length <= 0">
+            No user has joined the call right now
+          </span>
+        </div>
+        <div class="modal-footer">
+          <a href='javascript:void(0)' ng-click="activateJoinedUsers()" class='btn btn-primary'>Close</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Joined Users list Modal -->
+
 
   <!-- Incoming GroupCall Notification Modal -->
   <div id="incomingGroupCallModal" class="modal fade" role="dialog">
@@ -1396,14 +1633,6 @@
       </button>
     </div>
   </div>
- 
-  <!-- <div ng-if="msgNotif" id ="msgNotification" class="alert alert-info alert-dismissible show msgNotif" role="alert">
-    <span id="msgNotifText">{{msgNotifText}}</span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div> -->
-
 </div>
 
 <script type="text/javascript">
@@ -1514,6 +1743,24 @@
       }
     });
 
+      $("#sendGMsg").emojioneArea({
+      events: {
+        keypress: function (editor, event) {
+          socket.emit('typing');
+        },
+        keyup: function (editor, event) {
+          this.source.val(this.getText());
+          if (event.keyCode == 13) {
+            var text = this.source.val();
+            var scope = angular.element(document.getElementById("MainWrap")).scope();
+            scope.$apply(function () {
+              scope.message = text;
+              scope.sendMessage();
+            });
+          }
+        }
+      }
+    });
 
     $('.chat_list').click(function () {
       $('.chat_list').css("border-left", "1px solid red");
@@ -1590,15 +1837,17 @@
     var con = document.getElementById('usersList');
     con.scrollTop = 0;
   }
-
-
+  
   function scrollbottom() {
     var con = document.getElementsByClassName('msg_history')[0];
-    // console.log(con.scrollTop);
-    // console.log($('.msg_history').prop("scrollHeight"));
-
     setTimeout(function () {
       con.scrollTo(0, $('.msg_history').prop("scrollHeight"));
+    }, 200);
+  }
+  function scrollGroupBottom() {
+    var con = document.getElementsByClassName('gMsg_history')[0];
+    setTimeout(function () {
+      con.scrollTo(0, $('.gMsg_history').prop("scrollHeight"));
     }, 200);
   }
 
@@ -1614,13 +1863,6 @@
       fTotalHeight = con.scrollHeight;
     }, 200);
   }
-
-  // function getScrollHeight(){
-  //   // var con = document.getElementsByClassName('msg_history')[0];
-  //   // console.log(con.scrollHeight);
-  //   return scrollHeight;
-  // }
-
   function scrolled(o) {
     if (!executeOnce) {
       executeOnce = true;

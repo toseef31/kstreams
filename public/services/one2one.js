@@ -64,6 +64,7 @@ factory('One2OneCall', ['$rootScope',
             if ($rootScope.webRtcO2OPeer) {
                 $rootScope.webRtcO2OPeer.dispose();
                 $rootScope.webRtcO2OPeer = null; 
+                $rootScope.userBusy = false;
                 //if (!message)  
                 sendKMessage({ 
                     id : 'stop',
@@ -84,6 +85,19 @@ factory('One2OneCall', ['$rootScope',
                     message : 'bussy'
         
                 };
+
+                // ------------- Needs Recheck -------------
+                if ($rootScope.userBusy){
+                    $.toaster({
+                        priority: 'danger',
+                        title: 'Incoming Call',
+                        message: 'Another user is calling you ...'
+                    });
+                    $rootScope.userBusyMsg();
+                }
+                // ------------- Needs Recheck -------------
+
+                console.log("*********** BUSY *************");
                 return sendKMessage(response);
             }
             
@@ -137,6 +151,8 @@ factory('One2OneCall', ['$rootScope',
                         callResponse : 'accept',
                         sdpOffer:offerSdp
                     }; 
+
+                    $rootScope.userBusy = true;
                     sendKMessage(response);
                 });
             });
@@ -187,7 +203,7 @@ factory('One2OneCall', ['$rootScope',
                         userData:userData,
                         sdpOffer:offerSdp
                     };  
-
+                    $rootScope.userBusy = true;
                     sendKMessage(message);
                 });
             });

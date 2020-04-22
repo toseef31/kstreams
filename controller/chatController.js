@@ -55,7 +55,7 @@ module.exports = function (io, saveUser) {
 
   router.groupChat = function (req, res) {
     var chatType = req.body.chatType;
-
+    console.log("chatType: "+ chatType);
     if (chatType == 0) {
       newMessage = new chatModel({
         groupId: req.body.id,

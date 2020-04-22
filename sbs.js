@@ -279,8 +279,8 @@ io.on('connection', function (socket) {
 	socket.on('updateGroupChat', function (chats) {
 		io.emit('updateAllGroupChat', chats);
 	});
-	socket.on('busy', function (data) {
-		io.emit('userBusy', data);
+	socket.on('userBusy', function (data) {
+		io.emit('_userBusy', data);
 	});
 	socket.on('groupvideoCall', function (data) {
 		io.emit('reveiceGroupVideoCall', data);
@@ -293,9 +293,6 @@ io.on('connection', function (socket) {
 		console.log('ucu socket');
 		io.emit('updateConnectedUsers', data);
 	})
-	// socket.on('removeconnectUser', function (data) {
-	// 	io.emit('deductConnectedUser', data);
-	// })
 	socket.on('dropCall', function (data) {
 		io.emit('callDroped', data);
 	})

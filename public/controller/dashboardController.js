@@ -1160,6 +1160,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             $scope.selectedGroupId = null;
             $scope.selGroupName = "";
+
+            //*** need recheck **** */
+            // $scope.selectedUserNo = -1;
+            // $scope.selectedUserData = null;
+         
         }
 
         $scope.seenNotification = () => {
@@ -1471,7 +1476,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         /* Video Calling Functionality */
         // -------- (About Third 'status' Param): 0- calling, 1- joining --------------- 
         $scope.videoCall = function (type, callerId, status = 0) {
-
+    
             if ($scope.groupCallMinimized) {
                 $scope.groupCallStatus = true;
                 $("#groupCallModal").modal({
@@ -1482,12 +1487,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $("#groupVideoCall").css("color", "white");
                 return;
             }
-
+           
             $("#groupVideoCall").css("color", "#ea5a5a;");
             cancelTimmer = false;
             if ($scope.groupSelected || $scope.bypassGroupSelected) {
                 scrollGroupBottom();
-
+                $scope.groupChatBoxActive = true;
                 $scope.bypassGroupSelected = false;
                 $('#incomingGroupCallModal').hide();
                 $scope.groupCallStatus = true;
@@ -1498,9 +1503,11 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $('#groupCallModal').show();
 
                 let userData = {};
-                // console.log($scope.selGroupData);
+              //  console.log($scope.allGroups);
+               // console.log($scope.selGroupData);
                 $scope.myCallStatus = status;
                 if (status == 0) {   // a caller's area
+               
                     $scope.joinedUsersList = [];
                     $http.post('/createGroupCall', {
                         'groupId': $scope.selGroupData._id,
@@ -1508,9 +1515,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         'projectId': $rootScope.projectData._id
                     }).then(function (groupCallData) {
                         $scope.caller = true;
-
+                       // console.log("5555");
+                       // console.log(groupCallData);
                         for (var i in $scope.allGroups) {
-                            if ($scope.allGroups[i]._id == groupCallData.data.groupId._id) {
+                            if ($scope.allGroups[i]._id == $scope.selGroupData._id) {
                                 $scope.allGroups[i].groupCallid = groupCallData.data._id;
                                 $scope.callingGroups.push($scope.allGroups[i]);
 
@@ -1528,10 +1536,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 else {
                                     gData = $scope.selGroupCallData;
                                 }
-
-                                // let videoId =  Math.floor(100000000 + Math.random() * 900000000);
-                                // console.log("created Rand Val: "+  videoId);
-
                                 userData = {
                                     'groupId': gData.groupId,
                                     'groupCallid': gData.groupCallid,
@@ -1540,11 +1544,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                     // 'videoId': videoId
                                 };
                                 //--- needs reChecking ---------
-
+                                console.log("initiating groupCall");
                                 GroupCall.init(userData, status);
                                 break;
                             }
                         }
+
                     });
                     groupTimmer(30, 0);
                 }

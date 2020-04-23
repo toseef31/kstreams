@@ -135,13 +135,13 @@ module.exports = function (io, saveUser) {
   };
 
   router.createGroupCall = (req, res) => {
-    //console.log(req.body);
+   console.log(req.body.groupId);
     let newGroupCall = new groupCall(req.body);
     newGroupCall.save(function (err, result) {
       if (err) return;// console.log(err);
 
-      groupCall.findOne({status: 1}, {}, { sort: { 'created_at' : -1 } }).populate('groupId'). exec(function (err, groupC) {
-        //console.log(groupC);
+      groupCall.findOne({status: 1 }, {}, { sort: { 'created_at' : -1 } }).populate('groupId'). exec(function (err, groupC) {
+     //   console.log(groupC);
         res.send(groupC);
       });
 
@@ -172,8 +172,8 @@ module.exports = function (io, saveUser) {
   }
 
   router.leaveCallGroup = (req, res) => {
-    console.log("leaveCallGroup");
-    console.log(req.body);
+  //  console.log("leaveCallGroup");
+   // console.log(req.body);
 
     if (req.body.status == 0) { // call is ended
       const date = new Date().getTime();
@@ -186,7 +186,7 @@ module.exports = function (io, saveUser) {
       })
     }
     else { // user has left the call
-      console.log("left the call");
+      //console.log("left the call");
       groupCall.update(
         { '_id': req.body._id },
         { $pull: { members: req.body.userId } },

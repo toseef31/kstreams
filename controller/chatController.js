@@ -657,29 +657,29 @@ module.exports = function (io, saveUser) {
     });
   };
 
-  router.saveUserDataToSession = (req, res) => {
-    userModel.find({ email: req.body.user_email }, (err, data) => {
-      if (err) throw err;
-      if (data.length > 0) {
-        //do some thing if user exsist
-      } else {
-        var user = new userModel({
-          userId: req.body.user_Id,
-          name: req.body.user_firstname + req.body.user_lastname,
-          email: req.body.user_email,
-          user_image: req.body.user_image,
-          phone: req.body.user_mobileNumber,
-          address: req.body.address,
-          status: 1
-        });
-        user.save(function (err, data) {
-          if (err) console.log(err);
-        });
-      }
+  // router.saveUserDataToSession = (req, res) => {
+  //   userModel.find({ email: req.body.user_email }, (err, data) => {
+  //     if (err) throw err;
+  //     if (data.length > 0) {
+  //       //do some thing if user exsist
+  //     } else {
+  //       var user = new userModel({
+  //         userId: req.body.user_Id,
+  //         name: req.body.user_firstname + req.body.user_lastname,
+  //         email: req.body.user_email,
+  //         user_image: req.body.user_image,
+  //         phone: req.body.user_mobileNumber,
+  //         address: req.body.address,
+  //         status: 1
+  //       });
+  //       user.save(function (err, data) {
+  //         if (err) console.log(err);
+  //       });
+  //     }
 
-      res.json(1);
-    });
-  };
+  //     res.json(1);
+  //   });
+  // };
 
   router.removeUser = (req, res) => {
   };

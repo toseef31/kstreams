@@ -7792,6 +7792,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Socket.prototype.onopen = function () {
 	  debug('transport is open - connecting');
+	  console.log(localStorage.getItem('onlineStatus'));
+	  if (localStorage.getItem('onlineStatus') == 0)
+	   this.emit('front_user_status',{'userId': localStorage.getItem("userId"), 'status': 1});
 
 	  // write connect packet if necessary
 	  if ('/' !== this.nsp) {
@@ -7964,6 +7967,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	Socket.prototype.ondisconnect = function () {
+	
 	  debug('server disconnect (%s)', this.nsp);
 	  this.destroy();
 	  this.onclose('io server disconnect');

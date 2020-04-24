@@ -15,7 +15,7 @@ const sslConfig = require('./ssl-config');
 var os = require('os');
 var ifaces = os.networkInterfaces();
 const passport = require('passport');
-
+	
 var keysOpt = {};
 var serverIpAdd = [];
 Object.keys(ifaces).forEach(function (ifname) {
@@ -205,7 +205,6 @@ function setUserStatus(status, userId) {
 }
 
 io.on('connection', function (socket) {
-
 	// socket.on('setSSL', function (SSLData){
 	// 	options.key = SSLData.sslKey;
 	// 	options.key = SSLData.sslCert;
@@ -222,6 +221,7 @@ io.on('connection', function (socket) {
 	});
 	/*disconnect user */
 	socket.on('disconnect', function () {
+		console.log("disconnect");
 		setUserStatus(0, socket.userId);
 		io.emit('front_user_status', {
 			'userId': socket.userId,

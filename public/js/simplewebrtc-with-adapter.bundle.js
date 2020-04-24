@@ -16831,7 +16831,7 @@ Socket.prototype.onclose = function(reason){
   this.connected = false;
   this.disconnected = true;
   delete this.id;
-  this.emit('disconnect', reason);
+  //this.emit('disconnect', reason);
 };
 
 /**

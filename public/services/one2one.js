@@ -48,7 +48,22 @@ factory('One2OneCall', ['$rootScope',
         }
      
         function callResponse(message) {
+            console.log(message);
             if (message.response != 'accepted') {
+                if (message.message != 'user declined'){
+                    $.toaster({
+                        priority: 'danger',
+                        title: 'Call Status',
+                        message: 'User is offline'
+                    });
+                }
+                // else{
+                //     $.toaster({
+                //         priority: 'danger',
+                //         title: 'Call Status',
+                //         message: 'Call rejected by user'
+                //     });
+                // }
                 console.info('Call not accepted by peer. Closing call');
                 var errorMessage = message.message ? message.message
                         : 'Unknown reason for call rejection.'; 
@@ -159,6 +174,7 @@ factory('One2OneCall', ['$rootScope',
         }
     
         function stopCall(){
+            console.log('stopCall');
             let response = {
                 id : 'incomingCallResponse',
                 from : $rootScope.inComCallData.from,

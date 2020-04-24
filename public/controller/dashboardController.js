@@ -656,14 +656,18 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.stopCall = function (message = '', friendId = 0) {
-        //console.log("chatWithId: "+ $scope.chatWithId)
         let callDuration = 'Call duration: ' + $rootScope.timmerObj.showTime();
-        $.toaster({
-            priority: 'danger',
-            title: 'call ended',
-            message: callDuration
-        });
-        
+        if ($rootScope.timmerObj.showTime() == 0){
+         // right now nothing
+        }
+        else{
+            $.toaster({
+                priority: 'danger',
+                title: 'call ended',
+                message: callDuration
+            });      
+        }
+       
         socket.emit('endCall', {
             callerId: $scope.user._id,
             chatWithId: $scope.chatWithId,
@@ -748,6 +752,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         localStorage.setItem('tokenData', $rootScope.user._id);
         localStorage.setItem('userData', $rootScope.user);
+        localStorage.setItem('onlineStatus', 1);
 
         //  REVIEW -------------------- NEEDS Review -----------------
         // $scope.check = function (user) {
@@ -1599,14 +1604,14 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             if ($scope.selectedUserData != null && $scope.selectedUserData.pStatus != 0) return
 
-            if ($scope.selectedUserData.onlineStatus == 0) {
-                $.toaster({
-                    priority: 'danger',
-                    title: 'call canceled',
-                    message: 'user is offline'
-                });
-                return;
-            }
+            // if ($scope.selectedUserData.onlineStatus == 0) {
+            //     $.toaster({
+            //         priority: 'danger',
+            //         title: 'call canceled',
+            //         message: 'user is offline'
+            //     });
+            //     return;
+            // }
 
             if (type == 1) document.querySelector('.audioTab').style.display = 'block';
             else document.querySelector('.videoTabNew').style.display = 'block';
@@ -1936,6 +1941,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.leaveRoom();
                 $scope.callCancelTimmer.stopCallTimmer();
                 $scope.ringbell.pause();
+                console.log('callDroped: '+ data.type);
                 if (data.type == 'call')
                     $.toaster({
                         priority: 'danger',

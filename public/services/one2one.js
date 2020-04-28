@@ -50,13 +50,13 @@ factory('One2OneCall', ['$rootScope',
         function callResponse(message) {
             console.log(message);
             if (message.response != 'accepted') {
-                if (message.message != 'user declined'){
-                    $.toaster({
-                        priority: 'danger',
-                        title: 'Call Status',
-                        message: 'User is offline'
-                    });
-                }
+                // if (message.message != 'user declined'){
+                //     $.toaster({
+                //         priority: 'danger',
+                //         title: 'Call Status',
+                //         message: 'User is offline'
+                //     });
+                // }
                 // else{
                 //     $.toaster({
                 //         priority: 'danger',

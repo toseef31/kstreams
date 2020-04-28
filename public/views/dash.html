@@ -1346,8 +1346,8 @@
           </div>
 
           <!-- ******* GC chatBox ends ****** -->
-          <div ng-if="groupChatBoxActive" onscroll="scrolled(this)" class="col-sm-4 col-md-4  gcSubPanelWidth" style="float:right">
-            <div class="messagejoint gMsg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
+          <div ng-if="groupChatBoxActive" class="col-sm-4 col-md-4  gcSubPanelWidth" style="float:right">
+            <div  onscroll="scrolled(this)" class="messagejoint gMsg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
               id="{{connectionId}}">
               <div class="messages-container">
                 <div ng-repeat="chat in groupchats track by $index">

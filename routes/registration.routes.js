@@ -25,12 +25,12 @@ registrationRoutes.route("/login").post(function (req, res) {
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
-    projectModel.findOne({ status: 1 }).exec(function (err, projectData) {
+    projectModel.findOne({ 'status': 1 , 'projectId': req.body.projectId}).exec(function (err, projectData) {
         //  { $or:[ {'email':req.body.email}, {'phone':req.body.phone} ]}
          console.log(req.body);
         if (req.body.email != '') {
             console.log("if");
-            User.findOne({ 'email': req.body.email }).then(
+            User.findOne({ 'email': req.body.email , 'projectId': req.body.projectId}).then(
                 (result) => {
 
                     if (!result) {
@@ -54,7 +54,7 @@ registrationRoutes.route("/login").post(function (req, res) {
         }
         else if (req.body.phone != '') {
             console.log("else if 1");
-            User.findOne({ 'phone': req.body.phone }).then(
+            User.findOne({ 'phone': req.body.phone , 'projectId': req.body.projectId}).then(
                 (result) => {
                     if (!result) {
                         return res.json({ 'message': "Incorrect phone", 'isUserExist': false });
@@ -80,7 +80,7 @@ registrationRoutes.route("/login").post(function (req, res) {
             console.log("else if 2");
             console.log(req.body);
             console.log(req.body.name);
-            User.findOne({ 'name': req.body.name }).then(
+            User.findOne({ 'name': req.body.name , 'projectId': req.body.projectId}).then(
                 (result) => {
                     console.log(result);
                     if (!result) {
@@ -112,7 +112,7 @@ registrationRoutes.route("/getloggeduser").post(function (req, res) {
     var User = regModel;
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
 
-    User.findOne({ email: req.body.email }).then(
+    User.findOne({ email: req.body.email , projectId: req.body.projectId}).then(
         (result) => {
             var imageFile = "";
             if (result.user_image != '') {
@@ -132,7 +132,7 @@ registrationRoutes.post('/getusers', function (req, res) {
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
     var activeProjectUsers = [];
 
-    User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
+    User.find({ 'isAdmin': 0, 'status': { $gt: 0 } , 'projectId': req.body.projectId}, { 'password': false }).populate('projectId').exec(function (err, users) {
         if (err) res.send("error");
         if (!users) res.send(null);
         for (var i = 0; i < users.length; i++) {
@@ -154,7 +154,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
     var activeProjectUsers = [];
 
-    userModel.find({ 'email': userData.email }, { 'email': true }, function (err, result) {
+    userModel.find({ 'email': userData.email, 'projectId': req.body.projectId}, { 'email': true }, function (err, result) {
 
         if (result.length == 0) {
             projectModel.findOne({ status: 1 }, { projetId: true }).exec(function (err, resultpid) {
@@ -165,7 +165,7 @@ registrationRoutes.post('/adduser', upload.single('file'), (req, res) => {
                     .then(reg => {
                         var User = regModel;
 
-                        User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
+                        User.find({ 'isAdmin': 0, 'status': { $gt: 0 }, 'projectId': req.body.projectId}, { 'password': false }).populate('projectId').exec(function (err, users) {
                             for (var i = 0; i < users.length; i++) {
                                 if (users[i].user_image != "")
                                     users[i]['userImageLink'] = (fullUrl + users[i].user_image);
@@ -201,7 +201,7 @@ registrationRoutes.post('/updateuser', upload.single('file'), (req, res) => {
         User.findByIdAndUpdate(newUserModel._id, { $set: newUserModel }).then(
             (result) => {
                 var User = regModel;
-                User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
+                User.find({ 'isAdmin': 0, 'status': { $gt: 0 }, 'projectId': req.body.projectId }, { 'password': false }).populate('projectId').exec(function (err, users) {
 
                     for (var i = 0; i < users.length; i++) {
                         if (users[i].user_image != "")
@@ -226,13 +226,13 @@ registrationRoutes.post('/deleteuser', function (req, res) {
     var fullUrl = req.protocol + '://' + req.get('host') + '/profilePhotos/';
     var activeProjectUsers = [];
 
-    User.findByIdAndUpdate(userIdToBeDeleted, { 'status': 0 }).then(
+    User.findByIdAndUpdate(userIdToBeDeleted, { 'status': 0 , 'projectId': req.body.projectId}).then(
         (result) => {
             if (!result) {
                 res.status(400).send({ 'message': "unable to delete user", 'status': false });
             }
 
-            User.find({ 'isAdmin': 0, 'status': { $gt: 0 } }, { 'password': false }).populate('projectId').exec(function (err, users) {
+            User.find({ 'isAdmin': 0, 'status': { $gt: 0 }, 'projectId': req.body.projectId }, { 'password': false }).populate('projectId').exec(function (err, users) {
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].user_image != "")
                         users[i]['userImageLink'] = (fullUrl + users[i].user_image);

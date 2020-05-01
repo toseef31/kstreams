@@ -303,9 +303,21 @@
 
             <div ng-if="!groupSelected">
               <div ng-repeat="chat in chats track by $index">
+                
+                        <!-- --------------- CALL END MSG ---------------------------------------------- -->
+                        <div class="message" ng-if="chat.chatType == 3 && chat.messageType == 3">
+                          <p class="message-text horizontalLine" dir="auto">
+                          <span>
+                              {{chat.message}} at <b>{{chat.createdAt | timeago}}</b> 
+                          </span>
+                          </p>
+                          <div class="message-media">
+                            <div class="clear"></div>
+                          </div>
+                        </div>
 
                 <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
-                <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id" ng-mouseover="showReplyIcon(chat._id,1)"
+                <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id && chat.messageType != 3" ng-mouseover="showReplyIcon(chat._id,1)"
                   ng-mouseout="showReplyIcon(chat._id,0)">
                   <div ng-if="selectedUserData.user_image != ''" class="message-user-image pull-left">
                     <img src="{{projectData.profileImgLocation}}{{selectedUserData.user_image}}" alt="User image">
@@ -376,7 +388,7 @@
 
                 <!-- ---------------------  SENDING MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-mouseover="showHideDots(chat._id,1)" ng-mouseout="showHideDots(chat._id,0)"
-                  ng-if="chat.senderId._id == user._id">
+                  ng-if="chat.senderId._id == user._id && chat.messageType != 3">
                   <div ng-if="!chat.isDeleted">
 
                     <div class="clear"></div>
@@ -425,7 +437,6 @@
                         </a>
 
                         <!-- --------------- FILE MSG ---------------------------------------------- -->
-
                         <a class="messageType2 msgType2CenterAlign" href="download/{{chat.message}}"
                           ng-if="chat.messageType == 2">
                           <img class="messageType2Width" src="/images/fileIcon.png" alt="{{chat.name}}" />

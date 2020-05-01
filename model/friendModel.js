@@ -10,6 +10,10 @@ const friendSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'users'
     },
+    "ProjectId": {
+        type: Schema.ObjectId,
+        ref: 'projects'
+    },
     "status": { type: Number, default: 1 }
 }, {
         timestamps: true

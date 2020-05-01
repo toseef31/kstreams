@@ -286,7 +286,6 @@ io.on('connection', function (socket) {
 		io.emit('reveiceGroupVideoCall', data);
 	});
 	socket.on('broadcasting', function (data) {
-		console.log('bc socket');
 		io.emit('receiveBroadcasting', data);
 	});
 	socket.on('connectUsers', function (data) {
@@ -342,7 +341,7 @@ app.post('/gCallStatus', (req, res) => {
 })
 
 app.post('/externalLogout/:userId', (req, res) => {
-	console.log("externalLogout SBS");
+	//console.log("externalLogout SBS");
 	io.emit('_externalLogout', req.params); 
 	res.status(200).json({});
 })

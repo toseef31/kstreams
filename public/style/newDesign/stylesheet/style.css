@@ -1146,3 +1146,18 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     border-radius: 5px; 
     padding: 5px;
 }
+
+.horizontalLine {
+    width: 100%; 
+    text-align: center; 
+    border-bottom: 1px solid #847979; 
+    /* line-height: 0.1em; */
+    margin: 10px 0 20px; 
+ } 
+
+ 
+.horizontalLine span{
+    background:#fff; 
+    padding:0 10px; 
+    border-radius: 5%;
+ } 

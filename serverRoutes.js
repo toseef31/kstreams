@@ -64,7 +64,6 @@ module.exports = function (app, io, saveUser) {
 
     app.post('/chatFilesShare', upload.array('file'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
-    // app.post('/SUDTS', chatCon.saveUserDataToSession);
 
     app.post('/updateUser', chatCon.updateUser);
     app.post('/removeUser', chatCon.removeUser);

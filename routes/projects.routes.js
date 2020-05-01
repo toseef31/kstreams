@@ -11,7 +11,7 @@ projectsRouter.route('/register-user').post(function (req, res) {
     var fullUrl = req.protocol + '://' + req.get('host') + 'profilePhotos';
     console.log("REGISTERING USER");
     console.log(userData);
-    userModel.findOne({ $or: [{ 'name': userData.name }, { 'email': userData.email }] })
+    userModel.findOne({ $or: [{ 'name': userData.name }, { 'email': userData.email }], 'projectId': req.body.projectId })
         .lean().exec(function (err, result) {
             console.log(result);
             if (!result) {
@@ -38,7 +38,7 @@ projectsRouter.route('/registerProject').post(function (req, res) {
 
         let newUserModel = new userModel({ 'userId': projectData.userId, 'projectId': res.projectId });
         newUserModel.save().then(result => {
-            userModel.find({ 'isAdmin': 0, 'status': { $gt: 0 } }).populate('projects').exec(function (err, usersData) {
+            userModel.find({ 'isAdmin': 0, 'status': { $gt: 0 }, 'projectId': req.body.projectId }).populate('projects').exec(function (err, usersData) {
                 (err) => res.send(err);
 
                 res.send(usersData);
@@ -50,7 +50,7 @@ projectsRouter.route('/registerProject').post(function (req, res) {
 })
 
 projectsRouter.route('/getProject').get(function (req, res) {
-    projectModel.findOne({ 'status': 1 })
+    projectModel.findOne({'projectId': req.body.projectId, 'status': 1 })
         .lean().exec(function (err, projectData) {
             res.send(projectData);
         })

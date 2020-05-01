@@ -234,6 +234,8 @@ module.exports = function (io, saveUser) {
     var receiverImage = req.body.msgData.receiverImage;
     var isSeen = req.body.msgData.isSeen;
 
+    console.log('chatType: '+ chatType);
+    console.log(req.body);
     if (chatType == 0) {
       newMessage = new chatModel({
         senderId: sender,
@@ -263,11 +265,24 @@ module.exports = function (io, saveUser) {
         message: req.body.msgData.message
       });
     }
+    else if (chatType == 3) {
+      newMessage = new chatModel({
+        chatType: 3,
+        senderId: sender,
+        senderName: name,
+        receiverId: recevier,
+        message: message,
+        messageType:  3,
+        isSeen: isSeen,
+        senderImage: senderImage,
+        receiverImage: receiverImage
+      });
+    }
 
     newMessage.save(function (err, data) {
       if (err) throw err;
 
-      if (chatType != 2) {
+      if (chatType != 2 && req.body.selectedUserData) {
         let date_ob = new Date();
         userModel.update(
           { _id: req.body.selectedUserData._id },

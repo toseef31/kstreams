@@ -25,11 +25,12 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                            // $and: [
                           //  { 
                                 $or: [{ 'userId': userResult._id, 'friendId': friendResult._id},
-                                { 'userId': friendResult._id, 'friendId': userResult._id}] 
+                                { 'userId': friendResult._id, 'friendId': userResult._id}], 
+                                'projectId': req.body.projectId 
                     //    },
                             // { $or: [{ 'userId': friendResult._id, 'friendId': userResult._id}] }
                        // ]
-                    }
+                        }
                         ).exec(function (err, result) { 
                             console.log("result");
                             console.log(result);
@@ -37,15 +38,15 @@ friendsRouter.route('/createfriend').post(function (req, res) {
                             console.log("if create friend");
                             result.status=1;
                             //result.save();
-                            userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
+                            userModel.update({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
                             res.send({ 'message': 'We are already friends brother', 'status': true });
                         } 
                         else {
                             console.log("else create friend");
                             // get reference ids of both iserId and friendId 
-                            let newFriendModel = new friendModel({ 'userId': userResult._id, 'friendId': friendResult._id });
+                            let newFriendModel = new friendModel({ 'userId': userResult._id, 'friendId': friendResult._id, 'projectId': req.body.projectId });
                             newFriendModel.save().then(reslt => { // save both ref-Ids in friend table
-                                userModel.update({ 'userId': req.body.userId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
+                                userModel.update({ 'userId': req.body.userId, 'projectId': req.body.projectId }, { $set: { 'chatWithRefId': friendResult._id } }).exec();
                                 res.send({ 'message': 'Success', 'status': true });
                             })
                         }

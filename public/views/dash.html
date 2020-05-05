@@ -19,6 +19,7 @@
         <div class="headind_srch">
           <div class="recent_heading width100">
             <div class="pro_img">
+            
               <span ng-if="!user.user_image || user.user_image=='' || !projectData.profileImgLocation">
                 <img class="importantHeight" src="images/noProfile.png" alt="{{user.name}}" />
               </span>
@@ -135,7 +136,6 @@
                           <span class="status userStatusMargin"
                             ng-class="{activeSt:userA.pStatus==0,awaySt:userA.pStatus==1,dDisturbSt:userA.pStatus==2,invisSt:userA.pStatus==3}"></span>
                         </span>
-
                         <span ng-if="userA.user_image == '' || !projectData.profileImgLocation">
                           <img class="" ng-if="userA.receiverId != user._id" src="images/noProfile.png"
                             alt="{{user.name}}" />
@@ -1338,6 +1338,11 @@
             <b style="float: left;">Group Call</b>
 
             <span style="float: right; padding-left: 20px;">
+              <!-- <a id="groupChatBtn" href='javascript:void(0)' ng-click="activeGroupSS()"
+              class='btn btn-warning'>Screenshare</a> -->
+
+              <iframe id="gShareIframe" src="/gShare.html" style="width: 22%; height: 6vh; float: right;" frameBorder="0"></iframe>
+
               <a id="groupChatBtn" href='javascript:void(0)' ng-click="gcChatBox()"
                 class='btn btn-primary'>Chat</a>
               <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()"
@@ -1350,7 +1355,11 @@
           </div>
           <span id="groupCallTime" style="color: white; float: left;"></span>
         </div>
-        <div class="modal-body" style="padding: 0 !important;">    
+        <div class="modal-body" style="padding: 0 !important;">  
+          <div id="groupSS"> 
+            <iframe id="gViewerIframe" src="/gViewer.html" style="width: 95%; height: 81vh;"></iframe>
+          </div>
+
           <div class="col-sm-8 col-md-8 groupCallModalContent">
             <!-- test area folks test area -->
             <!-- <video id="parentVideo" autoplay="autoplay" controls="controls"></video> -->
@@ -1362,7 +1371,7 @@
               id="{{connectionId}}">
               <div class="messages-container">
                 <div ng-repeat="chat in groupchats track by $index">
-<!--  ng-mouseover="showReplyIcon(chat._id,1)"  ng-mouseout="showReplyIcon(chat._id,0)"  -->
+                 <!--  ng-mouseover="showReplyIcon(chat._id,1)"  ng-mouseout="showReplyIcon(chat._id,0)"  -->
                  <!-- ---------------------  RECEIVED MESSAGES -------------------------------------->
                 <div class="gap-btw-msg" ng-if="chat.senderId._id != user._id">
 
@@ -1857,6 +1866,7 @@
   }
   function scrollGroupBottom() {
     var con = document.getElementsByClassName('gMsg_history')[0];
+    if (!con) return;
     setTimeout(function () {
       con.scrollTo(0, $('.gMsg_history').prop("scrollHeight"));
     }, 200);
@@ -1885,7 +1895,7 @@
       // right now, no use ...
     }
     else if (o.scrollTop == 0) {
-      console.log("getting more chat");
+    //  console.log("getting more chat");
       angular.element(document.getElementById('MainWrap')).scope().getMoreChat();
     }
   }

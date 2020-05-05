@@ -75,14 +75,14 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
                 withCredentials: true
             }
         }).then(function successCallback(response) {
-            console.log('checkSession POST');
-            console.log('response');
+          //  console.log('checkSession POST');
+          //  console.log('response');
             $rootScope.user = response.data;
             socket.emit('logoutUpdate', $scope.loggedUserId);
-            console.log("GOOO TOOO LOGGIN");
+          //  console.log("GOOO TOOO LOGGIN");
             $window.location.href = "/#!/dash";
         }, function errorCallback(response) {
-            console.log(response);
+           // console.log(response);
         });
 
 
@@ -95,7 +95,7 @@ app.controller("loginController", function ($scope, $http, $location, $rootScope
             url: '/login',
             data: { name: $scope.user.name, password: $scope.user.password }
         }).then(function successCallback(response) {
-            console.log('login result ',response.data.user);
+          //  console.log('login result ',response.data.user);
             if (response.data.user == null) {
                 $scope.notAuthorize = true;
                 $scope.showLoginButton = true;

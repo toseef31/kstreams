@@ -48,12 +48,12 @@ app.factory('GroupCall', ['$rootScope',
         }
 
         function sendMessage(message) {
-            console.log('Sending message from groupCall.js ', message);
+           // console.log('Sending message from groupCall.js ', message);
             $rootScope.signaling_socket.$emit(JSON.stringify(message));
         }
 
         function join_chat_channel(channel, userdata, status = 0) {
-            console.log('join_chat_channel');
+        //    console.log('join_chat_channel');
             var message = {
                 id: 'join',
                 channel: channel,
@@ -85,11 +85,11 @@ app.factory('GroupCall', ['$rootScope',
         */
         //$rootScope.signaling_socket.on('addPeer', function (config) {
         function addPeerEmitted(config) {
-            console.log('addPeerEmitted:', config);
+          //  console.log('addPeerEmitted:', config);
             var peer_id = config.peer_id;
             if (peer_id in peers) {
                 /* This could happen if the user joins multiple channels where the other peer is also in. */
-                console.log("Already connected to peer ", peer_id);
+              //  console.log("Already connected to peer ", peer_id);
                 return;
             }
             var peer_connection = new RTCPeerConnection(
@@ -99,10 +99,10 @@ app.factory('GroupCall', ['$rootScope',
                                                                 * for now to get firefox to talk to chrome */
             );
             peers[peer_id] = peer_connection;
-            console.log(peers);
+         //   console.log(peers);
             peer_connection.onicecandidate = function (event) {
-                console.log("onicecandidate");
-                console.log(event);
+              //  console.log("onicecandidate");
+             //   console.log(event);
                 if (event.candidate) {
                     var message = {
                         'id': 'relayICECandidate',
@@ -116,7 +116,7 @@ app.factory('GroupCall', ['$rootScope',
                 }
             }
             peer_connection.onaddstream = function (event) {
-                console.log(event);
+               // console.log(event);
                 var remote_media = USE_VIDEO ?
                     $("<video id='setId'>")
                         .add("<span id='setVideoName' class='groupCallVideos'>") :
@@ -128,7 +128,7 @@ app.factory('GroupCall', ['$rootScope',
                 }
                 remote_media.attr("controls", "");
                 peer_media_elements[peer_id] = remote_media;
-                console.log(peer_media_elements);
+             //   console.log(peer_media_elements);
                 let spanId = Math.floor(100000000 + Math.random() * 900000000);
                 var spanTag = $(`<span id='${spanId}' class='groupCallVideoSpan'>`);
                 $('.groupCallModalContent').append(spanTag);
@@ -149,7 +149,7 @@ app.factory('GroupCall', ['$rootScope',
             }
 
             /* Add our local stream */
-            console.log("addStream");
+          //  console.log("addStream");
 
             peer_connection.addStream(local_media_stream);
 
@@ -174,7 +174,7 @@ app.factory('GroupCall', ['$rootScope',
 
                                 // $rootScope.signaling_socket.emit('relaySessionDescription',
                                 //     { 'peer_id': peer_id, 'session_description': local_description });
-                                console.log("Offer setLocalDescription succeeded");
+                            //    console.log("Offer setLocalDescription succeeded");
                             },
                             function () { Alert("Offer setLocalDescription failed!"); }
                         );
@@ -217,7 +217,7 @@ app.factory('GroupCall', ['$rootScope',
                                         sendMessage(message);
                                         // $rootScope.signaling_socket.emit('relaySessionDescription',
                                         //     { 'peer_id': peer_id, 'session_description': local_description });
-                                        console.log("Answer setLocalDescription succeeded");
+                                     //   console.log("Answer setLocalDescription succeeded");
                                     },
                                     function () { Alert("Answer setLocalDescription failed!"); }
                                 );
@@ -241,7 +241,7 @@ app.factory('GroupCall', ['$rootScope',
          */
         //$rootScope.signaling_socket.on('iceCandidate', function (config) {
         function iceCandidateEmitted(config) {
-            console.log("iceCandidateEmitted");
+         //   console.log("iceCandidateEmitted");
             var peer = peers[config.peer_id];
             var ice_candidate = config.ice_candidate;
             peer.addIceCandidate(new RTCIceCandidate(ice_candidate));
@@ -349,7 +349,7 @@ app.factory('GroupCall', ['$rootScope',
                     if (callback) callback();
                 },
                 function () { /* user denied access to a/v */
-                    console.log("Access denied for audio/video");
+                  //  console.log("Access denied for audio/video");
                     $rootScope.updateGC();
                     alert("You choose not to provide access to the camera/microphone");
                     if (errorback) errorback();

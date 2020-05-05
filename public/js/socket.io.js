@@ -7792,7 +7792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Socket.prototype.onopen = function () {
 	  debug('transport is open - connecting');
-	  console.log(localStorage.getItem('onlineStatus'));
+	//  console.log(localStorage.getItem('onlineStatus'));
 	  if (localStorage.getItem('onlineStatus') == 0)
 	   this.emit('front_user_status',{'userId': localStorage.getItem("userId"), 'status': 1});
 

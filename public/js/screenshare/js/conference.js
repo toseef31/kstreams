@@ -26,7 +26,7 @@ var conference = function (config) {
     var sockets = [];
 
     function openDefaultSocket() {
-        console.log("openDefaultSocket");
+      //  console.log("openDefaultSocket");
         if (localStorage.getItem('ssStatus') == 1) {
             var tokenIs = localStorage.getItem('tokenIs');
             let userData = tokenIs.split('-');
@@ -36,7 +36,7 @@ var conference = function (config) {
                 url: "/updateSSstatus",
                 data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 0 },
             }).done(function () {
-                console.log("MODAL CLOSED");
+              //  console.log("MODAL CLOSED");
                 localStorage.setItem('ssStatus', 0);
             });
         }
@@ -44,6 +44,7 @@ var conference = function (config) {
         defaultSocket = config.openSocket({
             onmessage: defaultSocketResponse,
             callback: function (socket) {
+               // console.log(socket);
                 defaultSocket = socket;
             }
         });
@@ -64,7 +65,7 @@ var conference = function (config) {
     }
 
     function openSubSocket(_config) {
-        console.log("openSubSocket");
+      //  console.log("openSubSocket");
         if (!_config.channel) return;
         var socketConfig = {
             channel: _config.channel,
@@ -76,7 +77,7 @@ var conference = function (config) {
         };
 
         socketConfig.callback = function (_socket) {
-            console.log("socketConfig.callback");
+        //    console.log("socketConfig.callback");
             socket = _socket;
             this.onopen();
         };
@@ -90,7 +91,7 @@ var conference = function (config) {
 
         var peerConfig = {
             oniceconnectionstatechange: function (p) {
-                console.log("oniceconnectionstatechange");
+              //  console.log("oniceconnectionstatechange");
 
                 if (!isofferer) return;
 
@@ -100,7 +101,7 @@ var conference = function (config) {
             },
             attachStream: config.attachStream,
             onICE: function (candidate) {
-                console.log("onICE");
+              //  console.log("onICE");
                 socket && socket.send({
                     userToken: self.userToken,
                     candidate: {
@@ -110,7 +111,7 @@ var conference = function (config) {
                 });
             },
             onRemoteStream: function (stream) {
-                console.log("onRemoteStream");
+              //  console.log("onRemoteStream");
                 if (isbroadcaster) return;
 
                 try {
@@ -131,7 +132,7 @@ var conference = function (config) {
         };
 
         function initPeer(offerSDP) {
-            console.log("initPeer");
+          //  console.log("initPeer");
             if (!offerSDP) peerConfig.onOfferSDP = sendsdp;
             else {
                 peerConfig.offerSDP = offerSDP;
@@ -141,7 +142,7 @@ var conference = function (config) {
         }
 
         function afterRemoteStreamStartedFlowing() {
-            console.log("afterRemoteStreamStartedFlowing");
+          //  console.log("afterRemoteStreamStartedFlowing");
             gotstream = true;
 
             config.onRemoteStream({
@@ -235,7 +236,7 @@ var conference = function (config) {
     }
 
     function leave() {
-        console.log("leave screen share");
+      //  console.log("leave screen share");
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -250,17 +251,17 @@ var conference = function (config) {
 
         // if owner leaves; try to remove his room from all other users side
         if (isbroadcaster) {
-            console.log("owner leave screen share");
+           // console.log("owner leave screen share");
             if (localStorage.getItem('ssStatus') == 1) {
                 var tokenIs = localStorage.getItem('tokenIs');
-                let userData = tokenIs.split('-');
+                let userData = tokenIs.split('-'); 
 
                 $.ajax({
                     type: "POST",
                     url: "/updateSSstatus",
                     data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 0 },
                 }).done(function () {
-                    console.log("MODAL CLOSED");
+                //    console.log("MODAL CLOSED");
                     localStorage.setItem('ssStatus', 0);
                 });
             }
@@ -327,14 +328,14 @@ var conference = function (config) {
 
             var tokenIs = localStorage.getItem('tokenIs');
             let userData = tokenIs.split('-');
-
+         
             $.ajax({
                 type: "POST",
                 url: "/updateSSstatus",
-                data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 1 },
+                data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 
+                        'isGroupSS': localStorage.getItem('isGroupSS'), 'modalStatus': 1, 'isError': false },
             }).done(function () {
                 localStorage.setItem('ssStatus', 1);
-                console.log("MODAL OPEN");
             });
         },
         joinRoom: function (_config) {
@@ -345,11 +346,25 @@ var conference = function (config) {
                 channel: self.userToken
             });
 
-            defaultSocket.send({
-                participant: true,
-                userToken: self.userToken,
-                joinUser: _config.joinUser
-            });
+           // console.log(defaultSocket);
+            if (!defaultSocket){
+                console.log("conference: IF");
+                $.ajax({
+                    type: "POST",
+                    url: "/updateSSstatus",
+                    data: { 'userId': userData[0], 'chatWithId': userData[1], 
+                            'userData': tokenIs, 'isGroupSS': 0, 'modalStatus': 0 , 'isError': true},
+                })
+            }
+            else{
+                console.log("conference: ELSE");
+                defaultSocket.send({
+                    participant: true,
+                    userToken: self.userToken,
+                    joinUser: _config.joinUser
+                });
+            }
+            
         }
     };
 };
@@ -436,7 +451,7 @@ function RTCPeerConnectionHandler(options) {
             // onRemoteStream(MediaStream)
             if (options.onRemoteStream) options.onRemoteStream(remoteMediaStream);
 
-            console.debug('on:add:stream', remoteMediaStream);
+          //  console.debug('on:add:stream', remoteMediaStream);
         };
     } else if ('addTrack' in peer) {
         peer.ontrack = peer.onaddtrack = function (event) {
@@ -456,7 +471,7 @@ function RTCPeerConnectionHandler(options) {
             // onRemoteStream(MediaStream)
             if (options.onRemoteStream) options.onRemoteStream(remoteMediaStream);
 
-            console.debug('on:add:stream', remoteMediaStream);
+           // console.debug('on:add:stream', remoteMediaStream);
         };
     } else {
         throw new Error('WebRTC addStream/addTrack is not supported.');

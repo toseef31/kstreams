@@ -44,7 +44,7 @@ var conference = function (config) {
         defaultSocket = config.openSocket({
             onmessage: defaultSocketResponse,
             callback: function (socket) {
-               // console.log(socket);
+                console.log(socket);
                 defaultSocket = socket;
             }
         });
@@ -236,7 +236,7 @@ var conference = function (config) {
     }
 
     function leave() {
-      //  console.log("leave screen share");
+        console.log("leave screen share");
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -250,6 +250,7 @@ var conference = function (config) {
         }
 
         // if owner leaves; try to remove his room from all other users side
+        console.log('isbroadcaster: '+ isbroadcaster);
         if (isbroadcaster) {
            // console.log("owner leave screen share");
             if (localStorage.getItem('ssStatus') == 1) {
@@ -259,28 +260,39 @@ var conference = function (config) {
                 $.ajax({
                     type: "POST",
                     url: "/updateSSstatus",
-                    data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 'modalStatus': 0 },
+                    data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 
+                             'isGroupSS': localStorage.getItem('isGroupSS'), 'modalStatus': 0 },
                 }).done(function () {
                 //    console.log("MODAL CLOSED");
                     localStorage.setItem('ssStatus', 0);
                 });
             }
 
-            defaultSocket.send({
-                left: true,
-                userToken: self.userToken,
-                roomToken: self.roomToken
-            });
+            console.log('***** isbroadcaster ******');
+            console.log(defaultSocket);
+            if (!defaultSocket){
+                console.log('IFFFFF');
+                openDefaultSocket();
+            }
+            else{      console.log('ELSEEEE');
+                defaultSocket.send({
+                    left: true,
+                    userToken: self.userToken,
+                    roomToken: self.roomToken
+                });
+            }
         }
 
         // if (config.attachStream) config.attachStream.stop();
     }
 
     window.addEventListener('beforeunload', function () {
+        console.log("--- beforeunload ---");
         leave();
     }, false);
 
     window.addEventListener('keyup', function (e) {
+        console.log("--- keyup ---");
         if (e.keyCode == 116)
             leave();
     }, false);
@@ -326,6 +338,7 @@ var conference = function (config) {
             isGetNewRoom = false;
             startBroadcasting();
 
+            console.log("Broadcaster is true");
             var tokenIs = localStorage.getItem('tokenIs');
             let userData = tokenIs.split('-');
          
@@ -333,27 +346,29 @@ var conference = function (config) {
                 type: "POST",
                 url: "/updateSSstatus",
                 data: { 'userId': userData[0], 'chatWithId': userData[1], 'userData': tokenIs, 
-                        'isGroupSS': localStorage.getItem('isGroupSS'), 'modalStatus': 1, 'isError': false },
+                        'isGroupSS': localStorage.getItem('isGroupSS'), 'modalStatus': 1},
             }).done(function () {
                 localStorage.setItem('ssStatus', 1);
             });
         },
-        joinRoom: function (_config) {
 
+        joinRoom: function (_config) {
             self.roomToken = _config.roomToken;
             isGetNewRoom = false;
             openSubSocket({
                 channel: self.userToken
             });
 
-           // console.log(defaultSocket);
+            console.log('***** joinRoom ******');
+            console.log(defaultSocket);
             if (!defaultSocket){
                 console.log("conference: IF");
+                openDefaultSocket();
                 $.ajax({
                     type: "POST",
                     url: "/updateSSstatus",
                     data: { 'userId': userData[0], 'chatWithId': userData[1], 
-                            'userData': tokenIs, 'isGroupSS': 0, 'modalStatus': 0 , 'isError': true},
+                            'userData': tokenIs, 'isGroupSS': localStorage.getItem('isGroupSS'), 'modalStatus': 0},
                 })
             }
             else{

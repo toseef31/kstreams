@@ -764,6 +764,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.isScrollExecuted = false;
         $scope.showJoinedUsers = false;
 
+        $scope.msgLoading = false;
         $scope.groupChatBoxActive = false;
         $scope.isReplying = false;
         $scope.allUsersLeft = 0; // * 0: nothing, 1: users left call after joining, 2: users has not left call
@@ -872,6 +873,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         $scope.upload = function () {
             // console.log('*** UPLOAD ***');
+            $scope.msgLoading = true;
             for (var i = 0; i < $scope.allUsers.length; i++) {
                 // Check, to which user message has been sent, to move senderUser up in the userList
                 if ($scope.selectedUserData._id == $scope.allUsers[i]._id) {
@@ -895,6 +897,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         'Content-Type': undefined
                     }
                 }).then(function (d) {
+                    $scope.msgLoading = false;
                     updatechat();
                 })
             } else {
@@ -907,6 +910,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     }
                 }).then(function (d) {
                     socket.emit('updateGroupFiles', d);
+                    $scope.msgLoading = false;
                     scrollbottom();
                 })
             }
@@ -1206,7 +1210,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             //*** need recheck **** */
             // $scope.selectedUserNo = -1;
             // $scope.selectedUserData = null;
-
         }
 
         $scope.seenNotification = () => {
@@ -2453,8 +2456,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         //Update Viewers and hide their modal + reload their iframe
         socket.on('updateScreenshareStatus', function (data) {
-            console.log('$$$updateScreenshareStatus$$$');
-            console.log(data);
+         //   console.log('$$$updateScreenshareStatus$$$');
+        //    console.log(data);
 
             //  ------------ GroupCall Screensharing ----------------------------------------
             //-- isGroupSS: is this groupCall screenshare or one2one
@@ -2494,7 +2497,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             //  ------------ one2one Screensharing ----------------------------------------
             if (data.modalStatus == 0 && $scope.user._id == data.chatWithId) {
                 $("#ssViewerModal").modal('hide');
-                console.log("RELOAD 1");
+              //  console.log("RELOAD 1");
                 document.getElementById('viewerIframe').contentWindow.location.reload();
             }
 

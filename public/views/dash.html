@@ -678,6 +678,7 @@
 
         <!--- ------------------------ SEND MESSAGE BOX ------------------------------------ -->
         <div>
+          <p ng-if="msgLoading">Loading...</p>
           <div id="applyPic" class="input-group type_msg" ng-class="{type_msgMarginTopOvrr: isReplying == true }">
 
             <div id="commentsReply" class="showCommentsReply panel panel-default">
@@ -935,6 +936,7 @@
           </div>
 
           <!--- ----------------------- SEND MESSAGE BOX ----------------------------------- -->
+          <p ng-if="msgLoading">Loading...</p>
           <div class="input-group broadCast_type_msg"
             ng-keydown="$event.keyCode == 13 && sendBCMessage(sendType, 0,message)">
             <div style="position:relative">
@@ -1541,6 +1543,7 @@
             </div>
 
             <!--- ----------------------- SEND GC MESSAGE BOX ----------------------------------- -->
+            <p ng-if="msgLoading">Loading...</p>
             <div class="input-group"
               ng-keydown="$event.keyCode == 13">
               <div style="position:relative">

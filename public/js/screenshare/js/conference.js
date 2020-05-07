@@ -44,7 +44,7 @@ var conference = function (config) {
         defaultSocket = config.openSocket({
             onmessage: defaultSocketResponse,
             callback: function (socket) {
-                console.log(socket);
+               // console.log(socket);
                 defaultSocket = socket;
             }
         });
@@ -236,7 +236,7 @@ var conference = function (config) {
     }
 
     function leave() {
-        console.log("leave screen share");
+       // console.log("leave screen share");
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -250,7 +250,7 @@ var conference = function (config) {
         }
 
         // if owner leaves; try to remove his room from all other users side
-        console.log('isbroadcaster: '+ isbroadcaster);
+      //  console.log('isbroadcaster: '+ isbroadcaster);
         if (isbroadcaster) {
            // console.log("owner leave screen share");
             if (localStorage.getItem('ssStatus') == 1) {
@@ -268,13 +268,13 @@ var conference = function (config) {
                 });
             }
 
-            console.log('***** isbroadcaster ******');
-            console.log(defaultSocket);
+          //  console.log('***** isbroadcaster ******');
+          //  console.log(defaultSocket);
             if (!defaultSocket){
-                console.log('IFFFFF');
+             //   console.log('IFFFFF');
                 openDefaultSocket();
             }
-            else{      console.log('ELSEEEE');
+            else{    //  console.log('ELSEEEE');
                 defaultSocket.send({
                     left: true,
                     userToken: self.userToken,

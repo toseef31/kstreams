@@ -406,7 +406,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     // ============================== SCREENSHARE ==============================================
     $scope.openssShareModal = function () {
-        console.log("SSSSSSSSSSSS");
+       // console.log("SSSSSSSSSSSS");
         if ($scope.selectedUserData.pStatus != 0) return;
         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.chatWithId + '-' + $rootScope.user.name);
         $("#ssShareModal").modal('show');
@@ -776,6 +776,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.files = [];
         $scope.callingGroups = [];
         $scope.members = [];  /*this array save group members*/
+        $scope.SSgroups = [];
 
         localStorage.setItem('tokenData', $rootScope.user._id);
         localStorage.setItem('userData', $rootScope.user);
@@ -798,7 +799,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         // To download attachment, by clicking it
         $scope.download = function (filename) {
-            console.log('*** DOWNLOAD ***');
+        //    console.log('*** DOWNLOAD ***');
             $http.get('/download/' + filename)
                 .then(function (res) {
                     return res;
@@ -1064,9 +1065,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }, 500);
         }
 
+        // $scope.testSS = function (){
+        //     document.getElementById('gShareIframe').contentWindow.location.reload();
+        // }
+
         /*on clicking a user, this function is called to get chat*/
         $scope.startChat = function (obj) {
             // console.log(obj);
+            $('#groupSS').hide();
+            $('#gShareIframe').show();
             if (obj.isChatDocker == 0) resetScrollVar();
             if (!obj) return;
 
@@ -1115,7 +1122,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             $scope.selGrpMembers = [];
             /*obj is an object send from view it may be a chat or a group info*/
-            //console.log(obj);
+         
             if (obj.type == 1) {
                 $scope.groupSelected = false;
                 //  $scope.selGrpMembers = [];
@@ -1150,6 +1157,15 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         });
                     });
             } else {
+
+                for(var s=0; s < $scope.SSgroups.length; s++){
+                    if ($scope.SSgroups[s] == obj.group._id){
+                        $('#gShareIframe').hide();
+                        $('#groupSS').show();
+                        break;
+                    }
+                }
+
                 $scope.selectedUserData = obj.group;
                 $scope.groupSelected = true;
                 $scope.selGroupData = obj.group;
@@ -1293,7 +1309,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else if (!$scope.message && !chkmsg) return;
 
             if (!$scope.groupSelected) {
-                console.log("sendMessage not to Group");
+               // console.log("sendMessage not to Group");
                 if (message != 0) $scope.message = 'call duration ' + $rootScope.timmerObj.showTime();
 
                 if ($scope.edit === true) {
@@ -1308,7 +1324,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         })
                 } else {
                     var msgObj;
-                    console.log('chatWithId: ' + $scope.chatWithId);
+                   // console.log('chatWithId: ' + $scope.chatWithId);
                     if (!$scope.isReplying)
                         msgObj = {
                             "chatType": 0,
@@ -1595,7 +1611,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $('#stopGroupCallBtn').text("Leave");
                     cancelTimmer = true;
                     let gData = {};
-                    console.log($scope.selGroupData);
+                   // console.log($scope.selGroupData);
                     if ($scope.selGroupData != null) {
                         gData = $scope.selGroupData;
                         gData = {
@@ -1605,13 +1621,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             'name': $scope.user._id
                         }
                         $scope.selGroupCallData = $scope.selGroupData;
-                        console.log($scope.selGroupCallData);
+                      //  console.log($scope.selGroupCallData);
                         localStorage.setItem('selGroupId', $scope.selGroupCallData._id);
                         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.selGroupCallData._id + '-' + $rootScope.user.name);
                     }
                     else {
                         gData = $scope.selGroupCallData;
-                        console.log($scope.selGroupCallData);
+                      //  console.log($scope.selGroupCallData);
                         localStorage.setItem('selGroupId', $scope.selGroupCallData.groupId);
                         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.selGroupCallData.groupId + '-' + $rootScope.user.name);
                     }
@@ -1683,8 +1699,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.stopGroupCall = function () {
             let userData = {};
             $scope.groupChatBoxActive = true;
-            console.log("RELOAD 3");
+         //   console.log("RELOAD 3");
             document.getElementById('gViewerIframe').contentWindow.location.reload();
+            document.getElementById('gShareIframe').contentWindow.location.reload();
 
             if ($scope.selGroupData != null) {
                 userData = {
@@ -2118,8 +2135,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         $scope.receivedCallerData = null;
         // GROUP CALL SOCKET RECEIVER ----------------------------------------------------------
         socket.on('gCallStatusUpdater', function (data) {
-            console.log("GC SOCKET:-> ");
-            console.log(data);
+         //   console.log("GC SOCKET:-> ");
+          //(data);
             // ----- open incoming modal for all receiver users -----
             if (data.status == 0) {
                 for (var g = 0; g < $scope.allGroups.length; g++) {
@@ -2227,8 +2244,9 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                     GroupCall.stop(null, -1);
                                     cancelTimmer = true;
                                     $scope.ringbell.pause();
-                                    console.log("RELOAD 4");
+                                 // console.log("RELOAD 4");
                                     document.getElementById('gViewerIframe').contentWindow.location.reload();
+                                    document.getElementById('gShareIframe').contentWindow.location.reload();
                                     resetGroupTimer();
                                     $('#groupCallTime').text('Group call ended');
                                     $('#stopGroupCallBtn').text('Close');
@@ -2255,14 +2273,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                 if ($scope.joinedUsersList.length == 0) {
                                     $scope.allUsersLeft = 1;
 
-                                    for (var g = 0; g < $scope.allGroups.length; g++) {
-                                        console.log(data.userdata.groupId + ' == ' + $scope.allGroups[g]._id);
-                                        if (data.userdata.groupId == $scope.allGroups[g]._id) {
-                                            $scope.allGroups[g].joinCall = false;
-                                            break;
-                                        }
-                                    }
-
                                     if ($scope.caller) {
                                         $('#groupCallModal').hide();
                                         // ---- needs rechecking -----
@@ -2275,11 +2285,20 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                                             'status': 0
                                         });
                                         $scope.selGroupData = null;
+                                        document.getElementById('gShareIframe').contentWindow.location.reload();
                                     }
                                     else {
-                                        console.log("RELOAD 5");
+                                     //   console.log("RELOAD 5");
                                         document.getElementById('gViewerIframe').contentWindow.location.reload();
                                     }
+
+                                    for (var g = 0; g < $scope.allGroups.length; g++) {
+                                        // console.log(data.userdata.groupId + ' == ' + $scope.allGroups[g]._id);
+                                         if (data.userdata.groupId == $scope.allGroups[g]._id) {
+                                             $scope.allGroups[g].joinCall = false;
+                                             break;
+                                         }
+                                     }
                                 }
 
                                 break;
@@ -2442,23 +2461,37 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             //-- modalStatus: does screenshare iframe modal has to be close or not
             if (data.isGroupSS == 1) {
             for (var g = 0; g < $scope.allGroups.length; g++) {
-                console.log(data.chatWithId +' == '+ $scope.allGroups[g]._id);
                 if (data.modalStatus == 0 && data.chatWithId == $scope.allGroups[g]._id) {
                     $("#groupSS").hide();
                     $('#gShareIframe').show();
                     document.getElementById('gViewerIframe').contentWindow.location.reload();
-                    // document.getElementById('gShareIframe').contentWindow.location.reload();
+
+                    for(var s=0; s < $scope.SSgroups.length; s++){
+                       // console.log($scope.SSgroups[s] +' == '+ data.chatWithId);
+                        if ($scope.SSgroups[s] == data.chatWithId){
+                            $scope.SSgroups.splice(s, 1);
+                           // console.log($scope.SSgroups);
+                            break;
+                        }
+                    }
                 }
     
                 else if (data.modalStatus == 1 && data.chatWithId == $scope.allGroups[g]._id && $scope.user._id != data.userId) {
+                    $scope.SSgroups.push(data.chatWithId);
+                   // console.log($scope.SSgroups);
                     $("#groupSS").show();
                     $('#gShareIframe').hide();
                 }
+
+                // if (data.modalStatus == 0 && data.chatWithId == $scope.allGroups[g]._id && $scope.user._id == data.userId){
+                //     document.getElementById('gShareIframe').contentWindow.location.reload();
+                // }
 
                 break;
             }
         }
         else{
+            //  ------------ one2one Screensharing ----------------------------------------
             if (data.modalStatus == 0 && $scope.user._id == data.chatWithId) {
                 $("#ssViewerModal").modal('hide');
                 console.log("RELOAD 1");
@@ -2660,7 +2693,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.reloadCurrent = function () {
-        console.log("RELOAD 2");
+      //  console.log("RELOAD 2");
         $window.location.reload();
     }
 

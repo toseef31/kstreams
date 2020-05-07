@@ -20,9 +20,9 @@
             width: 100%;
         }
     </style>
-    <section id="logs-message" class="experiment"
+    <!-- <section id="logs-message" class="experiment"
         style="display: none;text-align: center;font-size: 1.5em;line-height: 2;color: red;">WebRTC getDisplayMedia API.
-    </section>
+    </section> -->
     <section id="videoModal" class="experiment">
         <table style="width: 50%;" id="rooms-list" class="hide-after-join"></table>
         <!-- local/remote videos container -->
@@ -43,7 +43,7 @@
         var config = {
             // via: https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socketio-over-nodejs
             openSocket: function (config) {
-              
+
                 var SIGNALING_SERVER = 'https://socketio-over-nodejs2.herokuapp.com:443/';
 
                 var channel = config.channel || 'peekChatSystemG';
@@ -54,7 +54,7 @@
                     channel: channel,
                     sender: sender
                 });
-              
+
                 var socket = io.connect(SIGNALING_SERVER + channel);
                 socket.channel = channel;
                 socket.on('connect', function () {
@@ -81,45 +81,19 @@
             },
             onRoomFound: function (room) {
                 if (isbroadcaster) return;
-                console.log("*** onRoomFound 1 ***");
                 let userData = room.roomData.split('-');
-               // console.log(room);
-                console.log(localStorage.getItem('selGroupId') + ' != ' + userData[1]);
+                // console.log(localStorage.getItem('selGroupId') + ' != ' + userData[1]);
                 if (localStorage.getItem('selGroupId') != userData[1]) return;
-
-                console.log("*** onRoomFound 2 ***");
 
                 var alreadyExist = document.getElementById(room.roomData);
                 if (alreadyExist) return;
-          
-              //  var roomsList = document.getElementById('rooms-list');
-             //   if (typeof roomsList === 'undefined') roomsList = document.body;
-             //   var tr = document.createElement('tr');
-               
-            //    tr.id = room.roomData;
-               // tr.innerHTML = '<td><button class="join btn btn-danger">View</button></td>';
-              //  roomsList.insertBefore(tr, roomsList.firstChild);
+                localStorage.setItem('onlineStatus', 1);
 
-              //  var button = tr.querySelector('.join');
-              //  button.setAttribute('data-roomData', room.roomData);
-              //  button.setAttribute('data-roomToken', room.roomToken);
-              //  button.onclick = function () {
-                //    var button = this;
-                //    button.disabled = true;
-                 
-              //  console.log("JOIN CONFERENCE:");
-              //  console.log(room.roomToken);
-               // console.log(room.broadcaster);
-               localStorage.setItem('onlineStatus', 1);
+                conferenceUI.joinRoom({
+                    roomToken: room.roomToken,
+                    joinUser: room.broadcaster
+                });
 
-                    conferenceUI.joinRoom({
-                        roomToken: room.roomToken,
-                        joinUser: room.broadcaster
-                    });
-
-                //    document.querySelector('.hide-after-join').innerHTML = '<img src="https://www.webrtc-experiment.com/images/key-press.gif" style="margint-top:10px; width:50%;" />';
-                
-              //  };
             },
             onNewParticipant: function (numberOfParticipants) {
                 var text = numberOfParticipants + ' users are viewing your screen!';
@@ -164,10 +138,10 @@
         };
 
         function showErrorMessage(error, color) {
-            var errorMessage = document.querySelector('#logs-message');
-            errorMessage.style.color = color || 'red';
-            errorMessage.innerHTML = error;
-            errorMessage.style.display = 'block';
+            // var errorMessage = document.querySelector('#logs-message');
+            // errorMessage.style.color = color || 'red';
+            // errorMessage.innerHTML = error;
+            // errorMessage.style.display = 'block';
         }
 
         function getDisplayMediaError(error) {
@@ -201,7 +175,7 @@
                         location.reload();
                     });
 
-               
+
                     config.attachStream = stream;
                     callback && callback();
                     rotateVideo(video);

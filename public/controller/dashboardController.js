@@ -1075,9 +1075,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*on clicking a user, this function is called to get chat*/
         $scope.startChat = function (obj) {
-            // console.log(obj);
-            $('#groupSS').hide();
-            $('#gShareIframe').show();
+           // $('#groupSS').hide();
+           // $('#gShareIframe').show();
             if (obj.isChatDocker == 0) resetScrollVar();
             if (!obj) return;
 
@@ -1162,13 +1161,13 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     });
             } else {
 
-                for(var s=0; s < $scope.SSgroups.length; s++){
-                    if ($scope.SSgroups[s] == obj.group._id){
-                        $('#gShareIframe').hide();
-                        $('#groupSS').show();
-                        break;
-                    }
-                }
+                // for(var s=0; s < $scope.SSgroups.length; s++){
+                //     if ($scope.SSgroups[s] == obj.group._id){
+                //         $('#gShareIframe').hide();
+                //         $('#groupSS').show();
+                //         break;
+                //     }
+                // }
 
                 $scope.selectedUserData = obj.group;
                 $scope.groupSelected = true;
@@ -2175,7 +2174,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             }
             // -- push the joined user in array - if already added then break from loop and go on -----
             else if (data.status == 1) {
-
                 for (var g = 0; g < $scope.callingGroups.length; g++) {
                     if (data.userdata.groupCallid == $scope.callingGroups[g].groupCallid) {
                         if ($scope.joinedUsersList.length > 0) {
@@ -2278,6 +2276,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
                                     if ($scope.caller) {
                                         $('#groupCallModal').hide();
+                                        $('#minimizedGroupCall').hide();
                                         // ---- needs rechecking -----
                                         resetGroupTimer();
                                         $scope.resetUserSelectionData();
@@ -2469,14 +2468,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     $('#gShareIframe').show();
                     document.getElementById('gViewerIframe').contentWindow.location.reload();
 
-                    for(var s=0; s < $scope.SSgroups.length; s++){
-                       // console.log($scope.SSgroups[s] +' == '+ data.chatWithId);
-                        if ($scope.SSgroups[s] == data.chatWithId){
-                            $scope.SSgroups.splice(s, 1);
-                           // console.log($scope.SSgroups);
-                            break;
-                        }
-                    }
+                    // for(var s=0; s < $scope.SSgroups.length; s++){
+                    //     if ($scope.SSgroups[s] == data.chatWithId){
+                    //         $scope.SSgroups.splice(s, 1);
+                    //         break;
+                    //     }
+                    // }
                 }
     
                 else if (data.modalStatus == 1 && data.chatWithId == $scope.allGroups[g]._id && $scope.user._id != data.userId) {

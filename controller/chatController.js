@@ -363,7 +363,7 @@ module.exports = function (io, saveUser) {
   router.getGroupChat = function (req, res) {
     var id = req.params.groupId;
     let msgCountLimit = parseInt(req.params.limit);
-
+   console.log(req.params);
     chatModel
       .find({ groupId: id })
       .populate("commentId")
@@ -371,6 +371,8 @@ module.exports = function (io, saveUser) {
       .sort({ createdAt: -1 })
       .limit(msgCountLimit)
       .exec(function (err, data) {
+        console.log(data);
+        if (!data)  res.json(null);
         data.reverse();
         res.json(data);
       });

@@ -1061,7 +1061,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         /*on clicking a user, this function is called to get chat*/
         $scope.startChat = function (obj) {
-          //  console.log(obj);
+            console.log(obj);
             $('#groupSS').hide();
             $('#gShareIframe').show();
             if (obj.isChatDocker == 0) resetScrollVar();
@@ -1161,6 +1161,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.selGroupData = obj.group;
                 //   console.log($scope.selGroupData);
                 $scope.connectionId = obj.group._id;
+                console.log($scope.connectionId);
                 $scope.selGroupName = obj.group.name;
                 $scope.selGrpMembers = obj.group.members;
                 $scope.status = '';
@@ -1170,6 +1171,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                     userId: $scope.user._id
                 })
 
+      
                 $http.get('/getGroupChat/' + obj.group._id + '/' + 20).then(function (groupchat) {
                     $scope.groupchats = groupchat.data;
                     $scope.chatLength = $scope.groupchats.length;
@@ -1611,18 +1613,21 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             'name': $scope.user._id
                         }
                         $scope.selGroupCallData = $scope.selGroupData;
-                        $scope.connectionId = gData._id;
+                      //  console.log(gData);
+                        $scope.connectionId = gData.groupId;
                         localStorage.setItem('selGroupId', $scope.selGroupCallData._id);
                         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.selGroupCallData._id + '-' + $rootScope.user.name);
                     }
                     else {
                         gData = $scope.selGroupCallData;
+                      //  console.log(gData);
                         $scope.connectionId = $scope.selGroupCallData.groupId;
                         localStorage.setItem('selGroupId', $scope.selGroupCallData.groupId);
                         localStorage.setItem('tokenIs', $rootScope.user._id + '-' + $scope.selGroupCallData.groupId + '-' + $rootScope.user.name);
                     }
 
                    // if (!$scope.groupchats){
+                    console.log('connectionId: '+ $scope.connectionId);
                         $http.get('/getGroupChat/' + $scope.connectionId + '/' + 20).then(function (groupchat) {
                             $scope.groupchats = groupchat.data;
                             $scope.chatLength = $scope.groupchats.length;

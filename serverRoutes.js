@@ -52,7 +52,7 @@ module.exports = function (app, io, saveUser) {
 
     app.get('/getGroupChat/:groupId/:limit', chatCon.getGroupChat);
     app.get('/getMoreGroupChat/:groupId/:limit/:chatTime', chatCon.getMoreGroupChat);
-    app.post('/getLastGroupMsg', chatCon.getLastGroupMsg);
+    // app.post('/getLastGroupMsg', chatCon.getLastGroupMsg);
 
     app.get('/deleteMsg/:msgId/:type', chatCon.deleteMsg);
     app.get('/logout/:userId', chatCon.logout);
@@ -60,14 +60,14 @@ module.exports = function (app, io, saveUser) {
     app.get('/deleteGroupMsg/:msgId/:type/:groupId', chatCon.deleteGroupMsg);
     app.get('/getNotification/:userId', chatCon.getNotification);
     app.post('/notificationseen', chatCon.notificationseen);
-    app.post('/getcurrentgroupchat', chatCon.getcurrentgroupchat);
+    // app.post('/getcurrentgroupchat', chatCon.getcurrentgroupchat);
 
     app.post('/chatFilesShare', upload.array('file'), chatCon.addfiles);
     app.post('/groupFilesShare', upload.array('file'), chatCon.groupFilesShare);
 
-    app.post('/updateUser', chatCon.updateUser);
-    app.post('/removeUser', chatCon.removeUser);
-    app.post('/updateUser/image', chatCon.updateUserImage);
+   // app.post('/updateUser', chatCon.updateUser);
+   // app.post('/removeUser', chatCon.removeUser);
+   // app.post('/updateUser/image', chatCon.updateUserImage);
     app.post('/setPerStatus', chatCon.setPerStatus);
 
     // -------------- PROJECT ROUTES--------------------------------------
@@ -88,10 +88,10 @@ module.exports = function (app, io, saveUser) {
     app.post('/addNewMembers', groupCon.addNewMembers);
     app.post('/deleteGroup', groupCon.deleteGroup);
     // -------------- GROUP CALL ROUTES---------------------------------
-    app.post('/callAGroup', groupCon.callAGroup);
+   // app.post('/callAGroup', groupCon.callAGroup);
     app.post('/createGroupCall', groupCon.createGroupCall);
     app.post('/joinCallGroup', groupCon.joinCallGroup);
     app.post('/leaveCallGroup', groupCon.leaveCallGroup);
     app.post('/getCallGroups', groupCon.getCallGroups);
-    app.post('/updateGroupCallStatus', groupCon.updateGroupCallStatus);
+    //app.post('/updateGroupCallStatus', groupCon.updateGroupCallStatus);
 }

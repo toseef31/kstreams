@@ -109,45 +109,46 @@ module.exports = function (io, saveUser) {
   // ********************************** *****************************************************
 
   // For now we will enter a group call based on hour check, need imp later on
-  router.callAGroup = (req, res) => {
-    groupCall
-      .find({ groupId: req.body.groupId, status: 1 }) // check if call is still open
-      .sort({ _id: -1 }).limit(1)
-      .exec(function (err, groupData) {
-        // console.log('groupData ', groupData);
+  // router.callAGroup = (req, res) => {
+  //   groupCall
+  //     .find({ groupId: req.body.groupId, status: 1 }) // check if call is still open
+  //     .sort({ _id: -1 }).limit(1)
+  //     .exec(function (err, groupData) {
+  //       // console.log('groupData ', groupData);
 
-        if (groupData.length > 0) {
-          var hours = Math.abs(groupData[0].createdAt - new Date) / 36e5;
-          if (hours > 1) { //create new entry 
-            //  console.log("create new entry");
-            new groupCall({ 'groupId': req.body.groupId, 'createdBy': req.body.userId });
-          }
-          else if (req.body.userId != groupData[0].createdBy) { //update existing one
-            //  console.log("update existing one");
-            groupData.members.push({ 'userId': req.body.userId });
-          }
-        }
-        else { // create new entry
-          new groupCall({ 'groupId': req.body.groupId, 'createdBy': req.body.userId });
-        }
+  //       if (groupData.length > 0) {
+  //         var hours = Math.abs(groupData[0].createdAt - new Date) / 36e5;
+  //         if (hours > 1) { //create new entry 
+  //           //  console.log("create new entry");
+  //           new groupCall({ 'groupId': req.body.groupId, 'createdBy': req.body.userId });
+  //         }
+  //         else if (req.body.userId != groupData[0].createdBy) { //update existing one
+  //           //  console.log("update existing one");
+  //           groupData.members.push({ 'userId': req.body.userId });
+  //         }
+  //       }
+  //       else { // create new entry
+  //         new groupCall({ 'groupId': req.body.groupId, 'createdBy': req.body.userId });
+  //       }
 
-      });
-  };
+  //     });
+  // };
 
   router.createGroupCall = (req, res) => {
-   console.log(req.body.groupId);
+  // console.log(req.body);
     let newGroupCall = new groupCall(req.body);
     newGroupCall.save(function (err, result) {
       if (err) return;// console.log(err);
 
-      groupCall.findOne({status: 1 }, {}, { sort: { 'created_at' : -1 } }).populate('groupId'). exec(function (err, groupC) {
-     //   console.log(groupC);
+      groupCall.findOne({status: 1, callerId:  req.body.callerId}, {}, { sort: { 'created_at' : -1 } }).populate('groupId'). exec(function (err, groupC) {
+      //  console.log("=============");
+       // console.log(groupC);
         res.send(groupC);
       });
 
-    //  console.log('saved');
-    //  console.log(result);
-     // res.json(200);
+     //console.log('saved');
+     //console.log(result);
+     //res.json(200);
     });
   }
 
@@ -218,9 +219,9 @@ module.exports = function (io, saveUser) {
     });
   }
 
-  router.updateGroupCallStatus = (req, res) => {
+ // router.updateGroupCallStatus = (req, res) => {
     // --- if group call started or ended then update its status here ...
-  }
+ // }
 
   // Broadcast function end ======
   return router;

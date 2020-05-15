@@ -55,10 +55,10 @@ module.exports = function (io, saveUser) {
 
   router.groupChat = function (req, res) {
     var chatType = req.body.chatType;
-    console.log("chatType: "+ chatType);
+    console.log(req.body);
     if (chatType == 0) {
       newMessage = new chatModel({
-        groupId: req.body.id,
+        groupId: req.body.groupId,
         senderId: req.body.senderId,
         message: req.body.message,
         isGroup: 1
@@ -67,7 +67,7 @@ module.exports = function (io, saveUser) {
       newMessage = new chatModel({
         commentId: req.body.commentId,
         chatType: chatType,
-        groupId: req.body.id,
+        groupId: req.body.groupId,
         senderId: req.body.senderId,
         message: req.body.message,
         isGroup: 1
@@ -79,7 +79,7 @@ module.exports = function (io, saveUser) {
 
       if (chatType == 0) {
         chatModel
-          .findOne({ groupId: req.body.id, senderId: req.body.senderId })
+          .findOne({ groupId: req.body.groupId, senderId: req.body.senderId })
           .populate("senderId")
           .sort({ updatedAt: -1 })
           .exec(function (err, data) {
@@ -91,7 +91,7 @@ module.exports = function (io, saveUser) {
         chatModel
           .findOne({
             commentId: req.body.commentId,
-            groupId: req.body.id,
+            groupId: req.body.groupId,
             senderId: req.body.senderId
           })
           .populate("commentId")
@@ -459,18 +459,18 @@ module.exports = function (io, saveUser) {
   };
 
 
-  router.getLastGroupMsg = function (req, res) {
-    var id = req.body.id;
-    var sid = req.body.senderId;
+  // router.getLastGroupMsg = function (req, res) {
+  //   var id = req.body.id;
+  //   var sid = req.body.senderId;
 
-    chatModel
-      .find({ groupId: id, senderId: sid })
-      .populate("senderId")
-      .lean()
-      .then(function (data) {
-        res.json(data);
-      });
-  };
+  //   chatModel
+  //     .find({ groupId: id, senderId: sid })
+  //     .populate("senderId")
+  //     .lean()
+  //     .then(function (data) {
+  //       res.json(data);
+  //     });
+  // };
 
   router.logout = function (req, res) {
   };
@@ -481,24 +481,24 @@ module.exports = function (io, saveUser) {
     res.download(filepath);
   };
 
-  router.updateUser = function (req, res) {
-    var userId = req.body.id;
-    var name = req.body.name;
-    var image = req.body.imageName;
-    var skill = req.body.skill;
+  // router.updateUser = function (req, res) {
+  //   var userId = req.body.id;
+  //   var name = req.body.name;
+  //   var image = req.body.imageName;
+  //   var skill = req.body.skill;
 
-    userModel
-      .update(
-        { userId: userId },
-        { $set: { name: name, user_image: image, userTitle: skill } }
-      )
-      .exec(function (err, result) {
-        if (err) res.json(false);
-        else {
-          res.json(true);
-        }
-      });
-  };
+  //   userModel
+  //     .update(
+  //       { userId: userId },
+  //       { $set: { name: name, user_image: image, userTitle: skill } }
+  //     )
+  //     .exec(function (err, result) {
+  //       if (err) res.json(false);
+  //       else {
+  //         res.json(true);
+  //       }
+  //     });
+  // };
 
   router.checkSession = function (req, res, next) {
     userModel.findById(req.body)
@@ -664,13 +664,13 @@ module.exports = function (io, saveUser) {
     }
   };
 
-  router.getcurrentgroupchat = function (req, res) {
-    var id = req.body.id;
-    var _senderId = req.body.senderId;
-    groupsModel.find({ groupId: id, senderId: _senderId }, function (err, data) {
-      res.json(data);
-    });
-  };
+  // router.getcurrentgroupchat = function (req, res) {
+  //   var id = req.body.id;
+  //   var _senderId = req.body.senderId;
+  //   groupsModel.find({ groupId: id, senderId: _senderId }, function (err, data) {
+  //     res.json(data);
+  //   });
+  // };
 
   // router.saveUserDataToSession = (req, res) => {
   //   userModel.find({ email: req.body.user_email }, (err, data) => {
@@ -696,19 +696,19 @@ module.exports = function (io, saveUser) {
   //   });
   // };
 
-  router.removeUser = (req, res) => {
-  };
+  // router.removeUser = (req, res) => {
+  // };
 
-  router.updateUserImage = (req, res) => {
-    userModel.findOneAndUpdate(
-      { userId: req.body.id },
-      { user_image: req.body.image },
-      function (err, data) {
-        if (err) throw err;
-        res.json(req.body.id);
-      }
-    );
-  };
+  // router.updateUserImage = (req, res) => {
+  //   userModel.findOneAndUpdate(
+  //     { userId: req.body.id },
+  //     { user_image: req.body.image },
+  //     function (err, data) {
+  //       if (err) throw err;
+  //       res.json(req.body.id);
+  //     }
+  //   );
+  // };
 
   router.setPerStatus = (req, res) => {
       userModel.findOneAndUpdate(

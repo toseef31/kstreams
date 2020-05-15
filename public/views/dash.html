@@ -1342,18 +1342,19 @@
             <span style="float: right; padding-left: 20px;">
               <!-- <a id="groupChatBtn" ng-click="testSS()" class='btn btn-warning'>TEST CLOSE SS</a> -->
 
-              <iframe id="gShareIframe" src="/gShare.html" style="width: 22%; height: 6vh; float: right;" frameBorder="0"></iframe>
+              <iframe id="gShareIframe" src="/gShare.html" style="width: 26%; height: 6vh; float: right;" frameBorder="0"></iframe>
 
               <a id="groupChatBtn" href='javascript:void(0)' ng-click="gcChatBox()"
                 class='btn btn-primary'>Chat</a>
-              <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()"
-                class='btn btn-info'>Minimize</a>
+              <!-- <a id="minGroupCallBtn" href='javascript:void(0)' ng-click="minGroupCall()"
+                class='btn btn-info'>Minimize</a> -->
               <a id="stopGroupCallBtn" href='javascript:void(0)' ng-click="stopGroupCall()"
                 class='btn btn-danger'>Stop</a>
             </span>
            
-            <span style="padding-left: 20px;"><b style="cursor: pointer;" ng-click="activateJoinedUsers()">Joined Users: </b> {{joinedUsersList.length}}</span>
+            <!-- <span style="padding-left: 20px;"><b style="cursor: pointer;" ng-click="activateJoinedUsers()">Joined Users: </b> {{joinedUsersList.length}}</span> -->
           </div>
+          <br>
           <span id="groupCallTime" style="color: white; float: left;"></span>
         </div>
         <div class="modal-body" style="padding: 0 !important;">  
@@ -1599,7 +1600,7 @@
   <!-- Group Call end-->
 
   <!-- Joined Users list Modal -->
-  <div id="joinedUsersSectionModal" class="modal fade" role="dialog">
+  <!-- <div id="joinedUsersSectionModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header clearfix">
@@ -1623,7 +1624,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <!-- Joined Users list Modal -->
 
 
@@ -1802,10 +1803,10 @@
       $('#sidebar_secondary').removeClass('popup-box-on');
     });
 
-    $(".videoTabNew").draggable();
-    $(".audioTab").draggable();
-    $("#incommingCall").draggable();
-    $("#videoBroadCast").draggable();
+    // $(".videoTabNew").draggable();
+    // $(".audioTab").draggable();
+    // $("#incommingCall").draggable();
+    // $("#videoBroadCast").draggable();
   });
 
   function removeVideoTab() {

@@ -473,7 +473,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.submitNewMember = function () {
-
+        console.log($scope.groupUsers);
         $scope.selGrpMembers = $scope.selGrpMembers.concat($scope.groupUsers);
 
         //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
@@ -481,6 +481,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             'groupId': $scope.connectionId,
             'members': $scope.groupUsers,
             'groupData': $scope.selectedUserData,
+            'userId': $scope.user._id,
             'funType': 2
         });
 
@@ -488,7 +489,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $http.post("/addNewMembers", { 'groupId': $scope.connectionId, 'members': $scope.groupUsers }).then(function (response) {
                 $scope.addMemberModalStatus();
                 $scope.groupUsers = [];
-
+             
                 for (var i = 0; i < $scope.allUsers.length; i++) {
                     if ($scope.allUsers[i].isAdded) {
                         $scope.allUsers[i].isAdded = false;
@@ -518,7 +519,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             };
 
             //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
-            socket.emit('updateGroups', { 'groupData': groupData, 'funType': 0 });
+            socket.emit('updateGroups', { 'groupData': groupData, 'userId': $scope.user._id, 'funType': 0 });
             $http.post("/createUserGroup", { 'groupData': groupData, 'userId': $rootScope.user._id }).then(function (response) {
                 $scope.allGroups = response.data;
                 $scope.groupsLoaded = true;
@@ -542,7 +543,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
     $scope.DeleteGroup = function () {
         //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
-        socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'funType': 4 });
+        socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'userId': $scope.user._id, 'funType': 4 });
 
         $http.post("/deleteGroup", { 'groupId': $scope.selGroupData._id, 'projectId': $rootScope.projectData._id }).then(function (response) {
             $scope.groupDeleteConfirmStatus = false;
@@ -578,7 +579,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     $scope.removeCreatedGroupUser = function (user) {
         var index = $scope.selGrpMembers.indexOf(user);
         $scope.selGrpMembers.splice(index, 1);
-
+        console.log("removeMember");
         //!**** Below socket code will be updated ****
         //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
         socket.emit('updateGroups', {
@@ -589,7 +590,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         });
 
         $http.post("/removeGroupUser", { 'groupId': $scope.connectionId, 'memberId': user._id }).then(function (response) {
-            // $scope.closeEditGroup();
+           
         });
     }
     // ============================== ========== ===============================================
@@ -611,7 +612,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 'projectId': $rootScope.projectData._id, 'status': 1
             };
             //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
-            socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupName, 'groupData': groupData, 'funType': 1 });
+            socket.emit('updateGroups', { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupName, 'groupData': groupData, 'userId': $scope.user._id, 'funType': 1 });
             $http.post("/editGroupName", { 'groupId': $scope.connectionId, 'groupName': $scope.selGroupName }).
                 then(function (response) {
                 });
@@ -973,6 +974,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         }
 
         $scope.chatBack = function () {
+          //  $('#sendMsg').val('');
+          //  $scope.message = '';
             $scope.selectedUserNo = -1;
             $scope.selectedUserData = null;
             $scope.groupSelected = false;
@@ -1069,6 +1072,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
             // -------------- If selected one is the user -------------------
             if (obj.type == 1 && $scope.selectedUserNo == obj.userIndex) {
+                localStorage.setItem('isGroupSS', 0);
                 $scope.selectedUserNo = -1;
                 $scope.selectedUserData = null;
                 $scope.resetUserSelectionData();
@@ -1076,6 +1080,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 return;
             }
             else if (obj.type == 1 && $scope.selectedUserNo != obj.userIndex) {
+                localStorage.setItem('isGroupSS', 0);
                 localStorage.setItem('selGroupId', null);
                 $scope.selectedUserNo = obj.userIndex;
                 $scope.selectedUserData = obj.user;
@@ -1161,7 +1166,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.selGroupData = obj.group;
                 //   console.log($scope.selGroupData);
                 $scope.connectionId = obj.group._id;
-                console.log($scope.connectionId);
+               // console.log($scope.connectionId);
                 $scope.selGroupName = obj.group.name;
                 $scope.selGrpMembers = obj.group.members;
                 $scope.status = '';
@@ -2040,6 +2045,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on("updateFriendsGroups", (gData) => {
             //delete the selected group
+            console.log(gData);
             if (gData.funType == 4) {
                 for (var j = 0; j < $scope.allGroups.length; j++) {
                     if (gData.groupId == $scope.allGroups[j]._id) {
@@ -2057,8 +2063,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             if ($scope.allGroups[l].members[m]._id == gData.memberId) {
                                 let memberIndex = $scope.allGroups.indexOf($scope.allGroups[l].members[m]);
                                 $scope.allGroups[l].members.splice(memberIndex, 1);
-                                $('#editGroupModal').hide();
+                             
+                                if ($scope.user._id != gData.userId)  $('#editGroupModal').hide();
+                               
+                                // if user leaves group
                                 if ($scope.user._id == gData.memberId) {
+                                    $('#editGroupModal').hide();
                                     let groupIndex = $scope.allGroups.indexOf($scope.allGroups[l]);
                                     $scope.allGroups.splice(groupIndex, 1);
                                     break;
@@ -2071,10 +2081,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else {
                 for (var i = 0; i < gData.groupData.members.length; i++) {
                     if (gData.funType == 0 && gData.groupData.members[i]._id == $scope.user._id) {
+                        console.log("1111");
                         $scope.allGroups.push(gData.groupData);
                         break;
                     }
                     else if (gData.funType == 1 && gData.groupData.members[i]._id == $scope.user._id) {
+                        console.log("2222");
                         for (var j = 0; j < $scope.allGroups.length; j++) {
                             if (gData.groupId == $scope.allGroups[j]._id) {
                                 $scope.allGroups[j].name = gData.groupName;
@@ -2083,11 +2095,25 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                         }
                     }
                     else if (gData.funType == 2 && gData.groupData.members[i]._id == $scope.user._id) {
-                        $scope.allGroups.push(gData.groupData);
+                  
+                        console.log("3333");
+                        console.log(gData);
+                        console.log($scope.allGroups);
+                        if (gData.userId != $scope.user._id)
+                            $scope.allGroups.push(gData.groupData);
+
                         //on any issue, reCheck Needed about this below ForLoop
                         for (var k = 0; k < $scope.allGroups.length; k++) {
                             if (gData.groupId == $scope.allGroups[k]._id) {
-                                $scope.allGroups[k].members.concat(gData.members);
+                                console.log(gData.members);
+                                // angular.extend($scope.allGroups[k].members, gData.members);
+                                // $scope.allGroups[k].members.concat(gData.members);
+                                //Concat is not working thats why below loop is used [reCheck needed]
+                                for (var t = 0; t < gData.members.length; t++){
+                                    $scope.allGroups[k].members.push(gData.members[t]);
+                                }
+                                console.log($scope.allGroups);
+                                break;
                             }
                         }
                     }
@@ -2461,6 +2487,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         //Update Viewers and hide their modal + reload their iframe
         socket.on('updateScreenshareStatus', function (data) {
+            console.log("*** updateScreenshareStatus ***");
+            console.log(data);
             //  ------------ GroupCall Screensharing ----------------------------------------
             //-- isGroupSS: is this groupCall screenshare or one2one
             //-- modalStatus: does screenshare iframe modal has to be close or not

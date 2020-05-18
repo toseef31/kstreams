@@ -1081,18 +1081,19 @@
 
   <!-- screenShare Viewer modal -->
   <div id="ssViewerModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog ss_modal-custom">
       <div class="modal-content">
         <div class="modal-header">
-          <p style="color: white;">Screen Shared By</p>
+          <span style="color: white;">Screen Shared By</span>
+          <button type="button" class="btn btn-default" data-dismiss="modal" style="float: right;">Close</button>
           <h4 id="screenerTitle" class="modal-title"></h4>
         </div>
         <div class="modal-body">
           <iframe id="viewerIframe" src="/sViewer.html"></iframe>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+        <!-- <div class="modal-footer">
+         
+        </div> -->
       </div>
     </div>
   </div>
@@ -1207,7 +1208,7 @@
 
   <!-- Create-Group EDIT Modal -->
   <div id="editGroupModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="margin: 12px auto;">
       <div class="modal-content createGroupModal">
         <div class="modal-header">
           <span ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
@@ -1216,7 +1217,7 @@
             <i ng-if="selGroupData.creatorUserId == user._id" ng-click="confirmModalGroupDel()"
               class="fa fa-trash groupDeleteIcon" aria-hidden="true"></i>
 
-            <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName"
+            <i ng-click="edit(); focusInput=true" ng-hide="editMode" class="fa fa-pencil-square-o editGroupName groupEditNameBtn"
               aria-hidden="true"></i>
             <i ng-click="save()" ng-show="editMode" class="fa fa-check editGroupName" aria-hidden="true"></i>
           </span>

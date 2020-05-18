@@ -722,6 +722,8 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     margin: 0 auto;
   }
 
+  
+
   .userCount{
     color: #5a5b5d;
     margin-right: 20px;
@@ -1100,6 +1102,17 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
   .callServerNoti{
     left: 15%;
   }
+
+  .createGroupModal {
+     width: 98%;
+     margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 350px){
+    .groupEditNameBtn {
+        margin: -9px;
+     }
 }
 
 @media screen and (max-width: 420px) {
@@ -1131,7 +1144,8 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     height: 100%;
 }
 #ssViewerModal .modal-body{
-    height: 400px;
+    /* height: 400px; */
+    height: 81%;
 }
 .userInteraction{
     margin-top: 3px;
@@ -1161,3 +1175,8 @@ svg.feather{vertical-align:middle;margin-top:-4px;width: 19px;height:19px;}
     padding:0 10px; 
     border-radius: 5%;
  } 
+
+ .ss_modal-custom {
+    width: 100% !important;
+    margin: 5px auto !important;
+}

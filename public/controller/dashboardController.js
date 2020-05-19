@@ -476,6 +476,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
         console.log($scope.groupUsers);
         $scope.selGrpMembers = $scope.selGrpMembers.concat($scope.groupUsers);
 
+        for (var i = 0; i < $scope.allUsers.length; i++) {
+            if ($scope.allUsers[i].isAdded) {
+                $scope.allUsers[i].isAdded = false;
+            }
+        }
+
         //-> (About funType) 0- updateGroup; 1- updateGroupName; 2- UpdateGroupMember; 3- RemoveGroupMember
         socket.emit('updateGroups', {
             'groupId': $scope.connectionId,
@@ -489,12 +495,6 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             $http.post("/addNewMembers", { 'groupId': $scope.connectionId, 'members': $scope.groupUsers }).then(function (response) {
                 $scope.addMemberModalStatus();
                 $scope.groupUsers = [];
-             
-                for (var i = 0; i < $scope.allUsers.length; i++) {
-                    if ($scope.allUsers[i].isAdded) {
-                        $scope.allUsers[i].isAdded = false;
-                    }
-                }
             });
         }
     }
@@ -566,6 +566,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
     }
 
     $scope.openEditGroup = function () {
+        console.log($scope.selGrpMembers);
         $("#editGroupModal").modal({
             backdrop: 'static',
             keyboard: false
@@ -2045,7 +2046,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
 
         socket.on("updateFriendsGroups", (gData) => {
             //delete the selected group
-            console.log(gData);
+          //  console.log(gData);
             if (gData.funType == 4) {
                 for (var j = 0; j < $scope.allGroups.length; j++) {
                     if (gData.groupId == $scope.allGroups[j]._id) {
@@ -2081,12 +2082,12 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             else {
                 for (var i = 0; i < gData.groupData.members.length; i++) {
                     if (gData.funType == 0 && gData.groupData.members[i]._id == $scope.user._id) {
-                        console.log("1111");
+                      //  console.log("1111");
                         $scope.allGroups.push(gData.groupData);
                         break;
                     }
                     else if (gData.funType == 1 && gData.groupData.members[i]._id == $scope.user._id) {
-                        console.log("2222");
+                      //  console.log("2222");
                         for (var j = 0; j < $scope.allGroups.length; j++) {
                             if (gData.groupId == $scope.allGroups[j]._id) {
                                 $scope.allGroups[j].name = gData.groupName;

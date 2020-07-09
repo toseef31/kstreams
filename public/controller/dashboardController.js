@@ -1202,6 +1202,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.selectedUserData = null;
                 $scope.resetUserSelectionData();
                 localStorage.setItem('selGroupId', null);
+               // $scope.allUsers[obj.userIndex].chatWithRefId = "";
+                $http.get('/emptyChatWithId/' + $scope.user._id);
                 return;
             }
             else if (obj.type == 1 && $scope.selectedUserNo != obj.userIndex) {
@@ -1219,6 +1221,8 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.resetUserSelectionData();
                 localStorage.setItem('selGroupId', null);
                 localStorage.setItem('friendId', null);
+              //  $scope.allUsers[obj.userIndex].chatWithRefId = "";
+                $http.get('/emptyChatWithId/' + $scope.user._id);
                 return;
             }
             else if (obj.type == 2 && $scope.selectedUserNo != obj.groupIndex) {
@@ -1562,8 +1566,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                             scrolltopUserList();
                         }
 
+                       // console.log($scope.allUsers[i]._id +" == "+ $scope.chatWithId +" && "+ $scope.allUsers[i].onlineStatus +" == "+ 1);
                         if ($scope.allUsers[i]._id == $scope.chatWithId && $scope.allUsers[i].onlineStatus == 1) {
-                            if ($scope.allUsers[i].chatWithRefId == msgObj.senderId) {
+                            console.log($scope.allUsers[i].chatWithRefId +" == "+ msgObj.senderId._id);
+                            if ($scope.allUsers[i].chatWithRefId == msgObj.senderId._id) {
                                 msgObj.isSeen = 1;
                                 break;
                             }

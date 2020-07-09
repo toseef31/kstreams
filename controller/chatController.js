@@ -55,7 +55,7 @@ module.exports = function (io, saveUser) {
 
   router.groupChat = function (req, res) {
     var chatType = req.body.chatType;
-    console.log(req.body);
+  //  console.log(req.body);
     if (chatType == 0) {
       newMessage = new chatModel({
         groupId: req.body.groupId,
@@ -107,7 +107,7 @@ module.exports = function (io, saveUser) {
 
   router.getUsers = function (req, res) {
     function chatModelFunc(data) {
-     // console.log(data);
+    //  console.log(data);
       for (let i = 0; i < data.length; i++) {
        // if(data[i]) {
           chatModel
@@ -225,6 +225,7 @@ module.exports = function (io, saveUser) {
 
   router.chat = function (req, res) {
 
+    console.log(req.body);
     var chatType = req.body.msgData.chatType;
     var sender = req.body.msgData.senderId;
     var name = req.body.msgData.senderName;
@@ -234,8 +235,8 @@ module.exports = function (io, saveUser) {
     var receiverImage = req.body.msgData.receiverImage;
     var isSeen = req.body.msgData.isSeen;
 
-    console.log('chatType: '+ chatType);
-    console.log(req.body);
+   // console.log('chatType: '+ chatType);
+  //  console.log(req.body);
     if (chatType == 0) {
       newMessage = new chatModel({
         senderId: sender,
@@ -279,9 +280,10 @@ module.exports = function (io, saveUser) {
       });
     }
 
+    console.log("111A");
     newMessage.save(function (err, data) {
       if (err) throw err;
-
+      console.log("111B");
       if (chatType != 2 && req.body.selectedUserData) {
         let date_ob = new Date();
         userModel.update(
@@ -290,12 +292,12 @@ module.exports = function (io, saveUser) {
         )
           .exec();
       }
-
+      console.log("222A");
       if (chatType == 0) {
         chatModel
           .findOne({ senderId: sender, receiverId: recevier })
-          .populate("senderId", { _id: true, name: true })
-          .populate("receiverId", { _id: true, name: true })
+          .populate("senderId", { _id: true, name: true, user_image: true })
+          .populate("receiverId", { _id: true, name: true, user_image: true })
           .sort({ updatedAt: -1 })
           .exec(function (err, data) {
             helper.addNewMessage(data);
@@ -309,8 +311,8 @@ module.exports = function (io, saveUser) {
             receiverId: recevier
           })
           .populate("commentId")
-          .populate("senderId", { _id: true, name: true })
-          .populate("receiverId", { _id: true, name: true })
+          .populate("senderId", { _id: true, name: true, user_image: true })
+          .populate("receiverId", { _id: true, name: true, user_image: true })
           .sort({ updatedAt: -1 })
           .exec(function (err, data) {
             helper.addNewMessage(data);
@@ -363,15 +365,15 @@ module.exports = function (io, saveUser) {
   router.getGroupChat = function (req, res) {
     var id = req.params.groupId;
     let msgCountLimit = parseInt(req.params.limit);
-   console.log(req.params);
+   //console.log(req.params);
     chatModel
       .find({ groupId: id })
       .populate("commentId")
-      .populate("senderId", { _id: true, name: true })
+      .populate("senderId", { _id: true, name: true, user_image: true })
       .sort({ createdAt: -1 })
       .limit(msgCountLimit)
       .exec(function (err, data) {
-        console.log(data);
+     //   console.log(data);
         if (!data)  res.json(null);
         data.reverse();
         res.json(data);
@@ -396,8 +398,8 @@ module.exports = function (io, saveUser) {
               { senderId: receiver, receiverId: sender }
             ]
           })
-          .populate("receiverId", { _id: true, name: true })
-          .populate("senderId", { _id: true, name: true })
+          .populate("receiverId", { _id: true, name: true, user_image: true })
+          .populate("senderId", { _id: true, name: true, user_image: true })
           .sort({ createdAt: -1 })
           .limit(msgCountLimit)
           .populate("commentId")
@@ -448,8 +450,8 @@ module.exports = function (io, saveUser) {
         ]
       })
 
-      .populate("receiverId", { _id: true, name: true })
-      .populate("senderId", { _id: true, name: true })
+      .populate("receiverId", { _id: true, name: true, user_image: true })
+      .populate("senderId", { _id: true, name: true, user_image: true })
       .sort({ createdAt: -1 })
       .limit(msgCountLimit)
       .populate("commentId")
@@ -555,7 +557,6 @@ module.exports = function (io, saveUser) {
       { new: true },
       function (err, data) {
         if (err) throw err;
-        helper.addNewMessage(data);
         res.json(data);
       }
     );
@@ -607,27 +608,55 @@ module.exports = function (io, saveUser) {
     });
   };
 
-  router.addfiles = function (req, res, next) {
-    let isFileImage = 1;
-
-    for (var i = 0; i < req.files.length; i++) {
+  router.addfiles = async function (req, res, next) {
+    savedChat = [];
+    for (let i = 0; i < req.files.length; i++) {
       if (isImage("./images/chatImages/" + req.files[i].originalname)) {
         isFileImage = 1;
       } else {
         isFileImage = 2;
       }
 
-      var newchat = new chatModel({
-        senderId: req.body.senderId,
-        receiverId: req.body.friendId,
-        message: req.files[i].originalname,
-        messageType: isFileImage
-      });
-      newchat.save(function (err, data) {
+      var newchat;
+      if (req.body.isGroup == 0) {
+        newchat = new chatModel({
+          senderId: req.body.senderId,
+          receiverId: req.body.friendId,
+          message: req.files[i].originalname,
+          messageType: isFileImage
+        });
+      }
+      else {
+        newchat = new chatModel({
+          groupId: req.body.id,
+          senderId: req.body.senderId,
+          isGroup: 1,
+          message: req.files[i].originalname,
+          messageType: isFileImage
+        });
+      }
+
+      await newchat.save(function (err, data) {
         if (err) throw err;
+        if (req.body.isGroup == 0) {
+          chatModel.populate(data, { path: "receiverId senderId", select: "_id name user_image" }, function (err, populatedData) {
+            savedChat.push(populatedData);
+            console.log(populatedData);
+            if (i == (req.files.length - 1)) {
+              res.send(savedChat);
+            }
+          })
+        }
+        else {
+          chatModel.populate(data, { path: "senderId", select: "_id name user_image" }, function (err, populatedData) {
+            savedChat.push(populatedData);
+            if (i == (req.files.length - 1)) {
+              res.send(savedChat);
+            }
+          })
+        }
       });
     }
-    res.send(req.files);
   };
 
   router.groupFilesShare = function (req, res, next) {

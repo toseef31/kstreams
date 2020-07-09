@@ -271,8 +271,9 @@
               <i id="groupVideoCall" ng-if="!selGroupData.joinCall" class="fa fa fa-video-camera"
                 ng-click="videoCall(0,0,0)"></i>
 
-              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">Join
-                Call</span>
+              <span ng-if="selGroupData.joinCall" class="callStatus ng-scope" ng-click="videoCall(0,0,1)">
+                Join Call
+              </span>
             </span>
 
             <span ng-if="groupSelected && projectData.audioCall == 1" class="whiteTextColor">
@@ -291,8 +292,8 @@
 
         <div onscroll="scrolled(this)" class="messagejoint msg_history" ng-class="{groupMsgHistory: groupSelected}"
           id="{{connectionId}}" file-dropzone files-to-upload='files' ng-mouseout="removeClasses()">
-          <div class="messages-container">
 
+          <div class="messages-container">
             <div id="dropImage" class="dropImage">
               <img height="22%" width="22%" src="../images/fileDrop_image.png">
             </div>
@@ -379,7 +380,7 @@
                         <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                           {{chat.createdAt | timeago}}
                         </div>
-                        <div class="deleted_received_msg">this message has been deleted</div>
+                        <div class="deleted_received_msg">message deleted</div>
                       </div>
                     </div>
                   </div>
@@ -456,9 +457,9 @@
                             <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
                           </span>
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
-                            uib-tooltip="Edit" ng-click="editMsg()"></span>
+                            uib-tooltip="Edit" ng-click="editMsg(chat)"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
-                            ng-click="confirmModal()"></span>
+                            ng-click="confirmModal(chat)"></span>
                           <!-- deleteMsg('fromMe')  -->
                         </li>
                       </ul>
@@ -480,7 +481,7 @@
                       </div>
                       <div class="message">
                         <p class="message-text" dir="auto">
-                          this message has been deleted
+                           message deleted
                         </p>
                         <div class="message-media">
                           <div class="clear"></div>
@@ -556,7 +557,7 @@
                   <div ng-if="chat.isDeleted">
                     <div class="message-contnaier incoming pull-left">
                       <div class="messages-wrapper messages-text message-model pull-left">
-                        <div class="deleted_received_msg">this message has been deleted
+                        <div class="deleted_received_msg">message deleted
                         </div>
                         <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                           {{chat.createdAt | timeago}}
@@ -627,9 +628,9 @@
                             <span class='hoverIt fa fa-reply' ng-click="activateReply(chat)"></span>
                           </span>
                           <span ng-if="chat.messageType == 0" class='hoverIt fa fa-edit' tooltip-placement="left"
-                            uib-tooltip="Edit" ng-click="editMsg()"></span>
+                            uib-tooltip="Edit" ng-click="editMsg(chat)"></span>
                           <span class='hoverIt fa fa-remove' tooltip-placement="left" uib-tooltip="For me"
-                            ng-click="confirmModal()"></span>
+                            ng-click="confirmModal(chat)"></span>
                         </li>
                       </ul>
                       <div class="top-left">
@@ -647,7 +648,7 @@
                       <div class="clear"></div>
                       <div class="message">
                         <p class="message-text" dir="auto">
-                          this message has been deleted
+                          message deleted
                         </p>
                         <div class="message-media">
                           <div class="clear"></div>
@@ -663,7 +664,7 @@
 
                 </div>
                 <!-- NEEEEED REEECHECKING NINININI (640) -->
-
+          
                 <span ng-if="$index == (groupchats.length-1) && !isRepeatFinish">
                   {{ngRepeatFinish()}}
                 </span>
@@ -732,7 +733,7 @@
           </span>
         </li>
 
-        <div class="nomessage-container messagejoint msg_history">
+        <div class="nomessage-container messagejoint">
           <div class="noMessageContainerText">
             <i class="fa fa-comments-o chatIcon"></i>
             <h4 style="font-size: xx-large;"> Select User From List</h4>
@@ -1369,8 +1370,8 @@
           </div>
 
           <!-- ******* GC chatBox ends ****** -->
-          <div ng-if="groupChatBoxActive" class="col-sm-4 col-md-4  gcSubPanelWidth" style="float:right">
-            <div  onscroll="scrolled(this)" class="messagejoint gMsg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
+          <div ng-if="groupChatBoxActive" class="col-sm-4 col-md-4 gcSubPanelWidth" style="float:right">
+            <div onscroll="scrolled(this)" class="messagejoint gMsg_history text-sender-container" ng-class="{groupBroadMsgHistory: true}"
               id="{{connectionId}}">
               <div class="messages-container">
                 <div ng-repeat="chat in groupchats track by $index">
@@ -1426,7 +1427,7 @@
                 <div ng-if="chat.isDeleted">
                   <div class="message-contnaier incoming pull-left">
                     <div class="messages-wrapper messages-text message-model pull-left">
-                      <div class="deleted_received_msg">this message has been deleted
+                      <div class="deleted_received_msg">message deleted
                       </div>
                       <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
                         {{chat.createdAt | timeago}}
@@ -1488,7 +1489,7 @@
 
 
                     <div class="time ajax-time text-right" title="{{chat.createdAt | date:'MM/dd/yy h:mm:ss a'}}">
-                      {{ chat.createdAt | timeago}}
+                      {{chat.createdAt | timeago}}
                     </div>
                   </div>
 
@@ -1518,7 +1519,7 @@
                   <div class="clear"></div>
                   <div class="message">
                     <p class="message-text" dir="auto">
-                      this message has been deleted
+                      message deleted
                     </p>
                     <div class="message-media">
                       <div class="clear"></div>
@@ -1534,9 +1535,9 @@
 
             </div>
               <!-- *************** SEND GROUP MSGZ ***************** -->
-              <!-- {{$index}} == {{(groupchats.length-1)}} && {{isRepeatFinish}} -->
-              <span ng-if="$index == (groupchats.length-1) && !isRepeatFinish">
-                {{ngRepeatFinish()}}
+              <span ng-if="$index == (groupchats.length-1) && !isGroupRepeatFinish">
+                <span>Passing type 1</span>
+                {{ngGroupRepeatFinish()}}
               </span>
               <div class="clear"></div>
 
@@ -1751,7 +1752,20 @@
     $("#sendMsg").emojioneArea({
       events: {
         keypress: function (editor, event) {
-          socket.emit('typing');
+          let userData = JSON.parse(localStorage.getItem('userData'));
+          let grpId = null;
+          let friendId = 0;
+  
+         // grpId = localStorage.getItem('selGroupId');
+          friendId = localStorage.getItem('friendId');
+      
+          let data = {
+             'userId': userData._id,
+            // 'groupId': grpId,
+             'friendId': friendId,
+             'name': userData.name
+          };
+          socket.emit('typing', data);
         },
         keyup: function (editor, event) {
           this.source.val(this.getText());
@@ -1770,7 +1784,14 @@
       $("#sendGMsg").emojioneArea({
       events: {
         keypress: function (editor, event) {
-          socket.emit('typing');
+          // let userData = JSON.parse(localStorage.getItem('userData'));
+          // let data = {
+          //    'userId': userData._id,
+          //    'groupId': localStorage.getItem('selGroupId'),
+          //    'name': userData.name
+          // };
+
+          // socket.emit('typing', data);
         },
         keyup: function (editor, event) {
           this.source.val(this.getText());

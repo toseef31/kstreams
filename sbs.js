@@ -253,10 +253,7 @@ io.on('connection', function (socket) {
 
 	//listen on typing
 	socket.on('typing', (data) => {
-		socket.broadcast.emit('typingRec', {
-			username: socket.username,
-			rcv_id: socket.rcv_id
-		})
+		socket.broadcast.emit('typingRec', data);
 	});
 
 	socket.on('updatechat', (coversation) => {
@@ -304,8 +301,12 @@ io.on('connection', function (socket) {
 	socket.on('dropTheGroupCall', function (data) {
 		io.emit('dropeTheMembersCall', data);
 	})
+	
 	socket.on('updateGroupFiles', function (data) {
 		io.emit('updateOtherMembersFiles', data);
+	});
+	socket.on('updateFiles', function (data) {
+		io.emit('updateOtherFiles', data);
 	});
 	
 	socket.on('updateGroups', function (data) {
@@ -317,9 +318,10 @@ io.on('connection', function (socket) {
 	});
 
 	//listen on typing
-	socket.on('typing', (data) => {
-		io.emit('typing', data)
-	});
+	// socket.on('typing', (data) => {
+	// 	console.log("typing 2");
+	// 	io.emit('typing', data)
+	// });
 });
 
 

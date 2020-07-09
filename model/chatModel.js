@@ -23,7 +23,7 @@ const chatSchema = mongoose.Schema({
 	},
 	"message": String,
 	"messageType": {
-		type: Number,    // 0- Normal , 1- Image, 2- Text, PDF etc.., 3- Call
+		type: Number,    // 0- Normal , 1- Image, 2- TextFile, PDF etc.., 3- Call
 		default: 0
 	},
 	"chatType":{

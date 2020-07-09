@@ -1194,6 +1194,7 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
             if (obj.isChatDocker == 0) resetScrollVar();
             if (!obj) return;
             $("#isTyping").addClass('hidden');
+
             // -------------- If selected one is the user -------------------
             if (obj.type == 1 && $scope.selectedUserNo == obj.userIndex) {
                 localStorage.setItem('isGroupSS', 0);
@@ -1203,7 +1204,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 $scope.resetUserSelectionData();
                 localStorage.setItem('selGroupId', null);
                // $scope.allUsers[obj.userIndex].chatWithRefId = "";
-                $http.get('/emptyChatWithId/' + $scope.user._id);
+               socket.emit('updateChatWithId', {
+                userId: $scope.user._id
+               });
+             //   $http.get('/emptyChatWithId/' + $scope.user._id);
                 return;
             }
             else if (obj.type == 1 && $scope.selectedUserNo != obj.userIndex) {
@@ -1222,7 +1226,10 @@ app.controller("dashController", function ($scope, $http, $window, $location, $r
                 localStorage.setItem('selGroupId', null);
                 localStorage.setItem('friendId', null);
               //  $scope.allUsers[obj.userIndex].chatWithRefId = "";
-                $http.get('/emptyChatWithId/' + $scope.user._id);
+              socket.emit('updateChatWithId', {
+                userId: $scope.user._id
+               });
+               // $http.get('/emptyChatWithId/' + $scope.user._id);
                 return;
             }
             else if (obj.type == 2 && $scope.selectedUserNo != obj.groupIndex) {

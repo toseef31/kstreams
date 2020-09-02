@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     const email = this.loginform.get('email').value;
     const password = this.loginform.get('password').value;
 
-    this.backendApi.loginApiRequest({ 'email': email, 'password': password }).then(
+    this.backendApi.loginApiRequest({ 'email': email, 'password': password, 'projectId': '5d4c07fb030f5d0600bf5c03' }).then(
       (loginResponse: any) => {
         if (loginResponse.isUserExist) {
           this.sessionService.set('user_session_data', loginResponse.data);
